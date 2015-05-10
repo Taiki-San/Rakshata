@@ -116,6 +116,19 @@
 	_posX = posX;
 }
 
+#pragma mark - Property management
+
+- (void) setOffsetYSpeed : (CGFloat) offsetYSpeed
+{
+	if(offsetYSpeed < 0)
+		wasOffsetSet = NO;
+	else
+	{
+		wasOffsetSet = YES;
+		_offsetYSpeed = offsetYSpeed;
+	}
+}
+
 #pragma mark - Drawing
 
 - (void) notifyNeedDisplay
@@ -126,15 +139,18 @@
 - (void) centerText
 {
 	[_speedText sizeToFit];
+	
 	NSRect frame = _speedText.frame;
 	
 	if(_posX)
 		frame.origin.x = _posX - frame.size.width;
 	else
-	{
 		frame.origin.x = self.frame.size.width * 3 / 4 - frame.size.width / 2;
-	}
-	frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
+	
+	if(wasOffsetSet)
+		frame.origin.y = _offsetYSpeed;
+	else
+		frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
 	
 	[_speedText setFrameOrigin:frame.origin];
 }

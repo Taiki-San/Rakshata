@@ -10,6 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	MDLLIST_CELL_HEIGHT = ((11 + 1) * 2),
+	MDLLIST_CELL_HEIGHT_MULTI = 40
+};
+
 @implementation RakMDLList
 
 - (id) init : (NSRect) frame : (RakMDLController *) _controller
@@ -22,7 +28,6 @@
 	if(self != nil)
 	{
 		controller = _controller;
-		cellHeight = MDLLIST_CELL_HEIGHT;
 		dragInProgress = NO;
 		wasSerie = controller.isSerieMainThread;
 		
@@ -115,7 +120,7 @@
 	if(wasSerie != controller.isSerieMainThread)
 		[self checkIfShouldReload];
 	
-	return wasSerie ? 40 : cellHeight;
+	return wasSerie ? MDLLIST_CELL_HEIGHT_MULTI : MDLLIST_CELL_HEIGHT;
 }
 
 - (NSNumber*) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -169,7 +174,7 @@
 	}
 	else
 	{
-		[result updateData : row : _tableView.frame.size.width];
+		[result updateData : row];
 
 		if(result.invalidData)
 			[_tableView reloadData];

@@ -10,13 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define MDLLIST_CELL_HEIGHT ((11 + 1) * 2)
-
 @interface RakMDLList : RakList
 {
 	RakMDLController * controller;
-	
-	CGFloat cellHeight;
 	
 	BOOL dragInProgress;
 	uint draggedElement;

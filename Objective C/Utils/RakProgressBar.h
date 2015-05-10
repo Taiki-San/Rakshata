@@ -23,7 +23,11 @@
 	NSColor * progressColor;
 	
 	uint _posX;
+	
+	BOOL wasOffsetSet;
 }
+
+@property (nonatomic) CGFloat offsetYSpeed;
 
 + (CGFloat) getLeftBorder;
 + (CGFloat) getRightBorder;

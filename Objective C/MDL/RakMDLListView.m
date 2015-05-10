@@ -12,7 +12,9 @@
 
 enum
 {
-	REQUEST_OFFSET_WIDTH = 50
+	REQUEST_OFFSET_WIDTH = 50,
+	Y_OFFSET_MULTILINE_TEXT = 5,
+	Y_OFFSET_MULTILINE_BUTTON = 2,
 };
 
 @implementation RakMDLListView
@@ -27,7 +29,7 @@ enum
 		_controller = controller;
 		_row = rowID;
 		_invalidData = NO;
-		wasMultiLine = _controller.isSerieMainThread;
+		wasMultiLine = _controller.isSerieMainThread;	//We want to trigger the code updating wasMultiLine
 		
 		todoList = [_controller getData: _row : YES];
 		if(todoList == NULL || *todoList == NULL)
@@ -40,7 +42,7 @@ enum
 		
 		self.autoresizesSubviews = NO;
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : [self getName] : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
+		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
 		if(requestName != nil)		[self addSubview:requestName];
 		
 		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
@@ -52,6 +54,8 @@ enum
 		if(DLprogress != nil){	[self addSubview:DLprogress];	[DLprogress setHidden:YES];	}
 		
 		iconWidth = [_remove frame].size.width;
+		
+		[self multilineStateUpdated];	//Update everything depending of the context
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rowDeleted:) name:@"RakMDLListViewRowDeleted" object:nil];
 	}
@@ -127,6 +131,9 @@ enum
 			localized = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*todoList)->identifier];
 	}
 	
+	if(wasMultiLine)
+		return [NSString stringWithFormat:@"%@\n%@", getStringForWchar((*todoList)->datas->projectName), localized];
+
 	return [NSString stringWithFormat:@"%@ - %@", getStringForWchar((*todoList)->datas->projectName), localized];
 }
 
@@ -151,16 +158,30 @@ enum
 	[self initIcons];
 }
 
+#pragma mark - Data update
+
+- (void) multilineStateUpdated
+{
+	if(wasMultiLine)
+		DLprogress.offsetYSpeed = Y_OFFSET_MULTILINE_BUTTON + 1;
+	else
+		DLprogress.offsetYSpeed = -1;
+	
+	[requestName setStringValue : [self getName]];
+}
+
 - (void) setPositionsOfStuffs
 {
 	NSRect frame = _bounds, curFrame;
 	NSPoint newPoint;
 	BOOL stateUpdate = NO;
 	
-	if(wasMultiLine != (frame.size.height > 30))
+	if(wasMultiLine != (frame.size.height > 30 && frame.size.width < 300))
 	{
 		stateUpdate = YES;
 		wasMultiLine = !wasMultiLine;
+
+		[self multilineStateUpdated];
 	}
 	
 	//Text at extreme left
@@ -175,7 +196,12 @@ enum
 		}
 		
 		curFrame.size.width = frame.size.width - REQUEST_OFFSET_WIDTH;
-		curFrame.origin.y = frame.size.height / 2 - curFrame.size.height / 2;
+		
+		if(wasMultiLine)
+			curFrame.origin.y = Y_OFFSET_MULTILINE_TEXT;
+		else
+			curFrame.origin.y = frame.size.height / 2 - curFrame.size.height / 2;
+		
 		curFrame.origin.x = 5;
 		
 		[requestName setFrame:curFrame];
@@ -189,8 +215,16 @@ enum
 	{
 		curFrame = _remove.frame;
 		
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-		newPoint.x -= 5 + curFrame.size.width;
+		if(wasMultiLine)
+		{
+			newPoint.y = Y_OFFSET_MULTILINE_BUTTON + _remove.frame.size.height;
+			newPoint.x = frame.size.width - curFrame.size.width - 6;
+		}
+		else
+		{
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.x -= 5 + curFrame.size.width;
+		}
 		
 		[_remove setFrameOrigin:newPoint];
 	}
@@ -200,8 +234,17 @@ enum
 	{
 		curFrame = _read.frame;
 
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-		newPoint.x -= 5 + curFrame.size.width;
+		if(wasMultiLine)
+		{
+			newPoint.y = Y_OFFSET_MULTILINE_BUTTON;
+			newPoint.x = frame.size.width - curFrame.size.width - 5;
+		}
+		else
+		{
+			newPoint.x -= 5 + curFrame.size.width;
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		}
+		
 		
 		[_read setFrameOrigin:newPoint];
 	}
@@ -211,9 +254,18 @@ enum
 	{
 		curFrame = _pause.frame;
 		
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		if(wasMultiLine)
+			newPoint.y = Y_OFFSET_MULTILINE_BUTTON;
+		else
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
 		
-		if(_read == nil)		newPoint.x -= 5 + curFrame.size.width;
+		if(_read == nil)
+		{
+			if(wasMultiLine)
+				newPoint.x = frame.size.width - curFrame.size.width - 5;
+			else
+				newPoint.x -= 5 + curFrame.size.width;
+		}
 		
 		[_pause setFrameOrigin:newPoint];
 	}
@@ -234,7 +286,11 @@ enum
 	{
 		curFrame = statusText.frame;
 		
-		newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+		if(wasMultiLine)
+			newPoint.y = Y_OFFSET_MULTILINE_TEXT;
+		else
+			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+
 		newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
 		
 		if(requestName == nil || requestName.frame.size.width + requestName.frame.origin.x + 25 < newPoint.x)
@@ -254,10 +310,8 @@ enum
 		[self setPositionsOfStuffs];
 }
 
-- (void) updateData : (uint) data : (uint) newCellWidth
+- (void) updateData : (uint) data
 {
-	[self setFrameSize:NSMakeSize(newCellWidth, self.frame.size.height)];
-
 	_row = data;
 	
 	todoList = [_controller getData : _row : YES];
@@ -270,7 +324,6 @@ enum
 		_invalidData = NO;
 	
 	[requestName setStringValue : [self getName]];
-	[requestName setNeedsDisplay : YES];
 
 	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
 	[_pause setNeedsDisplay : YES];

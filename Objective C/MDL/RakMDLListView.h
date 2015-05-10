@@ -38,7 +38,7 @@
 - (void) initIcons;
 - (NSString *) getName;
 - (void) setFont : (NSFont*) font;
-- (void) updateData : (uint) data : (uint) newCellWidth;
+- (void) updateData : (uint) data;
 - (void) rowDeleted : (NSNotification *) notification;
 
 - (void) updateContext;
