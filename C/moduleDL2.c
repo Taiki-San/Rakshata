@@ -10,6 +10,17 @@
 **                                                                                          **
 *********************************************************************************************/
 
+struct START_WORKER_DELAYED
+{
+	THREAD_TYPE * coreWorker;
+	DATA_LOADED **** todoList;
+	int8_t *** status;
+	uint ** IDToPosition;
+	uint * nbElemTotal;
+	bool * quit;
+	void * mainTab;
+};
+
 bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
 {
     uint i;
@@ -60,11 +71,38 @@ bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DAT
 		(*status)[i] = NULL;
 	}
 
-	return startWorker(coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab);
+	return startWorker(coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab, false);
 }
 
-bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab)
+void _startWorkerDeamon(struct START_WORKER_DELAYED * argument)
 {
+	startWorker(argument->coreWorker, argument->todoList, argument->status, argument->IDToPosition, argument->nbElemTotal, argument->quit, argument->mainTab, true);
+	free(argument);
+}
+
+bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab, bool threaded)
+{
+	//If we have to wait for some network request to end, we send the task in a different thread
+	if(checkNetworkState(CONNEXION_TEST_IN_PROGRESS) && !threaded)
+	{
+		struct START_WORKER_DELAYED * argument = malloc(sizeof(struct START_WORKER_DELAYED));
+		
+		if(argument == NULL)
+			return false;
+		
+		argument->coreWorker = coreWorker;
+		argument->todoList = todoList;
+		argument->status = status;
+		argument->IDToPosition = IDToPosition;
+		argument->nbElemTotal = nbElemTotal;
+		argument->quit = quit;
+		argument->mainTab = mainTab;
+		
+		createNewThread(_startWorkerDeamon, argument);
+		
+		return true;
+	}
+
 	/*On attend d'avoir confirmé que on peut bien accéder à Internet*/
     while(checkNetworkState(CONNEXION_TEST_IN_PROGRESS)) {		usleep(5000);		}
 	
