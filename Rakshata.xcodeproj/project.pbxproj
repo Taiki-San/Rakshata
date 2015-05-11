@@ -1386,7 +1386,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Rak;
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
 					B6CF07BA1868DD58009B16A3 = {
@@ -1749,7 +1749,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = Codesigning;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = NO;
@@ -1818,7 +1818,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = Codesigning;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
