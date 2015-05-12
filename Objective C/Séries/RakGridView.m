@@ -10,20 +10,14 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#define BORDER 3
-
-@interface RakGridViewDragImage : NSImage
-
-@property BOOL itemCanDL;
-
-@end
-
-@implementation RakGridViewDragImage
-
-//Dealloc will be called at the end of the D&D session
-- (void) dealloc
+enum
 {
-	[RakList propagateDragAndDropChangeState : NO : _itemCanDL];
+	BORDER = 3
+};
+
+@interface RakGridView()
+{
+	BOOL lastDragCouldDL;
 }
 
 @end
@@ -164,19 +158,13 @@
 	
 	NSImage * image = [self initializeImageForItem : _dragProject : [RakSerieList contentNameForDrag:_dragProject] : _currentDragItem];
 	
-	if(image == nil)
-		return nil;
+	if(image != nil)
+	{
+		lastDragCouldDL = [RakDragItem canDL:_dragProject isTome:YES element:VALEUR_FIN_STRUCT] || [RakDragItem canDL:_dragProject isTome:NO element:VALEUR_FIN_STRUCT];
+		[RakList propagateDragAndDropChangeState : YES : lastDragCouldDL];
+	}
 	
-	//We use a different object in order to hook dealloc
-	RakGridViewDragImage * output = [[RakGridViewDragImage alloc] initWithSize:image.size];
-	[output addRepresentations:image.representations];
-
-	//Let's see if we can or not DL this element
-	output.itemCanDL = [RakDragItem canDL:_dragProject isTome:YES element:VALEUR_FIN_STRUCT] || [RakDragItem canDL:_dragProject isTome:NO element:VALEUR_FIN_STRUCT];
-	
-	[RakList propagateDragAndDropChangeState : YES : output.itemCanDL];
-	
-	return output;
+	return image;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard
@@ -193,6 +181,12 @@
 	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	return YES;
+}
+
+- (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint dragOperation:(NSDragOperation)operation
+{
+	[RakList propagateDragAndDropChangeState : NO : lastDragCouldDL];
+
 }
 
 - (BOOL) grantDropAuthorization : (BOOL) canDL
