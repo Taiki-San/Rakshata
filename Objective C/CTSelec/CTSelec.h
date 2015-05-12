@@ -47,3 +47,8 @@
 - (PROJECT_DATA) activeProject;
 
 @end
+
+enum
+{
+	TITLE_BALANCING_OFFSET = 10
+};

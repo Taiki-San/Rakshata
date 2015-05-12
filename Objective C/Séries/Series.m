@@ -219,9 +219,10 @@
 	
 	if(self.mainThread != TAB_SERIES)
 	{
+		frame.origin.y -= TITLE_BALANCING_OFFSET;
 		frame.origin.x = SR_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 		frame.size.width -= 2 * frame.origin.x;
-		frame.size.height -= SR_READERMODE_LATERAL_BORDER;
+		frame.size.height -= 3;
 	}
 	else
 	{

@@ -297,10 +297,10 @@
 	{
 		CGFloat previousHeight = frame.size.height;
 		
-		frame.size.height -= backButtonLowestY + RBB_TOP_BORDURE + CT_READERMODE_BOTTOMBAR_WIDTH;
+		frame.size.height -= backButtonLowestY + RBB_TOP_BORDURE + CT_READERMODE_BOTTOMBAR_WIDTH - TITLE_BALANCING_OFFSET;
 		frame.origin.x = CT_READERMODE_LATERAL_BORDER * frame.size.width / 100.0f;
 		frame.origin.y = previousHeight - frame.size.height - CT_READERMODE_BOTTOMBAR_WIDTH;
-		frame.size.width -= 2* frame.origin.x;	//Pas obligé de recalculer
+		frame.size.width -= 2 * frame.origin.x;	//Pas obligé de recalculer
 	}
 	else if(self.mainThread == TAB_CT)
 	{
