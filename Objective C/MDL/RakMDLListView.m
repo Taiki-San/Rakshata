@@ -168,6 +168,7 @@ enum
 		DLprogress.offsetYSpeed = -1;
 	
 	[requestName setStringValue : [self getName]];
+	[requestName sizeToFit];
 }
 
 - (void) setPositionsOfStuffs

@@ -854,7 +854,6 @@ enum
 		{
 			ret_value = stateTabsReader != (uint) value;
 			stateTabsReader = value & STATE_READER_TAB_MASK;
-
 			[prefsCache refreshFirstResponder];
 			
 			break;
