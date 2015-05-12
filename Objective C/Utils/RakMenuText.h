@@ -10,6 +10,11 @@
  **                                                                                         **
  ********************************************************************************************/
 
+enum
+{
+	MENU_TEXT_WIDTH = 28
+};
+
 @interface RakMenuText : RakText
 {
 	BOOL _haveBackgroundColor;

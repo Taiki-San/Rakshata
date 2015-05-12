@@ -44,3 +44,8 @@
 - (void) setAnimationStatus:(CGFloat) status;
 
 @end
+
+#define RBB_TOP_BORDURE 10
+#define RBB_BUTTON_HEIGHT	25
+#define RBB_BUTTON_WIDTH	75		//	%
+#define RBB_BUTTON_POSX		12.5f	//	%

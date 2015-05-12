@@ -14,7 +14,7 @@
 
 - (NSRect) getMenuFrame : (NSRect) superviewSize
 {
-	superviewSize.size.height = CT_READERMODE_WIDTH_PROJECT_NAME;
+	superviewSize.size.height = MENU_TEXT_WIDTH;
 	
 	return superviewSize;
 }

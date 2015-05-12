@@ -327,7 +327,6 @@
 		B678866B1A82552800774431 /* RakSRContentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRContentManager.m; path = "Séries/RakSRContentManager.m"; sourceTree = "<group>"; };
 		B678D0311977178A00D7FE6A /* DBrecent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBrecent.c; path = C/DBrecent.c; sourceTree = "<group>"; };
 		B678D033197717A600D7FE6A /* ProjectParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProjectParser.m; path = "Objective C/Utils/ProjectParser.m"; sourceTree = "<group>"; };
-		B67983A518DD08AB007F18CD /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; };
 		B67C0F371A9FDD35003A2086 /* RakAboutTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutTools.h; path = "Divers Windows/RakAboutTools.h"; sourceTree = "<group>"; };
 		B67C0F381A9FDD35003A2086 /* RakAboutTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutTools.m; path = "Divers Windows/RakAboutTools.m"; sourceTree = "<group>"; };
@@ -592,7 +591,6 @@
 		B6218242187351A3008AC5DD /* Prefs */ = {
 			isa = PBXGroup;
 			children = (
-				B67983A518DD08AB007F18CD /* constants.h */,
 				B6B3830F188740E7005B5F01 /* Deep Prefs */,
 				B67449431876114E00F96DB4 /* Includes */,
 				B62182451873527A008AC5DD /* Prefs.h */,

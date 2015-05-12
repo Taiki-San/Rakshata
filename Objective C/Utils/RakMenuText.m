@@ -42,7 +42,7 @@
 
 - (CGFloat) getTextHeight
 {
-	return CT_READERMODE_WIDTH_PROJECT_NAME;
+	return MENU_TEXT_WIDTH;
 }
 
 - (NSRect) getMenuFrame : (NSRect) parentFrame
