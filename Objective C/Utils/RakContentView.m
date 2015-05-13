@@ -218,7 +218,7 @@
 	[super setFrame:frameRect];
 
 	BOOL oldVal = NO;
-	NSView * view;
+	RakTabView * view;
 	NSArray * subviews = self.subviews;
 	NSInteger i, count = [subviews count];
 	
@@ -229,15 +229,15 @@
 		{
 			if([view class] == [MDL class])
 			{
-				oldVal = ((MDL*) view)->needUpdateMainViews;
-				((MDL*) view)->needUpdateMainViews = NO;
+				oldVal = ((MDL*) view).needUpdateMainViews;
+				((MDL*) view).needUpdateMainViews = NO;
 			}
 
-			[(RakTabView *) view setFrame:[(RakTabView *) view createFrame]];
+			[view setFrame:[view createFrame]];
 			
 			if([view class] == [MDL class])
 			{
-				((MDL*) view)->needUpdateMainViews = oldVal;
+				((MDL*) view).needUpdateMainViews = oldVal;
 			}
 		}
 	}

@@ -12,13 +12,13 @@
 
 @implementation MDL
 
-- (id)init : (NSView*)contentView : (NSString *) state
+- (instancetype) init : (NSView*)contentView : (NSString *) state
 {
     self = [super init];
     if (self)
 	{
 		flag = TAB_MDL;
-		needUpdateMainViews = NO;
+		_needUpdateMainViews = NO;
 		self.forcedToShowUp = NO;
 		_popover = nil;
 		self = [self initView: contentView : state];
@@ -40,11 +40,10 @@
 	if(coreView != nil)
 	{
 		[self addSubview:coreView];
-		
 		[self setFrame:[self createFrame]];	//Update the size if required
 
 		//Tell every over major entities to update now that their position relative to us finally mean something
-		needUpdateMainViews = YES;
+		_needUpdateMainViews = YES;
 		[self updateDependingViews : NO];
 	}
 }
@@ -57,7 +56,7 @@
 - (void) wakeUp
 {
 	[coreView wakeUp];
-	needUpdateMainViews = YES;
+	_needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
 }
 
@@ -95,9 +94,7 @@
 {
 	NSRect output = frame;
 	
-	output.origin.x = MDL_READERMODE_LATERAL_BORDER * frame.size.width / 100;
-	output.size.height -= MDL_READERMODE_BOTTOMBAR_WIDTH;
-	output.origin.y = MDL_READERMODE_BOTTOMBAR_WIDTH - MDL_READERMODE_BOTTOMBAR_WIDTH;
+	output.origin.x = frame.size.width / 20;
 	output.size.width -= 2 * output.origin.x;
 	
 	return output;
@@ -182,7 +179,7 @@
 			//The animation is different depending of the focus
 			//Series make us slide to the left, while the others to the bottom
 			if(_lastFrame.size.width != - _lastFrame.origin.x && _lastFrame.size.height != - _lastFrame.origin.y)
-				needUpdateMainViews = YES;
+				_needUpdateMainViews = YES;
 
 			if(self.mainThread == TAB_SERIES)
 			{
@@ -200,7 +197,7 @@
 			if(self.mainThread != TAB_SERIES)
 			{
 				maximumSize.size.height = contentHeight;
-				needUpdateMainViews = YES;
+				_needUpdateMainViews = YES;
 			}
 			
 			[coreView updateScroller:YES];
@@ -215,7 +212,7 @@
 
 - (void) updateDependingViews : (BOOL) animated
 {
-	if(!needUpdateMainViews)
+	if(!_needUpdateMainViews)
 		return;
 	
 	RakAppDelegate * delegate = (RakAppDelegate *) [NSApp delegate];
@@ -231,7 +228,7 @@
 			[view refreshViewSize];
 	}
 
-	needUpdateMainViews = NO;
+	_needUpdateMainViews = NO;
 }
 
 - (void) fastAnimatedRefreshLevel : (NSView*) superview
@@ -388,7 +385,7 @@
 	
 	[coreView hideList: self.forcedToShowUp];
 	[coreView setFocusDrop : self.forcedToShowUp];
-	needUpdateMainViews = YES;
+	_needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
 }
 
