@@ -19,7 +19,7 @@
 
 @property (atomic) BOOL animationInProgress;
 
-- (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
+- (instancetype) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
 - (NSColor *) getBackgroundColor;
 
 - (void) mouseEnteredForced : (NSEvent *) theEvent;
@@ -39,7 +39,7 @@
 
 @property (unsafe_unretained) id delegate;
 
-- (id) init : (NSView *) contentView : (NSView *) coreView;
+- (instancetype) init : (NSView *) contentView : (NSView *) coreView;
 - (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame;
 
 - (void) switchState;

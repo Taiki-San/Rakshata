@@ -12,7 +12,7 @@
 
 @implementation RakCTHeaderImage
 
-- (id) initWithData : (NSRect) frame : (PROJECT_DATA) project
+- (instancetype) initWithData : (NSRect) frame : (PROJECT_DATA) project
 {
 	self = [self initWithFrame : [self frameByParent:frame]];
 	

@@ -19,7 +19,7 @@
 	NSAnimation * _animation;
 }
 
-- (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack;
+- (instancetype) initWithFrame : (NSRect) frame : (bool) isOneLevelBack;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

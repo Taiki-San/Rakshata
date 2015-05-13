@@ -12,7 +12,7 @@
 
 @implementation RakScroller
 
-- (id) initWithFrame:(NSRect)frameRect
+- (instancetype) initWithFrame:(NSRect)frameRect
 {
 	self = [super initWithFrame:frameRect];
 	

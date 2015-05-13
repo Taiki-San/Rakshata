@@ -14,7 +14,7 @@
 
 #pragma mark - Controller internal
 
-- (id) init : (MDL *) tabMDL : (NSString *) state
+- (instancetype) init : (MDL *) tabMDL : (NSString *) state
 {
 	self = [super init];
 	

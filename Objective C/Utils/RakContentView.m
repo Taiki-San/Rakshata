@@ -12,7 +12,7 @@
 
 @implementation RakContentViewBack
 
-- (id) initWithCoder:(NSCoder *)aDecoder
+- (instancetype) initWithCoder:(NSCoder *)aDecoder
 {
 	self = [super initWithCoder:aDecoder];
 	
@@ -201,7 +201,7 @@
 
 @implementation RakContentView
 
-- (id) initWithFrame:(NSRect)frameRect
+- (instancetype) initWithFrame:(NSRect)frameRect
 {
 	self = [super initWithFrame:frameRect];
 	

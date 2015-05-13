@@ -12,7 +12,7 @@
 
 @implementation RakPageCounter
 
-- (id)init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
+- (instancetype) init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
 	if(target.initWithNoContent)
 		return nil;

@@ -23,7 +23,7 @@
 	NSImage * defaultImage;
 }
 
-- (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;
+- (instancetype) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;
 - (BOOL) loadProject : (PROJECT_DATA) data;
 
 - (RakCTHImageGradient *) gradientView;

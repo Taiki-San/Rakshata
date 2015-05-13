@@ -22,7 +22,7 @@
 
 @property (setter=setInstallOnly:, getter=installOnlyMode) BOOL installOnlyMode;
 
-- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly;
+- (instancetype) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly;
 
 - (void) updateJumpTable;
 - (PROJECT_DATA) getElementAtIndex : (NSInteger) index;

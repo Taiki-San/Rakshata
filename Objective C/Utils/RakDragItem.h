@@ -23,7 +23,7 @@
 @property uint price;
 
 - (void) setDataProject : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
-- (id) initWithData : (NSData *) data;
+- (instancetype) initWithData : (NSData *) data;
 
 - (NSData *) getData;
 - (BOOL) canDL;

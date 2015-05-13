@@ -12,7 +12,7 @@
 
 @implementation RakReaderControllerUIQuery
 
-- (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
+- (instancetype) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray
 {
 	if(tabMDL == nil || arraySelection == NULL || sizeArray == 0)
 		return nil;
@@ -171,7 +171,7 @@
 
 @implementation RakQuerySegmentedControl
 
-- (id) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree
+- (instancetype) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	

@@ -14,7 +14,7 @@
 
 #pragma mark - Core view management
 
-- (id) initView: (NSView *)superview : (NSString *) state
+- (instancetype) initView: (NSView *)superview : (NSString *) state
 {
 	NSRect frame = [self createFrameWithSuperView:superview];
 	

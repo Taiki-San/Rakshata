@@ -12,7 +12,7 @@
 
 @implementation RakSerieList
 
-- (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state
+- (instancetype) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state
 {
 	self = [super init];
 	
@@ -363,7 +363,7 @@
 	return (_nbElemReadDisplayed != 0) + (_nbElemDLDisplayed != 0) + 1;
 }
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+- (id) outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
 	id output;
 	

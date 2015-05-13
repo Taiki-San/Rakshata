@@ -14,7 +14,7 @@
 
 #define RADIUS_BORDERS 13.0
 
-- (id) init: (BOOL) displayed : (Reader*) parent
+- (instancetype) init: (BOOL) displayed : (Reader*) parent
 {
 	self = [super initWithFrame:[self createFrameWithSuperView:parent.frame]];
 	
@@ -411,7 +411,7 @@
 
 @implementation RakReaderBBButton
 
-- (id) init
+- (instancetype) init
 {
 	self = [super init];
 	

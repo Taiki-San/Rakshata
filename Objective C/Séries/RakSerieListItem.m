@@ -12,7 +12,7 @@
 
 @implementation RakSerieListItem
 
-- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren
+- (instancetype) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren
 {
 	self = [super init];
 	

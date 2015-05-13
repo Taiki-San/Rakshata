@@ -37,7 +37,7 @@
 	IBOutlet RakPageCounterPopover * popover;
 }
 
-- (id) init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
+- (instancetype) init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
 - (void) updateContext;
 - (void) updatePopoverFrame : (NSRect) newFrame : (BOOL) animated;
 - (void) stopUsePopover;

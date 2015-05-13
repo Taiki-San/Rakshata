@@ -20,7 +20,7 @@
 	RakTabView * tabView;
 }
 
-- (id) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail;
+- (instancetype) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail;
 - (void) resizeAnimation : (NSRect) frameRect;
 
 @end

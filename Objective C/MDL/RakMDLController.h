@@ -38,7 +38,7 @@
 @property BOOL requestCredentials;
 @property (readonly) BOOL isSerieMainThread;
 
-- (id) init : (MDL *) tabMDL : (NSString *) state;
+- (instancetype) init : (MDL *) tabMDL : (NSString *) state;
 
 - (void) needToQuit;
 - (NSString *) serializeData;

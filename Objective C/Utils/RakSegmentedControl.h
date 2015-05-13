@@ -18,7 +18,7 @@
 @property (unsafe_unretained) id postAnimationTarget;
 @property SEL postAnimationAction;
 
-- (id) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
+- (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
 
 - (NSRect) getButtonFrame : (NSRect) superviewFrame;
 

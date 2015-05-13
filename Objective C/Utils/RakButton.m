@@ -161,7 +161,9 @@
 
 @implementation RakButtonCell
 
-- (id) init
+#pragma mark - Initialization
+
+- (instancetype) init
 {
 	self = [super init];
 	
@@ -176,10 +178,52 @@
 	return self;
 }
 
+- (instancetype) initWithPage : (NSString*) imageName : (short) state
+{
+	self = [self init];
+	
+	if(self != nil)
+	{
+		_imageName = [NSString stringWithString:imageName];
+		
+		notAvailable = NO;
+		_highlightAllowed = YES;
+		
+		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
+		{
+			NSLog(@"Failed at create button for icon: %@", imageName);
+			return nil;
+		}
+	}
+	
+	return self;
+}
+
+- (instancetype) initWithText : (NSString *) text
+{
+	self = [self init];
+	if(self != nil)
+	{
+		_hasBorder = YES;
+
+		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
+		if(textCell != nil)
+		{
+			textCell.centered = YES;
+			textCell.alignment = NSCenterTextAlignment;
+			textCell.textColor = [self getFontColor];
+			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
+
+			[Prefs getCurrentTheme:self];	//Register to changes
+		}
+	}
+	return self;
+}
+
 - (void) dealloc
 {
 	if(!textCell)
-		[self setImage:nil];
+		self.image = nil;
 	
 	[Prefs deRegisterForChanges:self];
 }
@@ -191,11 +235,11 @@
 	
 	if(_imageName == nil)	//text cell
 	{
-		[textCell setTextColor:[self getFontColor]];
+		[self reloadFontColor];
 	}
 	else					//img cell
 	{
-		uint state = 0;
+		uint state = RB_STATE_UNAVAILABLE;
 		
 		//We get the previous state to restore it
 		if(self.image == clicked)
@@ -203,33 +247,11 @@
 		else if(self.image == nonClicked)
 			state = RB_STATE_STANDARD;
 		
-		//Free the previous images
 		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
 	}
 }
 
-//Image only code
-
-- (id) initWithPage : (NSString*) imageName : (short) state
-{
-	self = [self init];
-	
-	if(self != nil)
-	{
-		_imageName = [NSString stringWithString:imageName];
-		
-		notAvailable = false;
-		canHighlight = true;
-		
-		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
-		{
-			NSLog(@"Failed at create button for icon: %@", imageName);
-			return nil;
-		}
-	}
-	
-	return self;
-}
+#pragma mark - Utils
 
 - (BOOL) loadIcon : (short) state : (uint) currentTheme
 {
@@ -251,28 +273,11 @@
 	return YES;
 }
 
-- (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable
-{
-	self = [self init];
-	
-	if(self != nil)
-	{
-		_imageName = [imageName copy];
-		clicked = _clicked;
-		nonClicked = _nonClicked;
-		unAvailable = _unAvailable;
-		
-		[self setImage:nonClicked];
-	}
-	
-	return self;
-}
-
 - (void) setState : (NSInteger)value
 {
 	notAvailable = false;
 	
-	if(value == RB_STATE_HIGHLIGHTED && canHighlight)
+	if(value == RB_STATE_HIGHLIGHTED && _highlightAllowed)
 	{
 		[self setImage:clicked];
 	}
@@ -285,16 +290,6 @@
 		[self setImage:unAvailable];
 		notAvailable = true;
 	}
-}
-
-- (void) setHighlightAllowed : (BOOL) allowed
-{
-	canHighlight = allowed;
-}
-
-- (bool) isHighlightAllowed
-{
-	return canHighlight;
 }
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
@@ -312,33 +307,7 @@
 	}
 }
 
-//Text only code
-
-- (id) initWithText : (NSString *) text
-{
-	self = [self init];
-	
-	if(self != nil)
-	{
-		_hasBorder = YES;
-		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
-		if(textCell != nil)
-		{
-			textCell.centered = YES;
-			[textCell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
-			[textCell setAlignment:NSCenterTextAlignment];
-			[textCell setTextColor:[self getFontColor]];
-			[Prefs getCurrentTheme:self];	//Register to changes
-		}
-	}
-	return self;
-}
-
-- (void) reloadFontColor
-{
-	if(textCell != nil)
-		[textCell setTextColor:[self getFontColor]];
-}
+#pragma mark - Sizing
 
 - (void) setBorderWidth:(CGFloat)borderWidth
 {
@@ -361,6 +330,8 @@
 	return NSZeroSize;
 }
 
+#pragma mark - Drawing
+
 - (NSColor*) getBorderColor
 {
 	return [Prefs getSystemColor:GET_COLOR_BORDER_BUTTONS :nil];
@@ -379,6 +350,12 @@
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED : nil];
 	else
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_UNAVAILABLE :nil];
+}
+
+- (void) reloadFontColor
+{
+	if(textCell != nil)
+		[textCell setTextColor:[self getFontColor]];
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView

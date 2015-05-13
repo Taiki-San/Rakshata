@@ -12,7 +12,7 @@
 
 @implementation RakTreeView
 
-- (id)makeViewWithIdentifier:(NSString *)identifier owner:(id)owner
+- (instancetype) makeViewWithIdentifier:(NSString *)identifier owner:(id)owner
 {
 	id view = [super makeViewWithIdentifier:identifier owner:owner];
 	
@@ -233,17 +233,17 @@
 	return 0;
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+- (BOOL) outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
 	return item == nil ? YES : [item isRootItem];
 }
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+- (id) outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
 	return nil;
 }
 
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+- (id) outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	id output = [item getData];
 	
@@ -252,7 +252,7 @@
 
 #pragma mark - Delegate of the view
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item
+- (BOOL) outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item
 {
 	((RakSerieListItem*) item).expanded = YES;
 	return YES;

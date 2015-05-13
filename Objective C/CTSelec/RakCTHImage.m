@@ -14,7 +14,7 @@
 
 @implementation RakCTHImage
 
-- (id) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
+- (instancetype) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data
 {
 	self = [self initWithFrame : parentFrame];
 	

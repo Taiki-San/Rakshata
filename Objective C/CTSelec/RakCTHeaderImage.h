@@ -27,7 +27,7 @@
 	RakCTHContainer * _container;
 }
 
-- (id) initWithData : (NSRect) frame : (PROJECT_DATA) project;
+- (instancetype) initWithData : (NSRect) frame : (PROJECT_DATA) project;
 - (void) updateHeaderProject : (PROJECT_DATA) project;
 - (BOOL) updateHeaderProjectInternal : (PROJECT_DATA) project;
 

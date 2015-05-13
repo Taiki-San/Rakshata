@@ -21,7 +21,7 @@
 @property BOOL textButton;
 @property BOOL hasBorder;
 
-+ (id) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
++ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 
 + (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
 + (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
@@ -35,7 +35,6 @@
 @interface RakButtonCell : NSButtonCell
 {
 	bool notAvailable;
-	bool canHighlight;
 	
 	NSString * _imageName;
 	
@@ -50,14 +49,11 @@
 @property (nonatomic) CGFloat borderWidth;
 @property bool forceHighlight;
 @property BOOL hasBorder;
+@property (nonatomic, getter=isHighlightAllowed) BOOL highlightAllowed;
 
-- (id) initWithPage : (NSString*) imageName : (short) state;
-- (id) initWithRawData : (NSString *) imageName : (NSImage*) _clicked : (NSImage*) _nonClicked : (NSImage*) _unAvailable;
+- (instancetype) initWithPage : (NSString*) imageName : (short) state;
 
-- (void) setHighlightAllowed : (BOOL) allowed;
-- (bool) isHighlightAllowed;
-
-- (id) initWithText : (NSString *) text;
+- (instancetype) initWithText : (NSString *) text;
 - (void) reloadFontColor;
 - (NSSize) sizeOfTextCell;
 - (NSColor*) getBorderColor;

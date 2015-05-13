@@ -14,7 +14,7 @@
 
 @implementation RakPrefsTabDeepData
 
-- (id) init : (Prefs*) creator : (char *) inputData
+- (instancetype) init : (Prefs*) creator : (char *) inputData
 {
 	self = [super init];
 	if(self != nil)

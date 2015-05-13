@@ -19,7 +19,7 @@
 @property NSRect anchorFrame;
 @property INPopoverArrowDirection direction;
 
-- (id) init : (NSView *) contentView;
+- (instancetype) init : (NSView *) contentView;
 - (void) togglePopover : (NSRect) frame;
 - (void) additionalConfiguration : (id) target;
 - (void) updatePosition : (NSPoint) origin : (BOOL) animated;

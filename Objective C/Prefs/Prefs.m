@@ -999,7 +999,7 @@ enum
 
 char * loadPref(char request[3], unsigned int length, char defaultChar);
 
-- (id) init : (NSString *) data
+- (instancetype) init : (NSString *) data
 {
 	self = [super init];
 	if(self != nil)

@@ -18,7 +18,7 @@ enum
 
 @implementation RakBackButton
 
-- (id)initWithFrame : (NSRect) frame : (bool) isOneLevelBack
+- (instancetype) initWithFrame : (NSRect) frame : (bool) isOneLevelBack
 {
     self = [super initWithFrame : [self frameFromParent:frame]];
     if (self != nil)

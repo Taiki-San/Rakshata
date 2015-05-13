@@ -12,7 +12,7 @@
 
 @implementation RakForegroundView
 
-- (id) init : (NSView *) container : (RakForegroundViewContentView *) coreView
+- (instancetype) init : (NSView *) container : (RakForegroundViewContentView *) coreView
 {
 	self = [super init];
 	
@@ -121,7 +121,7 @@
 
 @implementation RakForegroundViewBackgroundView
 
-- (id) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father
+- (instancetype) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father
 {
 	self = [super initWithFrame:frameRect];
 	

@@ -64,7 +64,7 @@
 @property BOOL isTome;
 @property BOOL preventRecursion;
 
-- (id)init : (NSView*)contentView : (NSString *) state;
+- (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
 - (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;

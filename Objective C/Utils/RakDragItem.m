@@ -30,7 +30,7 @@ typedef struct project_data_for_drag_drop
 	canDL = [[self class] canDL:project isTome:isTome element:element];
 }
 
-- (id) initWithData : (NSData *) data
+- (instancetype) initWithData : (NSData *) data
 {
 	if(data == nil || [data length] != sizeof(INTERNAL_D_AND_D))
 		return nil;

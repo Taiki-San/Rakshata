@@ -49,7 +49,7 @@ enum {
 
 @property BOOL installOnly;
 
-- (id) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state;
+- (instancetype) init : (NSRect) frame : (BOOL) _readerMode : (NSString*) state;
 - (void) restoreState : (NSString *) state;
 
 - (NSString*) getContextToGTFO;

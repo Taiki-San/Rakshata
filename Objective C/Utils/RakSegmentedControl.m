@@ -17,7 +17,7 @@ enum
 
 @implementation RakSegmentedControl
 
-- (id) initWithFrame : (NSRect) frame : (NSArray *) buttonMessages
+- (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessages
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	

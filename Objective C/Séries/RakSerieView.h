@@ -24,6 +24,6 @@
 //Used by MDL in series to define its height
 @property CGFloat currentValidHeight;
 
-- (id)initContent:(NSRect)frame : (NSString *) state;
+- (instancetype) initContent:(NSRect)frame : (NSString *) state;
 
 @end

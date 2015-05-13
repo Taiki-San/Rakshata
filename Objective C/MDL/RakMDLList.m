@@ -18,7 +18,7 @@ enum
 
 @implementation RakMDLList
 
-- (id) init : (NSRect) frame : (RakMDLController *) _controller
+- (instancetype) init : (NSRect) frame : (RakMDLController *) _controller
 {
 	if(_controller == nil)
 		return nil;

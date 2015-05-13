@@ -12,7 +12,7 @@
 
 @implementation RakSerieMainList
 
-- (id) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly
+- (instancetype) init : (NSRect) frame : (NSInteger) selectedDBID : (NSInteger) scrollPosition : (BOOL) installOnly
 {
 	self = [super init];
 	

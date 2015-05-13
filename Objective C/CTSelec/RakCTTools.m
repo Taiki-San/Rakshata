@@ -109,7 +109,7 @@
 
 @implementation RakCTProjectImageView
 
-- (id) initWithImageName : (REPO_DATA*) repo : (NSString *) imageName : (NSRect) superviewFrame
+- (instancetype) initWithImageName : (REPO_DATA*) repo : (NSString *) imageName : (NSRect) superviewFrame
 {
 	NSImage * projectImageBase = nil;
 	

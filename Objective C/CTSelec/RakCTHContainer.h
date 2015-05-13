@@ -22,7 +22,7 @@
 	CGFloat lastKnownHeight;
 }
 
-- (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project;
+- (instancetype) initWithProject : (NSRect) frame : (PROJECT_DATA) project;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 

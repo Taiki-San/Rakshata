@@ -22,7 +22,7 @@
 	BOOL _remind;
 }
 
-- (id) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (instancetype) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
 
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated;
 
@@ -30,6 +30,6 @@
 
 @interface RakQuerySegmentedControl : NSSegmentedControl
 
-- (id) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree;
+- (instancetype) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree;
 
 @end

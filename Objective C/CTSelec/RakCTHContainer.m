@@ -14,7 +14,7 @@
 
 @implementation RakCTHContainer
 
-- (id) initWithProject : (NSRect) frame : (PROJECT_DATA) project
+- (instancetype) initWithProject : (NSRect) frame : (PROJECT_DATA) project
 {
 	self = [self initWithFrame : [self frameFromParent : frame]];
 	

@@ -17,7 +17,7 @@ enum
 
 @implementation RakMDLView
 
-- (id)initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller
+- (instancetype) initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller
 {
     self = [super initWithFrame:frame];
 	

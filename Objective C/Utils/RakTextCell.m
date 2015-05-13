@@ -56,7 +56,7 @@
 
 @implementation RakTextCell
 
-- (id) init
+- (instancetype) init
 {
 	self = [super init];
 	
@@ -69,7 +69,7 @@
 	return self;
 }
 
-- (id)initWithText : (NSString *) text : (NSColor *) color
+- (instancetype) initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [self initTextCell:text];
     if (self != nil)

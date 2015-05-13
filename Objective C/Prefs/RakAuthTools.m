@@ -261,7 +261,7 @@
 
 @implementation RakAuthText
 
-- (id) initWithText : (NSRect)frame : (NSString *) text : (NSColor *) color;
+- (instancetype) initWithText : (NSRect)frame : (NSString *) text : (NSColor *) color;
 {
 	self = [self initWithFrame:frame];
 	

@@ -21,7 +21,7 @@
 	PROJECT_DATA dataChild;
 }
 
-- (id) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
+- (instancetype) init : (void*) data : (BOOL) isRootItem : (int) initStage : (uint) nbChildren;
 
 - (BOOL) isRecentList;
 - (BOOL) isDLList;

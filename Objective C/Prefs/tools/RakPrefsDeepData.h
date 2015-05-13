@@ -19,7 +19,7 @@
 	int sizeInputBuffer;
 }
 
-- (id) init : (Prefs*) creator : (char *) inputData;
+- (instancetype) init : (Prefs*) creator : (char *) inputData;
 - (void) initJumpTable : (SEL *) jumpTable;
 - (void) setAtIndex: (uint8_t) index : (CGFloat) data;
 - (void) reinitAtIndex : (uint8_t) index;

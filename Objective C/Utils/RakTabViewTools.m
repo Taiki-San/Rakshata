@@ -12,7 +12,7 @@
 
 @implementation RakTabForegroundView
 
-- (id) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail
+- (instancetype) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail
 {
 	self = [super initWithFrame:frameRect :nil];
 	

@@ -12,7 +12,7 @@
 
 @implementation RakPopoverWrapper
 
-- (id) init : (NSView *) contentView
+- (instancetype) init : (NSView *) contentView
 {
 	self = [super init];
 	

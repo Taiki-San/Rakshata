@@ -12,7 +12,7 @@
 
 @implementation RakOutlineListItem
 
-- (id) init
+- (instancetype) init
 {
 	self = [super init];
 	

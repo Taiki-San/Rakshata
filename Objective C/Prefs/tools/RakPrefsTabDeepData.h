@@ -25,7 +25,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	CGFloat footerHeight;
 }
 
-- (id) init : (Prefs*) creator : (char *) inputData;
+- (instancetype) init : (Prefs*) creator : (char *) inputData;
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;
@@ -85,7 +85,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	CGFloat heightMDLReaderFocus;
 }
 
-- (id) init : (Prefs*) creator : (char*) inputData;
+- (instancetype) init : (Prefs*) creator : (char*) inputData;
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;

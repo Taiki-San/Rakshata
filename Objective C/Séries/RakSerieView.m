@@ -12,7 +12,7 @@
 
 @implementation RakSerieView
 
-- (id)initContent:(NSRect)frame : (NSString *) state
+- (instancetype) initContent:(NSRect)frame : (NSString *) state
 {
     self = [super initWithFrame:frame];
     if(self != nil)

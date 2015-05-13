@@ -65,7 +65,7 @@ enum
 
 #pragma mark - Data source stuffs
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+- (id) outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
 	id output;
 	

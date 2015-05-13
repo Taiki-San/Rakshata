@@ -20,7 +20,7 @@
 	BOOL wasSerie;
 }
 
-- (id) init : (NSRect) frame : (RakMDLController *) _controller;
+- (instancetype) init : (NSRect) frame : (RakMDLController *) _controller;
 - (void) wakeUp;
 - (void) setScrollerHidden : (BOOL) hidden;
 - (void) checkIfShouldReload;

@@ -49,7 +49,7 @@
 @property BOOL readerMode;
 @property BOOL highjackedMouseEvents;
 
-- (id)init: (BOOL) displayed : (Reader*) parent;
+- (instancetype) init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
