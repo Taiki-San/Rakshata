@@ -30,10 +30,10 @@
 	pthread_cond_init(&loginLock, NULL);
 	pthread_mutex_init(&loginMutex, NULL);
 	
-	tabSerie =	[Series alloc];
-	tabCT =		[CTSelec alloc];
-	tabReader =	[Reader alloc];
-	tabMDL =	[MDL alloc];
+	Series * _tabSerie =	[Series alloc];
+	CTSelec  * _tabCT =		[CTSelec alloc];
+	Reader  * _tabReader =	[Reader alloc];
+	MDL * _tabMDL =			[MDL alloc];
 
 	[contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
 	self.window.defaultDispatcher = contentView;
@@ -42,14 +42,14 @@
 	NSArray *context = [RakContextRestoration newContext];
 
 	[Prefs initCache:[context objectAtIndex:0]];
-	tabSerie = [tabSerie init:contentView : [context objectAtIndex:1]];
-	tabCT = [tabCT init:contentView : [context objectAtIndex:2]];
-	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
-	tabReader = [tabReader init:contentView : [context objectAtIndex:4]];
+	tabSerie = [_tabSerie init:contentView : [context objectAtIndex:1]];
+	tabCT = [_tabCT init:contentView : [context objectAtIndex:2]];
+	tabMDL = [_tabMDL init:contentView : [context objectAtIndex:3]];
+	tabReader = [_tabReader init:contentView : [context objectAtIndex:4]];
 	
 	//Update everything's size now that everything if up to date
 	tabMDL.needUpdateMainViews = YES;
-	[tabMDL updateDependingViews:NO];
+	[tabMDL resetFrameSize:NO];
 	
 	[self.window makeKeyWindow];
 }

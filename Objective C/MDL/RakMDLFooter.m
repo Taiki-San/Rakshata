@@ -12,7 +12,9 @@
 
 enum
 {
-	BUTTON_SIZE = 25,
+	BUTTON_WIDTH = 17,
+	BUTTON_HEIGHT = 14,
+	BORDER_COLLAPSE = 40
 };
 
 @interface RakMDLFooter()
@@ -31,16 +33,22 @@ enum
 	
 	if(self != nil)
 	{
-		collapseButton = [[NSButton alloc] init];
+		collapseButton = [[NSButton alloc] initWithFrame:[self collapseFrame:_bounds]];
 		if(collapseButton != nil)
 		{
 			[(NSButtonCell *) collapseButton.cell setFocusRingType:NSFocusRingTypeNone];
 			[collapseButton.cell setImage:[self getImage]];
 			[collapseButton.cell setBackgroundColor:[NSColor clearColor]];
 			collapseButton.bordered = NO;
-			[collapseButton sizeToFit];
 			
 			[self addSubview:collapseButton];
+		}
+		
+		actionButton = [RakButton allocWithText:@"Vider"];
+		if(actionButton != nil)
+		{
+			[actionButton setFrame:[self actionFrame:_bounds]];
+			[self addSubview:actionButton];
 		}
 	}
 	
@@ -65,21 +73,32 @@ enum
 	{
 		[self.animator setFrame:newFrame];
 		[collapseButton.animator setFrame:[self collapseFrame:newFrame]];
+		[actionButton.animator setFrame:[self actionFrame:_bounds]];
 	}
 	else
 	{
-		[self setFrame:newFrame];
+		[super setFrame:newFrame];
 		[collapseButton setFrame:[self collapseFrame:newFrame]];
+		[actionButton setFrame:[self actionFrame:_bounds]];
 	}
+}
+
+- (NSRect) actionFrame : (NSRect) bounds
+{
+	NSSize size = actionButton.bounds.size;
+	
+	bounds.origin.x = bounds.size.width * 20;
+	bounds.origin.y = bounds.size.height / 2 - size.height / 2;
+	bounds.size = size;
+	
+	return bounds;
 }
 
 - (NSRect) collapseFrame : (NSRect) bounds
 {
-	NSSize size = collapseButton.bounds.size;
-	
-	bounds.origin.x = bounds.size.width - 50;
-	bounds.origin.y = bounds.size.height / 2 - size.height / 2;
-	bounds.size = size;
+	bounds.origin.x = bounds.size.width * 19 / 20 - BUTTON_WIDTH;
+	bounds.origin.y = bounds.size.height / 2 - BUTTON_HEIGHT / 2;
+	bounds.size = NSMakeSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 	
 	return bounds;
 }
@@ -93,12 +112,12 @@ enum
 	if(output != nil)
 	{
 		[output setTemplate:NO];
-		[output setSize:NSMakeSize(BUTTON_SIZE, BUTTON_SIZE)];
+		[output setSize:NSMakeSize(BUTTON_WIDTH, BUTTON_HEIGHT)];
 		
 		[output lockFocus];
 		
-		[[Prefs getSystemColor:GET_COLOR_SURVOL :nil] set];
-		NSRectFillUsingOperation(NSMakeRect(0, 0, BUTTON_SIZE, BUTTON_SIZE), NSCompositeSourceAtop);
+		[[Prefs getSystemColor:GET_COLOR_INACTIVE :nil] set];
+		NSRectFillUsingOperation(NSMakeRect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT), NSCompositeSourceAtop);
 		
 		[output unlockFocus];
 	}

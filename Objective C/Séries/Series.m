@@ -50,16 +50,17 @@
 		if(searchTab != nil)
 		{
 			[self addSubview:searchTab];
+			
+			if(self.mainThread != TAB_SERIES)
+			{
+				searchTab.hidden = YES;	searchTab.alphaValue = 0;
+			}
 		}
 	}
 	
 	coreView = [[RakSerieView alloc] initContent:[self getCoreviewFrame : frame] : state];
-	[self addSubview:coreView];
-	
-	if(self.mainThread != TAB_SERIES)
-	{
-		searchTab.hidden = YES;	searchTab.alphaValue = 0;
-	}
+	if(coreView != nil)
+		[self addSubview:coreView];
 }
 
 - (NSString *) byebye

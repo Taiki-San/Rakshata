@@ -12,4 +12,6 @@
 
 @interface RakMDLFooter : NSView
 
+- (void) resizeAnimation : (NSRect) frameRect;
+
 @end

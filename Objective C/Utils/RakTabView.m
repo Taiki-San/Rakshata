@@ -237,7 +237,7 @@
 	if(![self wouldFrameChange:frameRect])
 		return;
 	
-	[self _resize:frameRect :YES];
+	[self _resize:frameRect :NO];
 }
 
 - (void) resizeAnimation
@@ -537,6 +537,9 @@
 
 - (NSRect) createFrameWithSuperView : (NSView*) superview
 {
+	if(superview == nil)
+		return NSZeroRect;
+	
 	NSRect frame;
 	NSSize sizeSuperView = superview.bounds.size;
 	
@@ -659,6 +662,15 @@
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame
 {
+	if(NSEqualRects(newFrame, NSZeroRect))
+	{
+		NSRect frame = [self createFrame];
+#ifdef DEV_VERSION
+		NSLog(@"Incorrect size requested by %@", self);
+#endif
+		return NO;
+	}
+	
 	if(self.forceNextFrameUpdate)
 	{
 		self.forceNextFrameUpdate = NO;

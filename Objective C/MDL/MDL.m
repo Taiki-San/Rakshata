@@ -50,8 +50,6 @@ enum
 	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds]];
 	if(footer != nil)
 		[self addSubview:footer];
-
-	[self resetFrameSize:NO];
 }
 
 - (BOOL) available
@@ -119,6 +117,7 @@ enum
 	NSRect output = frame;
 	
 	output.origin.y = output.size.height - BORDER_BOTTOM_EXTENDED;
+	output.size.height = BORDER_BOTTOM_EXTENDED;
 	
 	return output;
 }
@@ -159,6 +158,16 @@ enum
 			[coreView resizeAnimation:coreFrame];
 		else
 			[coreView setFrame:coreFrame];
+	}
+	
+	if(footer != nil)
+	{
+		NSRect footerFrame = [self getFooterFrame:frame];
+		
+		if(animated)
+			[footer resizeAnimation : footerFrame];
+		else
+			[footer setFrame:footerFrame];
 	}
 	
 	if(_popover != nil)
