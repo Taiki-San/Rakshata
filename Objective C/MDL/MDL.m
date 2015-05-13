@@ -10,9 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	BORDER_BOTTOM = 14,
+	BORDER_BOTTOM_EXTENDED = 14 + 20,
+	OFFSET_BUTTON = 28
+};
+
 @implementation MDL
 
-- (instancetype) init : (NSView*)contentView : (NSString *) state
+- (instancetype) init : (NSView *) contentView : (NSString *) state
 {
     self = [super init];
     if (self)
@@ -38,14 +45,13 @@
 	
 	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : _bounds] : state : controller];
 	if(coreView != nil)
-	{
 		[self addSubview:coreView];
-		[self setFrame:[self createFrame]];	//Update the size if required
+	
+	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds]];
+	if(footer != nil)
+		[self addSubview:footer];
 
-		//Tell every over major entities to update now that their position relative to us finally mean something
-		_needUpdateMainViews = YES;
-		[self updateDependingViews : NO];
-	}
+	[self resetFrameSize:NO];
 }
 
 - (BOOL) available
@@ -90,12 +96,29 @@
 
 #pragma mark - View sizing manipulation
 
+- (CGFloat) getBottomBorder
+{
+	return self.mainThread == TAB_SERIES ? BORDER_BOTTOM_EXTENDED : BORDER_BOTTOM;
+}
+
 - (NSRect) getCoreviewFrame : (NSRect) frame
 {
 	NSRect output = frame;
 	
 	output.origin.x = frame.size.width / 20;
 	output.size.width -= 2 * output.origin.x;
+	output.origin.y = 0;
+
+	output.size.height -= [self getBottomBorder];
+
+	return output;
+}
+
+- (NSRect) getFooterFrame : (NSRect) frame
+{
+	NSRect output = frame;
+	
+	output.origin.y = output.size.height - BORDER_BOTTOM_EXTENDED;
 	
 	return output;
 }
@@ -116,39 +139,33 @@
 	return prefData;
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) resizeAnimation
 {
-	if([self wouldFrameChange:frameRect])
+	[super resizeAnimation];
+
+	if (_popover != nil && ![self isDisplayed])
 	{
-		[super setFrame:frameRect];
-		[foregroundView setFrame:NSMakeRect(0, 0, frameRect.size.width, frameRect.size.height)];
-		
-		if(coreView != nil)
-			[coreView setFrame:[self getCoreviewFrame : frameRect]];
-		
-		if(_popover != nil)
-			[_popover locationUpdated:frameRect:NO];
-		
-		if(needUpdateMainViews)
-			[self updateDependingViews : NO];
+		[_popover locationUpdated :[self createFrame] :YES];
 	}
 }
 
-- (void) resizeAnimation
+- (void) resize : (NSRect) frame : (BOOL) animated
 {
-	NSRect frame = [self createFrame];
-	
-	if([self wouldFrameChange:frame])
+	if(coreView != nil)
 	{
-		[self.animator setFrame:frame];
-		[foregroundView resizeAnimation:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
+		NSRect coreFrame = [self getCoreviewFrame : frame];
 		
-		if(coreView != nil)
-			[coreView resizeAnimation : [self getCoreviewFrame : frame]];
+		if(animated)
+			[coreView resizeAnimation:coreFrame];
+		else
+			[coreView setFrame:coreFrame];
 	}
 	
-	if (([self wouldFrameChange:frame] || ![self isDisplayed]) && _popover != nil)
-		[_popover locationUpdated:frame:YES];
+	if(_popover != nil)
+		[_popover locationUpdated:frame:animated];
+	
+	if(_needUpdateMainViews)
+		[self updateDependingViews : NO];
 }
 
 #pragma mark - Subclassing
@@ -172,7 +189,7 @@
 	{
 		maximumSize.size.height = round(maximumSize.size.height);
 		
-		CGFloat contentHeight = [coreView getContentHeight] + MDL_READERMODE_BOTTOMBAR_WIDTH;
+		CGFloat contentHeight = [coreView getContentHeight] + [self getBottomBorder];
 		
 		if([controller getNbElem:YES] == 0)	//Let's get the fuck out of here, it's empty
 		{

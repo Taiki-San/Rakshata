@@ -241,29 +241,14 @@
 	[super refreshViewSize];
 }
 
-- (void) resizeAnimation
+- (void) resize : (NSRect) frame : (BOOL) animated
 {
-	NSRect frame = [self createFrame];
-	
-	if ([self wouldFrameChange:frame])
-	{
-		[self.animator setFrame:frame];
-		[self setFrameInternal: frame : YES];
-		
-		[bottomBar resizeAnimation:frame];
-		
-		[foregroundView resizeAnimation:frame];
-	}
-}
+	[self setFrameInternal: frame : animated];
 
-- (void) setFrame:(NSRect)frameRect
-{
-	if([self wouldFrameChange:frameRect])
-	{
-		[super setFrame:frameRect];
-		[self setFrameInternal: frameRect : NO];
-		[bottomBar setFrame:frameRect];
-	}
+	if(animated)
+		[bottomBar resizeAnimation:frame];
+	else
+		[bottomBar setFrame:frame];
 }
 
 - (void) readerIsOpening : (byte) context

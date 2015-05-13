@@ -18,10 +18,12 @@
 #import "RakMDLListView.h"
 #import "RakMDLList.h"
 #import "RakMDLView.h"
+#import "RakMDLFooter.h"
 
 @interface MDL : RakTabView
 {
 	RakMDLView * coreView;
+	RakMDLFooter * footer;
 	RakMDLController * controller;
 	
 	RakReaderControllerUIQuery * _popover;

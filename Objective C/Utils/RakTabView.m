@@ -188,6 +188,8 @@
 	[self drawContentView:dirtyRect];
 }
 
+#pragma mark - General resizing utils
+
 - (void) refreshLevelViews : (NSView*) superview : (byte) context
 {
 	[self refreshLevelViewsAnimation:superview];
@@ -210,15 +212,6 @@
 	[RakTabAnimationResize animateTabs : [superview subviews] : YES];
 }
 
-- (void) setFrame:(NSRect)frameRect
-{
-	if([self wouldFrameChange:frameRect])
-	{
-		[super setFrame:frameRect];
-		[foregroundView setFrame:frameRect];
-	}
-}
-
 - (void) resetFrameSize : (BOOL) withAnimation
 {
 	self.forceNextFrameUpdate = YES;
@@ -234,19 +227,57 @@
 	_forceNextFrameUpdate = YES;
 	
 	[self setFrame:[self createFrame]];
+	[foregroundView setFrame: _bounds];
 
-	[foregroundView setFrame:self.bounds];
 	[self refreshDataAfterAnimation];
 }
 
-/**			Overwrite methods to resize the main view in order to resize subviews	**/
+- (void) setFrame:(NSRect)frameRect
+{
+	if(![self wouldFrameChange:frameRect])
+		return;
+	
+	[self _resize:frameRect :YES];
+}
 
 - (void) resizeAnimation
 {
 	NSRect frame = [self createFrame];
-	[self.animator setFrame : frame];
-	[foregroundView resizeAnimation:frame];
+	
+	if(![self wouldFrameChange:frame])
+		return;
+	
+	[self _resize:frame :YES];
 }
+
+- (void) _resize : (NSRect) frame : (BOOL) animated
+{
+	if(animated)
+	{
+		[self.animator setFrame : frame];
+		
+		frame.origin = NSZeroPoint;
+
+		[foregroundView resizeAnimation:frame];
+	}
+	else
+	{
+		[super setFrame:frame];
+		
+		frame.origin = NSZeroPoint;
+
+		[foregroundView setFrame:frame];
+	}
+	
+	[self resize:frame :animated];
+}
+
+- (void) resize : (NSRect) bounds : (BOOL) animated
+{
+	
+}
+
+#pragma mark - Look for constraints
 
 #ifdef DEV_VERSION
 

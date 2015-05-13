@@ -64,6 +64,7 @@ enum {
 - (void) fastAnimatedRefreshLevel : (NSView*) superview;
 - (void) resetFrameSize : (BOOL) withAnimation;
 - (void) refreshViewSize;
+- (void) resize : (NSRect) bounds : (BOOL) animated;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 
 - (void) seriesIsOpening : (byte) context;

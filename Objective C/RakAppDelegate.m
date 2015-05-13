@@ -47,6 +47,10 @@
 	tabMDL = [tabMDL init:contentView : [context objectAtIndex:3]];
 	tabReader = [tabReader init:contentView : [context objectAtIndex:4]];
 	
+	//Update everything's size now that everything if up to date
+	tabMDL.needUpdateMainViews = YES;
+	[tabMDL updateDependingViews:NO];
+	
 	[self.window makeKeyWindow];
 }
 

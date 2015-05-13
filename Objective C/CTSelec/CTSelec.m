@@ -12,7 +12,7 @@
 
 @implementation CTSelec
 
-- (id)init : (NSView*)contentView : (NSString *) state
+- (id) init : (NSView *) contentView : (NSString *) state
 {
     self = [super init];
     if (self)
@@ -332,33 +332,20 @@
 	return isReader;
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) resize : (NSRect) frame : (BOOL) animated
 {
-	if([self wouldFrameChange:frameRect])
+	if(animated)
 	{
-		[super setFrame : frameRect];
-		frameRect.origin = NSZeroPoint;
-
-		[backButton setFrame:frameRect];
-		[SRHeader setFrame:[self headerFrame:frameRect]];
-		
-		[coreView setFrame:[self contentFrame : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
-	}
-}
-
-- (void) resizeAnimation
-{
-	NSRect frame = [self createFrame];
-	
-	if([self wouldFrameChange:frame])
-	{
-		[self.animator setFrame:frame];
-		frame.origin = NSZeroPoint;
-
 		[backButton resizeAnimation:frame];
 		[SRHeader setFrame:[self headerFrame : frame]];
-
+		
 		[coreView resizeAnimation:[self contentFrame : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
+	}
+	else
+	{
+		[backButton setFrame:frame];
+		[SRHeader setFrame:[self headerFrame:frame]];
+		[coreView setFrame:[self contentFrame : [self lastFrame] : backButton.frame.origin.y + backButton.frame.size.height]];
 	}
 }
 

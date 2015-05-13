@@ -136,43 +136,29 @@
 	return isReader;
 }
 
-- (void) setFrame : (NSRect) frameRect
+- (void) resize : (NSRect) frame : (BOOL) animated
 {
-	if([self wouldFrameChange:frameRect])
+	if(header != nil)
 	{
-		[super setFrame:frameRect];
-		
-		frameRect.origin = NSZeroPoint;
-
-		if(header != nil)
+		if(animated)
 		{
-			[header setFrame:frameRect];
+			NSRect headerFrame = [header frameFromParent:frame];
+
+			[header resizeAnimation:headerFrame];
+			[searchTab resizeAnimation:[self getSearchTabFrame:headerFrame.size]];
+		}
+		else
+		{
+			[header setFrame:frame];
 			[searchTab setFrame:[self getSearchTabFrame : header.bounds.size]];
 		}
-
-		[coreView setFrame:[self getCoreviewFrame : frameRect]];
 	}
-}
 
-- (void) resizeAnimation
-{
-	NSRect newFrame = [self createFrame];
-	if([self wouldFrameChange:newFrame])
-	{
-		[self.animator setFrame:newFrame];
-		
-		newFrame.origin = NSZeroPoint;
-		
-		if(header != nil)
-		{
-			NSRect frame = [header frameFromParent:newFrame];
-			
-			[header resizeAnimation:frame];
-			[searchTab resizeAnimation:[self getSearchTabFrame:frame.size]];
-		}
-
-		[coreView resizeAnimation:[self getCoreviewFrame : newFrame]];
-	}
+	NSRect coreFrame = [self getCoreviewFrame : frame];
+	if(animated)
+		[coreView resizeAnimation:coreFrame];
+	else
+		[coreView setFrame:coreFrame];
 }
 
 - (void) refreshViewSize

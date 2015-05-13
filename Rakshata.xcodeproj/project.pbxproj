@@ -111,6 +111,7 @@
 		B6A6ACF51AAEEF4D00CAF51E /* DBCacheRepo.c in Sources */ = {isa = PBXBuildFile; fileRef = B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */; };
 		B6AC08001AD69D5D00F750D3 /* RakOutlineList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AC07FF1AD69D5D00F750D3 /* RakOutlineList.m */; };
 		B6AC08031AD6A46600F750D3 /* RakOutlineListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AC08021AD6A46600F750D3 /* RakOutlineListItem.m */; };
+		B6ACB32F1B037988009AFF7C /* RakMDLFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACB32E1B037988009AFF7C /* RakMDLFooter.m */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
@@ -397,6 +398,8 @@
 		B6AC07FF1AD69D5D00F750D3 /* RakOutlineList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakOutlineList.m; path = Utils/RakOutlineList.m; sourceTree = "<group>"; };
 		B6AC08011AD6A46600F750D3 /* RakOutlineListItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOutlineListItem.h; path = Utils/RakOutlineListItem.h; sourceTree = "<group>"; };
 		B6AC08021AD6A46600F750D3 /* RakOutlineListItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakOutlineListItem.m; path = Utils/RakOutlineListItem.m; sourceTree = "<group>"; };
+		B6ACB32D1B037988009AFF7C /* RakMDLFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLFooter.h; path = MDL/RakMDLFooter.h; sourceTree = "<group>"; };
+		B6ACB32E1B037988009AFF7C /* RakMDLFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLFooter.m; path = MDL/RakMDLFooter.m; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
 		B6B46DAE18FB34FE00EB1FE6 /* RakList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakList.h; path = Utils/RakList.h; sourceTree = "<group>"; };
 		B6B46DAF18FB34FE00EB1FE6 /* RakList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakList.m; path = Utils/RakList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1037,6 +1040,8 @@
 				B69D61DD186CA3D0003504F9 /* MDL.m */,
 				B64D155F191058A200B6E47F /* RakMDLController.h */,
 				B64D1560191058A200B6E47F /* RakMDLController.m */,
+				B6ACB32D1B037988009AFF7C /* RakMDLFooter.h */,
+				B6ACB32E1B037988009AFF7C /* RakMDLFooter.m */,
 				B6E9D19C190EEF9B007F041C /* RakMDLList.h */,
 				B6E9D19D190EEF9B007F041C /* RakMDLList.m */,
 				B68B5226191AE31E0057F35A /* RakMDLListView.h */,
@@ -1581,6 +1586,7 @@
 				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
 				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
+				B6ACB32F1B037988009AFF7C /* RakMDLFooter.m in Sources */,
 				B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */,
 				B62266A71A55D5B3000A5138 /* Utils.m in Sources */,
 				B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */,
