@@ -217,29 +217,23 @@
 {
 	[super setFrame:frameRect];
 
-	BOOL oldVal = NO;
-	RakTabView * view;
-	NSArray * subviews = self.subviews;
-	NSInteger i, count = [subviews count];
-	
-	for(i = 0; i < count; i++)
+	for(RakTabView * view in self.subviews)
 	{
-		view = [subviews objectAtIndex:i];
-		if([view superclass] == [RakTabView class])
-		{
-			if([view class] == [MDL class])
-			{
-				oldVal = ((MDL*) view).needUpdateMainViews;
-				((MDL*) view).needUpdateMainViews = NO;
-			}
+		if(![view isKindOfClass:[RakTabView class]])
+			continue;
 
-			[view setFrame:[view createFrame]];
-			
-			if([view class] == [MDL class])
-			{
-				((MDL*) view).needUpdateMainViews = oldVal;
-			}
+		BOOL isMDL = [view class] == [MDL class], oldVal;
+		
+		if(isMDL)
+		{
+			oldVal = ((MDL*) view).needUpdateMainViews;
+			((MDL*) view).needUpdateMainViews = NO;
 		}
+		
+		[view setFrame:[view createFrame]];
+		
+		if(isMDL)
+			((MDL*) view).needUpdateMainViews = oldVal;
 	}
 }
 
