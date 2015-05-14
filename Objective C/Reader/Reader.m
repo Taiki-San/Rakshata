@@ -192,7 +192,7 @@
 {
 	if(gonnaReduceTabs)
 	{
-		int mainTab;
+		uint mainTab;
 		bool isReaderMode;
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
 		[Prefs getPref:PREFS_GET_READER_TABS_STATE :&mainTab];
@@ -271,7 +271,7 @@
 
 - (BOOL) isStillCollapsedReaderTab
 {
-	int state;
+	uint state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
 }

@@ -221,7 +221,7 @@
 
 - (BOOL) isStillCollapsedReaderTab
 {
-	int state;
+	uint state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return (state & STATE_READER_TAB_CT_FOCUS) == 0;
 }

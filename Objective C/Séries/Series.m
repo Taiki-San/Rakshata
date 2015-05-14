@@ -264,7 +264,7 @@
 	if(self.mainThread != TAB_READER)
 		return NO;
 	
-	int state;
+	uint state;
 
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	

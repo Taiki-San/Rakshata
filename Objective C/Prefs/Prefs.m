@@ -682,7 +682,7 @@ enum
 			
 		case PREFS_GET_READER_TABS_STATE:
 		{
-			int * output = outputContainer;
+			uint * output = outputContainer;
 			*output = stateTabsReader;
 			break;
 		}
