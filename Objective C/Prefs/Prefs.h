@@ -15,18 +15,19 @@
 #import "RakResPath.h"
 #import "RakContextRestoration.h"
 
-enum DIRECT_QUERY_REQUEST {
-	QUERY_SERIE = 0,
+enum DIRECT_QUERY_REQUEST
+{
+	QUERY_SERIE = 0,	//Unused
 	QUERY_CT = 1,
-	QUERY_READER = 2,
-	QUERY_MDL = 3
+	QUERY_READER = 2,	//Unused
+	QUERY_MDL = 3		//Unused
 };
 
 enum QUERY_SUBREQUEST {
-	QUERY_GET_WIDTH = 0,
-	QUERY_GET_HEIGHT = 1,
-	QUERY_GET_POSX = 2,
-	QUERY_GET_POSY = 3
+	QUERY_GET_WIDTH,
+	QUERY_GET_HEIGHT,	//Unused
+	QUERY_GET_POSX,		//Unused
+	QUERY_GET_POSY		//Unused
 };
 
 enum COLOR_REQUEST {

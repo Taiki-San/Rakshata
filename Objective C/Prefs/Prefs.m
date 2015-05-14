@@ -810,12 +810,12 @@ enum
 {
 	if(output == NULL)
 		return;
+	
 	if(mainThreadLocal == -1)
 		mainThreadLocal = mainThread;
+	
 	if(stateTabsReaderLocal == -1)
 		stateTabsReaderLocal = stateTabsReader;
-	
-	*output = -1;
 	
 	NSRect frame;
 	
@@ -845,22 +845,22 @@ enum
 		{
 #ifdef DEV_VERSION
 			NSLog(@"%s: Received garbage", __PRETTY_FUNCTION__);
-#else
-			NSLog(@"Received garbage");
 #endif
-			memset(output, 0, sizeof(*output));
+			*output = 0;
 			return;
 		}
 	}
 	
-	if(subRequest == QUERY_GET_HEIGHT)
-		*output = frame.size.height;
-	else if(subRequest == QUERY_GET_WIDTH)
+	if(subRequest == QUERY_GET_WIDTH)
 		*output = frame.size.width;
+	else if(subRequest == QUERY_GET_HEIGHT)
+		*output = frame.size.height;
 	else if(subRequest == QUERY_GET_POSX)
 		*output = frame.origin.x;
 	else if(subRequest == QUERY_GET_POSY)
 		*output = frame.origin.y;
+	else
+		*output = -1;
 }
 
 /************		Private sections		************/
