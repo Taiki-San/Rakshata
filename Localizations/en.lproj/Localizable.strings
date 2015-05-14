@@ -29,30 +29,32 @@
 "GO" = "Go";
 
 //MDL
-"MDL-LOGIN-TO-PAY" = "Votre sélection contient des éléments payants,\nveuillez vous connecter pour lancer la transaction.";
-"MDL-LOGIN-TO-AUTH" = "Suite à la politique des détenteurs des droits\nd'une partie de votre sélection, vous connecter\nest requis pour démarrer le téléchargement.";
-"MDL-INSTALLING" = "Installation";
+"MDL-LOGIN-TO-PAY" = "You selection contain paid items,\nplease login to initiate the transaction.";
+"MDL-LOGIN-TO-AUTH" = "Because of the policy of the rightholders\nof a part of your selection, login\n is required to initiate the download.";
+"MDL-INSTALLING" = "Installing";
 
-"MDL-TAB-TITLE" = "Téléchargement";
-"MDL-DROP-PLACEHOLDER" = "Lâchez ici pour télécharger";
+"MDL-TAB-TITLE" = "Downloads";
+"MDL-DROP-PLACEHOLDER" = "Drop here to download";
+
+"MDL-FLUSH-INSTALLED" = "Remove processed items";
 
 //Authentification controller
-"AUTH-REQUIRED" = "Connexion requise";
-"AUTH-REQUIRED-READER-VOL-OF-%@" = "Suite à une demande\ndes détenteurs des droits de '%1$@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce tome.";
-"AUTH-REQUIRED-READER-CHAP-OF-%@" = "Suite à une demande\ndes détenteurs des droits de '%1$@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce chapitre.";
+"AUTH-REQUIRED" = "Login required";
+"AUTH-REQUIRED-READER-VOL-OF-%@" = "Because of a request from the\nrightholders of '%1$@',\nRakshata needs you to login to the\naccount used to download this volume.";
+"AUTH-REQUIRED-READER-CHAP-OF-%@" = "Because of a request from the\nrightholders of '%1$@',\nRakshata needs you to login to the\naccount used to download this chapter.";
 
-"AUTH-FOOTER-PLACEHOLDER" = "Votre compte vous donne accès aux créations et offres de nombreux artistes\nPas encore de compte? Remplissez, on se charge du reste!";
-"AUTH-PRIVACY" = "Vos coordonnées ne seront pas, hors obligation légale, transmise à des tiers";
+"AUTH-FOOTER-PLACEHOLDER" = "Your account gives you access to the art and offers from a lot of artists.\nDon't have one? Fill the fields and we take care of it!";
+"AUTH-PRIVACY" = "Your contact informations won't, unless legaly pressured, shared to third parties";
 "AUTH-CGU" = "Please accept our terms of use";
 "AUTH-CREATE" = "Create an account";
 "AUTH-PASS-FORGOTTEN" = "Password forgotten?";
 "AUTH-LOGIN" = "Login";
 
 //Chapters related strings
-"CT-ALL-CHAPTERS" = "Intégralité des chapitres";
+"CT-ALL-CHAPTERS" = "All chapters";
 "CT-NO-CHAPTER" = "No chapter\navailable";
 
-"CT-ALL-VOLUMES" = "Intégralité des tomes";
+"CT-ALL-VOLUMES" = "All volumes";
 "CT-NO-VOLUME" = "No volume\navailable";
 
 "CT-%zu-NO-INSTALLED" = "%1$zu (none installed)";
@@ -79,8 +81,8 @@
 //Project selection strings
 "YOUR-PROJECTS" = "Your series";
 "SUGGESTIONS" = "Suggestions";
-"RECENT-OPEN" = "Consultées récemment";
-"RECENT-DL" = "Téléchargées récemment";
+"RECENT-OPEN" = "Recently read";
+"RECENT-DL" = "Recently downloaded";
 "FULL-LIST" = "Full list";
 
 "PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES" = "%2$zu Volumes - %1$zu Chapters\n";
@@ -104,7 +106,7 @@
 "PROJ-SEARCH-TAGS" = "Tags";
 "PROJ-SEARCH-TYPE" = "Categories";
 
-"PROJ-EXPAND-FILTER-AREA" = "Afficher les outils de recherche avancée";
+"PROJ-EXPAND-FILTER-AREA" = "Display the advanced search tools";
 
 //Reader utils
 "DELETION-CHAP-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
@@ -118,9 +120,51 @@
 "AUTO-DL-ONE-VOL" = "J'ai remarqué\nqu'il y a un tome\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
 "AUTO-DL-SEVERAL-VOL" = "J'ai remarqué\nqu'il y a des tomes\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
 
+//Prefs
+"PREFS-TITLE-GENERAL" = "General";
+"PREFS-TITLE-REPO" = "Sources";
+"PREFS-TITLE-FAVS" = "Favorites";
+"PREFS-ROOT-NO-ACTIVE-REPO" = "No active source";
+"PREFS-ROOT-ONE-ACTIVE-REPO" = "One active source";
+"PREFS-ROOT-%zu-ACTIVE-REPO" = "%1$zu active sources";
+"PREFS-ROOT-GROUPS-%@" = "Groupe: %1$@";
+"PREFS-ROOT-NO-GROUP" = "No group";
+"PREFS-REPO-NO-ACTIVE-PROJECT" = "No installed series";
+"PREFS-REPO-ONE-ACTIVE-PROJECT" = "One installed series";
+"PREFS-REPO-%zu-ACTIVE-PROJECT" = "%1$zu installed series";
+"WEBSITE" = "Website";
+"PREFS-DELETE-CONTENT" = "Delete\nthe content";
+"PREFS-DELETE-SOURCE" = "Disable\nthe source";
+"PREFS-DELETE-CONTENT-TITLE" = "Are you sure you want to delete the content of this source?";
+"PREFS-DELETE-CONTENT-MESSAGE" = "This option will delete every series distributed by this source that you may have downloaded. If you want to read it again, you will have to download them again.";
+"PREFS-DELETE-SOURCE-TITLE" = "Disable the source will delete its local content";
+"PREFS-DELETE-SOURCE-MESSAGE" = "Disable the source will make its catalog diseapear and delete every series you may have downloaded from the source. You may activate the source afain from its group. If you want to read again series from this source, you will have to download them again.";
+"PREFS-CANCEL" = "Cancel";
+"PREFS-DELETE-GO-FOR-IT" = "Ok";
+
+"PREFS-REPO-PLACEHOLDER-TUTORIAL" = "You can control from here the sources you are suscribed to.\n\nYou may delete the installed content or delete from Rakshata any source.\n\nYou may also control sources via the group from which they come from (activate and disable sources from the group).";
+"PREFS-REPO-SWITCH-MESSAGE" = "Display groups of sources";
+
+"PREFS-DELETE-KILL-USE" = "Stopping the use of the ressources to delete";
+"PREFS-DELETE-REMOVE" = "Flushing remains";
+"PREFS-DELETE-PURGE" = "Deleting files";
+
+"PREFS-GENERAL-THEME-DARK" = "Dark theme";
+"PREFS-GENERAL-THEME-LIGHT" = "Light theme";
+"PREFS-GENERAL-THEME-CUSTOM" = "Custom theme";
+"PREFS-GENERAL-CHOOSE-THEME" = "Graphical theme : ";
+"PREFS-GENERAL-LOGGED-IN-ON-%s" = "You're logged with the account %1$s";
+"PREFS-GENERAL-LOGOUT" = "Disconnect";
+"PREFS-GENERAL-RESET-ALERTS" = "Reset warnings";
+
+"PREFS-ADD-REPO-CONFIRM-INSERT-%@" = "Do you want to add %1$@?";
+"PREFS-ADD-REPO-ONE-REPO" = "this source";
+"PREFS-ADD-REPO-SEVERAL-REPO" = "the following sources";
+"PREFS-ADD-REPO-CONFIRM" = "Confirm";
+
 //Others
 "FOSS-USAGE" = "Rakshata use some open source technologies";
 "COPYRIGHT" = "© 2011-2015 Taiki. All rights reserved";
 
 //DEV COMS, shouldn't really end up in production
-"PREFS-UPDATE-UI" = "MàJ de l'UI";
+"PREFS-UPDATE-UI" = "Update the UI";
