@@ -191,7 +191,7 @@ enum
 	
 	if(mainEaster == nil)
 	{
-		mainEaster = [[RakText alloc] initWithText:@"I want to thanks the Tapbots team for showing me that it is possible to make extremely polished software with a small team. While I don't think that Rakshata reached the level of Tweetbot, we were looking at them while working of Rakshata for OSX for more than two years." :[self mainTextColor]];
+		mainEaster = [[RakText alloc] initWithText:@"I want to thanks the Tapbots team for showing me that it is possible to make extremely polished software with a small team. While I don't think that Rakshata reached the level of Tweetbot, we were looking at them while working of Rakshata for OS X for more than two years." :[self mainTextColor]];
 		if(mainEaster != nil)
 		{
 			[mainEaster.cell setWraps:YES];

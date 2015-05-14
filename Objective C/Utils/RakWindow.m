@@ -22,7 +22,7 @@
 	[self setMovable:YES];
 	self.movableByWindowBackground = YES;
 	
-	self.title = [NSString stringWithUTF8String:PROJECT_NAME];
+	self.title = [self getProjectName];
 	self.showsTitle = YES;
 	self.verticallyCenterTitle = YES;
 	self.centerTrafficLightButtons = YES;
@@ -146,19 +146,28 @@
 
 #pragma mark - Title management
 
+- (NSString *) getProjectName
+{
+#ifdef DEV_VERSION
+	return [NSString stringWithFormat:@"[Build #%@] %s", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], PROJECT_NAME];
+#else
+	return [NSString stringWithUTF8String:PROJECT_NAME];
+#endif
+}
+
 - (void) resetTitle
 {
-	self.title = [NSString stringWithUTF8String:PROJECT_NAME];
+	self.title = [self getProjectName];
 }
 
 - (void) setProjectTitle : (PROJECT_DATA) project
 {
-	self.title = [NSString stringWithFormat:@"%s - %@", PROJECT_NAME, getStringForWchar(project.projectName)];
+	self.title = [NSString stringWithFormat:@"%@ - %@", [self getProjectName], getStringForWchar(project.projectName)];
 }
 
 - (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element
 {
-	self.title = [NSString stringWithFormat:@"%s - %@ - %@", PROJECT_NAME, getStringForWchar(project.projectName), element];
+	self.title = [NSString stringWithFormat:@"%@ - %@ - %@", [self getProjectName], getStringForWchar(project.projectName), element];
 }
 
 #pragma mark - Delegate

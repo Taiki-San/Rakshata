@@ -12,11 +12,9 @@
 
 #ifdef DEBUG
     #define DEV_VERSION
-    #define PROJECT_NAME "[DEV_BUILD] Rakshata"
-#else
-    #define PROJECT_NAME "Rakshata"
 #endif
 
+#define PROJECT_NAME "Rakshata"
 #define CURRENTVERSION 200
 #define PRINTABLE_VERSION "2.0"
 
