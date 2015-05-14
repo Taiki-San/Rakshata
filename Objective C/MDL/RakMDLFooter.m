@@ -41,18 +41,37 @@ enum
 			[collapseButton.cell setBackgroundColor:[NSColor clearColor]];
 			collapseButton.bordered = NO;
 			
+			collapseButton.target = self;
+			collapseButton.action = @selector(collapseClicked);
+			
 			[self addSubview:collapseButton];
 		}
 		
-		actionButton = [RakButton allocWithText:@"Vider"];
+		actionButton = [RakButton allocWithText:NSLocalizedString(@"MDL-FLUSH-INSTALLED", nil)];
 		if(actionButton != nil)
 		{
 			[actionButton setFrame:[self actionFrame:_bounds]];
+
+			actionButton.target = self;
+			actionButton.action = @selector(actionClicked);
+			
 			[self addSubview:actionButton];
 		}
 	}
 	
 	return self;
+}
+
+#pragma mark - Clic callback
+
+- (void) actionClicked
+{
+	[_controller discardInstalled];
+}
+
+- (void) collapseClicked
+{
+	NSLog(@"Collapse clicked");
 }
 
 #pragma mark - Sizing
@@ -87,7 +106,7 @@ enum
 {
 	NSSize size = actionButton.bounds.size;
 	
-	bounds.origin.x = bounds.size.width * 20;
+	bounds.origin.x = bounds.size.width / 20;
 	bounds.origin.y = bounds.size.height / 2 - size.height / 2;
 	bounds.size = size;
 	

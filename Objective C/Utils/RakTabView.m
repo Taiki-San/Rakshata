@@ -360,7 +360,7 @@
 		NSRect frame = [self generateNSTrackingAreaSize];
 		
 #ifdef VERBOSE_MOUSE_OVER
-		NSLog(@"Creating a tracking area for %@ (prev: %ld): x: %lf y: %lf h: %lf w: %lf", self, (long)trackingArea, frame.origin.x, frame.origin.y, frame.size.height, frame.size.width);
+		NSLog(@"Creating a tracking area for %@ (prev: %ld): x: %lf y: %lf h: %lf w: %lf", self, (long) trackingArea, frame.origin.x, frame.origin.y, frame.size.height, frame.size.width);
 #endif
 		
 		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];

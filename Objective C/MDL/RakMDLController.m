@@ -497,7 +497,7 @@
 				if((*todoList)[IDToPosition[posDiscarded]]->datas == project && status[IDToPosition[posDiscarded]] != NULL && (*(status[IDToPosition[posDiscarded]]) == MDL_CODE_INSTALL_OVER || *(status[IDToPosition[posDiscarded]]) == MDL_CODE_ABORTED))
 					indexRemoved[nbRemoved++] = posDiscarded;
 				else
-					IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded + 1];
+					IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded];
 			}
 			
 			discardedCount -= nbRemoved;
@@ -510,6 +510,24 @@
 			[_list deleteElements : &element : 1];
 		}
 	}
+}
+
+- (void) discardInstalled
+{
+	uint indexRemoved[discardedCount], nbRemoved = 0;
+	
+	for(uint posDiscarded = 0; posDiscarded < discardedCount; posDiscarded++)
+	{
+		//We remove every similar project from which the download is done
+		if(status[IDToPosition[posDiscarded]] != NULL && (*(status[IDToPosition[posDiscarded]]) == MDL_CODE_INSTALL_OVER || *(status[IDToPosition[posDiscarded]]) == MDL_CODE_ABORTED))
+			indexRemoved[nbRemoved++] = posDiscarded;
+		else
+			IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded];
+	}
+	
+	discardedCount -= nbRemoved;
+	
+	[_list deleteElements : indexRemoved : nbRemoved];
 }
 
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value

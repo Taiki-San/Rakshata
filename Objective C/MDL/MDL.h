@@ -33,7 +33,6 @@
 @property BOOL needUpdateMainViews;
 
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
-- (void) initContent : (NSString *) state;
 - (BOOL) available;
 - (void) wakeUp;
 

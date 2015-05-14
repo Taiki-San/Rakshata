@@ -34,14 +34,17 @@ enum
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor;
 		self.layer.borderWidth = 2;
 		
-		[self initContent:state];
+		if(![self initContent:state])
+			self = nil;
 	}
     return self;
 }
 
-- (void) initContent : (NSString *) state
+- (BOOL) initContent : (NSString *) state
 {
 	controller = [[RakMDLController alloc] init: self : state];
+	if(controller == nil)
+		return NO;
 	
 	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : _bounds] : state : controller];
 	if(coreView != nil)
@@ -49,7 +52,13 @@ enum
 	
 	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds]];
 	if(footer != nil)
+	{
+		footer.controller = controller;
+		footer.hidden = self.mainThread != TAB_SERIES;
 		[self addSubview:footer];
+	}
+	
+	return YES;
 }
 
 - (BOOL) available
@@ -76,6 +85,9 @@ enum
 {
 	[coreView removeFromSuperview];
 }
+
+- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent { return NO; }
+- (BOOL) acceptsFirstResponder { return NO; }
 
 #pragma mark - Proxy
 
@@ -124,7 +136,7 @@ enum
 
 - (NSRect) lastFrame
 {
-	if(_lastFrame.size.height + _lastFrame.origin.y <= 0)
+	if(_lastFrame.size.height + _lastFrame.origin.y <= 0 || _lastFrame.size.width + _lastFrame.origin.x <= 0)
 		return NSZeroRect;
 	
 	return [super lastFrame];
@@ -169,7 +181,7 @@ enum
 		[self updateDependingViews : NO];
 }
 
-#pragma mark - Subclassing
+#pragma mark - Sizing
 
 - (BOOL) isStillCollapsedReaderTab
 {
@@ -278,15 +290,6 @@ enum
 	[self refreshDataAfterAnimation];
 }
 
-- (void) refreshDataAfterAnimation
-{
-	if([controller getNbElem:YES] != 0)
-	{
-		[super refreshDataAfterAnimation];
-		[self updateDependingViews : NO];
-	}
-}
-
 - (NSRect) getFrameOfNextTab
 {
 	NSSize sizeSuperview = self.superview.bounds.size;
@@ -296,8 +299,10 @@ enum
 	return output;
 }
 
-- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent { return NO; }
-- (BOOL) acceptsFirstResponder { return NO; }
+- (uint) getFrameCode
+{
+	return PREFS_GET_MDL_FRAME;
+}
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
@@ -305,9 +310,36 @@ enum
 		[super mouseEntered:theEvent];
 }
 
-- (uint) getFrameCode
+#pragma mark - Animation
+
+- (void) setUpViewForAnimation : (uint) mainThread
 {
-	return PREFS_GET_MDL_FRAME;
+	BOOL inSeries = mainThread == TAB_SERIES;
+
+	if(inSeries == footer.isHidden)
+	{
+		if(inSeries)
+		{
+			footer.alphaValue = 0;
+			footer.hidden = NO;
+		}
+
+		footer.animator.alphaValue = inSeries;
+	}
+	
+	[super setUpViewForAnimation:mainThread];
+}
+
+- (void) refreshDataAfterAnimation
+{
+	if([controller getNbElem:YES] != 0)
+	{
+		[super refreshDataAfterAnimation];
+		[self updateDependingViews : NO];
+	}
+	
+	if(footer.alphaValue == 0)
+		footer.hidden = YES;
 }
 
 #pragma mark - Login request

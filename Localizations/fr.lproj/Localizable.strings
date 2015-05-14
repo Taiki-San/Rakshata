@@ -36,6 +36,8 @@
 "MDL-TAB-TITLE" = "Téléchargement";
 "MDL-DROP-PLACEHOLDER" = "Lâchez ici pour télécharger";
 
+"MDL-FLUSH-INSTALLED" = "Retirer les lignes installés";
+
 //Authentification controller
 "AUTH-REQUIRED" = "Connexion requise";
 "AUTH-REQUIRED-READER-VOL-OF-%@" = "Suite à une demande\ndes détenteurs des droits de '%1$@',\nRakshata à besoin que vous vous connectiez\nau compte utilisé pour télécharger ce tome.";
@@ -149,7 +151,7 @@
 
 "PREFS-GENERAL-THEME-DARK" = "Thème sombre";
 "PREFS-GENERAL-THEME-LIGHT" = "Thème clair";
-"PREFS-GENERAL-THEME-CUSTOM" = "Thème customisé";
+"PREFS-GENERAL-THEME-CUSTOM" = "Thème personnalisé";
 "PREFS-GENERAL-CHOOSE-THEME" = "Thème graphique : ";
 "PREFS-GENERAL-LOGGED-IN-ON-%s" = "Vous êtes connecté avec le compte %1$s";
 "PREFS-GENERAL-LOGOUT" = "Déconnecter";
