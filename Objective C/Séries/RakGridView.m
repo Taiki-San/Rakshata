@@ -161,7 +161,6 @@ enum
 	if(image != nil)
 	{
 		lastDragCouldDL = [RakDragItem canDL:_dragProject isTome:YES element:VALEUR_FIN_STRUCT] || [RakDragItem canDL:_dragProject isTome:NO element:VALEUR_FIN_STRUCT];
-		[RakList propagateDragAndDropChangeState : YES : lastDragCouldDL];
 	}
 	
 	return image;
@@ -181,6 +180,11 @@ enum
 	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	return YES;
+}
+
+- (void) collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItemsAtIndexes:(NSIndexSet *)indexes
+{
+	[RakList propagateDragAndDropChangeState : YES : lastDragCouldDL];
 }
 
 - (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint dragOperation:(NSDragOperation)operation
