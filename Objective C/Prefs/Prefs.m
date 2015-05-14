@@ -521,84 +521,7 @@ enum
 			
 			break;
 		}
-			
-		case PREFS_GET_TAB_READER_WIDTH:
-		{
-			[self getPrefInternal: PREFS_GET_TAB_READER_POSX : outputContainer : additionalData];
-			*(CGFloat *) outputContainer = (*(NSSize *) additionalData).width - *(CGFloat *) outputContainer;
-			
-			if(*(CGFloat *) outputContainer < 0)
-				*(CGFloat *) outputContainer = 0;
-			
-			break;
-		}
-			
-		case PREFS_GET_MDL_WIDTH:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.width;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread == TAB_READER ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
-
-			break;
-		}
-			
-		case PREFS_GET_TAB_SERIE_HEIGHT:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.height;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_CT_HEIGHT:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.height;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_READER_HEIGHT:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].size.height;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-		
-		case PREFS_GET_MDL_HEIGHT:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].size.height;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_SERIE_POSX:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.x;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
-			
-			break;
-		}
-			
+						
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			if(mainThread == TAB_READER && stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
@@ -663,61 +586,6 @@ enum
 					}
 				}
 			}
-			
-			break;
-		}
-			
-		case PREFS_GET_MDL_POSX:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.x;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_SERIE_POSY:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].origin.y;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_CT_POSY:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].origin.y;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_TAB_READER_POSY:
-		{
-			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.y;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
-			
-			break;
-		}
-			
-		case PREFS_GET_MDL_POSY:
-		{
-			CGFloat * output = outputContainer;
-			*output = [prefsPosMDL getData: mainThread : stateTabsReader].origin.y;
-			
-			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).height, -1);
 			
 			break;
 		}

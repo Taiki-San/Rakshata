@@ -54,6 +54,7 @@
 	
 	isFocusDrop = isFocus;
 	[self updateViewForFocusDrop];
+	[self setNeedsDisplay:YES];
 }
 
 - (BOOL) isFocusDrop	{	return isFocusDrop;		}

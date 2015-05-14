@@ -173,14 +173,9 @@
 - (NSRect) getFrameOfNextTab
 {
 	NSRect output;
-	[Prefs getPref:PREFS_GET_TAB_CT_FRAME :&output];
-	
-	NSSize sizeSuperView = [self.superview frame].size;
-	
-	output.origin.x *= sizeSuperView.width / 100.0f;
-	output.origin.y *= sizeSuperView.height / 100.0f;
-	output.size.width *= sizeSuperView.width / 100.0f;
-	output.size.height *= sizeSuperView.height / 100.0f;
+	NSSize sizeSuperview = self.superview.bounds.size;
+
+	[Prefs getPref:PREFS_GET_TAB_CT_FRAME :&output :&sizeSuperview];
 	
 	return output;
 }
@@ -259,47 +254,9 @@
 
 #pragma mark - Reader code
 
-- (int) getCodePref : (int) request
+- (uint) getFrameCode
 {
-	int output;
-	
-	switch (request)
-	{
-		case CONVERT_CODE_POSX:
-		{
-			output = PREFS_GET_TAB_SERIE_POSX;
-			break;
-		}
-			
-		case CONVERT_CODE_POSY:
-		{
-			output = PREFS_GET_TAB_SERIE_POSY;
-			break;
-		}
-			
-		case CONVERT_CODE_HEIGHT:
-		{
-			output = PREFS_GET_TAB_SERIE_HEIGHT;
-			break;
-		}
-			
-		case CONVERT_CODE_WIDTH:
-		{
-			output = PREFS_GET_TAB_SERIE_WIDTH;
-			break;
-		}
-			
-		case CONVERT_CODE_FRAME:
-		{
-			output = PREFS_GET_TAB_SERIE_FRAME;
-			break;
-		}
-			
-		default:
-			output = 0;
-	}
-	
-	return output;
+	return PREFS_GET_TAB_SERIE_FRAME;
 }
 
 - (BOOL) isStillCollapsedReaderTab

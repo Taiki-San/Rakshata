@@ -40,8 +40,6 @@
 - (void) proxyAddElement : (PROJECT_DATA) data  isTome : (bool) isTome element : (int) newElem  partOfBatch : (bool) partOfBatch;
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
 
-- (NSRect) getCoreviewFrame : (NSRect) frame;
-
 - (BOOL) isDisplayed;
 
 - (void) updateDependingViews : (BOOL) animated;

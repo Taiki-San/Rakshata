@@ -138,47 +138,9 @@
 	[self ownFocus];
 }
 
-- (int) getCodePref : (int) request
+- (uint) getFrameCode
 {
-	int output;
-	
-	switch (request)
-	{
-		case CONVERT_CODE_POSX:
-		{
-			output = PREFS_GET_TAB_CT_POSX;
-			break;
-		}
-			
-		case CONVERT_CODE_POSY:
-		{
-			output = PREFS_GET_TAB_CT_POSY;
-			break;
-		}
-			
-		case CONVERT_CODE_HEIGHT:
-		{
-			output = PREFS_GET_TAB_CT_HEIGHT;
-			break;
-		}
-			
-		case CONVERT_CODE_WIDTH:
-		{
-			output = PREFS_GET_TAB_CT_WIDTH;
-			break;
-		}
-			
-		case CONVERT_CODE_FRAME:
-		{
-			output = PREFS_GET_TAB_CT_FRAME;
-			break;
-		}
-		
-		default:
-			output = 0;
-	}
-	
-	return output;
+	return PREFS_GET_TAB_CT_FRAME;
 }
 
 - (void) setUpViewForAnimation : (uint) mainThread
@@ -353,6 +315,7 @@
 {
 	NSRect output;
 	NSSize sizeSuperview = self.superview.bounds.size;
+	
 	[Prefs getPref : PREFS_GET_TAB_READER_FRAME : &output : &sizeSuperview];
 	
 	return output;

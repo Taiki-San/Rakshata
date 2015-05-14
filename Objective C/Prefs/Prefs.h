@@ -164,8 +164,7 @@ enum FONT_REQUEST {
 - (NSArray *) setupExecuteConsistencyChecks : (uint8) request;
 @end
 
-#include "prefsRequest.h"
-#include "prefsSetters.h"
+#include "prefsControl.h"
 #include "prefsMagic.h"
 #import "PrefsUI.h"
 #import "RakPrefsRemindPopover.h"

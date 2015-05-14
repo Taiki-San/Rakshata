@@ -41,7 +41,7 @@
 	return sizeInputBuffer;
 }
 
-+ (int) getExpectedBufferSizeVirtual
++ (uint) getExpectedBufferSizeVirtual
 {
 	return 4 + 4 + 4 * 4;
 }

@@ -10,7 +10,35 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
+/*Codes servant à identifier les requêtes*/
+
+enum PREFS_REQUEST
+{
+	PREFS_GET_MAIN_THREAD,
+	
+	PREFS_GET_TAB_SERIE_WIDTH,
+	PREFS_GET_TAB_CT_WIDTH,
+	
+	PREFS_GET_TAB_CT_POSX,
+	PREFS_GET_TAB_READER_POSX,
+	
+	PREFS_GET_CT_FOOTER_HEIGHT,
+	PREFS_GET_READER_FOOTER_HEIGHT,
+	
+	PREFS_GET_TAB_SERIE_FRAME,
+	PREFS_GET_TAB_CT_FRAME,
+	PREFS_GET_TAB_READER_FRAME,
+	PREFS_GET_MDL_FRAME,
+	
+	PREFS_GET_IS_READER_MT,
+	PREFS_GET_READER_TABS_STATE,
+	
+	PREFS_GET_SCROLLER_STYLE,
+	
+	PREFS_GET_INVALID
+};
+
+enum PREFS_PROVIDER
 {
 	PREFS_SET_OWNMAINTAB,
 	PREFS_SET_READER_TABS_STATE,

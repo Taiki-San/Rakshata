@@ -304,8 +304,7 @@
 		B66ED1921949C77A002A333F /* RakDragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragView.h; path = Utils/RakDragView.h; sourceTree = "<group>"; };
 		B66ED1931949C77A002A333F /* RakDragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDragView.m; path = Utils/RakDragView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B66ED1971949EC20002A333F /* theme 1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "theme 1"; sourceTree = "<group>"; };
-		B67449441876116200F96DB4 /* prefsRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsRequest.h; path = Prefs/prefsRequest.h; sourceTree = "<group>"; };
-		B67449451876118100F96DB4 /* prefsSetters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = prefsSetters.h; path = Prefs/prefsSetters.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B67449441876116200F96DB4 /* prefsControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsControl.h; path = Prefs/prefsControl.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
 		B6748ADD1A936D77003FBC1D /* RakSRDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRDetails.h; path = CTSelec/RakSRDetails.h; sourceTree = "<group>"; };
 		B6748ADE1A936D77003FBC1D /* RakSRDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRDetails.m; path = CTSelec/RakSRDetails.m; sourceTree = "<group>"; };
@@ -778,8 +777,7 @@
 			isa = PBXGroup;
 			children = (
 				B6744946187611BF00F96DB4 /* prefsMagic.h */,
-				B67449441876116200F96DB4 /* prefsRequest.h */,
-				B67449451876118100F96DB4 /* prefsSetters.h */,
+				B67449441876116200F96DB4 /* prefsControl.h */,
 			);
 			name = Includes;
 			sourceTree = "<group>";

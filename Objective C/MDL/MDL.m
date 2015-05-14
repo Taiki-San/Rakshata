@@ -130,14 +130,6 @@ enum
 	return [super lastFrame];
 }
 
-- (CGFloat) getRequestedViewWidth: (CGFloat) widthWindow
-{
-	CGFloat prefData;
-	NSSize size = NSMakeSize(widthWindow, 0);
-	[Prefs getPref : PREFS_GET_MDL_WIDTH : &prefData : &size];
-	return prefData;
-}
-
 - (void) resizeAnimation
 {
 	[super resizeAnimation];
@@ -313,47 +305,9 @@ enum
 		[super mouseEntered:theEvent];
 }
 
-- (int) getCodePref : (int) request
+- (uint) getFrameCode
 {
-	int output;
-	
-	switch (request)
-	{
-		case CONVERT_CODE_POSX:
-		{
-			output = PREFS_GET_MDL_POSX;
-			break;
-		}
-			
-		case CONVERT_CODE_POSY:
-		{
-			output = PREFS_GET_MDL_POSY;
-			break;
-		}
-			
-		case CONVERT_CODE_HEIGHT:
-		{
-			output = PREFS_GET_MDL_HEIGHT;
-			break;
-		}
-			
-		case CONVERT_CODE_WIDTH:
-		{
-			output = PREFS_GET_MDL_WIDTH;
-			break;
-		}
-			
-		case CONVERT_CODE_FRAME:
-		{
-			output = PREFS_GET_MDL_FRAME;
-			break;
-		}
-			
-		default:
-			output = 0;
-	}
-	
-	return output;
+	return PREFS_GET_MDL_FRAME;
 }
 
 #pragma mark - Login request
@@ -372,8 +326,8 @@ enum
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
 {
-	[[(RakAppDelegate*) [NSApp delegate]CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
-	[[(RakAppDelegate*) [NSApp delegate]reader]	updateContextNotification : data : isTome : element];
+	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
+	[[(RakAppDelegate*) [NSApp delegate] reader]	updateContextNotification : data : isTome : element];
 }
 
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover
@@ -411,6 +365,7 @@ enum
 	
 	[coreView hideList: self.forcedToShowUp];
 	[coreView setFocusDrop : self.forcedToShowUp];
+	
 	_needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
 }

@@ -95,8 +95,7 @@ enum {
 - (NSRect) lastFrame;
 - (NSRect) createFrameWithSuperView : (NSView*) superview;
 
-- (int) getCodePref : (int) request;
-- (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow;
+- (uint) getFrameCode;
 
 - (NSString *) waitingLoginMessage;
 - (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;

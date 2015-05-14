@@ -543,7 +543,7 @@
 	NSRect frame;
 	NSSize sizeSuperView = superview.bounds.size;
 	
-	[Prefs getPref : [self getCodePref:CONVERT_CODE_FRAME] : &frame : &sizeSuperView];
+	[Prefs getPref : [self getFrameCode] : &frame : &sizeSuperView];
 	
 	if([self class] != [MDL class])
 	{
@@ -563,17 +563,9 @@
 	return frame;
 }
 
-- (int) getCodePref : (int) request
+- (uint) getFrameCode
 {
-	return 0;
-}
-
-- (CGFloat) getRequestedViewWidth:(CGFloat) widthWindow
-{
-	CGFloat prefData;
-	NSSize size = NSMakeSize(widthWindow, 0);
-	[Prefs getPref:[self getCodePref:CONVERT_CODE_WIDTH] : &prefData : &size];
-	return prefData;
+	return PREFS_GET_INVALID;
 }
 
 #pragma mark - Wait for login
@@ -664,7 +656,6 @@
 {
 	if(NSEqualRects(newFrame, NSZeroRect))
 	{
-		NSRect frame = [self createFrame];
 #ifdef DEV_VERSION
 		NSLog(@"Incorrect size requested by %@", self);
 #endif

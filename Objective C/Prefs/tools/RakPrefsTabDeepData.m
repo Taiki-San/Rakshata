@@ -17,19 +17,19 @@
 - (instancetype) init : (Prefs*) creator : (char *) inputData
 {
 	self = [super init];
+	
 	if(self != nil)
 	{
 		[self setNumberElem];
 		[self setExpectedBufferSize];
 		
 		NSRect dataBuf, dataDefault;
-		int i;
 		SEL jumpTable[numberElem];
 		
 		mammouth = creator;
 		[self initJumpTable:jumpTable];
 		
-		for(i = 0; i < numberElem-1; i++)	//Le dernier cas est particulier
+		for(uint i = 0; i < numberElem - 1; i++)	//Le dernier cas est particulier
 		{
 			dataBuf.origin.x	= hex2intPrefs(&inputData[16*i], 1000);
 			dataBuf.origin.y	= hex2intPrefs(&inputData[16*i + 4], 1000);
@@ -64,7 +64,8 @@
 		}
 		
 		//cas du footer
-		CGFloat footer = hex2intPrefs(&inputData[16*i], 1000);
+		CGFloat footer = hex2intPrefs(&inputData[16 * (numberElem - 1)], 1000);
+
 		if(footer == -1)
 			footer = [self getDefaultFooterHeight];
 		else
@@ -91,7 +92,7 @@
 	return sizeInputBuffer;
 }
 
-+ (int) getExpectedBufferSizeVirtual
++ (uint) getExpectedBufferSizeVirtual
 {
 	return (DEFAULT_NUMBER_ELEMS_IN_RakPrefsDeepData - 1) * 16 + 4;
 }
@@ -111,7 +112,7 @@
 
 - (NSRect) triggerJumpTableLocal : (SEL) selector
 {
-	NSRect output = {{0,0},{0,0}};
+	NSRect output = NSZeroRect;
 	
 	if (selector != NULL && [self respondsToSelector:selector])
 	{
@@ -199,23 +200,17 @@
 
 - (NSRect) getDefaultFocusSerie
 {
-	NSRect output;
-	
-	return output;
+	return NSZeroRect;
 }
 
 - (NSRect) getDefaultFocusCT
 {
-	NSRect output;
-	
-	return output;
+	return NSZeroRect;
 }
 
 - (NSRect) getDefaultFocusReader
 {
-	NSRect output;
-	
-	return output;
+	return NSZeroRect;
 }
 
 - (NSRect) getDefaultFocusReaderOneCollapsed
@@ -235,9 +230,7 @@
 
 - (NSRect) getDefaultFocusReaderDFMode
 {
-	NSRect output;
-	
-	return output;
+	return NSZeroRect;
 }
 
 - (CGFloat) getDefaultFooterHeight

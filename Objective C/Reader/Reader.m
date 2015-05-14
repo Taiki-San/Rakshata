@@ -183,47 +183,9 @@
 	[container removeFromSuperview];
 }
 
-- (int) getCodePref : (int) request
+- (uint) getFrameCode
 {
-	int output;
-	
-	switch (request)
-	{
-		case CONVERT_CODE_POSX:
-		{
-			output = PREFS_GET_TAB_READER_POSX;
-			break;
-		}
-			
-		case CONVERT_CODE_POSY:
-		{
-			output = PREFS_GET_TAB_READER_POSY;
-			break;
-		}
-			
-		case CONVERT_CODE_HEIGHT:
-		{
-			output = PREFS_GET_TAB_READER_HEIGHT;
-			break;
-		}
-			
-		case CONVERT_CODE_WIDTH:
-		{
-			output = PREFS_GET_TAB_READER_WIDTH;
-			break;
-		}
-			
-		case CONVERT_CODE_FRAME:
-		{
-			output = PREFS_GET_TAB_READER_FRAME;
-			break;
-		}
-			
-		default:
-			output = 0;
-	}
-	
-	return output;
+	return PREFS_GET_TAB_READER_FRAME;
 }
 
 - (void) refreshViewSize

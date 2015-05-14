@@ -61,7 +61,8 @@
 #define STATE_READER_TAB_MASK				0xFF
 
 //Theme code
-enum : uint {
+enum : uint
+{
 	THEME_CODE_ERROR = 0,
 	THEME_CODE_DARK = 1,
 	THEME_CODE_LIGHT = 2,
