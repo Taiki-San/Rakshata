@@ -40,7 +40,7 @@
 	if([object class] != [Prefs class])
 		return;
 
-	bool isActive = color == active;
+	BOOL isActive = color == active;
 	
 	passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
 	active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];

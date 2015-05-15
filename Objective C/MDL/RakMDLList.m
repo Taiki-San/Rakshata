@@ -248,12 +248,12 @@ enum
 	
 	[item setDataProject : project isTome: isTome element: (*dataProject)->identifier];
 	
-	dragInProgress = true;		draggedElement = row;
+	dragInProgress = YES;		draggedElement = row;
 }
 
 - (void) cleanupDrag
 {
-	dragInProgress = false;
+	dragInProgress = NO;
 }
 
 #pragma mark - Drop support
@@ -284,7 +284,7 @@ enum
 	return TAB_MDL;
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{

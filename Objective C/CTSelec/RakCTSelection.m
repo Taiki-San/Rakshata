@@ -28,7 +28,7 @@
 		BOOL isCompact = _currentContext == TAB_READER;
 		
 		//We create views even if there is no content for them
-		RakCTSelectionList * view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:false selection:context[0] scrollerPos:context[1]];
+		RakCTSelectionList * view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:NO selection:context[0] scrollerPos:context[1]];
 		if(view != nil)
 		{
 			_chapterView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];
@@ -46,7 +46,7 @@
 			view = nil;
 		}
 		
-		view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:true selection:context[2] scrollerPos:context[3]];
+		view = [[RakCTSelectionList alloc] initWithFrame:self.bounds isCompact:isCompact projectData:data isTome:YES selection:context[2] scrollerPos:context[3]];
 		if(view != nil)
 		{
 			_volView = [[RakCTSelectionListContainer alloc] initWithFrame : self.bounds : isCompact : view];

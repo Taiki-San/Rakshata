@@ -445,7 +445,7 @@
 	BOOL isTome = [[item class] defineIsTomePriority:&project alreadyRefreshed:NO];
 	
 	getUpdatedCTList(&project, true);
-	getUpdatedCTList(&project, false);
+	getUpdatedCTList(&project, NO);
 	
 	[item setDataProject:project isTome:isTome element:VALEUR_FIN_STRUCT];
 }

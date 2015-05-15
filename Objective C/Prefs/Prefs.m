@@ -675,7 +675,7 @@ enum
 			
 		case PREFS_GET_IS_READER_MT:
 		{
-			bool * data = outputContainer;
+			BOOL * data = outputContainer;
 			*data = (mainThread & TAB_READER) != 0;
 			break;
 		}
@@ -700,9 +700,9 @@ enum
 	}
 }
 
-+ (bool) setPref : (uint) requestID : (uint64) value
++ (BOOL) setPref : (uint) requestID : (uint64) value
 {
-	bool ret_value = false;
+	BOOL ret_value = NO;
 	
 	if(prefsCache == NULL)
 		[self initCache];
@@ -732,12 +732,12 @@ enum
 			if(value && stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
 			{
 				stateTabsReader = STATE_READER_TAB_DISTRACTION_FREE;
-				ret_value = true;
+				ret_value = YES;
 			}
 			else if(!value && stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
 			{
 				stateTabsReader = STATE_READER_TAB_ALL_COLLAPSED;
-				ret_value = true;
+				ret_value = YES;
 			}
 			break;
 		}
@@ -902,7 +902,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		tabCTSize = [tabCTSize init: prefsCache: &input[expectedSize[0]]];
 		tabReaderSize = [tabReaderSize init: prefsCache: &input[expectedSize[0] + expectedSize[1]]];
 		
-		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :true];
+		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :YES];
 		
 		//Must come after tabs prefs initialization
 		prefsPosMDL = [RakMDLSize alloc];
@@ -986,7 +986,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	[firstResponder updateContext:mainThread :stateTabsReader];
 }
 
-- (void) flushMemory : (bool) memoryError
+- (void) flushMemory : (BOOL) memoryError
 {
 	prefsCache = NULL;
 	
@@ -1049,7 +1049,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar)
 					else if(count == 3 && c == '>')
 					{
 						count = 0;
-						isWritting = true;
+						isWritting = YES;
 					}
 					else
 						count = 0;

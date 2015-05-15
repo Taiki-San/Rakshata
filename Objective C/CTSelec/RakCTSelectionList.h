@@ -46,7 +46,7 @@
 
 @property BOOL compactMode;
 
-- (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (bool) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition;
+- (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (BOOL) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition;
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 - (void) flushContext : (BOOL) animated;
 

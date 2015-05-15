@@ -29,7 +29,7 @@
 	baseContainerHeight = container.bounds.size.height;
 	
 	currentMode = AUTH_MODE_DEFAULT;
-	self.postProcessing = false;
+	self.postProcessing = NO;
 	
 	[self updateMainView];
 	
@@ -157,7 +157,7 @@
 			passInput.currentStatus = AUTH_STATE_GOOD;
 			[passInput display];
 			
-			self.postProcessing = true;
+			self.postProcessing = YES;
 			
 			if(COMPTE_PRINCIPAL_MAIL == NULL || strcmp(email, COMPTE_PRINCIPAL_MAIL))
 			{

@@ -24,7 +24,7 @@
 	{
 		_initWithNoContent = NO;
 		_waitingLogin = NO;
-		canDeploy = true;
+		canDeploy = YES;
 		
 		[superview addSubview:self];
 		
@@ -378,12 +378,12 @@
 
 - (BOOL) isStillCollapsedReaderTab
 {
-	return true;
+	return YES;
 }
 
 - (BOOL) abortCollapseReaderTab
 {
-	return false;
+	return NO;
 }
 
 - (void) releaseTrackingArea
@@ -423,10 +423,10 @@
 	if(selfLoc.x - 5 < mouseLoc.x && selfLoc.x + selfSize.width + 5 >= mouseLoc.x &&
 	   selfLoc.y - 5 < mouseLoc.y && selfLoc.y + selfSize.height + 5 >= mouseLoc.y)
 	{
-		return true;
+		return YES;
 	}
 
-	return false;
+	return NO;
 }
 
 - (NSPoint) getCursorPosInWindow	//mouseLocation return the obsolute position, not the position inside the window
@@ -454,7 +454,7 @@
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	noDrag = true;
+	noDrag = YES;
 	
 	if(_mainThread == flag)
 	{
@@ -596,7 +596,7 @@
 	[self setWaitingLogin : [objWaitingLogin boolValue]];
 }
 
-- (void) setWaitingLogin : (bool) waitingLogin
+- (void) setWaitingLogin : (BOOL) waitingLogin
 {
 	if(waitingLogin == _waitingLogin)
 		return;
@@ -643,7 +643,7 @@
 	[NSAnimationContext endGrouping];
 }
 
-- (bool) waitingLogin
+- (BOOL) waitingLogin
 {
 	return _waitingLogin;
 }
@@ -693,7 +693,7 @@
 	
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
 {
 	NSLog(@"Project %@ received: istome: %d - element : %d", getStringForWchar(data.projectName), isTome, element);
 	return YES;

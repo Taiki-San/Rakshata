@@ -436,7 +436,7 @@ enum
 - (BOOL) abortProcessing
 {
 	if(todoList == nil)
-		return false;
+		return NO;
 	
 	int8_t status = [_controller statusOfID:_row :YES];
 

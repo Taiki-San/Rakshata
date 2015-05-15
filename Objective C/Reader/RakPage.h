@@ -41,7 +41,7 @@
 - (void) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
-- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage;
+- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage;
 - (void) updateCTTab;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;
 - (void) updateEvnt;

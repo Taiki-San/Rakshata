@@ -55,7 +55,7 @@
 
 - (void) initBackButton
 {
-	backButton = [[RakBackButton alloc] initWithFrame:_bounds: true];
+	backButton = [[RakBackButton alloc] initWithFrame:_bounds: YES];
 	if(backButton != nil)
 	{
 		[backButton setTarget : self];
@@ -106,7 +106,7 @@
 	}
 	
 	//Perfect! now, all we have to do is to sanitize last few data :D
-	bool isTome = [[dataState objectAtIndex:2] boolValue] != 0;
+	BOOL isTome = [[dataState objectAtIndex:2] boolValue] != 0;
 	long context[4];
 	context[0] = [[dataState objectAtIndex:3] floatValue];		//elemSelectedChapter
 	context[1] = [[dataState objectAtIndex:4] floatValue];		//scrollerPosChapter
@@ -405,7 +405,7 @@
 
 #pragma mark - Drop
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
 {
 	BOOL ret_value = NO;
 	

@@ -48,7 +48,7 @@ CG_EXTERN CGSConnectionID CGSMainConnectionID(void);
 CG_EXTERN CGError CGSGetWindowBounds(CGSConnectionID cid, CGSWindowID wid, CGRect *rectOut);
 
 CG_EXTERN CGError CGSNewRegionWithRect(const CGRect *rect, CGSRegionRef *regionOut);
-CG_EXTERN bool CGSRegionIsEmpty(CGSRegionRef region);
+CG_EXTERN BOOL CGSRegionIsEmpty(CGSRegionRef region);
 CG_EXTERN CGError CGSReleaseRegion(CGSRegionRef region);
 
 CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid, CGSWindowID wid, CGSRegionRef region);

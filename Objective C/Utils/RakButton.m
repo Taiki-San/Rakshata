@@ -266,7 +266,7 @@
 	else if(unAvailable != nil)
 	{
 		[self setImage:unAvailable];
-		notAvailable = true;
+		notAvailable = YES;
 	}
 	else
 		return NO;
@@ -275,7 +275,7 @@
 
 - (void) setState : (NSInteger)value
 {
-	notAvailable = false;
+	notAvailable = NO;
 	
 	if(value == RB_STATE_HIGHLIGHTED && _highlightAllowed)
 	{
@@ -288,7 +288,7 @@
 	else if(value == RB_STATE_UNAVAILABLE)
 	{
 		[self setImage:unAvailable];
-		notAvailable = true;
+		notAvailable = YES;
 	}
 }
 

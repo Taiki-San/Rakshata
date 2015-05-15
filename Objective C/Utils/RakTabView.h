@@ -25,22 +25,22 @@ enum {
 
 @interface RakTabView : NSView <NSDraggingDestination>
 {
-	bool noDrag;
-	bool canDeploy;
+	BOOL noDrag;
+	BOOL canDeploy;
 	int flag;
 	NSTrackingRectTag trackingArea;
 	
 	NSRect _lastFrame;
 
 	//Login request
-	bool _waitingLogin;
-	bool _needPassword;
+	BOOL _waitingLogin;
+	BOOL _needPassword;
 	RakTabForegroundView * foregroundView;
 }
 
 @property uint mainThread;
-@property bool waitingLogin;
-@property bool initWithNoContent;
+@property BOOL waitingLogin;
+@property BOOL initWithNoContent;
 
 @property BOOL forceNextFrameUpdate;
 
@@ -107,7 +107,7 @@ enum {
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 - (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL;
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender;
 - (BOOL) shouldDeployWhenDragComeIn;
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL;
 - (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender;

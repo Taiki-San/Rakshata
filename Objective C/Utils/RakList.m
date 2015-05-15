@@ -620,7 +620,7 @@
 	
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
 #ifdef DEV_VERSION
 	NSLog(@"Project: %@- isTome: %d - element: %d - sender: %d - row: %ld - operation: %lu", getStringForWchar(project.projectName), isTome, element, sender, (long)row, (unsigned long)operation);

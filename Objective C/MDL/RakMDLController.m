@@ -22,7 +22,7 @@
 	{
 		_tabMDL = tabMDL;
 		IDToPosition = NULL;
-		quit = false;
+		quit = NO;
 		
 		//We have to make reference to entries of cache. In order to keep it updatable, we have to allocate memory for each entry
 		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID, &sizeCache);
@@ -80,7 +80,7 @@
 
 - (void) needToQuit
 {
-	quit = true;
+	quit = YES;
 	if(isThreadStillRunning(coreWorker))
 		MDLQuit();
 }
@@ -461,7 +461,7 @@
 		injectionPoint--;
 
 	uint size = (posEnd - posStart + 1);
-	bool isMovingPartBeforeInsertion = posEnd < injectionPoint;
+	BOOL isMovingPartBeforeInsertion = posEnd < injectionPoint;
 	uint * movingPart = malloc(size * sizeof(uint));
 	
 	if (movingPart == NULL)

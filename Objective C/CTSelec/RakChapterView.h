@@ -28,7 +28,7 @@
 	RakCTSelection * coreview;
 }
 
-- (instancetype) initContent:(NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context;
+- (instancetype) initContent:(NSRect)frame : (PROJECT_DATA) project : (BOOL) isTome : (long [4]) context;
 
 - (void) updateContext : (PROJECT_DATA) data;
 - (void) projectDataUpdate : (PROJECT_DATA) oldData : (PROJECT_DATA) newData;

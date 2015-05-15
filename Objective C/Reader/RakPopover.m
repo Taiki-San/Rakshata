@@ -105,7 +105,7 @@
 	
 	if(wantAdditionalConfig)
 	{
-		additionalConfigRequired = true;
+		additionalConfigRequired = YES;
 		[popover additionalConfiguration : self];
 	}
 	

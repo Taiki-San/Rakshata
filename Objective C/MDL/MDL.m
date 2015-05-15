@@ -29,7 +29,7 @@ enum
 		self.forcedToShowUp = NO;
 		_popover = nil;
 		self = [self initView: contentView : state];
-		canDeploy = false;
+		canDeploy = NO;
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor;
 		self.layer.borderWidth = 2;
@@ -91,7 +91,7 @@ enum
 
 #pragma mark - Proxy
 
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (bool) isTome element : (int) newElem  partOfBatch : (bool) partOfBatch
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (int) newElem  partOfBatch : (BOOL) partOfBatch
 {
 	if(controller != nil)
 		[controller addElement:data :isTome :newElem :partOfBatch];
@@ -415,7 +415,7 @@ enum
 
 #pragma mark - Intertab communication
 
-- (void) propagateContextUpdate : (PROJECT_DATA) data : (bool) isTome : (int) element
+- (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (int) element
 {
 	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
 	[[(RakAppDelegate*) [NSApp delegate] reader]	updateContextNotification : data : isTome : element];
@@ -473,7 +473,7 @@ enum
 	return [super dropOperationForSender:sender:canDL];
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender;
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender;
 {
 	return (coreView != nil && [coreView proxyReceiveDrop:data :isTome :element :sender]);
 }

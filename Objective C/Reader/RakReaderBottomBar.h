@@ -39,7 +39,7 @@
 	
 	CGContextRef contextBorder;
 	
-	bool isFaved;
+	BOOL isFaved;
 	
 	//Used for distraction free mode
 	Reader * _parent;

@@ -152,7 +152,7 @@ enum FONT_REQUEST {
 
 + (void) getPref : (int) requestID : (void*) outputContainer;
 + (void) getPref : (int) requestID : (void*) outputContainer : (void*) additionalData;
-+ (bool) setPref : (uint) requestID : (uint64) value;
++ (BOOL) setPref : (uint) requestID : (uint64) value;
 
 //Semi-public, use of this method should be avoided when possible
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;
@@ -161,7 +161,7 @@ enum FONT_REQUEST {
 - (instancetype) init : (NSString *) data;
 - (NSString*) dumpPrefs;
 - (void) refreshFirstResponder;
-- (void) flushMemory : (bool) memoryError;
+- (void) flushMemory : (BOOL) memoryError;
 - (NSArray *) setupExecuteConsistencyChecks : (uint8) request;
 @end
 

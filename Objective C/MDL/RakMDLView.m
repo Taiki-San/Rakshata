@@ -214,7 +214,7 @@ enum
 	return [Prefs getSystemColor: GET_COLOR_BACKGROUND_COREVIEW: nil];
 }
 
-- (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
 {
 	return (MDLList != nil && [MDLList receiveDrop:data :isTome :element :sender :-1 :NSTableViewDropOn]);
 }

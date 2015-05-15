@@ -14,8 +14,8 @@
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
-	_alreadyRefreshed = false;
-	_dontGiveACrapAboutCTPosUpdate = false;
+	_alreadyRefreshed = NO;
+	_dontGiveACrapAboutCTPosUpdate = NO;
 	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return NO;
@@ -139,10 +139,10 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-	bool fail = false;
+	BOOL fail = NO;
 
 	if(self.mainThread != TAB_READER || !noDrag || _scrollView == nil)
-		fail = true;
+		fail = YES;
 	else
 	{
 		NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -151,14 +151,14 @@
 		{
 			mouseLoc.y += [_scrollView.contentView documentRect].size.height - [_scrollView frame].size.height - [_scrollView.contentView documentVisibleRect].origin.y;
 			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) _scrollView.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
-				fail = true;
+				fail = YES;
 		}
 		
 		if(_scrollView.pageTooLarge)
 		{
 			mouseLoc.x += [_scrollView.contentView documentRect].size.width - [_scrollView frame].size.width - [_scrollView.contentView documentVisibleRect].origin.x;
 			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) _scrollView.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
-				fail = true;
+				fail = YES;
 		}
 	}
 	
@@ -172,7 +172,7 @@
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
     unichar     const   code        =   [character characterAtIndex:0];
-	bool isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
+	BOOL isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
 	
     switch (code)
     {
@@ -499,7 +499,7 @@
 	_currentElem = elemRequest;
 	self.isTome = isTomeRequest;
 	
-	_cacheBeingBuilt = false;
+	_cacheBeingBuilt = NO;
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 	if(_posElemInStructure == -1)
@@ -551,11 +551,11 @@
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
-			_needPassword = true;
+			_needPassword = YES;
 		
 		MUTEX_VAR * lock = [(RakAppDelegate*) [NSApp delegate]sharedLoginMutex : YES];
 		
-		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(true) waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(YES) waitUntilDone:NO];
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
@@ -564,7 +564,7 @@
 		
 		pthread_mutex_unlock(lock);
 
-		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(false) waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
 		
 		return [self getPage : posData : data];
 	}
@@ -739,13 +739,13 @@
 	}
 }
 
-- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (bool) isTomeRequest : (int) startPage
+- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
 {
 	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
 	
 	if(projectRequest.cacheDBID != _project.cacheDBID)
-		_alreadyRefreshed = false;
+		_alreadyRefreshed = NO;
 	else if(elemRequest == _currentElem && isTomeRequest == self.isTome)
 	{
 		[self jumpToPage:startPage];
@@ -768,9 +768,9 @@
 {
 	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate]CT];
 	
-	_dontGiveACrapAboutCTPosUpdate = true;
+	_dontGiveACrapAboutCTPosUpdate = YES;
 	[tabCT selectElem: _project.cacheDBID :self.isTome :_currentElem];
-	_dontGiveACrapAboutCTPosUpdate = false;
+	_dontGiveACrapAboutCTPosUpdate = NO;
 }
 
 - (void) updateContext : (BOOL) dataAlreadyLoaded
@@ -959,11 +959,11 @@
 
 - (void) buildCache : (NSNumber *) session
 {
-	_cacheBeingBuilt = true;
+	_cacheBeingBuilt = YES;
 	
 	if(mainScroller == nil || _data.pageCourante >= _data.nombrePage)	//Données hors de nos bornes
 	{
-		_cacheBeingBuilt = false;
+		_cacheBeingBuilt = NO;
 		return;
 	}
 	
@@ -982,7 +982,7 @@
 	}
 	[CATransaction commit];
 	
-	_cacheBeingBuilt = false;
+	_cacheBeingBuilt = NO;
 }
 
 - (void) _buildCache : (uint) session : (NSMutableArray *) data
@@ -1335,7 +1335,7 @@
 	if(_alreadyRefreshed)
 		return;
 	else
-		_alreadyRefreshed = true;
+		_alreadyRefreshed = YES;
 	
 	uint nbElemToGrab = checkNewElementInRepo(&_project, self.isTome, _currentElem);
 	
@@ -1395,7 +1395,7 @@
 - (void) flushCache
 {
 	cacheSession++;		//tell the cache to stop
-	_flushingCache = true;
+	_flushingCache = YES;
 	
 	if(mainScroller != nil)
 	{
@@ -1414,7 +1414,7 @@
 		MUTEX_UNLOCK(cacheMutex);
 	}
 	
-	_flushingCache = false;
+	_flushingCache = NO;
 }
 
 - (void) deallocInternal

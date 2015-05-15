@@ -92,7 +92,7 @@
 
 #pragma mark - Data manipulation
 
-- (SR_DATA *) getSmartReloadData : (PROJECT_DATA*) data : (uint) nbElem : (bool *) installed
+- (SR_DATA *) getSmartReloadData : (PROJECT_DATA*) data : (uint) nbElem : (BOOL *) installed
 {
 	if(!nbElem)
 		return NULL;

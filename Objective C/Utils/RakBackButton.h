@@ -13,13 +13,13 @@
 @interface RakBackButton : NSButton <NSAnimationDelegate>
 {
 	byte ID;
-	bool cursorOnMe;
+	BOOL cursorOnMe;
 	NSTrackingRectTag tag;
 
 	NSAnimation * _animation;
 }
 
-- (instancetype) initWithFrame : (NSRect) frame : (bool) isOneLevelBack;
+- (instancetype) initWithFrame : (NSRect) frame : (BOOL) isOneLevelBack;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 
@@ -34,13 +34,13 @@
 
 @interface RakBackButtonCell : RakButtonCell
 {
-	bool animationInProgress;
+	BOOL animationInProgress;
 	CGFloat animationStatus;
 }
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state;
 
-- (void) setAnimationInProgress : (bool) start;
+- (void) setAnimationInProgress : (BOOL) start;
 - (void) setAnimationStatus:(CGFloat) status;
 
 @end

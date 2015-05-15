@@ -364,11 +364,11 @@
 //Renvois si le check s'est bien passé, TRUE = OK | FALSE = KO
 + (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError
 {
-	BOOL ret_value = true;
+	BOOL ret_value = YES;
 	NSArray * array = [mainInstance setupExecuteConsistencyChecks: 1];
 	
 	if(array == nil)
-		return false;
+		return NO;
 	
 	uint i, nbElem = [[array objectAtIndex: 0] getNbElem] - 1, otherPan;
 	//nbElem est décrémenté car on ne test pas la hauteur du footer
@@ -385,7 +385,7 @@
 		//On vérifie que la pos X du panneau A + la largeur est supérieure ou égale à la pos X du panneau 2
 		if([[array objectAtIndex:(i / nbElem)] getAtIndex: (i % nbElem) ].origin.x + [[array objectAtIndex: (i / nbElem)] getAtIndex: (i % nbElem) ].size.width < [[array objectAtIndex:(i / nbElem) + 1] getAtIndex: (otherPan) ].origin.x)
 		{
-			ret_value = false;
+			ret_value = NO;
 #ifdef DEV_VERSION
 			NSLog(@"[%s] : Incoherency found at index %d", __PRETTY_FUNCTION__, i);
 #endif

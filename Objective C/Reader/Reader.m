@@ -49,7 +49,7 @@
 
 - (void) initReaderMainView : (NSString *) state
 {
-	initialized = false;
+	initialized = NO;
 	self.initWithNoContent = YES;
 	
 	if(state != nil && [state caseInsensitiveCompare:STATE_EMPTY] != NSOrderedSame)
@@ -83,7 +83,7 @@
 				//Perfect! now, all we have to do is to sanitize last few data :D
 				
 				int elemToRead;
-				bool isTome;
+				BOOL isTome;
 				uint page;
 				
 				elemToRead = [[dataState objectAtIndex:2] intValue];
@@ -108,11 +108,11 @@
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage
+- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (BOOL) isTome : (uint) startPage
 {
 	BOOL shouldNotifyBottomBarInitialized = NO;
 	
-	initialized = true;
+	initialized = YES;
 	
 	if(self.initWithNoContent)
 	{
@@ -193,7 +193,7 @@
 	if(gonnaReduceTabs)
 	{
 		uint mainTab;
-		bool isReaderMode;
+		BOOL isReaderMode;
 		[Prefs getPref:PREFS_GET_IS_READER_MT :&isReaderMode];
 		[Prefs getPref:PREFS_GET_READER_TABS_STATE :&mainTab];
 		if(!isReaderMode || (mainTab & STATE_READER_TAB_DEFAULT) == 0)
@@ -230,7 +230,7 @@
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			if(gonnaReduceTabs == copy && self.mainThread == TAB_READER)
 			{
-				[self collapseAllTabs : false];
+				[self collapseAllTabs : NO];
 			}
 		});
 	}
@@ -281,7 +281,7 @@
 	[self abortFadeTimer];
 }
 
-- (void) collapseAllTabs : (bool) forced
+- (void) collapseAllTabs : (BOOL) forced
 {
 	if(forced || [self isCursorOnMe] || [self mouseOutOfWindow])
 	{
@@ -535,7 +535,7 @@
 
 #pragma mark - Drop support
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (bool) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
 {
 	if(element != VALEUR_FIN_STRUCT && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
 	{

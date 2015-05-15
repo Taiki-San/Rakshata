@@ -16,7 +16,7 @@
 
 @interface Reader : RakTabView
 {
-	bool initialized;
+	BOOL initialized;
 	
 	uint gonnaReduceTabs;
 	NSView * container;
@@ -39,12 +39,12 @@
 	NSPoint cursorPosBeforeLastMove;
 	
 	//Context data
-	bool _readerMode;
-	bool _alreadyRefreshed;
-	bool _dontGiveACrapAboutCTPosUpdate;
-	bool _flushingCache;
+	BOOL _readerMode;
+	BOOL _alreadyRefreshed;
+	BOOL _dontGiveACrapAboutCTPosUpdate;
+	BOOL _flushingCache;
 	
-	bool _cacheBeingBuilt;
+	BOOL _cacheBeingBuilt;
 	
 	PROJECT_DATA _project;
 	BOOL dataLoaded;
@@ -67,12 +67,12 @@
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
-- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (bool) isTome : (uint) startPage;
+- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;
 - (void) willLeaveReader;
 - (void) willOpenReader;
 
-- (void) collapseAllTabs : (bool) forced;
+- (void) collapseAllTabs : (BOOL) forced;
 - (void) hideBothTab;
 - (void) unhideBothTab;
 

@@ -90,7 +90,7 @@
 				
 				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
 				
-				PROJECT_DATA * project = getDataFromSearch(repoID, projectID, false);
+				PROJECT_DATA * project = getDataFromSearch(repoID, projectID, NO);
 				
 				if(project == NULL || project->repo == NULL)
 				{
@@ -162,7 +162,7 @@
 	
 	//Recent read
 	uint8_t i = 0;
-	PROJECT_DATA ** recent = getRecentEntries(false, &_nbElemReadDisplayed);
+	PROJECT_DATA ** recent = getRecentEntries(NO, &_nbElemReadDisplayed);
 	
 	if(recent != NULL)
 	{

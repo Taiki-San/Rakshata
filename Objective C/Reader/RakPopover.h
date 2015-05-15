@@ -33,7 +33,7 @@
 @interface RakPopoverView : NSView <INPopoverControllerDelegate>
 {
 	BOOL prefsRegistered;
-	bool additionalConfigRequired;
+	BOOL additionalConfigRequired;
 	
 	NSView * _anchor;
 

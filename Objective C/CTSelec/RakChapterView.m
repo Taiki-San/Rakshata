@@ -12,7 +12,7 @@
 
 @implementation RakChapterView
 
-- (instancetype) initContent : (NSRect)frame : (PROJECT_DATA) project : (bool) isTome : (long [4]) context
+- (instancetype) initContent : (NSRect)frame : (PROJECT_DATA) project : (BOOL) isTome : (long [4]) context
 {
     self = [super initWithFrame:frame];
     if (self != nil)
@@ -304,7 +304,7 @@
 	}
 	else
 	{
-		coreview = [[RakCTSelection alloc] initWithProject : data : false : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1} : mainThread];
+		coreview = [[RakCTSelection alloc] initWithProject : data : NO : self.bounds : (header != nil ? header.bounds.size.height : 0) : (long [4]) {-1, -1, -1, -1} : mainThread];
 		if(coreview != nil)
 			[self addSubview:coreview];
 	}

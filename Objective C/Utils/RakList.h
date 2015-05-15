@@ -121,7 +121,7 @@ typedef struct smartReload_data
 - (void) fillDragItemWithData : (RakDragItem*) data : (uint) row;
 - (BOOL) acceptDrop : (id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation source:(uint) source;
 - (void) cleanupDrag;
-- (BOOL) receiveDrop : (PROJECT_DATA) project : (bool) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
 
 + (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL;
 

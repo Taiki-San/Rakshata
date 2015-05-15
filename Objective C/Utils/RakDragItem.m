@@ -14,8 +14,8 @@ typedef struct project_data_for_drag_drop
 {
 	PROJECT_DATA data;
 	int selection;
-	bool isTome;
-	bool canDL;
+	BOOL isTome;
+	BOOL canDL;
 	uint price;
 } INTERNAL_D_AND_D;
 

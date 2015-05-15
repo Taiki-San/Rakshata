@@ -18,16 +18,16 @@ enum
 
 @implementation RakBackButton
 
-- (instancetype) initWithFrame : (NSRect) frame : (bool) isOneLevelBack
+- (instancetype) initWithFrame : (NSRect) frame : (BOOL) isOneLevelBack
 {
     self = [super initWithFrame : [self frameFromParent:frame]];
     if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
-		[self setWantsLayer:true];
+		[self setWantsLayer:YES];
 		[self setBordered:NO];
 		[self.layer setCornerRadius:4];
-		cursorOnMe = false;
+		cursorOnMe = NO;
 		
 		[Prefs getCurrentTheme:self];	//We register to theme change
 
@@ -107,7 +107,7 @@ enum
 
 #pragma mark - Events
 
-- (bool) confirmMouseOnMe
+- (BOOL) confirmMouseOnMe
 {
 	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
 	RakTabView * group = ID == LEVEL_SERIE ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
@@ -123,14 +123,14 @@ enum
 {
 	if([self confirmMouseOnMe])
 	{
-		cursorOnMe = true;
+		cursorOnMe = YES;
 		[self startAnimation];
 	}
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	cursorOnMe = false;
+	cursorOnMe = NO;
 	[self.cell setAnimationInProgress:NO];
 }
 
@@ -141,7 +141,7 @@ enum
 
 - (void) mouseExited:(NSEvent *)theEvent
 {
-	cursorOnMe = false;
+	cursorOnMe = NO;
 	[self.cell setAnimationInProgress:NO];
 	
 	[_animation stopAnimation];
@@ -154,7 +154,7 @@ enum
 {
 	if([self confirmMouseOnMe])
 	{
-		cursorOnMe = false;
+		cursorOnMe = NO;
 		[self.cell setAnimationInProgress:NO];
 		[super performClick:sender];
 	}
@@ -176,7 +176,7 @@ enum
 		progress += 1/60.0f;
 	}
 	
-	[self.cell setAnimationInProgress:true];
+	[self.cell setAnimationInProgress:YES];
 	[_animation startAnimation];
 }
 
@@ -210,7 +210,7 @@ enum
 	nonClicked	= [RakResPath craftResNameFromContext:imageName : NO : YES : 1];
 	unAvailable = [RakResPath craftResNameFromContext:imageName : NO : NO : 1];
 	
-	notAvailable = false;
+	notAvailable = NO;
 	
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 		[self setImage:nonClicked];
@@ -219,7 +219,7 @@ enum
 	else if(unAvailable != nil)
 	{
 		[self setImage:unAvailable];
-		notAvailable = true;
+		notAvailable = YES;
 	}
 	else
 	{
@@ -227,7 +227,7 @@ enum
 	}
 }
 
-- (void) setAnimationInProgress : (bool) start
+- (void) setAnimationInProgress : (BOOL) start
 {
 	animationInProgress = start;
 	animationStatus = 0;

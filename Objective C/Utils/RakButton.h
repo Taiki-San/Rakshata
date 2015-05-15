@@ -36,7 +36,7 @@
 
 @interface RakButtonCell : NSButtonCell
 {
-	bool notAvailable;
+	BOOL notAvailable;
 	
 	NSString * _imageName;
 	
@@ -49,7 +49,7 @@
 
 @property NSColor * customBackgroundColor;
 @property (nonatomic) CGFloat borderWidth;
-@property bool forceHighlight;
+@property BOOL forceHighlight;
 @property BOOL hasBorder;
 @property (nonatomic, getter=isHighlightAllowed) BOOL highlightAllowed;
 
