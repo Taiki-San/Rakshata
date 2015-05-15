@@ -57,7 +57,10 @@ enum
 		
 		[self multilineStateUpdated];	//Update everything depending of the context
 		
+		self.postsFrameChangedNotifications = YES;
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rowDeleted:) name:@"RakMDLListViewRowDeleted" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(frameChanged) name:NSViewFrameDidChangeNotification object:self];
 	}
 	
 	return self;
@@ -301,14 +304,9 @@ enum
 	}
 }
 
-- (void) setFrame:(NSRect)frameRect
+- (void) frameChanged
 {
-	bool reposition = frameRect.size.width != self.frame.size.width || frameRect.size.height != self.frame.size.height;
-	
-	[super setFrame:frameRect];
-
-	if(reposition)
-		[self setPositionsOfStuffs];
+	[self setPositionsOfStuffs];
 }
 
 - (void) updateData : (uint) data
