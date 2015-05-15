@@ -130,8 +130,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 						  (unsigned int) infos_system.lpMinimumApplicationAddress, (unsigned int) infos_system.lpMaximumApplicationAddress, (unsigned int) infos_system.dwActiveProcessorMask, buf_name);
 		
 		length = MIN(length, 5000);
-#else
-#ifdef __APPLE__
+#elif defined(__APPLE__)
 		int c = 0;
 		unsigned char buffer_fingerprint[5000];
 		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
@@ -156,7 +155,6 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 		/**J'ai commencé les recherche d'API, procfs me semble une piste interessante: http://fr.wikipedia.org/wiki/Procfs
 		 En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
 		
-#endif
 #endif
 		whirlpool(buffer_fingerprint, length, (char*) _fingerprint, false);
 		craftedOnce = true;

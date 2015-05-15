@@ -25,16 +25,12 @@
 
 #ifdef DEV_VERSION
     #define BUILD "dev"
+#elif defined(_WIN32)
+	#define BUILD "win32"
+#elif defined(__APPLE__)
+	#define BUILD "OSX"
 #else
-    #ifdef _WIN32
-        #define BUILD "win32"
-    #else
-        #ifdef __APPLE__
-            #define BUILD "OSX"
-        #else
-            #define BUILD "linux"
-        #endif
-    #endif
+	#define BUILD "linux"
 #endif
 
 /*Standard des dépôts*/

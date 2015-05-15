@@ -425,15 +425,7 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
 
 static void defineUserAgent(CURL *curl)
 {
-#ifdef _WIN32 //User Agent
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Rakshata_WIN32");
-#else
-    #ifdef __APPLE__
-            curl_easy_setopt(curl, CURLOPT_USERAGENT, "Rakshata_OSX");
-    #else
-            curl_easy_setopt(curl, CURLOPT_USERAGENT, "Rakshata_UNIX");
-    #endif
-#endif
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, PROJECT_NAME"_"BUILD);
 }
 
 /** SSL related portion **/
