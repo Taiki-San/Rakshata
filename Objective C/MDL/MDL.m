@@ -186,12 +186,54 @@ enum
 - (void) setWantCollapse : (BOOL) wantCollapse
 {
 	_wantCollapse = wantCollapse;
+	
+	if(!_wantCollapse)
+		[self releaseTrackingArea];
+	else
+		[self resizeTrackingArea];
+}
+
+- (void) resizeTrackingArea
+{
+	[super resizeTrackingArea];
+	
+	if(self.mainThread == TAB_SERIES)
+	{
+		NSRect frame = NSMakeRect(0, 0, _lastFrame.size.width, _lastFrame.size.height);
+		
+		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];
+	}
+}
+
+- (void) rejectedMouseEntered
+{
+	if(self.mainThread == TAB_SERIES && seriesCollapsedBySetting)
+		[self updateSeriesCollapsedBySettingState : NO];
+}
+
+- (void) rejectedMouseExited
+{
+	if(self.mainThread == TAB_SERIES && _wantCollapse)
+		[self updateSeriesCollapsedBySettingState : YES];
+}
+
+- (void) updateSeriesCollapsedBySettingState : (BOOL) isCollapsed
+{
+	seriesCollapsedBySetting = isCollapsed;
+
+	[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+	
+	_needUpdateMainViews = YES;
+	[self updateDependingViews:YES];
 }
 
 #pragma mark - Sizing
 
 - (BOOL) isStillCollapsedReaderTab
 {
+	if(self.mainThread != TAB_READER)
+		return NO;
+		
 	uint state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
@@ -228,21 +270,29 @@ enum
 				maximumSize.origin.y = -contentHeight;
 			}
 		}
-		
-		else if(maximumSize.size.height > contentHeight - 1)
-		{
-			if(self.mainThread != TAB_SERIES)
-			{
-				maximumSize.size.height = contentHeight;
-				
-				if(_lastFrame.size.height != contentHeight)
-					_needUpdateMainViews = YES;
-			}
-			
-			[coreView updateScroller:YES];
-		}
 		else
-			[coreView updateScroller:NO];
+		{
+			//We have more space than we really need
+			if(maximumSize.size.height > contentHeight - 1)
+			{
+				if(self.mainThread != TAB_SERIES)
+				{
+					maximumSize.size.height = contentHeight;
+					
+					if(_lastFrame.size.height != contentHeight)
+						_needUpdateMainViews = YES;
+				}
+				
+				[coreView updateScroller:YES];
+			}
+			else
+				[coreView updateScroller:NO];
+			
+			if(self.mainThread == TAB_SERIES && seriesCollapsedBySetting)
+			{
+				maximumSize.origin.x = - (maximumSize.size.width * 0.8);
+			}
+		}
 	}
 
 	[self setLastFrame:maximumSize];

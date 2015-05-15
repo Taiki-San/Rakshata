@@ -744,6 +744,10 @@ enum
 			
 		case PREFS_SET_READER_TABS_STATE_FROM_CALLER:
 		{
+			//Only relevant in the reader
+			if(mainThread != TAB_READER)
+				break;
+			
 			int newValue = -1;
 			switch(value)
 			{

@@ -212,8 +212,9 @@
 		MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
 		if(tabMDL != nil)
 		{
-			frame.origin.x += [tabMDL lastFrame].size.width;
-			frame.size.width -= [tabMDL lastFrame].size.width;
+			CGFloat maxX = NSMaxX([tabMDL lastFrame]);
+			frame.origin.x += maxX;
+			frame.size.width -= maxX;
 		}
 	}
 	

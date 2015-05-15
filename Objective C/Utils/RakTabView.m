@@ -482,6 +482,8 @@
 		{
 			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+			else
+				[self rejectedMouseEntered];
 		}
 	});
 }
@@ -492,7 +494,9 @@
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			if(_mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
-					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
+			else
+				[self rejectedMouseExited];
 		});
 	}
 }
@@ -512,6 +516,16 @@
 			[(RakSRSearchBar *) [(NSTextView*) object delegate] willLooseFocus];
 		}
 	}
+}
+
+- (void) rejectedMouseEntered
+{
+	
+}
+
+- (void) rejectedMouseExited
+{
+	
 }
 
 #pragma mark - Graphic Utilities

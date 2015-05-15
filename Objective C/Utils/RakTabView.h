@@ -87,6 +87,8 @@ enum {
 - (NSRect) getFrameOfNextTab;
 - (BOOL) mouseOutOfWindow;
 - (void) objectWillLooseFocus : (id) object;
+- (void) rejectedMouseEntered;
+- (void) rejectedMouseExited;
 
 - (void) resizeAnimation;
 - (NSRect) createFrame;

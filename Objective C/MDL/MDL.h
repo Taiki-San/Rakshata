@@ -22,6 +22,8 @@
 
 @interface MDL : RakTabView
 {
+	BOOL seriesCollapsedBySetting;
+	
 	RakMDLView * coreView;
 	RakMDLFooter * footer;
 	RakMDLController * controller;
