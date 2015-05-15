@@ -14,6 +14,7 @@
 
 @property RakMDLController * controller;
 
+- (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) initialCollapseState;
 - (void) resizeAnimation : (NSRect) frameRect;
 
 @end

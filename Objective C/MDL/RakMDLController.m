@@ -90,7 +90,7 @@
 	char * data = MDLParseFile(*todoList, status, IDToPosition, discardedCount);
 	NSString * output = nil;
 
-	if(data != NULL && strlen(data))
+	if(data != NULL && data[0] != 0)
 	{
 		output = [NSString stringWithUTF8String: data];
 	}

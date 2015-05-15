@@ -27,7 +27,7 @@ enum
 
 @implementation RakMDLFooter
 
-- (instancetype) initWithFrame : (NSRect) frameRect
+- (instancetype) initWithFrame : (NSRect) frameRect : (BOOL) initialCollapseState
 {
 	self = [super initWithFrame:frameRect];
 	
@@ -36,6 +36,7 @@ enum
 		collapseButton = [[RakSlideshowButton alloc] initWithFrame:[self collapseFrame:_bounds]];
 		if(collapseButton != nil)
 		{
+			collapseButton.state = initialCollapseState ? NSOnState : NSOffState;
 			collapseButton.target = self;
 			collapseButton.action = @selector(collapseClicked);
 			

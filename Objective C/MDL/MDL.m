@@ -43,6 +43,18 @@ enum
 
 - (BOOL) initContent : (NSString *) state
 {
+	//We have to split state in two parts: the first char (0/1, _wantCollapse), and if there is content afterward, \n and the dump of the download list
+	BOOL oldWantCollapse = NO;
+	if([state length] != 0)	//Any content
+	{
+		if([state cStringUsingEncoding:NSASCIIStringEncoding][0] == '1')
+			oldWantCollapse = YES;
+		
+		if([state length] > 2 && [state isNotEqualTo:STATE_EMPTY])	//We may have some actual content
+			state = [state substringFromIndex:2];
+	}
+	
+	//Actual initialization
 	controller = [[RakMDLController alloc] init: self : state];
 	if(controller == nil)
 		return NO;
@@ -51,13 +63,15 @@ enum
 	if(coreView != nil)
 		[self addSubview:coreView];
 	
-	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds]];
+	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds] : oldWantCollapse];
 	if(footer != nil)
 	{
 		footer.controller = controller;
 		footer.hidden = self.mainThread != TAB_SERIES;
 		[self addSubview:footer];
 	}
+	
+	self.wantCollapse = oldWantCollapse;
 	
 	return YES;
 }
@@ -78,8 +92,12 @@ enum
 {
 	[controller needToQuit];
 	
-	NSString * output = [controller serializeData];
-	return output != nil ? output : [super byebye];
+	NSString * dataDump = [controller serializeData];
+	
+	if(dataDump == nil)
+		return [NSString stringWithFormat:@"%d", _wantCollapse];
+	
+	return [NSString stringWithFormat:@"%d\n%@", _wantCollapse, dataDump];
 }
 
 - (void) dealloc
@@ -186,6 +204,9 @@ enum
 
 - (void) setWantCollapse : (BOOL) wantCollapse
 {
+	if(_wantCollapse == wantCollapse)
+		return;
+	
 	_wantCollapse = wantCollapse;
 	
 	if(!_wantCollapse)
