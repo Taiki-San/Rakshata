@@ -87,7 +87,7 @@
 {
 	if(self.textButton)
 	{
-		NSRect frame = self.frame;
+		NSRect frame = _frame;
 		
 		frame.size = [self.cell sizeOfTextCell];
 		frame.size.height += 4;
@@ -184,7 +184,7 @@
 	
 	if(self != nil)
 	{
-		_imageName = [NSString stringWithString:imageName];
+		_imageName = [imageName copy];
 		
 		notAvailable = NO;
 		_highlightAllowed = YES;

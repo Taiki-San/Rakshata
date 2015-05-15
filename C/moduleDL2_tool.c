@@ -244,7 +244,7 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 			if(index == data->nombreTomes)
 			{
 				MDLFlushElement(output);
-				output = NULL;
+				return NULL;
 			}
 			
 			output->nbElemList = data->tomesFull[index].lengthDetails;
@@ -253,7 +253,7 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 			if(output->listChapitreOfTome == NULL)
 			{
 				MDLFlushElement(output);
-				output = NULL;
+				return NULL;
 			}
 			
 			memcpy(&(output->listChapitreOfTome), data->tomesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));

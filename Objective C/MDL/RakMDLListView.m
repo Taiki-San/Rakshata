@@ -178,11 +178,9 @@ enum
 {
 	NSRect frame = _bounds, curFrame;
 	NSPoint newPoint;
-	BOOL stateUpdate = NO;
 	
 	if(wasMultiLine != (frame.size.height > 30 && frame.size.width < 300))
 	{
-		stateUpdate = YES;
 		wasMultiLine = !wasMultiLine;
 
 		[self multilineStateUpdated];

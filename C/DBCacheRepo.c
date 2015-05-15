@@ -192,6 +192,9 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 	
 	MUTEX_UNLOCK(cacheMutex);
 	
+	if(newLengthRepo <= baseNewRoot)
+		return;
+
 	newRootEntries = newLengthRepo - baseNewRoot;
 	
 	//We now update the standard repo store
