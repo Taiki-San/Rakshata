@@ -142,8 +142,8 @@ enum
 
 - (void) setFont : (NSFont*) font
 {
-	[requestName setFont:font];
-	[statusText setFont:font];
+	[requestName setFont:font];		[requestName sizeToFit];
+	[statusText setFont:font];		[statusText sizeToFit];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
