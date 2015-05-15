@@ -564,4 +564,9 @@
 	return _tabMDL.mainThread == TAB_SERIES;
 }
 
+- (void) collapseStateUpdate : (BOOL) wantCollapse
+{
+	_tabMDL.wantCollapse = wantCollapse;
+}
+
 @end

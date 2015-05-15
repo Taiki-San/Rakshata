@@ -66,7 +66,7 @@ enum
 
 - (void) collapseClicked
 {
-	NSLog(@"Collapse clicked");
+	[_controller collapseStateUpdate:collapseButton.state == NSOnState];
 }
 
 #pragma mark - Sizing

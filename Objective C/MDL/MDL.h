@@ -31,6 +31,7 @@
 
 @property BOOL forcedToShowUp;
 @property BOOL needUpdateMainViews;
+@property (nonatomic) BOOL wantCollapse;
 
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (BOOL) available;

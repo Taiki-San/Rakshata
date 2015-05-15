@@ -60,4 +60,6 @@
 - (RakTabForegroundView *) getForegroundView;
 - (void) setWaitingLogin : (NSNumber *) request;
 
+- (void) collapseStateUpdate : (BOOL) wantCollapse;
+
 @end

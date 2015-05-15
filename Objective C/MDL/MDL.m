@@ -181,6 +181,13 @@ enum
 		[self updateDependingViews : NO];
 }
 
+#pragma mark Collapse management
+
+- (void) setWantCollapse : (BOOL) wantCollapse
+{
+	_wantCollapse = wantCollapse;
+}
+
 #pragma mark - Sizing
 
 - (BOOL) isStillCollapsedReaderTab
