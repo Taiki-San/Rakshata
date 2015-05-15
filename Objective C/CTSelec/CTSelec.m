@@ -226,7 +226,7 @@
 	return (state & STATE_READER_TAB_CT_FOCUS) == 0;
 }
 
-- (NSRect) generateNSTrackingAreaSize
+- (NSRect) generatedReaderTrackingFrame
 {
 	NSRect frame = [self lastFrame];
 	NSSize svSize = self.superview.bounds.size;

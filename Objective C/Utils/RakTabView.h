@@ -72,11 +72,11 @@ enum {
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
-- (void) resizeReaderCatchArea;
-- (void) releaseReaderCatchArea;
+- (void) resizeTrackingArea;
+- (void) releaseTrackingArea;
 - (void) setUpViewForAnimation : (uint) mainThread;
 
-- (NSRect) generateNSTrackingAreaSize;
+- (NSRect) generatedReaderTrackingFrame;
 - (void) refreshDataAfterAnimation;
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;

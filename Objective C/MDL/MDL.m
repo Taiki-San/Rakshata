@@ -281,7 +281,7 @@ enum
 	[super fastAnimatedRefreshLevel:superview];
 }
 
-- (NSRect) generateNSTrackingAreaSize
+- (NSRect) generatedReaderTrackingFrame
 {
 	NSSize svSize = self.superview.frame.size;
 	NSRect frame = [self lastFrame];

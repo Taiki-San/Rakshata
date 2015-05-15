@@ -220,7 +220,7 @@
 	return frame;
 }
 
-- (NSRect) generateNSTrackingAreaSize
+- (NSRect) generatedReaderTrackingFrame
 {
 	CGFloat var;
 	NSRect frame = [self lastFrame];

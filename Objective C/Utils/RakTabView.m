@@ -36,7 +36,7 @@
 		
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
 		
-		[self resizeReaderCatchArea];
+		[self resizeTrackingArea];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
@@ -347,16 +347,16 @@
 
 - (void) updateTrackingAreas
 {
-	[self resizeReaderCatchArea];
+	[self resizeTrackingArea];
 }
 
-- (void) resizeReaderCatchArea
+- (void) resizeTrackingArea
 {
-	[self releaseReaderCatchArea];
+	[self releaseTrackingArea];
 	
 	if(_mainThread == TAB_READER)
 	{
-		NSRect frame = [self generateNSTrackingAreaSize];
+		NSRect frame = [self generatedReaderTrackingFrame];
 		
 #ifdef VERBOSE_MOUSE_OVER
 		NSLog(@"Creating a tracking area for %@ (prev: %ld): x: %lf y: %lf h: %lf w: %lf", self, (long) trackingArea, frame.origin.x, frame.origin.y, frame.size.height, frame.size.width);
@@ -366,14 +366,14 @@
 	}
 }
 
-- (NSRect) generateNSTrackingAreaSize
+- (NSRect) generatedReaderTrackingFrame
 {
 	return _bounds;
 }
 
 - (void) refreshDataAfterAnimation
 {
-	[self resizeReaderCatchArea];
+	[self resizeTrackingArea];
 }
 
 - (BOOL) isStillCollapsedReaderTab
@@ -386,7 +386,7 @@
 	return false;
 }
 
-- (void) releaseReaderCatchArea
+- (void) releaseTrackingArea
 {
 	if(trackingArea != 0)
 	{
