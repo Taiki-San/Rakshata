@@ -227,7 +227,9 @@ enum
 			if(self.mainThread != TAB_SERIES)
 			{
 				maximumSize.size.height = contentHeight;
-				_needUpdateMainViews = YES;
+				
+				if(_lastFrame.size.height != contentHeight)
+					_needUpdateMainViews = YES;
 			}
 			
 			[coreView updateScroller:YES];
