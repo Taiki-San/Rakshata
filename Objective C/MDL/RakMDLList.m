@@ -185,6 +185,13 @@ enum
 
 - (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
+	DATA_LOADED ** dataProject = [controller getData:row :YES];
+
+	if(dataProject != NULL && (*dataProject)->datas != NULL)
+	{
+		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :VALEUR_FIN_STRUCT];
+	}
+	
 	return NO;
 }
 

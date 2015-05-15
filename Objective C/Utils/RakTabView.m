@@ -85,7 +85,6 @@
 	if(sender == nil)
 		return NO;
 	
-	
 	//Sanity checks
 	BOOL shouldFreeAfterward = NO;
 	if((project.tomesInstalled == NULL && project.nombreTomesInstalled != 0) || (project.chapitresInstalled == NULL && project.nombreChapitreInstalled != 0))
