@@ -122,9 +122,11 @@
 	//Author name
 	if(authorName == nil)
 	{
-		authorName = [[RakText alloc] initWithText : _bounds : currentElem : [self textColor]];
-		if(authorName)
+		authorName = [[RakClickableText alloc] initWithText : currentElem :[self textColor] responder: self];
+		if(authorName != nil)
 		{
+			authorName.URL = @"";
+			
 			[authorName setAlignment:NSLeftTextAlignment];
 			[authorName.cell setWraps:YES];
 			needProcessAuthor = YES;
@@ -190,6 +192,17 @@
 				[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			
 		}
+	}
+}
+
+- (void) respondTo : (RakClickableText *) sender
+{
+	uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_data.authorName));
+	
+	if(ID != UINT_MAX)
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_data.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+		[[[NSApp delegate] serie] ownFocus];
 	}
 }
 

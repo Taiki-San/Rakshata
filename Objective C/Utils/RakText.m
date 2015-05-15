@@ -41,15 +41,19 @@
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [super init];
+	
 	if (self != nil)
 	{
 		[self internalInit];
+		
 		self.stringValue = text;
+		
 		[self sizeToFit];
 		
 		if(color != nil)
 			self.textColor = color;
 	}
+	
 	return self;
 }
 

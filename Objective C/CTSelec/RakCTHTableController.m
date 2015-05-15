@@ -10,7 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define BOTTOM_BORDER 5
+enum
+{
+	BOTTOM_BORDER = 5,
+	
+	ROW_CHAPTER = 0,
+	ROW_VOLUME = 1,
+	ROW_STATUS = 2,
+	ROW_CATEGORY = 3,
+	ROW_TAGS = 4,
+	ROW_PAID = 5,
+	ROW_DRM = 6
+};
 
 @implementation RakCTHTableController
 
@@ -211,7 +222,43 @@
 
 #pragma mark - Delegate
 
-- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row	{	return NO;	}
+- (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+	if(numberOfChapters == 0)
+		row++;
+	if(numberOfVolumes == 0 && row > 0)
+		row++;
+	
+	switch (row)
+	{
+		case ROW_CATEGORY:
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_TYPEID, &type);
+			
+			if(ID != UINT_MAX)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getTagForCode(type)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[[NSApp delegate] serie] ownFocus];
+			}
+			break;
+		}
+			
+		case ROW_TAGS:
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &tag);
+			
+			if(ID != UINT_MAX)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[[NSApp delegate] serie] ownFocus];
+			}
+			
+			break;
+		}
+	}
+	
+	return NO;
+}
 
 #pragma mark - Data source
 
@@ -261,7 +308,7 @@
 	
 	switch (rowIndex)
 	{
-		case 0:
+		case ROW_CHAPTER:
 		{
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER%c", nil), numberOfChapters == 1 ? '\0' : 's'];
@@ -287,7 +334,7 @@
 			break;
 		}
 
-		case 1:
+		case ROW_VOLUME:
 		{
 			if(titleColumn)
 				ret_value = [NSString stringWithFormat:@"Tome%c", numberOfVolumes == 1 ? '\0' : 's'];
@@ -313,7 +360,7 @@
 			break;
 		}
 
-		case 2:
+		case ROW_STATUS:
 		{
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-STATUS", nil);
@@ -332,7 +379,7 @@
 			}
 			break;
 		}
-		case 3:
+		case ROW_CATEGORY:
 		{
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-TYPE", nil);
@@ -340,7 +387,7 @@
 				ret_value = getStringForWchar(getTypeForCode(type));
 			break;
 		}
-		case 4:
+		case ROW_TAGS:
 		{
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-TAGS", nil);
@@ -348,7 +395,7 @@
 				ret_value = getStringForWchar(getTagForCode(tag));
 			break;
 		}
-		case 5:
+		case ROW_PAID:
 		{
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-PAID", nil);
@@ -358,7 +405,7 @@
 			break;
 		}
 			
-		case 6:
+		case ROW_DRM:
 		{
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-NO-DRM", nil);

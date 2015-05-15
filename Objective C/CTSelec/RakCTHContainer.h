@@ -15,7 +15,7 @@
 	PROJECT_DATA _data;
 	
 	RakText * projectName;
-	RakText * authorName;
+	RakClickableText * authorName;
 	
 	RakCTHTableController * _tableController;
 	
