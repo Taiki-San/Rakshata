@@ -417,10 +417,11 @@
 
 #pragma mark - Delegate of the view
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
+- (BOOL) outlineView : (NSOutlineView *) outlineView shouldSelectItem : (id) item
 {
 	if(item == nil || [item isMainList])
 		return NO;
+	
 	else if([item isRootItem])
 	{
 		if(((RakSerieListItem*)item).expanded)
@@ -435,8 +436,16 @@
 	
 	if(!tmp.isInitialized)
 		return NO;
+	
+	if(tmp.nombreChapitre != 0)
+		getUpdatedCTList(&tmp, false);
+	
+	if(tmp.nombreTomes != 0)
+		getUpdatedCTList(&tmp, true);
 
 	[RakTabView broadcastUpdateContext: content : tmp : NO : VALEUR_FIN_STRUCT];
+	
+	releaseCTData(tmp);
 	
 	return YES;
 }
