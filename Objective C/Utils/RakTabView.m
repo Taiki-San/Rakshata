@@ -14,38 +14,31 @@
 
 #pragma mark - Core view management
 
-- (instancetype) initView: (NSView *)superview : (NSString *) state
+- (void) initView: (NSView *)superview : (NSString *) state
 {
-	NSRect frame = [self createFrameWithSuperView:superview];
+	[super setFrame:[self createFrameWithSuperView:superview]];
+
+	_initWithNoContent = NO;
+	_waitingLogin = NO;
+	canDeploy = YES;
 	
-	self = [super initWithFrame:frame];
+	[superview addSubview:self];
 	
-	if(self != nil)
-	{
-		_initWithNoContent = NO;
-		_waitingLogin = NO;
-		canDeploy = YES;
-		
-		[superview addSubview:self];
-		
-		[self setAutoresizesSubviews:NO];
-		[self setNeedsDisplay:YES];
-		[self setWantsLayer:YES];
-		
-		[self.layer setCornerRadius:7.5];
-		
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
-		
-		[self resizeTrackingArea];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
-		
-		//Drag'n drop support
-		[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
-	}
-		
-	return self;
+	[self setAutoresizesSubviews:NO];
+	[self setNeedsDisplay:YES];
+	[self setWantsLayer:YES];
+	
+	[self.layer setCornerRadius:7.5];
+	
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
+	
+	[self resizeTrackingArea];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
+	
+	//Drag'n drop support
+	[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
 }
 
 - (NSString *) byebye

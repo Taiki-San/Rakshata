@@ -48,7 +48,7 @@ enum {
 #define CREATE_CUSTOM_VIEW_TAB_CT		2
 #define CREATE_CUSTOM_VIEW_TAB_READER	3
 
-- (instancetype) initView: (NSView *)superview : (NSString *) state;
+- (void) initView: (NSView *)superview : (NSString *) state;
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element;

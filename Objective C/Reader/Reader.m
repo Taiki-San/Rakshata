@@ -25,7 +25,7 @@
 		[Prefs getCurrentTheme:self];		//register for changes
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
-		self = [self initView : contentView : state];
+		[self initView : contentView : state];
 		self.layer.cornerRadius = 0;
 		
 		pthread_mutex_init(&cacheMutex, NULL);

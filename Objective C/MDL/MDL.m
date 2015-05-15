@@ -28,7 +28,8 @@ enum
 		_needUpdateMainViews = NO;
 		self.forcedToShowUp = NO;
 		_popover = nil;
-		self = [self initView: contentView : state];
+		
+		[self initView: contentView : state];
 		canDeploy = NO;
 		
 		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor;
