@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakCustomButton.h"
+#import "RakSlideshowButton.h"
 #import "RakSwitchButton.h"
 #import "RakSegmentedControl.h"
 

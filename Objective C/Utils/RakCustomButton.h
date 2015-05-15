@@ -10,8 +10,27 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSwitchButton : RakCustomButton
+@interface RakCustomButton : NSButton
 
-@property (weak) id controller;
+@end
+
+@interface RakCustomButtonCell : NSButtonCell
+{
+	BOOL initialized;
+	BOOL haveSizeConfig;
+	
+	RakAnimationController * _animation;
+}
+
+- (void) initColors;
+
+@end
+
+@interface RakButtonAnimationController : RakAnimationController
+{
+	NSButtonCell * _cell;
+}
+
+- (instancetype) initWithCell : (NSButtonCell *) cell;
 
 @end

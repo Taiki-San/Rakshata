@@ -17,45 +17,17 @@ enum
 	RADIUS_INTERNAL = 2
 };
 
-@interface RakSwitchButtonCell : NSButtonCell
+@interface RakSwitchButtonCell : RakCustomButtonCell
 {
-	BOOL initialized;
-	
 	NSColor * borderColor;
 	NSColor *backgroundMixed, *backgroundOff, *backgroundOn;
 	
-	BOOL haveSizeConfig;
 	NSPoint basePoint, inflectionPoint, finishPoint;
-	
-	RakAnimationController * _animation;
 }
-
-@end
-
-@interface RakSwitchButtonAnimationController : RakAnimationController
-{
-	RakSwitchButtonCell * _cell;
-}
-
-- (instancetype) initWithCell : (RakSwitchButtonCell *) cell;
 
 @end
 
 @implementation RakSwitchButton
-
-- (instancetype) init
-{
-	self = [super init];
-
-	if(self != nil)
-	{
-		[self setButtonType:NSSwitchButton];
-		[self setImagePosition:NSImageOnly];
-		[self sizeToFit];
-	}
-	
-	return self;
-}
 
 + (Class) cellClass
 {
@@ -65,26 +37,6 @@ enum
 @end
 
 @implementation RakSwitchButtonCell
-
-- (instancetype) init
-{
-	self = [super init];
-	
-	if(self != nil)
-	{
-		[self initColors];
-		[Prefs getCurrentTheme:self];
-
-		initialized = YES;
-	}
-	
-	return self;
-}
-
-- (void) dealloc
-{
-	[Prefs deRegisterForChanges:self];
-}
 
 #pragma mark - Color management
 
@@ -96,42 +48,6 @@ enum
 	backgroundOn = [Prefs getSystemColor:GET_COLOR_BACKGROUND_SWITCH_BUTTON_ON :nil];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	
-	[self initColors];
-}
-
-#pragma mark - Animation management
-
-- (void) setState:(NSInteger)value
-{
-	if(initialized)
-	{
-		if(_animation == nil)
-		{
-			_animation = [[RakSwitchButtonAnimationController alloc] initWithCell:self];
-			if(_animation != nil)
-			{
-				[_animation addAction:self :@selector(animationOver)];
-				_animation.stage = _animation.animationFrame;
-			}
-		}
-
-		[_animation startAnimation];
-	}
-	
-	[super setState:value];
-}
-
-- (void) animationOver
-{
-	_animation = nil;
-	[self.controlView display];
-}
-
 #pragma mark - Drawing
 
 #define RADIUS_CHK 0.75f
@@ -141,17 +57,11 @@ enum
 	//Border
 	[borderColor setFill];
 	
-	cellFrame.origin.x += BORDER;
-	cellFrame.origin.y += BORDER;
-	cellFrame.size.height -= 2 * BORDER;
-	cellFrame.size.width -= 2 * BORDER;
+	cellFrame = NSInsetRect(cellFrame, BORDER, BORDER);
 	
 	[[NSBezierPath bezierPathWithRoundedRect:cellFrame xRadius:RADIUS_LARGE yRadius:RADIUS_LARGE] fill];
 
-	cellFrame.origin.x += 0.5;
-	cellFrame.origin.y += 0.5;
-	cellFrame.size.height -= 1;
-	cellFrame.size.width -= 1;
+	cellFrame = NSInsetRect(cellFrame, 0.5, 0.5);
 
 	if(self.isHighlighted)
 	{
@@ -268,28 +178,6 @@ enum
 		
 		[[NSBezierPath bezierPathWithRoundedRect:frame xRadius:2 yRadius:2] fill];
 	}
-}
-
-@end
-
-@implementation RakSwitchButtonAnimationController
-
-- (instancetype) initWithCell : (RakSwitchButtonCell *) cell
-{
-	self = [super init];
-	
-	if(self != nil)
-	{
-		_cell = cell;
-	}
-	
-	return self;
-}
-
-- (void) animation : (NSAnimation *) animation didReachProgressMark : (NSAnimationProgress) progress
-{
-	[_cell.controlView display];
-	[super animation:animation didReachProgressMark:progress];
 }
 
 @end

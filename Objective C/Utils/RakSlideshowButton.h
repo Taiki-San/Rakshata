@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSwitchButton : RakCustomButton
-
-@property (weak) id controller;
+@interface RakSlideshowButton : RakCustomButton
 
 @end

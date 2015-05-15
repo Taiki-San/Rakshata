@@ -353,7 +353,7 @@
 - (void) resizeReaderCatchArea
 {
 	[self releaseReaderCatchArea];
-		
+	
 	if(_mainThread == TAB_READER)
 	{
 		NSRect frame = [self generateNSTrackingAreaSize];

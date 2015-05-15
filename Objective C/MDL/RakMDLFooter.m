@@ -12,8 +12,8 @@
 
 enum
 {
-	BUTTON_WIDTH = 17,
-	BUTTON_HEIGHT = 14,
+	BUTTON_WIDTH = 18,
+	BUTTON_HEIGHT = 16,
 	BORDER_COLLAPSE = 40
 };
 
@@ -33,14 +33,9 @@ enum
 	
 	if(self != nil)
 	{
-		collapseButton = [[NSButton alloc] initWithFrame:[self collapseFrame:_bounds]];
+		collapseButton = [[RakSlideshowButton alloc] initWithFrame:[self collapseFrame:_bounds]];
 		if(collapseButton != nil)
 		{
-			[(NSButtonCell *) collapseButton.cell setFocusRingType:NSFocusRingTypeNone];
-			[collapseButton.cell setImage:[self getImage]];
-			[collapseButton.cell setBackgroundColor:[NSColor clearColor]];
-			collapseButton.bordered = NO;
-			
 			collapseButton.target = self;
 			collapseButton.action = @selector(collapseClicked);
 			
@@ -120,28 +115,6 @@ enum
 	bounds.size = NSMakeSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 	
 	return bounds;
-}
-
-#pragma mark - Color management
-
-- (NSImage *) getImage
-{
-	NSImage * image = [NSImage imageNamed:NSImageNameSlideshowTemplate], * output = [image copy];
-	
-	if(output != nil)
-	{
-		[output setTemplate:NO];
-		[output setSize:NSMakeSize(BUTTON_WIDTH, BUTTON_HEIGHT)];
-		
-		[output lockFocus];
-		
-		[[Prefs getSystemColor:GET_COLOR_INACTIVE :nil] set];
-		NSRectFillUsingOperation(NSMakeRect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT), NSCompositeSourceAtop);
-		
-		[output unlockFocus];
-	}
-	
-	return output;
 }
 
 @end

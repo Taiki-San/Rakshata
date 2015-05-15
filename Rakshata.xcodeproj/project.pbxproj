@@ -14,6 +14,8 @@
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
 		B6033BD218E4617000750226 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCD18E4617000750226 /* libssl.a */; };
 		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
+		B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */; };
+		B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
 		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
@@ -229,6 +231,10 @@
 		B6033BCD18E4617000750226 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
 		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
 		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = "Objective C/Utils/JSONParser.h"; sourceTree = "<group>"; };
+		B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSlideshowButton.h; path = Utils/RakSlideshowButton.h; sourceTree = "<group>"; };
+		B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSlideshowButton.m; path = Utils/RakSlideshowButton.m; sourceTree = "<group>"; };
+		B60AE4BE1B06247400DA44E6 /* RakCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomButton.h; path = Utils/RakCustomButton.h; sourceTree = "<group>"; };
+		B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCustomButton.m; path = Utils/RakCustomButton.m; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
@@ -678,12 +684,16 @@
 				B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */,
 				B6CC724D18723121003A745B /* RakButton.h */,
 				B6E5146418771492006470ED /* RakButton.m */,
-				B6A6ACE61AAED60700CAF51E /* RakSwitchButton.h */,
-				B6A6ACE71AAED60700CAF51E /* RakSwitchButton.m */,
+				B60AE4BE1B06247400DA44E6 /* RakCustomButton.h */,
+				B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */,
 				B64C926619571DDF000D60CC /* RakSegmentedButtonCell.h */,
 				B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */,
 				B6D904401AB8D7C7001A2D6B /* RakSegmentedControl.h */,
 				B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */,
+				B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */,
+				B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */,
+				B6A6ACE61AAED60700CAF51E /* RakSwitchButton.h */,
+				B6A6ACE71AAED60700CAF51E /* RakSwitchButton.m */,
 			);
 			name = Button;
 			sourceTree = "<group>";
@@ -1576,6 +1586,7 @@
 				B6F6ECF218A3001400E3B55B /* CTCommon.c in Sources */,
 				B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */,
 				B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */,
+				B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */,
 				B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */,
 				B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */,
 				B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */,
@@ -1591,6 +1602,7 @@
 				B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
 				B6D127031AC72062003FFEC6 /* DotRakParser.m in Sources */,
+				B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */,
 				B6F6ED0F18A3001400E3B55B /* settings.c in Sources */,
 				B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */,
 				B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */,
