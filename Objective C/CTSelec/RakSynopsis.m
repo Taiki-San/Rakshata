@@ -86,7 +86,7 @@ enum
 	}
 	
 	//Update text
-	if(synopsis != nil)
+	if(![synopsis isEqualTo:@""])
 	{
 		placeholderString = NO;
 		
