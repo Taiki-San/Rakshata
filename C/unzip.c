@@ -299,7 +299,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 #endif
 		
 		//Classement
-		for(uint j, i = 0; i <= nombreFichiers && filename[i][0] != 0; i++)
+		for(uint j, i = 0; i < nombreFichiers && filename[i][0] != 0; i++)
         {
 			MajToMin(nomPage[i]);
 
@@ -319,7 +319,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         }
         free(nomPage);
 		
-		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1) * (nombreFichiers + 1) + 15) * sizeof(byte));
+		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1) * nombreFichiers + 15) * sizeof(byte));
         if(hugeBuffer == NULL)
         {
 #ifdef DEV_VERSION
@@ -327,33 +327,62 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 #endif
             quit_thread(0); //Libérer la mémoire serait pas mal
         }
+		
         sprintf((char *) hugeBuffer, "%d", nombreFichiers);
-        for(uint i = 0, j = ustrlen(hugeBuffer); i <= nombreFichiers; i++) //Write config.enc
+		uint posBlob = ustrlen(hugeBuffer);
+
+		for(uint i = 0; i < nombreFichiers; i++) //Write config.enc
         {
-            hugeBuffer[j++] = ' ';
-            for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[j++] = pass[i][keyPos++]);
-			hugeBuffer[j] = 0;
+            hugeBuffer[posBlob++] = ' ';
+            for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[posBlob++] = pass[i][keyPos++]);
         }
 
-        if(getMasterKey(temp) == GMK_RETVAL_OK)
+		//We generate the masterkey
+        if(getMasterKey(temp) == GMK_RETVAL_OK || COMPTE_PRINCIPAL_MAIL == NULL)
         {
-            uint8_t hash[SHA256_DIGEST_LENGTH], chapter[15];
-#ifndef __APPLE__
-            snprintf((char *)chapter, 15, "%d", type);
-#else
-            snprintf((char *)chapter, 15, "%ld", type);
-#endif
-
-			internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
-
-            crashTemp(temp, sizeof(temp));
-            snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
-            _AESEncrypt(hash, hugeBuffer, pathToConfigFile, INPUT_IN_MEMORY, 1);
-            crashTemp(hash, SHA256_DIGEST_LENGTH);
-            crashTemp(hugeBuffer, (SHA256_DIGEST_LENGTH+1)*(nombreFichiers+1) + 15); //On écrase pour que ça soit plus chiant à lire
+			uint lengthEmail = strlen(COMPTE_PRINCIPAL_MAIL);
+			if(lengthEmail != 0)
+			{
+				snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
+				FILE * output = fopen(pathToConfigFile, "wb");
+				if(output != NULL)
+				{
+					char * encodedEmail[lengthEmail * 2 + 1];
+					decToHex((void*) COMPTE_PRINCIPAL_MAIL, lengthEmail, (char*) encodedEmail);
+					
+					fputs((char*) encodedEmail, output);
+					fputc('\n', output);
+					
+					uint8_t hash[SHA256_DIGEST_LENGTH], chapter[10];
+					snprintf((char *)chapter, sizeof(chapter), "%zu", type);
+					
+					internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
+					
+					crashTemp(temp, sizeof(temp));
+					_AESEncrypt(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, 1);
+					crashTemp(hash, SHA256_DIGEST_LENGTH);
+					
+					if(posBlob % CRYPTO_BUFFER_SIZE)
+						posBlob += CRYPTO_BUFFER_SIZE - (posBlob % CRYPTO_BUFFER_SIZE);
+					
+					fwrite(hugeBuffer, posBlob, 1, output);
+					fclose(output);
+				}
+				else //delete chapter
+				{
+					crashTemp(temp, sizeof(temp));
+					for(uint i = 0; filename[i][0]; remove(filename[i++]));
+				}
+			}
+			else //delete chapter
+			{
+				crashTemp(temp, sizeof(temp));
+				for(uint i = 0; filename[i][0]; remove(filename[i++]));
+			}
         }
 		else //delete chapter
 		{
+			crashTemp(temp, sizeof(temp));
 			for(uint i = 0; filename[i][0]; remove(filename[i++]));
 		}
 		

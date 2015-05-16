@@ -267,6 +267,14 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				//Handle the case where we got less pages than expected
 				
 				free(output[i]);
+				
+				if(i == 0)
+				{
+					free(output);
+					fclose(fileInput);
+					return NULL;
+				}
+				
 				*nombrePage = i;
 
 				void * tmp = realloc(output, i * sizeof(char*));
@@ -305,12 +313,14 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 	
 	//We then check that all those files exists
 	bool needCompact = false;
-	char temp[300];
+	uint pathLength = strlen(input) + LONGUEUR_NOM_PAGE + 1;
+	char temp[pathLength];
+	
     for(uint i = 0; i < *nombrePage; i++)
     {
         if(output[i] != NULL && output[i][0])
         {
-            snprintf(temp, 300, "%s%s", input, output[i]);
+            snprintf(temp, pathLength, "%s%s", input, output[i]);
             if(!checkFileExist(temp))
             {
 				free(output[i]);

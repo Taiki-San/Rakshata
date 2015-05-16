@@ -200,10 +200,8 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 {
 	byte retValue;
     uint curPosInConfigEnc, posInKeyOut, lengthPath = strlen(pathRoot) + 60;
-    rawData *configEnc = NULL;
     char path[lengthPath], *pathPageCopy;
-    unsigned char hash[SHA256_DIGEST_LENGTH], key[SHA256_DIGEST_LENGTH+1];
-    size_t size, sizeDBPass;
+    size_t pageLength, sizeDBPass;
 
 	snprintf(path, sizeof(path), "%s/"DRM_FILE, pathRoot);
 	
@@ -213,104 +211,176 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 		return IMGLOAD_NODATA;
 	
 	strncpy(pathPageCopy, pathPage, pathPageCopyLength);
-    
-	if(!(size = getFileSize(pathPage))) //Si on trouve pas la page
+	
+	//Si on trouve pas la page
+	if(!(pageLength = getFileSize(pathPage)))
 	{
 		free(pathPageCopy);
 		return IMGLOAD_NODATA;
 	}
 
-    if(size % (CRYPTO_BUFFER_SIZE * 2)) //Si chunks de 16o
-        size += CRYPTO_BUFFER_SIZE;
+	//Si chunks de 16o
+    if(pageLength % (CRYPTO_BUFFER_SIZE * 2))
+        pageLength += CRYPTO_BUFFER_SIZE;
 
-	if(!(sizeDBPass = getFileSize(path))) //Si on trouve pas config.enc
+	//Si on trouve pas config.enc
+	if(!(sizeDBPass = getFileSize(path)))
 	{
 		free(pathPageCopy);
 		return readFile(pathPage);
 	}
-
-    if((retValue = getMasterKey(key)) == GMK_RETVAL_INTERNALERROR)
-    {
+	
+	//We load the file in memory
+	rawData * configEncRaw = calloc(sizeof(rawData), sizeDBPass + SHA256_DIGEST_LENGTH);
+	if(configEncRaw == NULL)
+	{
+		memoryError(sizeof(rawData) * (sizeDBPass + SHA256_DIGEST_LENGTH));
 		free(pathPageCopy);
 		return IMGLOAD_NODATA;
-    }
-	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_MAIL)
+	}
+	
+	FILE * configEncFile = fopen(path, "rb");
+	if(configEncFile == NULL)
 	{
+		free(configEncRaw);
+		free(pathPageCopy);
+		return IMGLOAD_NODATA;
+	}
+	
+	sizeDBPass = fread(configEncRaw, sizeof(rawData), sizeDBPass + SHA256_DIGEST_LENGTH, configEncFile);
+	fclose(configEncFile);
+	
+	//We have to check the email address at the top of the file is the good one
+	uint endEmailLine = 0;
+	for(; endEmailLine < sizeDBPass && isHexa(configEncRaw[endEmailLine]); endEmailLine++);
+
+	//No data
+	if(endEmailLine == 0 || endEmailLine == sizeDBPass || endEmailLine & 1)
+	{
+		free(configEncRaw);
+		free(pathPageCopy);
+		return IMGLOAD_NODATA;
+	}
+	else
+		configEncRaw[endEmailLine] = 0; //We separate the two sections
+	
+	//We decode the email
+	char emailReceiver[endEmailLine / 2 + 1];
+	hexToDec((void*) configEncRaw, (void*) emailReceiver);
+	emailReceiver[endEmailLine / 2] = 0;
+	
+	//Invalid email
+	if(COMPTE_PRINCIPAL_MAIL == NULL || strcmp(COMPTE_PRINCIPAL_MAIL, emailReceiver))
+	{
+		free(configEncRaw);
 		free(pathPageCopy);
 		return IMGLOAD_NEED_CREDENTIALS_MAIL;
 	}
-	else if(retValue == GMK_RETVAL_NEED_CREDENTIALS_PASS)
+	
+	//We check that what remains from the file is compatible with an AES blob
+	sizeDBPass -= endEmailLine + 1;
+	if(sizeDBPass % CRYPTO_BUFFER_SIZE)
 	{
+		free(configEncRaw);
 		free(pathPageCopy);
-		return IMGLOAD_NEED_CREDENTIALS_PASS;
+		return IMGLOAD_NEED_CREDENTIALS_MAIL;
 	}
 
-	unsigned char numChapitreChar[10];
-    snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre/10);
-    internal_pbkdf2(SHA256_DIGEST_LENGTH, key, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, hash);
+	//We load the master key
+	unsigned char masterKey[SHA256_DIGEST_LENGTH];
+
+    if((retValue = getMasterKey(masterKey)) != GMK_RETVAL_OK)
+    {
+		free(configEncRaw);
+		free(pathPageCopy);
+		
+		if(retValue == GMK_RETVAL_NEED_CREDENTIALS_MAIL)
+			return IMGLOAD_NEED_CREDENTIALS_MAIL;
+		
+		if(retValue == GMK_RETVAL_NEED_CREDENTIALS_PASS)
+			return IMGLOAD_NEED_CREDENTIALS_PASS;
+		
+		return IMGLOAD_NODATA;	//GMK_RETVAL_INTERNALERROR or undefined message
+	}
+
+	//We generate the decryption key
+	unsigned char numChapitreChar[10], encryptionKey[SHA256_DIGEST_LENGTH];
+
+    snprintf((char*) numChapitreChar, 10, "%d", numeroChapitre / 10);
+    internal_pbkdf2(SHA256_DIGEST_LENGTH, masterKey, SHA256_DIGEST_LENGTH, numChapitreChar, ustrlen(numChapitreChar), 512, PBKDF2_OUTPUT_LENGTH, encryptionKey);
+
 #ifndef DEV_VERSION
-    crashTemp(key, SHA256_DIGEST_LENGTH);
+    crashTemp(masterKey, SHA256_DIGEST_LENGTH);
 #endif
 
-    _AESDecrypt(hash, path, configEnc, OUTPUT_IN_MEMORY, 1); //On déchiffre config.enc
+	rawData * decryptedPass = calloc(sizeDBPass, sizeof(rawData));
+	if(decryptedPass == NULL)
+	{
+		memoryError(sizeDBPass * sizeof(rawData));
+		free(configEncRaw);
+		free(pathPageCopy);
+		return IMGLOAD_NODATA;
+	}
+	
+    _AESDecrypt(encryptionKey, &(configEncRaw[endEmailLine + 1]), sizeDBPass, decryptedPass, EVERYTHING_IN_MEMORY, 1); //On déchiffre config.enc
+	free(configEncRaw);
+	
 #ifndef DEV_VERSION
-	crashTemp(hash, SHA256_DIGEST_LENGTH);
+	crashTemp(encryptionKey, SHA256_DIGEST_LENGTH);
 #endif
 	
-    for(curPosInConfigEnc = 0; isNbr(configEnc[curPosInConfigEnc]); curPosInConfigEnc++);
-    if(!curPosInConfigEnc || configEnc[curPosInConfigEnc] != ' ')
+	//The file start with the number of keys, we ignore it
+    for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass && isNbr(decryptedPass[curPosInConfigEnc]); curPosInConfigEnc++);
+    if(!curPosInConfigEnc || decryptedPass[curPosInConfigEnc] != ' ')
     {
-        logR("Huge fail: database corrupted\n");
+#ifdef DEV_VERSION
+		logR("Decryption probably failed, the number of keys isn't followed by a space");
+		if(!curPosInConfigEnc)
+			logR("	Couldn't even find the first number");
+#endif
 		free(pathPageCopy);
-        free(configEnc);
+        free(decryptedPass);
 		return IMGLOAD_INCORRECT_DECRYPTION;
     }
 
+	//We jump to the expected index
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
 
-    /*La, configEnc[i] est la première lettre de la clé*/
-    for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && configEnc[curPosInConfigEnc]; key[posInKeyOut++] = configEnc[curPosInConfigEnc++]);	//On parse la clée
-	
-    if(configEnc[curPosInConfigEnc] && configEnc[curPosInConfigEnc] != ' ')	//On est au milieu d'un clé (pas super normal mais bon, on regarde si c'est sauvable
+	//Là, decryptedPass[curPosInConfigEnc] est la première lettre de la clé. On la parse
+	for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && decryptedPass[curPosInConfigEnc]; encryptionKey[posInKeyOut++] = decryptedPass[curPosInConfigEnc++]);
+    if(curPosInConfigEnc < sizeDBPass && decryptedPass[curPosInConfigEnc] != ' ')
     {
-        if(!configEnc[curPosInConfigEnc+SHA256_DIGEST_LENGTH] || configEnc[curPosInConfigEnc+SHA256_DIGEST_LENGTH] == ' ')	//Une clé sur 64 char (super legacy), si c'est ça, on saute la fin de la clé
-            curPosInConfigEnc += SHA256_DIGEST_LENGTH;
-    }
-	
-    if(posInKeyOut != SHA256_DIGEST_LENGTH || (configEnc[curPosInConfigEnc] && configEnc[curPosInConfigEnc] != ' ')) //On vérifie que le parsage est complet
-    {
-#ifndef DEV_VERSION
-        crashTemp(key, SHA256_DIGEST_LENGTH);
+#ifdef DEV_VERSION
+		logR("Decryption probably failed, ended up in the middle of other keys");
 #endif
-        for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);
 		free(pathPageCopy);
-        free(configEnc);
-        logR("Huge fail: database corrupted\n");
-        return IMGLOAD_INCORRECT_DECRYPTION;
+		free(decryptedPass);
+		return IMGLOAD_INCORRECT_DECRYPTION;
     }
-	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; configEnc[curPosInConfigEnc++] = 0);	//On écrase le cache
-    free(configEnc);
+	
+	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; decryptedPass[curPosInConfigEnc++] = 0);	//On écrase le cache
+    free(decryptedPass);
 	
 	//On fait les allocations finales
 	IMG_DATA *output = malloc(sizeof(IMG_DATA));
 	if(output != NULL)
 	{
-		void* buf_in = malloc(size + 2 * CRYPTO_BUFFER_SIZE);
-		output->data = malloc((size + 2 * CRYPTO_BUFFER_SIZE) * sizeof(rawData));
+		void* buf_in = malloc(pageLength + 2 * CRYPTO_BUFFER_SIZE);
+		output->data = malloc((pageLength + 2 * CRYPTO_BUFFER_SIZE) * sizeof(rawData));
 		
 		FILE* pageFile = fopen(pathPageCopy, "rb");
 		
 		if(buf_in != NULL && output->data != NULL && pageFile != NULL)
 		{
-			output->length = size + 2 * CRYPTO_BUFFER_SIZE;
+			output->length = pageLength + 2 * CRYPTO_BUFFER_SIZE;
 
-			uint unRead = size - fread(buf_in, 1, size, pageFile);
+			uint unRead = pageLength - fread(buf_in, 1, pageLength, pageFile);
 			fclose(pageFile);
 			
 			if(unRead)
-				memset(&buf_in[size], 0, unRead);
+				memset(&buf_in[pageLength], 0, unRead);
 			
-			decryptPage(key, buf_in, output->data, size/(CRYPTO_BUFFER_SIZE*2));
+			decryptPage(encryptionKey, buf_in, output->data, pageLength / (2 * CRYPTO_BUFFER_SIZE));
 		}
 		else
 		{
