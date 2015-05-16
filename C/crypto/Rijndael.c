@@ -1238,7 +1238,7 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
 
 #include "crypto.h"
 
-int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB)
+void _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB)
 {
 	unsigned char *password = _password;
     char *path_input = _path_input, *path_output = _path_output;
@@ -1257,14 +1257,14 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             input = fopen(path_input, "rb");
             inputMemory = false;
             if (input == NULL)
-                return 1;
+                return;
         }
         if(cryptIntoMemory != OUTPUT_IN_MEMORY)
         {
             output = fopen((char *) path_output, "wb");
             outputMemory = false;
             if (output == NULL)
-                return 1;
+                return;
         }
     }
 
@@ -1311,7 +1311,7 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
             if (fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, output) != 1)
             {
                 fclose(output);
-                return 1;
+                return;
             }
         }
         else
@@ -1326,10 +1326,9 @@ int _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryp
         path_output[positionDansOutput] = 0;
     if(!inputMemory)
         fclose(input);
-    return 0;
 }
 
-int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB)
+void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB)
 {
 	unsigned char *password = _password;
 	char *path_input = _path_input, *path_output = _path_output;
@@ -1349,21 +1348,21 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
         {
             input = fopen(path_input, "rb");
             if (input == NULL)
-                return 1;
+                return;
             inputMemory = false;
         }
         if(cryptIntoMemory != OUTPUT_IN_MEMORY)
         {
             output = fopen(path_output, "wb");
             if (output == NULL)
-                return 1;
+                return;
             outputMemory = false;
         }
     }
     nrounds = rijndaelSetupDecrypt(rijndaelKey, key, KEYBITS);
 
     unsigned char previous_cipher[CRYPTO_BUFFER_SIZE];
-    while ((!inputMemory && fgetc(input) != EOF) || (inputMemory && path_input[positionDansInput]))
+    while ((!inputMemory && fgetc(input) != EOF) || (inputMemory && ((lengthInput != 0 && positionDansInput < lengthInput) || path_input[positionDansInput])))
     {
         unsigned char plaintext[CRYPTO_BUFFER_SIZE];
         unsigned char ciphertext[CRYPTO_BUFFER_SIZE];
@@ -1409,15 +1408,14 @@ int _AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
         fclose(input);
     if(!outputMemory)
         fclose(output);
-    return 0;
 }
 
-int AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	return _AESEncrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
+	_AESEncrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
 }
 
-int AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	return _AESDecrypt(_password, _path_input, _path_output, cryptIntoMemory, 0);
+	_AESDecrypt(_password, _path_input, 0, _path_output, cryptIntoMemory, 0);
 }
