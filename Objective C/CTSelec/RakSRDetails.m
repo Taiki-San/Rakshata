@@ -66,7 +66,7 @@ enum
 			[synopsis.cell setWraps:YES];
 			
 			[synopsis setTextColor : [self getSynopsisColor]];
-
+			
 			[self addSubview:synopsis];
 		}
 		else
@@ -112,7 +112,7 @@ enum
 	}
 	
 	output = [output stringByAppendingString:current];
-
+	
 	BOOL DRM = project.haveDRM;
 	
 	if(project.isPaid)

@@ -21,11 +21,11 @@
 - (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (BOOL) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition
 {
 	self = [self init];
-
+	
 	if(self != nil)
 	{
 		NSInteger row = LIST_INVALID_SELECTION, tmpRow = 0;
-
+		
 		_nbElemPerCouple = 1;
 		_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 		_compactMode = isCompact;
@@ -205,12 +205,12 @@
 	projectData = project;
 	
 	//Update installed list
-
+	
 	free(_installedJumpTable);
 	_installedJumpTable = (void*) _installedTable;
 	_installedTable = installedTable;
 	installedTable = (void*) _installedJumpTable;
-
+	
 	_installedJumpTable = installedJumpTable;
 	_nbInstalled = nbInstalledData;
 	
@@ -264,7 +264,7 @@
 			}
 			[self fullAnimatedReload :nbOldElem :newElem :orderProjects];
 		}
-
+		
 		//Add the column
 		[self updateMultiColumn: self.compactMode : scrollView.bounds.size];
 		
@@ -278,8 +278,8 @@
 		}
 		
 	}
-
-
+	
+	
 	if(isTome)
 		freeTomeList(oldData, true);
 	else
@@ -358,7 +358,7 @@
 		[_tableView scrollRowToVisible:row];
 	}
 }
- 
+
 - (uint) getIndexOfElement : (uint) element
 {
 	if (_data == NULL || (self.compactMode && _installedJumpTable == NULL))
@@ -487,7 +487,7 @@
 		else
 			row += column * _numberOfRows;
 	}
-
+	
 	return row;
 }
 
@@ -496,7 +496,7 @@
 	if(_nbCoupleColumn > 1 && index != LIST_INVALID_SELECTION)
 	{
 		uint modulo = _nbData % _nbCoupleColumn, maxNumberOfRows = _numberOfRows + (modulo != 0), idealColumn = index / maxNumberOfRows;
-
+		
 		if(modulo == 0 || idealColumn <= modulo)
 		{
 			if(column != NULL)
@@ -713,7 +713,7 @@
 	//Adding or removing columns will impact tableview size
 	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
 		[_tableView setFrameSize:initialSize];
-
+	
 	[self additionalResizing : initialSize];
 }
 
@@ -776,7 +776,7 @@
 	if(_detailColumns != nil && [_detailColumns containsObject : tableColumn])
 	{
 		output.alignment = NSRightTextAlignment;
-
+		
 		output.stringValue = [self tableView:tableView objectValueForTableColumn:tableColumn row:row];
 		[output sizeToFit];
 		
@@ -797,7 +797,7 @@
 	}
 	else
 		output.alignment = NSLeftTextAlignment;
-
+	
 	return output;
 }
 
@@ -899,13 +899,13 @@
 - (NSColor*) getTextColor:(uint)column :(uint)row
 {
 	row = [self rowFromCoordinates : row : column];
-
+	
 	if(row >= _nbData)
 		return nil;
 	
 	if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
 		return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
-
+	
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
 }
 
@@ -940,7 +940,7 @@
 	BOOL foundOneIn = NO, foundOneOut = NO;
 	uint size = MIN(_nbElem, [_tableView numberOfRows]);
 	NSMutableIndexSet * indexIn = [NSMutableIndexSet new], * indexOut = [NSMutableIndexSet new];
-
+	
 	if(_installedTable != NULL)
 	{
 		if(enter)
@@ -1034,13 +1034,13 @@
 		return;
 	else
 		self._selectionChangeComeFromClic = NO;
-
+	
 	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / _nbElemPerCouple];
 	
 	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
-
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName: CT_CLIC_NOTIFICATION object:nil userInfo: @{@"index": @(index), @"isTome" : @(self.isTome), @"isInstalled" : @(installed)}];
 	}
 }

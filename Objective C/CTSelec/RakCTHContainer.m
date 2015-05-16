@@ -25,7 +25,7 @@
 		self.gradientWidth = 100;
 		self.angle = 270;
 		self.autoresizesSubviews = NO;
-
+		
 		[self loadProject : project];
 	}
 	
@@ -106,7 +106,7 @@
 			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
 			projectName.fixedWidth = projectName.fixedWidth;	//Will refresh our width
 			[projectName setFrameOrigin : [self projectNamePos : _bounds.size]];
-		
+			
 			[self addSubview: projectName];
 		}
 	}
@@ -118,7 +118,7 @@
 	}
 	
 	currentElem = _data.isInitialized ? getStringForWchar(_data.authorName) : @"";
-
+	
 	//Author name
 	if(authorName == nil)
 	{
@@ -130,9 +130,9 @@
 			[authorName setAlignment:NSLeftTextAlignment];
 			[authorName.cell setWraps:YES];
 			needProcessAuthor = YES;
-
+			
 			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
-																	traits:NSItalicFontMask weight:0 size: 13]];
+																			 traits:NSItalicFontMask weight:0 size: 13]];
 			authorName.fixedWidth = authorName.fixedWidth;	//Will refresh our width
 			[authorName setFrameOrigin : [self authorNamePos : _bounds.size]];
 			
@@ -161,11 +161,11 @@
 	else
 	{
 		[_tableController updateProject:_data];
-
+		
 		NSRect bounds = self.bounds;
 		if(bounds.size.height != lastKnownHeight)	//May happend during animation
 			bounds.size = [self frameFromParent:self.superview.bounds].size;
-
+		
 		[_tableController setFrame : bounds];	//We refresh scrollview size
 	}
 	
@@ -180,7 +180,7 @@
 			
 			if(projectName.bounds.size.height != oldHeight)
 				[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
-
+			
 		}
 		
 		if(needProcessAuthor)

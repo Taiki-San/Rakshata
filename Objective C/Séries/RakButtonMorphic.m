@@ -50,7 +50,7 @@
 	
 	NSImage * image;
 	BOOL firstPass = YES;
-
+	
 	for(NSString * imageName in imageNames)
 	{
 		if(firstPass)
@@ -77,11 +77,11 @@
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	uint currentTheme = [Prefs getCurrentTheme : nil];
-
+	
 	NSImage * image = [RakResPath getImageFromTheme:_imageNames[0] :currentTheme];
-
+	
 	if(image != nil)
 	{
 		self.image = image;

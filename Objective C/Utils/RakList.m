@@ -38,13 +38,13 @@
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getFrameFromParent:frame]];
 	_tableView = [[RakTableView alloc] initWithFrame : scrollView.contentView.bounds];
-
+	
 	if(scrollView == nil || _tableView == nil)
 	{
 		NSLog(@"Luna refused to allocate this memory to us D:");
 		return;
 	}
-
+	
 	_tableView.wantsLayer = NO;
 	_tableView.autoresizesSubviews = NO;
 	scrollView.documentView = _tableView;
@@ -52,7 +52,7 @@
 	//Customisation
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
-
+	
 	_tableView.headerView = nil;
 	_tableView.backgroundColor = [NSColor clearColor];
 	_tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone;
@@ -222,7 +222,7 @@
 {
 	[_tableView registerForDraggedTypes:@[PROJECT_PASTEBOARD_TYPE]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
-    [_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
 }
 
 #pragma mark - Backup routine
@@ -286,7 +286,7 @@
 	
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
-
+	
 	[self updateTableElementsColor];
 }
 
@@ -351,10 +351,10 @@
 			selected = tableView.lastClickedColumn / _nbElemPerCouple != column;
 	}
 	
-    // Get an existing cell with the identifier if it exists
-    RakText *result = [tableView makeViewWithIdentifier : _identifier owner:self];
+	// Get an existing cell with the identifier if it exists
+	RakText *result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	
-    if (result == nil)
+	if (result == nil)
 	{
 		result = [[RakText alloc] init];
 		result.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
@@ -376,7 +376,7 @@
 	
 	[self resetSelection:tableView];
 	[tableView commitClic];
-
+	
 	selectedRowIndex = LIST_INVALID_SELECTION;
 	
 	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
@@ -391,7 +391,7 @@
 			[self graphicSelection:view : YES];
 		}
 	}
-
+	
 	[self postProcessingSelection : rowIndex];
 	return YES;
 }
@@ -522,7 +522,7 @@
 						}
 						else
 							tooMuchChanges = YES;
-
+						
 					}
 					else if(oldData[i].installed == newData[posNew].installed)
 					{
@@ -557,11 +557,11 @@
 						[new addIndex:posNew];
 					else
 						tooMuchChanges = YES;
-
+					
 					newElem++;
 				}
 			}
-
+			
 			if(!tooMuchChanges)
 			{
 				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
@@ -640,13 +640,13 @@
 		return NO;
 	
 	PROJECT_DATA localProject = getElementByID(item.project.cacheDBID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
-
+	
 	if(!localProject.isInitialized)
 	{
 		releaseCTData(item.project);
 		return NO;
 	}
-
+	
 	BOOL retVal = [self receiveDrop:localProject :item.isTome :item.selection :source :row :operation];
 	
 	releaseCTData(localProject);
@@ -766,7 +766,7 @@
 		{
 			if([self.delegate isKindOfClass:[RakList class]])
 				((RakList*) self.delegate)._selectionChangeComeFromClic = YES;
-	
+			
 			[self.delegate tableViewSelectionDidChange:nil];
 		}
 	}

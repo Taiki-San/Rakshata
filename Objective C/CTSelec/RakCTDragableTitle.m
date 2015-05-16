@@ -30,11 +30,11 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	outOfArea = NO;
-
+	
 	//We check if it's worth the trouble to initialize
 	if(self.isEmpty || self.currentID == UINT_MAX || _dragResponder == nil)
 		outOfArea = YES;
-
+	
 	else
 	{
 		NSSize textSize = [self intrinsicContentSize];
@@ -63,17 +63,17 @@
 	RakDragItem * item = [[RakDragItem alloc] init];
 	if(item == nil)
 		return;
-
+	
 	//We initialize the item, then insert it in the pasteboard
 	[item setDataProject:projectData isTome:self.isTome element:VALEUR_FIN_STRUCT];
 	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	//We create the image for the dragging session
 	NSImage * image = [_dragResponder initializeImageForItem : projectData : NSLocalizedString(self.isTome ? @"CT-ALL-VOLUMES" : @"CT-ALL-CHAPTERS", nil) : VALEUR_FIN_STRUCT];
-
+	
 	couldDL = self.isTome ? (projectData.nombreTomesInstalled < projectData.nombreTomes) : (projectData.nombreChapitreInstalled < projectData.nombreChapitre);
 	[RakList propagateDragAndDropChangeState : YES : couldDL];
-
+	
 	[self dragImage:image at:NSMakePoint(mousePosition.x - image.size.width / 3, mousePosition.y + 3) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
 	
 	[RakList propagateDragAndDropChangeState : NO : couldDL];

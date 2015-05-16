@@ -39,12 +39,12 @@
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	BOOL isActive = color == active;
 	
 	passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
 	active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
-
+	
 	if(isActive)	color = active;
 	else			color = passive;
 	
@@ -68,7 +68,7 @@
 	slotRect.origin.y += 10;
 	
 	[self setupPath:slotRect : slotRect.size.width : slotRect.size.width / 2.0f];
-
+	
 	[[NSColor blackColor] set];
 	
 	CGContextFillPath(contextBorder);
@@ -110,11 +110,11 @@
 	if(incompleteDrawing)
 	{
 		incompleteDrawing = NO;
-
+		
 		if([self.superview class] == [RakListScrollView class])
 		{
 			RakListScrollView * view = (RakListScrollView*) self.superview;
-
+			
 			if(self == [view horizontalScroller])
 				[view setHasHorizontalScroller:NO];
 			else if(self == [view verticalScroller])
@@ -151,7 +151,7 @@
 	
 	if(scrollerStyle == SCROLLER_STYLE_THIN)
 		return 2 * 5.0;
-
+	
 	return 2 * 6.5;
 }
 

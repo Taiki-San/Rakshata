@@ -28,16 +28,16 @@
 	{
 		if(data)
 			[self confirmed];
-
+		
 		return nil;
 	}
-
+	
 	self = [super initWithFrame : NSMakeRect(0, 0, 170, 170)];
 	
 	if(self != nil)
 	{
 		NSRect frame = NSZeroRect;
-
+		
 		if(_tabReader != nil)
 			frame.size.width = _tabReader.frame.origin.x;
 		
@@ -60,7 +60,7 @@
 		[contentText sizeToFit];
 		
 		[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
-
+		
 		[self addSubview : contentText];
 	}
 	
@@ -77,10 +77,10 @@
 	{
 		[buttonRemind setTarget:self];
 		[buttonRemind setAction:@selector(remindSwitched:)];
-
+		
 		((RakButtonCell*)buttonRemind.cell).forceHighlight = _remind;
 		[((RakButtonCell*)buttonRemind.cell) reloadFontColor];
-
+		
 		[self addSubview:buttonRemind];
 	}
 }
@@ -144,7 +144,7 @@
 		[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_AUTODL : output];
 	else
 		[RakPrefsRemindPopover removeValueReminded : PREFS_REMIND_AUTODL];
-
+	
 	
 	[popover closePopover];
 }
@@ -163,7 +163,7 @@
 	{
 		[(MDL*) _anchor proxyAddElement:_project isTome:_isTome element:_arraySelection[pos] partOfBatch:YES];
 	}
-
+	
 	[(MDL*) _anchor proxyAddElement:_project isTome:_isTome element:_arraySelection[_sizeArray - 1] partOfBatch:NO];
 }
 

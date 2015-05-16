@@ -90,7 +90,7 @@ enum
 		
 		for(uint i = 0; i < length; i++)
 			[index addIndex:indexes[i]];
-
+		
 		[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
 	}
 	
@@ -105,7 +105,7 @@ enum
 	
 	while(length--)
 		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(indexes[length])}];
-
+	
 }
 
 #pragma mark - Methods to deal with tableView
@@ -134,7 +134,7 @@ enum
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
 	DATA_LOADED ** todoList = [controller getData:row : YES];
-
+	
 	if(todoList != NULL && *todoList != NULL)
 	{
 		(*todoList)->rowViewResponsible = (__bridge void *)([tableView viewAtColumn:0 row:row makeIfNecessary:NO]);
@@ -148,7 +148,7 @@ enum
 		return;
 	
 	DATA_LOADED ** todoList = [controller getData:row : YES];
-
+	
 	if(todoList != NULL && *todoList != NULL)
 	{
 		(*todoList)->rowViewResponsible = NULL;
@@ -157,17 +157,17 @@ enum
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    // Get an existing cell with the MyView identifier if it exists
-    RakMDLListView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
+	// Get an existing cell with the MyView identifier if it exists
+	RakMDLListView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
 	
-    // There is no existing cell to reuse so create a new one
-    if (result == nil)
+	// There is no existing cell to reuse so create a new one
+	if (result == nil)
 	{
 		result = [[RakMDLListView alloc] init :controller :row];
 		
 		if(result.invalidData)
 			[_tableView reloadData];
-
+		
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		
 		result.identifier = @"Mane 6";
@@ -175,7 +175,7 @@ enum
 	else
 	{
 		[result updateData : row];
-
+		
 		if(result.invalidData)
 			[_tableView reloadData];
 	}
@@ -186,7 +186,7 @@ enum
 - (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
-
+	
 	if(dataProject != NULL && (*dataProject)->datas != NULL)
 	{
 		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :VALEUR_FIN_STRUCT];
@@ -213,7 +213,7 @@ enum
 	
 	if (dataProject == NULL)
 		return nil;
-
+	
 	if((*dataProject)->listChapitreOfTome == NULL)
 	{
 		int chapitre = (*dataProject)->identifier;
@@ -234,7 +234,7 @@ enum
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
-
+	
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
 	
 	if(dataProject == NULL || *dataProject == NULL)

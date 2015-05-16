@@ -27,7 +27,7 @@
 		mainScroller.transitionStyle = dataRequest.japaneseOrder ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 		mainScroller.delegate = self;
 	}
-
+	
 	[self updateEvnt];
 	
 	return YES;
@@ -36,7 +36,7 @@
 - (NSString *) getContextToGTFO
 {
 	NSPoint sliders = NSZeroPoint;
-
+	
 	if(_scrollView != nil)
 		sliders = [_scrollView contentView].bounds.origin;
 	
@@ -52,7 +52,7 @@
 	NSRect tabFrame = [self lastFrame], scrollViewFrame = scrollView.scrollViewFrame;
 	
 	scrollView.scrollViewFrame = NSZeroRect;
-
+	
 	//Hauteur
 	if (tabFrame.size.height < scrollView.contentFrame.size.height)
 	{
@@ -116,7 +116,7 @@
 		
 		_scrollView = (id) view;
 	}
-
+	
 	if(self.mainThread != TAB_READER)
 		frameRect.origin = _scrollView.frame.origin;
 	
@@ -140,7 +140,7 @@
 - (void)mouseUp:(NSEvent *)theEvent
 {
 	BOOL fail = NO;
-
+	
 	if(self.mainThread != TAB_READER || !noDrag || _scrollView == nil)
 		fail = YES;
 	else
@@ -171,36 +171,36 @@
 - (void) keyDown:(NSEvent *)theEvent
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
-    unichar     const   code        =   [character characterAtIndex:0];
+	unichar     const   code        =   [character characterAtIndex:0];
 	BOOL isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
 	
-    switch (code)
-    {
-        case NSUpArrowFunctionKey:
-        {
+	switch (code)
+	{
+		case NSUpArrowFunctionKey:
+		{
 			if(isModPressed)
 				[self moveSliderX:-PAGE_MOVE];
-            else
+			else
 				[self moveSliderY:PAGE_MOVE];
-            break;
-        }
-        case NSDownArrowFunctionKey:
-        {
+			break;
+		}
+		case NSDownArrowFunctionKey:
+		{
 			if(isModPressed)
 				[self moveSliderX:PAGE_MOVE];
-            else
+			else
 				[self moveSliderY:-PAGE_MOVE];
-            break;
-        }
-        case NSLeftArrowFunctionKey:
-        {
-            [self prevPage];
-            break;
-        }
-        case NSRightArrowFunctionKey:
-        {
-            [self nextPage];
-            break;
+			break;
+		}
+		case NSLeftArrowFunctionKey:
+		{
+			[self prevPage];
+			break;
+		}
+		case NSRightArrowFunctionKey:
+		{
+			[self nextPage];
+			break;
 		}
 			
 		case NSPageUpFunctionKey:
@@ -227,7 +227,7 @@
 				c = string[0] + 'a' - 'A';
 			else
 				c = string[0];
-
+			
 			switch (c)
 			{
 				case 'a':
@@ -283,7 +283,7 @@
 					break;
 			}
 		}
-    }
+	}
 }
 
 /*Error management*/
@@ -515,7 +515,7 @@
 	}
 	
 	[self updateTitleBar:_project :isTomeRequest :_posElemInStructure];
-
+	
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
@@ -547,7 +547,7 @@
 	
 	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
 		return nil;
-
+	
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
@@ -563,7 +563,7 @@
 		}
 		
 		pthread_mutex_unlock(lock);
-
+		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
 		
 		return [self getPage : posData : data];
@@ -572,7 +572,7 @@
 		return nil;
 	
 	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
-		
+	
 	free(dataPage->data);
 	free(dataPage);
 	
@@ -682,14 +682,14 @@
 			{
 				releaseDataReader(&_previousData);
 				currentPage = _data.nombrePage + 1;
-
+				
 				memcpy(&_previousData, &_data, sizeof(DATA_LECTURE));
 				previousDataLoaded = dataLoaded;
 				
 				memcpy(&_data, &_nextData, sizeof(DATA_LECTURE));
 				_data.pageCourante = 0;
 				dataLoaded = nextDataLoaded;
-
+				
 				nextDataLoaded = NO;
 				
 			}
@@ -697,7 +697,7 @@
 			{
 				releaseDataReader(&_nextData);
 				currentPage = 0;
-
+				
 				memcpy(&_nextData, &_data, sizeof(DATA_LECTURE));
 				nextDataLoaded = dataLoaded;
 				
@@ -723,7 +723,7 @@
 				NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
 				
 				[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
-
+				
 				MUTEX_LOCK(cacheMutex);
 				mainScroller.arrangedObjects = array;
 				MUTEX_UNLOCK(cacheMutex);
@@ -733,7 +733,7 @@
 		{
 			if(!byChangingPage)
 				_data.pageCourante = 0;
-
+			
 			[self updateContext : NO];
 		}
 	}
@@ -779,7 +779,7 @@
 	
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
-        [self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
+		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
 	
 	if(!dataLoaded)
 	{
@@ -814,15 +814,15 @@
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
-	
+		
 		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
-
+		
 		mainScroller.arrangedObjects = array;
 		mainScroller.selectedIndex = _data.pageCourante + 1;
 		
 		MUTEX_UNLOCK(cacheMutex);
 	}
-
+	
 	[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
 }
 
@@ -839,7 +839,7 @@
 	if(image == nil)
 		[imageData writeToFile:@"lol.png" atomically:NO];
 #endif
-
+	
 	if(image == nil)
 		return nil;
 	
@@ -860,7 +860,7 @@
 	
 	deleteProject(_project, _currentElem, self.isTome);
 	[RakDBUpdate postNotificationProjectUpdate:_project];
-		
+	
 	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 		[self nextChapter];
 	else if(_posElemInStructure > 0)
@@ -880,7 +880,7 @@
 		return;
 	
 	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
-
+	
 	//We create the view that si going to be displayed
 	NSImageView * pageView = [[NSImageView alloc] initWithFrame: scrollView.contentFrame];
 	[pageView setImageAlignment:NSImageAlignCenter];
@@ -890,19 +890,19 @@
 	scrollView.documentView = pageView;
 	
 	[CATransaction begin];
-
+	
 	[self initialPositionning : scrollView];
 	
 	[scrollView setFrame : scrollView.scrollViewFrame];
 	[scrollView scrollToBeginningOfDocument];
-
+	
 	[CATransaction commit];
 }
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
 {
 	NSPoint sliderStart = [[_scrollView contentView] bounds].origin;
-		
+	
 	if(scrollView.pageTooHigh)
 		sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
 	
@@ -949,7 +949,7 @@
 		{
 			height = [_scrollView.documentView frame].size.height;
 			if(withShift)	height *= -1;
-
+			
 			[self moveSliderY : height];
 		}
 	}
@@ -1082,7 +1082,7 @@
 			}
 		}
 	}
-
+	
 	return NO;
 }
 
@@ -1097,7 +1097,7 @@
 		if ([object class] == [RakPageScrollView class])
 		{
 			nbElemCounted++;
-
+			
 			if(nbElemCounted > NB_ELEM_MAX_IN_CACHE)
 				break;
 		}
@@ -1109,7 +1109,7 @@
 - (BOOL) entryValid : (NSArray*) data : (uint) index
 {
 	Class class = [data[index] class];
-
+	
 	return class == [RakPageScrollView class] || class == [RakImageView class];
 }
 
@@ -1126,7 +1126,7 @@
 		internalData = data;
 	
 	MUTEX_LOCK(cacheMutex);
-
+	
 	for(uint pos = 0, max = [internalData count]; pos < max; pos++)
 	{
 		object = [internalData objectAtIndex:pos];
@@ -1197,7 +1197,7 @@
 	[CATransaction begin];
 	
 	MUTEX_LOCK(cacheMutex);
-
+	
 	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	[*data replaceObjectAtIndex:page withObject:view];
 	mainScroller.arrangedObjects = *data;
@@ -1239,10 +1239,10 @@
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
 		NSImage * imagePlaceholder = !self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder;
-
+		
 		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
 		[placeholder setImage:imagePlaceholder];
-
+		
 		if([object isKindOfClass:[NSNumber class]])
 			placeholder.page = [(NSNumber *) object unsignedIntValue];
 		else
@@ -1423,7 +1423,7 @@
 	releaseDataReader(&_data);
 	
 	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
-
+	
 	for(NSView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
 	{
 		subArray = [NSArray arrayWithArray:view.subviews];

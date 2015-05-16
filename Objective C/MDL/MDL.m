@@ -21,8 +21,8 @@ enum
 
 - (instancetype) init : (NSView *) contentView : (NSString *) state
 {
-    self = [super init];
-    if (self)
+	self = [super init];
+	if (self)
 	{
 		flag = TAB_MDL;
 		_needUpdateMainViews = NO;
@@ -38,7 +38,7 @@ enum
 		if(![self initContent:state])
 			self = nil;
 	}
-    return self;
+	return self;
 }
 
 - (BOOL) initContent : (NSString *) state
@@ -137,9 +137,9 @@ enum
 	output.origin.x = frame.size.width / 20;
 	output.size.width -= 2 * output.origin.x;
 	output.origin.y = 0;
-
+	
 	output.size.height -= [self getBottomBorder];
-
+	
 	return output;
 }
 
@@ -164,7 +164,7 @@ enum
 - (void) resizeAnimation
 {
 	[super resizeAnimation];
-
+	
 	if (_popover != nil && ![self isDisplayed])
 	{
 		[_popover locationUpdated :[self createFrame] :YES];
@@ -242,7 +242,7 @@ enum
 - (void) updateSeriesCollapsedBySettingState : (BOOL) isCollapsed
 {
 	seriesCollapsedBySetting = isCollapsed;
-
+	
 	[[NSApp delegate] serie].forceNextFrameUpdate = YES;
 	
 	_needUpdateMainViews = YES;
@@ -255,7 +255,7 @@ enum
 {
 	if(self.mainThread != TAB_READER)
 		return NO;
-		
+	
 	uint state;
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
@@ -281,7 +281,7 @@ enum
 			//Series make us slide to the left, while the others to the bottom
 			if(_lastFrame.size.width != - _lastFrame.origin.x && _lastFrame.size.height != - _lastFrame.origin.y)
 				_needUpdateMainViews = YES;
-
+			
 			if(self.mainThread == TAB_SERIES)
 			{
 				maximumSize.origin.x = -maximumSize.size.width;
@@ -316,7 +316,7 @@ enum
 			}
 		}
 	}
-
+	
 	[self setLastFrame:maximumSize];
 	return maximumSize;
 }
@@ -338,7 +338,7 @@ enum
 		for(RakTabView * view in @[[delegate serie], [delegate CT], [delegate reader]])
 			[view refreshViewSize];
 	}
-
+	
 	_needUpdateMainViews = NO;
 }
 
@@ -346,7 +346,7 @@ enum
 {
 	if(self.mainThread == TAB_SERIES)
 		[[NSApp delegate] serie].forceNextFrameUpdate = YES;
-
+	
 	else if(self.mainThread == TAB_CT)
 		[[NSApp delegate] CT].forceNextFrameUpdate = YES;
 	
@@ -359,7 +359,7 @@ enum
 	NSRect frame = [self lastFrame];
 	
 	frame.origin = NSZeroPoint;
-
+	
 	[Prefs getPref : PREFS_GET_TAB_READER_POSX : &(frame.size.width) : &svSize];
 	
 	return frame;
@@ -396,7 +396,7 @@ enum
 - (void) setUpViewForAnimation : (uint) mainThread
 {
 	BOOL inSeries = mainThread == TAB_SERIES;
-
+	
 	if(inSeries == footer.isHidden)
 	{
 		if(inSeries)
@@ -404,7 +404,7 @@ enum
 			footer.alphaValue = 0;
 			footer.hidden = NO;
 		}
-
+		
 		footer.animator.alphaValue = inSeries;
 	}
 	

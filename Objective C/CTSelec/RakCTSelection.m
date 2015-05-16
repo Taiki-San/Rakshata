@@ -15,7 +15,7 @@
 - (instancetype) initWithProject : (PROJECT_DATA) project : (BOOL) isTome : (NSRect) parentBounds : (CGFloat) headerHeight : (long [4]) context : (uint) mainThread
 {
 	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_currentContext];
-
+	
 	self = [super initWithFrame : [self frameFromParent : parentBounds : headerHeight]];
 	if (self != nil)
 	{
@@ -39,7 +39,7 @@
 					_chapterView.hidden = YES;
 					_chapterView.alphaValue = 0;
 				}
-
+				
 				[self addSubview : _chapterView];
 			}
 			
@@ -57,7 +57,7 @@
 					_volView.hidden = YES;
 					_volView.alphaValue = 0;
 				}
-
+				
 				[self addSubview: _volView];
 			}
 			
@@ -109,7 +109,7 @@
 	_cachedHeaderHeight = headerHeight;
 	
 	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
-
+	
 	[_buttons setFrame : _bounds];
 	[_chapterView setFrame : _bounds];
 	[_volView setFrame : _bounds];
@@ -118,7 +118,7 @@
 - (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
 {
 	_cachedHeaderHeight = headerHeight;
-
+	
 	NSRect frame = [self frameFromParent : parentFrame : headerHeight];
 	[self.animator setFrame:frame];
 	
@@ -211,7 +211,7 @@
 	
 	_currentContext = currentContext;
 	[self updateTitle];
-
+	
 	BOOL isTome = [_buttons selectedSegment] == 1;
 	
 	if(currentContext == TAB_READER)
@@ -242,7 +242,7 @@
 		
 		_buttons.animator.alphaValue = 0;
 	}
-
+	
 	if(currentContext != TAB_SERIES)
 	{
 		_chapterView.compactMode = currentContext == TAB_READER;
@@ -301,10 +301,10 @@
 	
 	int ID;
 	NSNumber * _index = [notification.userInfo objectForKey:@"index"], *_isTome = [notification.userInfo objectForKey:@"isTome"], * _installed = [notification.userInfo objectForKey:@"isInstalled"];
-
+	
 	if(_index == nil || _isTome == nil || _installed == nil)
 		return;
-
+	
 	uint index = [_index unsignedIntValue];
 	BOOL isTome = [_isTome boolValue], installed = [_installed boolValue];
 	
@@ -342,7 +342,7 @@
 			[_volView resetSelection];
 		}
 	}
-
+	
 	if(installed)
 	{
 		_chapterView.compactMode = YES;
@@ -418,7 +418,7 @@
 	
 	[_buttons setEnabled:(newData.nombreChapitreInstalled > 0) forSegment:0];
 	[_buttons setEnabled:(newData.nombreTomesInstalled > 0) forSegment:1];
-
+	
 	if(isCompact)
 	{
 		//Update focus
@@ -440,7 +440,7 @@
 		[_chapterView setHidden:NO];
 		[_volView setHidden:NO];
 	}
-
+	
 	return YES;
 }
 

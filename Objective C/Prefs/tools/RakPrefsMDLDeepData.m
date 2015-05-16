@@ -60,7 +60,7 @@
 	
 	if(output == NULL)
 		return;
-		
+	
 	snprintf(output, 9, "%04x", (uint) floor(heightMDLReaderFocus * 10 + 0.5));
 	
 	//AAANNNND, We're done :D

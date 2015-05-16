@@ -89,12 +89,12 @@
 {
 	char * data = MDLParseFile(*todoList, status, IDToPosition, discardedCount);
 	NSString * output = nil;
-
+	
 	if(data != NULL && data[0] != 0)
 	{
 		output = [NSString stringWithUTF8String: data];
 	}
-
+	
 	free(data);
 	return output;
 }
@@ -126,7 +126,7 @@
 			BOOL usedOld[sizeCache], usedNew[newSize], firstPass = YES;
 			memset(usedOld, 0, sizeof(usedOld));
 			memset(usedNew, 0, sizeof(usedNew));
-
+			
 			//We update the current cache
 			for(uint posFinal = 0, posNew = 0; posFinal < sizeCache; posFinal++)
 			{
@@ -139,7 +139,7 @@
 						firstPass = NO;
 						posFinal--;
 					}
-
+					
 					posNew = 0;
 					continue;
 				}
@@ -157,7 +157,7 @@
 			//Ok, now, let's check if things were added, if some were removed
 			for(uint posFinal = 0, offsetDeleted = 0, posNew = 0; posFinal < sizeCache;)
 			{
-    			if(usedOld[posFinal + offsetDeleted])
+				if(usedOld[posFinal + offsetDeleted])
 				{
 					posFinal++;
 					continue;
@@ -168,7 +168,7 @@
 				[self depreciateProject : cache[posFinal]];
 				
 				releaseCTData(*cache[posFinal]);
-
+				
 				//We check if we can recycle an item to fit this hole
 				if(posNew != newSize)
 				{
@@ -206,7 +206,7 @@
 						if(posNew < newSize)
 						{
 							usedNew[posNew] = YES;
-
+							
 							cache[sizeCache] = malloc(sizeof(PROJECT_DATA));
 							if(cache[sizeCache] != NULL)
 							{
@@ -243,7 +243,7 @@
 			{
 				if(firstElement == UINT_MAX)
 					firstElement = i;
-					
+				
 				anythingWasDownloading |= [(__bridge RakMDLListView *) (*todoList)[IDToPosition[i]]->rowViewResponsible abortProcessing];
 			}
 			else
@@ -267,7 +267,7 @@
 - (void) dealloc
 {
 	[RakDBUpdate unRegister : self];
-
+	
 	MDLCleanup(nbElem, status, todoList, cache, sizeCache);
 	free(IDToPosition);
 }
@@ -401,7 +401,7 @@
 	{
 		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCT)
 			return countInjected;
-
+		
 		nbFull = data.nombreChapitre;
 		nbInst = data.nombreChapitreInstalled;
 	}
@@ -459,7 +459,7 @@
 	
 	if(injectionPoint == discardedCount)
 		injectionPoint--;
-
+	
 	uint size = (posEnd - posStart + 1);
 	BOOL isMovingPartBeforeInsertion = posEnd < injectionPoint;
 	uint * movingPart = malloc(size * sizeof(uint));
@@ -490,7 +490,7 @@
 		if(similar)
 		{
 			uint indexRemoved[discardedCount], nbRemoved = 0;
-
+			
 			for(uint posDiscarded = 0; posDiscarded < discardedCount; posDiscarded++)
 			{
 				//We remove every similar project from which the download is done
@@ -501,7 +501,7 @@
 			}
 			
 			discardedCount -= nbRemoved;
-		
+			
 			[_list deleteElements : indexRemoved : nbRemoved];
 		}
 		else

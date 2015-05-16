@@ -14,8 +14,8 @@
 
 - (instancetype) initContent:(NSRect)frame : (NSString *) state
 {
-    self = [super initWithFrame:frame];
-    if(self != nil)
+	self = [super initWithFrame:frame];
+	if(self != nil)
 	{
 		_currentValidHeight = frame.size.height;
 		[self setupInternal];
@@ -59,7 +59,7 @@
 - (void) setFrameInternalViews:(NSRect)newBound
 {
 	_currentValidHeight = newBound.size.height;
-
+	
 	[headerText setFrame:newBound];
 	[compactList setFrame:[self getCompactListFrame : newBound]];
 	[contentManager setFrame : newBound];
@@ -68,13 +68,13 @@
 - (void) resizeAnimationInternalViews:(NSRect)newBound
 {
 	_currentValidHeight = newBound.size.height;
-
+	
 	if(headerText.isHidden)		[headerText setFrame:newBound];
 	else						[headerText resizeAnimation: newBound];
 	
 	if(headerText.isHidden)		[compactList setFrame:[self getCompactListFrame : newBound]];
 	else						[compactList resizeAnimation:[self getCompactListFrame : newBound]];
-
+	
 	if([contentManager getActiveView].isHidden)		[contentManager setFrame : newBound];
 	else											[contentManager resizeAnimation : newBound];
 }

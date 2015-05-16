@@ -29,7 +29,7 @@ enum
 	if(self != nil)
 	{
 		activeElementInRoot = activeElementInSubRepo = UINT_MAX;
-
+		
 		root = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRoot, true);
 		repo = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false);
 		
@@ -75,7 +75,7 @@ enum
 			{
 				switchMessage.clicTarget = self;
 				switchMessage.clicAction = @selector(textClicked);
-
+				
 				[switchMessage setFrameOrigin:NSMakePoint(NSMaxX(radioSwitch.frame) + TEXT_RADIO_OFFSET, PREFS_REPO_BORDER_BELOW_LIST / 2 - switchMessage.bounds.size.height / 2 + 3)];
 				[self addSubview:switchMessage];
 			}
@@ -121,7 +121,7 @@ enum
 	
 	frame.origin.x = BORDER;
 	frame.origin.y = frame.size.height - height;
-
+	
 	frame.size.width = PREFS_REPO_LIST_WIDTH;
 	frame.size.height = height;
 	
@@ -150,10 +150,10 @@ enum
 	BOOL isRoot = radioSwitch.state == NSOnState;
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
+		
 		details.animator.alphaValue = 0;
 		placeholder.animator.alphaValue = 1;
-
+		
 	} completionHandler:^{
 		[self selectionUpdate:isRoot :isRoot ? activeElementInRoot : activeElementInSubRepo];
 	}];
@@ -209,7 +209,7 @@ enum
 			details.animator.alphaValue = 0;
 			placeholder.animator.alphaValue = 1;
 		}
-
+		
 		if(list.rootMode != isRoot)
 			list.rootMode = isRoot;
 		else
@@ -221,7 +221,7 @@ enum
 		activeElementInRoot = index;
 	else
 		activeElementInSubRepo = index;
-		
+	
 	
 	if(list.rootMode != isRoot)
 	{

@@ -17,8 +17,8 @@
 	if(target.initWithNoContent)
 		return nil;
 	
-    self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg] :[self getFontColor]];
-    if (self)
+	self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg] :[self getFontColor]];
+	if (self)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superview bounds].size.height : posX];
@@ -30,8 +30,8 @@
 		
 		self.drawsBackground = YES;
 		[self setBackgroundColor:[self getColorBackground]];
-    }
-    return self;
+	}
+	return self;
 }
 
 - (void) updateContext
@@ -39,7 +39,7 @@
 	[self setStringValue:[NSString stringWithFormat:@"%d/%d", currentPage, pageMax]];
 	
 	[self updateSize: self.superview.bounds.size.height : -1];
-
+	
 	[self setNeedsDisplay:YES];
 }
 
@@ -121,10 +121,10 @@
 {
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	CGContextBeginPath(contextBorder);
-
+	
 	CGContextSetLineWidth(contextBorder, 2);
 	[[self getBorderColor] setStroke];
-
+	
 	CGContextMoveToPoint(contextBorder, 0, self.bounds.size.height);
 	CGContextAddLineToPoint(contextBorder, 0, 0);
 	CGContextAddLineToPoint(contextBorder, self.bounds.size.width, 0);
@@ -134,8 +134,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [super drawRect:dirtyRect];
-
+	[super drawRect:dirtyRect];
+	
 	[self drawBorder];
 }
 
@@ -189,7 +189,7 @@
 	
 	if(content == nil)
 		return NO;
-
+	
 	if(content > [self maximum])
 	{
 		*newString = [NSString stringWithFormat:@"%d", [[self maximum] unsignedIntValue]];

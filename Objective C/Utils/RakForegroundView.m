@@ -32,7 +32,7 @@
 		{
 			[coreView setFrameOrigin:NSMakePoint(container.frame.size.width / 2 - coreView.frame.size.width / 2, -coreView.frame.size.height)];
 			[container addSubview:coreView];
-
+			
 			_coreView = coreView;
 		}
 	}
@@ -112,7 +112,7 @@
 {
 	if(![self isVisible])
 		[background setHidden:YES];
-
+	
 	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(switchOver:)])
 		[self.delegate performSelectorOnMainThread:@selector(switchOver:) withObject:@(isDisplayed) waitUntilDone:NO];
 }
@@ -180,15 +180,15 @@
 	NSPoint click = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	
 	[self.subviews enumerateObjectsUsingBlock:^(NSView *subview, NSUInteger idx, BOOL *stop)
-	{
-		if([subview class] == [NSView class] && [subview.subviews count] && [subview.subviews[0] class] == [RakPassField class])
-		{
-			if(NSPointInRect(click, subview.frame))
-				[self.window makeFirstResponder : subview.subviews[0]];
-			
-			*stop = YES;
-		}
-	}];
+	 {
+		 if([subview class] == [NSView class] && [subview.subviews count] && [subview.subviews[0] class] == [RakPassField class])
+		 {
+			 if(NSPointInRect(click, subview.frame))
+				 [self.window makeFirstResponder : subview.subviews[0]];
+			 
+			 *stop = YES;
+		 }
+	 }];
 	
 	[self.window makeFirstResponder : self];
 }

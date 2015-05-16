@@ -58,7 +58,7 @@
 			
 			if(data == NULL && initStage == INIT_FINAL_STAGE)
 				_isMainList = YES;
-
+			
 			else
 			{
 				_isMainList = NO;
@@ -68,7 +68,7 @@
 					dataChild	= *(PROJECT_DATA *) data;
 					releaseCTData(dataChild);
 				}
-
+				
 				dataChild.chapitresFull = dataChild.chapitresInstalled = NULL;
 				dataChild.tomesFull = dataChild.tomesInstalled = NULL;
 				dataChild.chapitresPrix = NULL;
@@ -134,8 +134,8 @@
 - (id) getData
 {
 	if(!_isRootItem && dataChild.isInitialized)
-	   return getStringForWchar(dataChild.projectName);
-
+		return getStringForWchar(dataChild.projectName);
+	
 	return [super getData];
 }
 
@@ -143,7 +143,7 @@
 {
 	if (_isRootItem || _isMainList)
 		return getEmptyProject();
-
+	
 	else
 		return dataChild;
 }

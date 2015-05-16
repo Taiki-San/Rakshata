@@ -105,7 +105,7 @@
 		return;
 	
 	NSUInteger row = [rowIndexes firstIndex];
-
+	
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
 									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
@@ -135,7 +135,7 @@
 		{
 			[draggedView setupContent: project : name];
 			[self additionalDrawing : draggedView : rowForAdditionalDrawing];
-
+			
 			return [draggedView createImage];
 		}
 	}

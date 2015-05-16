@@ -67,12 +67,12 @@
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	_draggedSomething = NO;
-
+	
 	[super mouseDown:theEvent];
 	
 	if(!_draggedSomething && _clickedView != nil)
 		[_clickedView mouseUp:theEvent];
-
+	
 	_clickedView = nil;
 }
 
@@ -190,7 +190,7 @@
 #endif
 		if(oldElem != nil)
 			[oldElem updateFocus];
-			
+		
 		return;
 	}
 	
@@ -339,7 +339,7 @@
 		if(nbCol == nbElem)
 			nbCol--;	//Une seule ligne, mais une très longue ligne
 	}
-
+	
 	return nbCol;
 }
 

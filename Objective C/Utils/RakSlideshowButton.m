@@ -70,7 +70,7 @@ enum
 		[path setLineWidth:BORDER_WIDTH];
 		[path stroke];
 	}
-
+	
 	//Arrow
 	const BOOL pointToRight = self.state != NSOnState;
 	const CGFloat width = cellFrame.size.width, height = cellFrame.size.height, baseX = width * 0.28, baseY = height / 4;
@@ -95,10 +95,10 @@ enum
 		for(byte i = 0; i < 3; i++)
 		{
 			NSPoint newPoint;
-
+			
 			newPoint.x = center.x + cos(angle) * (points[i].x - center.x) - sin(angle) * (points[i].y - center.y);
 			newPoint.y = center.y + sin(angle) * (points[i].x - center.x) + cos(angle) * (points[i].y - center.y);
-
+			
 			points[i] = newPoint;
 		}
 		

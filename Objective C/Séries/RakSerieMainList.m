@@ -34,7 +34,7 @@
 			else
 				installOnly = NO;
 		}
-
+		
 		if(!installOnly)
 			_nbData = _nbElemFull;
 		
@@ -58,7 +58,7 @@
 		if(_data == NULL || (self.installOnlyMode && _installed == NULL))
 		{
 			NSLog(@"Failed at initialize RakSerieMainList, most probably a memory problem :(");
-
+			
 			freeProjectData(_data); //Seul _cache peut ne pas être null dans cette branche
 		}
 		
@@ -96,14 +96,14 @@
 		installedOnly = NO;
 		
 		void * tmp = _jumpToInstalled;
-
+		
 		_jumpToInstalled = NULL;
 		_nbElemInstalled = 0;
 		
 		free(tmp);
 		_nbData = _nbElemFull;
 	}
-
+	
 	//Gather rows that will have to be removed/inserted
 	uint newSelectedIndex = LIST_INVALID_SELECTION;
 	
@@ -134,7 +134,7 @@
 	
 	[self needUpdateTableviewHeight];
 	[scrollView updateScrollerState : scrollView.bounds];
-
+	
 	if(newSelectedIndex != LIST_INVALID_SELECTION)	//Previous selection is in the new list
 		[self selectIndex:newSelectedIndex];
 }
@@ -174,7 +174,7 @@
 				
 				if(!self.installOnlyMode)
 					break;
-
+				
 				//We get our position in the tableview to update
 				uint posOfElemInInstalled;
 				for(posOfElemInInstalled = 0; posOfElemInInstalled < _nbElemInstalled && _jumpToInstalled[posOfElemInInstalled] != pos; posOfElemInInstalled++);
@@ -194,7 +194,7 @@
 		uint nbElem, oldNbElem = _nbElemFull;
 		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem), *oldData = _data;
 		bool * newInstalled, *oldInstalled = _installed, needSwapInstalled = NO, newState;
-
+		
 		if(projects == NULL)
 			return;
 		
@@ -313,7 +313,7 @@
 		return LIST_INVALID_SELECTION;
 	
 	PROJECT_DATA project = [self getElementAtIndex:selectedRowIndex];
-
+	
 	if(project.repo == NULL)
 		return LIST_INVALID_SELECTION;
 	
@@ -355,7 +355,7 @@
 	
 	else if(preloadedRow == nil)
 		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
-
+	
 	else if(((RakText *) preloadedRow).fixedWidth != _tableView.bounds.size.width)
 		((RakText *) preloadedRow).fixedWidth = _tableView.bounds.size.width;
 	
@@ -450,7 +450,7 @@
 	
 	if(!project.isInitialized)
 		return;
-
+	
 	project = getCopyOfProjectData(project);
 	
 	BOOL isTome = [[item class] defineIsTomePriority:&project alreadyRefreshed:NO];

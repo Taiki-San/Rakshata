@@ -44,12 +44,12 @@ uint _currentTheme;
 		
 		if(starActive == nil || starIdle == nil)
 			return nil;
-
+		
 		_wantNumber = NO;
 		_project = project;
 		
 		rating = (getRandom() % 50) / 10.0f;
-
+		
 		[self setFrameSize : NSMakeSize(WIDTH, HEIGHT)];
 		basePoint = NSZeroPoint;
 	}
@@ -93,7 +93,7 @@ uint _currentTheme;
 	if(!wantNumber)
 	{
 		number.hidden = YES;
-
+		
 		[self setFrameSize:NSMakeSize(WIDTH, HEIGHT)];
 		basePoint = NSZeroPoint;
 	}

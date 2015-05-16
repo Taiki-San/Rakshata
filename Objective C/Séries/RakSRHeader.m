@@ -66,7 +66,7 @@
 		
 		storeSwitch.hasBorder = NO;
 		[storeSwitch setButtonType:NSOnOffButton];
-
+		
 		[storeSwitch triggerBackground];
 #ifdef SEVERAL_VIEWS
 		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(displayType.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
@@ -92,7 +92,7 @@
 		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(preferenceButton.frame);
 	
 	NSRect searchButtonFrame = [self searchButtonFrame : frame];
-
+	
 	tagRail = [[RakSRTagRail alloc] initWithFrame: [self railFrame:frame] : searchButtonFrame.origin.x];
 	if(tagRail != nil)
 	{
@@ -101,7 +101,7 @@
 			tagRail.hidden = YES;
 			tagRail.alphaValue = 0;
 		}
-
+		
 		[self addSubview:tagRail];
 	}
 	
@@ -176,7 +176,7 @@
 	else
 	{
 		[super setFrame:frameRect];
-
+		
 		if(_haveFocus)
 		{
 			searchFrame = [self searchButtonFrame:frameRect];
@@ -216,7 +216,7 @@
 {
 	frame.origin.y = (frame.size.height + SRSEARCHTAB_DEFAULT_HEIGHT) / 2 - RBB_BUTTON_HEIGHT / 2;
 	frame.size.height = RBB_BUTTON_HEIGHT;
-
+	
 	if(preferenceButton != nil)
 	{
 		frame.origin.x = preferenceButton.frame.origin.x + preferenceButton.frame.size.width;
@@ -235,10 +235,10 @@
 {
 	frame.origin.x = frame.size.width - SR_HEADER_INTERBUTTON_WIDTH;
 	frame.origin.y = SR_HEADER_HEIGHT_SINGLE_ROW / 2;
-
+	
 	frame.size.height = SR_SEARCH_FIELD_HEIGHT;
 	frame.origin.y -= frame.size.height / 2;
-
+	
 	frame.size.width = 250;
 	frame.origin.x -= frame.size.width;
 	
@@ -321,12 +321,12 @@
 #ifdef SEVERAL_VIEWS
 	for(NSView * view in @[backButton, displayType, tagRail, search])
 #else
-	for(NSView * view in @[backButton, tagRail, search])
+		for(NSView * view in @[backButton, tagRail, search])
 #endif
-	{
-		if(view.alphaValue == 0)
-			view.hidden = YES;
-	}
+		{
+			if(view.alphaValue == 0)
+				view.hidden = YES;
+		}
 }
 
 - (void) backButtonClicked

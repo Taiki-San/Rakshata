@@ -16,7 +16,7 @@ enum
 	BORDER_NAME = 1,
 	BORDER_STARS = 3,
 	BAR_SEPARATOR = 5,
-
+	
 	SEPARATOR_WIDTH = 3,		//The - between the type and the tag
 	SUB_ELEMENT_FONT_SIZE = 11,
 };
@@ -101,11 +101,11 @@ enum
 			tagProject.stringValue = getStringForWchar(getTagForCode(_project.tag));
 			[tagProject sizeToFit];
 		}
-
+		
 		//If init went well or if we hid it, we insert it again in the view hierarchy
 		if(typeProject != nil && [typeProject superview] == nil)
 			[self addSubview:typeProject];
-
+		
 		if(tagProject != nil && [tagProject superview] == nil)
 			[self addSubview:tagProject];
 	}
@@ -117,7 +117,7 @@ enum
 	project.chapitresFull = project.chapitresInstalled = NULL;
 	project.tomesFull = project.tomesInstalled = NULL;
 	project.chapitresPrix = NULL;
-
+	
 	_project = project;
 	
 	NSImage * image = loadImage(_project, PROJ_IMG_SUFFIX_SRGRID);
@@ -125,7 +125,7 @@ enum
 		thumbnail.image = image;
 	
 	projectName.stringValue = getStringForWchar(project.projectName);
-
+	
 	[self initReason];
 }
 
@@ -160,7 +160,7 @@ enum
 		[stars.animator setFrameOrigin:	(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 	else
 		[stars setFrameOrigin:			(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
-
+	
 	return previousOrigin;
 }
 
@@ -260,7 +260,7 @@ enum
 		return;
 	
 	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-
+	
 	if(NSPointInRect(point, thumbnail.frame) || NSPointInRect(point, projectName.frame))
 	{
 		PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);

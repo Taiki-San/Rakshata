@@ -44,7 +44,7 @@
 	
 	if(_pageTooLarge)
 		sliderStart.x = documentViewSize.width - self.scrollViewFrame.size.width;
-
+	
 	[self scrollToPoint:sliderStart];
 }
 
@@ -108,7 +108,7 @@
 	[super setImage:newImage];
 	
 	[self setAnimates:NO];
-
+	
 	if(animationTimer != nil)
 	{
 		[animationTimer invalidate];

@@ -19,9 +19,9 @@ enum
 
 - (instancetype) initContent: (NSRect) frame : (NSString *) state : (RakMDLController*) controller
 {
-    self = [super initWithFrame:frame];
+	self = [super initWithFrame:frame];
 	
-    if (self)
+	if (self)
 	{
 		_controller = controller;
 		[self setupInternal];
@@ -30,7 +30,7 @@ enum
 		if(headerText != nil)
 		{
 			headerText.barWidth = 1;
-
+			
 			[self addSubview:headerText];
 		}
 		
@@ -45,7 +45,7 @@ enum
 			[dropPlaceHolder setHidden:YES];
 			[self addSubview:dropPlaceHolder];
 		}
-	}	
+	}
 	return self;
 }
 
@@ -61,7 +61,7 @@ enum
 		CGFloat height = [MDLList contentHeight];
 		
 		if(height)	height += 5;
-
+		
 		contentHeight+= height;
 	}
 	
@@ -86,7 +86,7 @@ enum
 		posY = (frameSize.height - headerText.frame.size.height) / 2 - dropPlaceHolder.frame.size.height / 2;
 	else
 		posY = frameSize.height / 2 - dropPlaceHolder.frame.size.height / 2;
-
+	
 	return NSMakePoint(frameSize.width / 2 - dropPlaceHolder.frame.size.width / 2, posY);
 }
 
@@ -105,7 +105,7 @@ enum
 {
 	[headerText setFrame:_bounds];
 	[MDLList setFrame:[self getMainListFrame:newBound]];
-
+	
 	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
 }
 
@@ -190,13 +190,13 @@ enum
 			{
 				[foregroundView setAlphaValue:isFocusDrop];
 				[foregroundView setHidden:NO];
-
+				
 				[foregroundView.animator setAlphaValue:!isFocusDrop];
 			}
 		}
 		
 		[[NSAnimationContext currentContext] setCompletionHandler:^{
-
+			
 			if(!isFocusDrop)
 				[dropPlaceHolder setHidden : YES];
 			else if(foregroundView != nil)

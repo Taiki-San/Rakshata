@@ -90,7 +90,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	
 	if([view class] == [RakCollectionView class])
 		view.clickedView = self;
-
+	
 	[view mouseDown:theEvent];
 }
 
@@ -124,7 +124,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		if(NSPointInRect(point, _workingArea))	//We check we are actually inside the valid area (excluding the padding
 		{
 			PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
-
+			
 			if(dataToSend.isInitialized)
 				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
 		}
@@ -137,7 +137,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		return;
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(RCVC_FOCUS_DELAY * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
+		
 		if(*_sharedActive == sessionCode)
 		{
 			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FOCUS object:@(_project.cacheDBID) userInfo:@{SR_FOCUS_IN_OR_OUT : @(_selected)}];
@@ -161,7 +161,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[projectAuthor setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
 		[mainTag setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
-
+	
 	return previousOrigin;
 }
 

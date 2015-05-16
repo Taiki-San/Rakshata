@@ -61,14 +61,14 @@ enum
 	{
 		_root = root;
 		contextBorder = nil;
-
+		
 		//We craft a linearized list of repos
 		for(_nbRoot = _nbRepo = 0; _nbRoot < nbRoot; _nbRoot++)
 			_nbRepo += root[_nbRoot]->nombreSubrepo;
-
+		
 		if(!_nbRepo)
 			return nil;
-
+		
 		linearizedRepo = malloc(_nbRepo * sizeof(REPO_DATA *));
 		if (linearizedRepo == NULL)
 			return nil;
@@ -95,7 +95,7 @@ enum
 	{
 		for(uint i = 0; i < _nbRoot; i++)
 			freeSingleRootRepo(_root[i]);
-
+		
 		free(_root);
 	}
 	
@@ -107,7 +107,7 @@ enum
 - (NSString *) getTitleString
 {
 	NSString * definition = nil;
-
+	
 	//Localize the definition of the subrepo we are asking the user to select
 	if(_nbRepo > 1)
 		definition = NSLocalizedString(@"PREFS-ADD-REPO-SEVERAL-REPO", nil);
@@ -169,10 +169,10 @@ enum
 			_root[posRoot] = NULL;
 		}
 	}
-
+	
 	//Perform the heavy task: insert in the DB and refresh in order to get the projects
 	addRootRepoToDB(_root, _nbRoot);
-
+	
 	//We remove the window
 	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
 	
@@ -181,7 +181,7 @@ enum
 	{
 		memcpy(_root, collector, nbRejected * sizeof(ROOT_REPO_DATA *));
 	}
-
+	
 	_nbRoot = nbRejected;
 }
 
@@ -231,7 +231,7 @@ enum
 		cancelButton.action = @selector(cancelClicked);
 		
 		[cancelButton setFrameOrigin:NSMakePoint(_bounds.size.width / 3 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
-
+		
 		[self addSubview:cancelButton];
 	}
 	
@@ -242,7 +242,7 @@ enum
 		confirmButton.action = @selector(confirmClicked);
 		
 		[confirmButton setFrameOrigin:NSMakePoint(_bounds.size.width * 2 / 3 - confirmButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
-
+		
 		[self addSubview:confirmButton];
 	}
 }
@@ -264,7 +264,7 @@ enum
 	CGContextAddLineToPoint(contextBorder, radius, currentSize.height);
 	CGContextAddArc(contextBorder, radius, currentSize.height - radius, radius, M_PI_2, M_PI, 0);
 	CGContextAddLineToPoint(contextBorder, 0, TOP_DARK_BORDER);
-
+	
 	CGContextFillPath(contextBorder);
 }
 
@@ -274,7 +274,7 @@ enum
 	
 	[[self listBackgroundColor] setFill];
 	[[NSBezierPath bezierPathWithRoundedRect:scrollview.frame xRadius:SCROLL_VIEW_RADIUS yRadius:SCROLL_VIEW_RADIUS] fill];
-
+	
 	[[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil] setFill];
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, TOP_DARK_BORDER));
 }

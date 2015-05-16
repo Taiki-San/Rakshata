@@ -56,7 +56,7 @@
 		
 		[button setTarget:self];
 		[button setAction:@selector(closePopover)];
-
+		
 		[self addSubview:button];
 	}
 }

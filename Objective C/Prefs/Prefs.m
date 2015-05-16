@@ -35,10 +35,10 @@ enum
 {
 	if(prefsCache == nil)
 		prefsCache = [[Prefs alloc] init : data];
-
+	
 	else if(data != nil)
 		[prefsCache updateContext:data];
-
+	
 	//We'll have to cache the old encrypted prefs /!\ prefs de crypto à protéger!!!
 	//Also, need to get the open prefs including tabs size, theme and various stuffs
 }
@@ -177,7 +177,7 @@ enum
 			output = [NSColor colorWithDeviceWhite:200/255.0f alpha:1.0];
 			break;
 		}
-
+			
 		case GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:222/255.0f alpha:1.0];
@@ -274,8 +274,8 @@ enum
 			output = [NSColor colorWithSRGBRed:44/255.0f green:71/255.0f blue:88/255.0f alpha:1.0];
 			break;
 		}
-
-		//To improve
+			
+			//To improve
 		case GET_COLOR_BACKGROUND_CT_TVCELL:
 		{
 			output = [NSColor colorWithDeviceWhite:44/255.0f alpha:1.0];
@@ -521,7 +521,7 @@ enum
 			
 			break;
 		}
-						
+			
 		case PREFS_GET_TAB_CT_POSX:
 		{
 			if(mainThread == TAB_READER && stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
@@ -554,10 +554,10 @@ enum
 			//Classical code
 			CGFloat * output = outputContainer;
 			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.x;
-
+			
 			if(additionalData == NULL)
 				break;
-		
+			
 			*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
 			
 			//Reader position is highly dependant of the width of either SER/CT tabs, we need to check we're not impacted if they were maximized
@@ -622,7 +622,7 @@ enum
 			
 			else if(mainThread == TAB_SERIES && additionalData != NULL)
 				[self getPrefInternal : PREFS_GET_TAB_SERIE_WIDTH : &(((NSRect *)outputContainer)->size.width) : additionalData];
-
+			
 			break;
 		}
 			
@@ -641,7 +641,7 @@ enum
 				((NSRect*) outputContainer)->size.width = SERIESMODE_MAX_WIDTH_WHEN_INACTIVE;
 				[self getPrefInternal : PREFS_GET_TAB_CT_POSX : &(((NSRect *)outputContainer)->origin.x) : additionalData];
 			}
-
+			
 			break;
 		}
 			
@@ -794,7 +794,7 @@ enum
 #endif
 			break;
 		}
-
+			
 		default:
 			break;
 	}
@@ -880,11 +880,11 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			self.themeCode = 1;
 		else
 			[self updateContext:data];
-
+		
 		uint expectedSize[] = { [RakSizeSeries getExpectedBufferSizeVirtual], [RakSizeCT getExpectedBufferSizeVirtual], [RakSizeReader getExpectedBufferSizeVirtual], [RakMDLSize getExpectedBufferSizeVirtual] };
 		uint bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
 		char *input = loadPref("si", bufferSize, 'f'), recoveryBuffer[bufferSize];
-
+		
 		if(input == NULL)
 		{
 			input = recoveryBuffer;
@@ -910,14 +910,14 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			[self flushMemory:YES];
 		
 		prefsPosMDL = [prefsPosMDL init: prefsCache: &input[expectedSize[0] + expectedSize[1] + expectedSize[2]]];
-
+		
 		if(input != recoveryBuffer)
 			free(input);
 		
 		RakAppDelegate * core = [NSApp delegate];
 		if([core class] == [RakAppDelegate class])
 			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
-
+		
 		[self refreshFirstResponder];
 	}
 	return self;
@@ -953,7 +953,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		
 		pos++;
 	}
-
+	
 }
 
 #ifdef MUTABLE_SIZING
@@ -992,7 +992,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	
 	if(memoryError)
 		[[NSException exceptionWithName:@"NotEnoughMemory"
-							 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
+								 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
 }
 
 - (NSArray *) setupExecuteConsistencyChecks : (uint8) request

@@ -60,9 +60,9 @@ enum
 	cellFrame = NSInsetRect(cellFrame, BORDER, BORDER);
 	
 	[[NSBezierPath bezierPathWithRoundedRect:cellFrame xRadius:RADIUS_LARGE yRadius:RADIUS_LARGE] fill];
-
+	
 	cellFrame = NSInsetRect(cellFrame, 0.5, 0.5);
-
+	
 	if(self.isHighlighted)
 	{
 		[backgroundMixed setFill];
@@ -74,7 +74,7 @@ enum
 		else
 			[backgroundOn setFill];
 	}
-
+	
 	[[NSBezierPath bezierPathWithRoundedRect:cellFrame xRadius:RADIUS_INTERNAL yRadius:RADIUS_INTERNAL] fill];
 	
 	if(!haveSizeConfig)
@@ -97,17 +97,17 @@ enum
 			stage = _animation.animationFrame - 1 - stage;
 		
 		CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
-
+		
 		CGContextBeginPath(contextBorder);
 		CGContextAddArc(contextBorder, basePoint.x, basePoint.y, RADIUS_CHK, M_PI * 0.835, -M_PI * 0.165, 0);
-
+		
 		const CGPoint currentPos = CGContextGetPathCurrentPoint(contextBorder);
-
+		
 		//Before the inflexion
 		if(stage < 3)
 		{
 			CGPoint newPoint = currentPos;
-
+			
 			//We draw the progress line
 			newPoint.x += stage * ((inflectionPoint.x - basePoint.x) / 3.0f);
 			newPoint.y += stage * ((inflectionPoint.y - basePoint.y) / 3.0f);
@@ -124,7 +124,7 @@ enum
 		{
 			//Full line
 			CGContextAddLineToPoint(contextBorder, inflectionPoint.x, inflectionPoint.y - 1);
-
+			
 			if(stage > 4)
 			{
 				CGPoint newPoint = CGContextGetPathCurrentPoint(contextBorder);
@@ -135,7 +135,7 @@ enum
 				newPoint.y += stage * ((finishPoint.y - inflectionPoint.y) / 6.0f);
 				
 				CGContextAddLineToPoint(contextBorder, newPoint.x, newPoint.y);
-
+				
 				//Roundish end of line
 				newPoint.x += currentPos.x - basePoint.x;
 				newPoint.y -= currentPos.y - basePoint.y;
@@ -151,17 +151,17 @@ enum
 		
 		CGContextFillPath(contextBorder);
 	}
- 	else if(self.state == NSOnState)
+	else if(self.state == NSOnState)
 	{
 		CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
-
+		
 		CGContextBeginPath(contextBorder);
 		
 		CGContextAddArc(contextBorder, basePoint.x, basePoint.y, RADIUS_CHK, M_PI * 0.835, -M_PI * 0.165, 0);
 		CGContextAddLineToPoint(contextBorder, inflectionPoint.x, inflectionPoint.y - 1);
 		CGContextAddArc(contextBorder, finishPoint.x, finishPoint.y, RADIUS_CHK, -M_PI * 0.828, M_PI * 0.172, 0);
 		CGContextAddArc(contextBorder, inflectionPoint.x, inflectionPoint.y, RADIUS_CHK, M_PI * 0.172, M_PI * 0.835, 0);
-
+		
 		CGContextFillPath(contextBorder);
 	}
 	else if(self.state == NSMixedState)

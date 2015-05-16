@@ -14,8 +14,8 @@
 
 - (instancetype) initWithFrame:(NSRect)frame
 {
-    self = [super initWithFrame:frame];
-    
+	self = [super initWithFrame:frame];
+	
 	if (self)
 	{
 		self.autoresizesSubviews = NO;
@@ -30,14 +30,14 @@
 			return nil;
 		else if(_speed == 0)
 			[_speedText setStringValue:@"0 KB/s"];
-
+		
 		
 		[self addSubview:_speedText];	[self centerText];
-
+		
 		slotColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT : nil];
 		progressColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS : nil];
-    }
-    
+	}
+	
 	return self;
 }
 
@@ -57,15 +57,15 @@
 		return;
 	
 	[_speedText setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
-			slotColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT : nil];
-		progressColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS : nil];
+	slotColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_SLOT : nil];
+	progressColor = [Prefs getSystemColor:GET_COLOR_PROGRESSCIRCLE_PROGRESS : nil];
 	
 	[self setNeedsDisplay:YES];
 }
 
 - (void) dealloc
 {
-	[_speedText removeFromSuperview];	
+	[_speedText removeFromSuperview];
 }
 
 - (void) setWidth : (CGFloat) width
@@ -163,12 +163,12 @@
 	
 	// "Full" Background Circle:
 	[slotColor setStroke];
-    CGContextBeginPath(context);
+	CGContextBeginPath(context);
 	CGContextMoveToPoint(context, 0, 0);
 	CGContextAddLineToPoint(context, self.frame.size.width, 0);
-    CGContextStrokePath(context);
-    
-    // Progress Arc:
+	CGContextStrokePath(context);
+	
+	// Progress Arc:
 	if(_percentage != 0)
 	{
 		[progressColor setStroke];

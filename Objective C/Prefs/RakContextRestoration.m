@@ -20,7 +20,7 @@
 	
 	if(output == NULL)
 		return;
-
+	
 	byte pos = 0;
 	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL , contextReader])
 	{
@@ -86,7 +86,7 @@
 		}
 		
 		bufferC = [buffer cStringUsingEncoding : NSASCIIStringEncoding];
-
+		
 		unsigned char decodedString[strlen(bufferC) / 2 + 1];
 		
 		hexToDec(bufferC, decodedString);

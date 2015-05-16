@@ -334,7 +334,7 @@
 		//self.state = (self.state == NSOnState) ? NSOffState : NSOnState;
 		return;
 	}
-
+	
 	else
 		return;
 	

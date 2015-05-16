@@ -48,7 +48,7 @@
 			
 			[self addSubview:_title];
 		}
-
+		
 		_placeholder = [[RakText alloc] initWithText: NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
 		if(_placeholder != nil)
 		{
@@ -106,7 +106,7 @@
 		_isCompact = compactMode;
 		
 		self.layer.cornerRadius = 4.0f;
-
+		
 		if(_title != nil)
 			[_title setHidden:NO];
 	}
@@ -155,7 +155,7 @@
 		if(_content.isTome)
 		{
 			parentFrame.origin.x = parentFrame.size.width + 20;
-
+			
 			//If focus chapter, and MDL around, it's below the tome view
 			MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
 			if(tabMDL != nil)
@@ -191,16 +191,16 @@
 		parentFrame.size.height -= parentFrame.origin.y + BORDERS_CONTENT;
 		parentFrame.size.width -= 2 * BORDERS_CONTENT;
 	}
-
+	
 	return parentFrame;
 }
 
 - (void) setFrame : (NSRect) parentFrame
 {
 	[super setFrame : [self frameFromParent:parentFrame]];
-
+	
 	[_title setFrame : [self frameForTitle : _bounds]];
-
+	
 	NSRect contentFrame = [self frameForContent : _bounds];
 	[_content setFrame : contentFrame];
 	[_placeholder setFrameOrigin : NSCenteredRect(contentFrame, _placeholder.bounds)];
@@ -265,16 +265,16 @@
 			{
 				[_content setHidden:NO];
 				[_content setAlphaValue:1 :YES];
-
+				
 				_placeholder.animator.alphaValue = 0;
 			}
 			else
 			{
 				[_content setAlphaValue:0 :YES];
-
+				
 				[_placeholder setHidden:NO];
 				_placeholder.animator.alphaValue = 1;
-
+				
 				[_content flushContext:YES];
 			}
 			
@@ -284,7 +284,7 @@
 				[_placeholder setHidden : YES];
 			else
 				[_content setHidden : YES];
-
+			
 		}];
 	}
 	
@@ -307,7 +307,7 @@
 - (void) setWantIsTome : (BOOL) isTome
 {
 	BOOL hidden = _content.isTome != isTome;
-
+	
 	if(_isCompact)
 	{
 		self.hidden = hidden;

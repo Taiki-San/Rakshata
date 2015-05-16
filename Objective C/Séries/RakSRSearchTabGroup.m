@@ -39,7 +39,7 @@
 			{
 				[close setTarget:self];
 				[close setAction:@selector(close)];
-
+				
 				[close.cell setHighlightAllowed:NO];
 				[close setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - close.bounds.size.width / 2, _bounds.size.height - 5 - close.bounds.size.height)];
 				[close.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
@@ -89,7 +89,7 @@
 - (void) resizeAnimation:(NSRect)frameRect
 {
 	[self.animator setFrame:frameRect];
-
+	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
 		[close.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height)];

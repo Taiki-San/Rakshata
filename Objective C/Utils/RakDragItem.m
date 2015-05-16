@@ -89,10 +89,10 @@ typedef struct project_data_for_drag_drop
 	{
 		if(isTome)
 			return (project.nombreTomes != VALEUR_FIN_STRUCT && project.nombreTomes != project.nombreTomesInstalled);
-
+		
 		return (project.nombreChapitre != VALEUR_FIN_STRUCT && project.nombreChapitre != project.nombreChapitreInstalled);
 	}
-
+	
 	return !checkReadable(project, isTome, element);
 }
 
@@ -113,7 +113,7 @@ typedef struct project_data_for_drag_drop
 		return NO;
 	else if(project->chapitresFull == NULL && project->tomesFull != NULL)
 		return YES;
-
+	
 	if(project->tomesInstalled == NULL || project->nombreTomesInstalled < project->nombreTomes)
 		return YES;
 	

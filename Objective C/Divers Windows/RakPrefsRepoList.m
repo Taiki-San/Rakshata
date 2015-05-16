@@ -66,7 +66,7 @@ enum
 		if(_detailMode)
 		{
 			_detailColumn = [[NSTableColumn alloc] init];
-
+			
 			if(_detailColumn != nil)
 			{
 				((NSTableColumn *) [_tableView.tableColumns firstObject]).width -= LIST_ROW_COMPACT_WIDTH;
@@ -128,7 +128,7 @@ enum
 		_rootMode = rootMode;
 		return;
 	}
-
+	
 	[self reloadContent : rootMode];
 }
 
@@ -167,7 +167,7 @@ enum
 	NSString * detail = nil;
 	if(!_rootMode && !_detailMode)
 		detail = [_responder nameOfParent: ((REPO_DATA *) data)->parentRepoID];
-
+	
 	RakPrefsRepoListItemView * result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if (result == nil)
 	{
@@ -251,7 +251,7 @@ enum
 		
 		if(!_wantActivationState)
 			activationButton.hidden = YES;
-
+		
 		//Image
 		image = loadImageForRepo(isRoot, repo);
 		
@@ -380,7 +380,7 @@ enum
 	_fixedWidth = fixedWidth;
 	
 	NSRect frame = self.frame;
-
+	
 	if(frame.size.width != _fixedWidth)
 	{
 		frame.size.width = _fixedWidth;
@@ -392,7 +392,7 @@ enum
 {
 	if(haveFixedWidth)
 		frameRect.size.width = _fixedWidth;
-
+	
 	[super setFrame:frameRect];
 	
 	if(_isDetailColumn || _wantActivationState)
@@ -429,7 +429,7 @@ enum
 	
 	if(_isDetailColumn)
 		return;
-
+	
 	[NSGraphicsContext saveGraphicsState];
 	
 	NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:imageFrame

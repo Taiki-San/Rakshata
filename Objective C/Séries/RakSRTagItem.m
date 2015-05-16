@@ -62,7 +62,7 @@
 {
 	label.stringValue = newTagName;
 	[label sizeToFit];
-
+	
 	[self setFrameSize:NSMakeSize(NSMaxX(label.frame) + TAG_BORDER_RIGHT_LABEL, TAG_BUTTON_HEIGHT)];
 }
 
@@ -97,10 +97,10 @@
 	CGContextAddLineToPoint(contextBorder, size.width, 0);
 	CGContextAddLineToPoint(contextBorder, TAG_BUTTON_ARROW_DEPTH, 0);
 	CGContextAddLineToPoint(contextBorder, 0, TAG_BUTTON_MIDDLE);
-
+	
 	[[self backgroundColor] setFill];
 	CGContextFillPath(contextBorder);
-
+	
 	//Front
 	CGContextBeginPath(contextBorder);
 	CGContextMoveToPoint(contextBorder, TAG_BUTTON_ARROW_DEPTH - 1, 1);

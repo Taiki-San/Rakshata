@@ -67,19 +67,19 @@
 	PROJECT_DATA copy = getCopyOfProjectData(project);
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-	
+		
 		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
 		[self.animator setAlphaValue:0.0];
-
+		
 	} completionHandler:^{
 		
 		[self updateHeaderProjectInternal : copy];
 		
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
+			
 			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
 			[self.animator setAlphaValue:1.0];
-
+			
 		} completionHandler:^{
 			
 		}];

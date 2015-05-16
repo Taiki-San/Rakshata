@@ -30,7 +30,7 @@
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	[self.controlView setNeedsDisplay:YES];
 }
 
@@ -96,7 +96,7 @@
 			}
 			
 			extraFrame = frame;
-
+			
 			//First part
 			extraFrame.size.width *= animationProgress;
 			
@@ -182,7 +182,7 @@
 	else
 	{
 		NSColor * expectedColor = [self getFontColor:cellID];
-
+		
 		if(![expectedColor isEqualTo:[cell textColor]])
 			[cell setTextColor:expectedColor];
 		

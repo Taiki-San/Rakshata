@@ -22,10 +22,10 @@
 - (NSRect) getDefaultFocusSerie
 {
 	NSRect output = NSZeroRect;
-
+	
 	output.size.width = TAB_SERIE_ACTIVE;
 	output.size.height = 100;
-
+	
 	return output;
 }
 

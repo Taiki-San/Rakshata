@@ -77,7 +77,7 @@
 		newFrame.origin.y += (newFrame.size.height - oldFrame.size.height) / 2;
 		[element setFrameOrigin:newFrame.origin];
 	}
-
+	
 	//We check if we need to increse the full width
 	if(NSMaxX(newFrame) + SPACE_AT_THE_RIGHT > self.bounds.size.width)
 	{
@@ -97,14 +97,14 @@
 {
 	if(selectionName == nil)
 		return;
-
+	
 	NSRect contentFrame = selectionName.frame;
 	if(!_noContent)
 		contentFrame.origin.x = NSMaxX(contentFrame) + PRICE_BORDER;
-
+	
 	[price setFrameOrigin: contentFrame.origin];
 	[self addSubview:price];
-
+	
 	CGFloat preoptimizationWidth = self.bounds.size.width;
 	[self optimizeWidth:price];
 	
@@ -123,7 +123,7 @@
 	{
 		[selectionName removeFromSuperview];
 		selectionName = nil;
-
+		
 		if(separationLine != nil)
 		{
 			[separationLine removeFromSuperview];

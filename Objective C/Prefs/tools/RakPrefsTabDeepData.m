@@ -65,7 +65,7 @@
 		
 		//cas du footer
 		CGFloat footer = hex2intPrefs(&inputData[16 * (numberElem - 1)], 1000);
-
+		
 		if(footer == -1)
 			footer = [self getDefaultFooterHeight];
 		else
@@ -149,7 +149,7 @@
 	for(int i = 0; i < numberElem - 1; i++)
 	{
 		frame = [self getAtIndex:i];
-
+		
 		frame.origin.x =	floor(frame.origin.x * 10 + 0.5);
 		frame.origin.y =	floor(frame.origin.y * 10 + 0.5);
 		frame.size.width =	floor(frame.size.width * 10 + 0.5);

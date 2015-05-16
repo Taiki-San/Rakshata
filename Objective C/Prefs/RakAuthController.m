@@ -60,7 +60,7 @@
 	[self.view addSubview:mailInput];
 	[_containerMail removeFromSuperview];
 	[mailInput addController:self];
-
+	
 	passInput = [[RakPassField alloc] initWithFrame:_containerPass.frame];
 	[self.view addSubview:passInput];
 	[_containerPass removeFromSuperview];
@@ -108,7 +108,7 @@
 		
 		[[NSAnimationContext currentContext] setCompletionHandler:^{
 			[self postAnimationWorkSignup:YES];
-
+			
 			if(currentMode == AUTH_MODE_LOGIN)
 				[self postAnimationWorkLogin:NO];
 		}];
@@ -116,7 +116,7 @@
 	else
 	{
 		[self animateLogin : YES];
-
+		
 		[[NSAnimationContext currentContext] setCompletionHandler:^{
 			[self postAnimationWorkLogin:YES];
 			
@@ -133,7 +133,7 @@
 - (void) clickedLogin
 {
 	[self.view.window makeFirstResponder:self.view];
-
+	
 	if(!self.postProcessing && [self isMailValid] && [self isPassValid])
 		[self clickedConfirm:NO];
 }
@@ -141,7 +141,7 @@
 - (void) clickedSignup
 {
 	[self.view.window makeFirstResponder:self.view];
-
+	
 	if(!self.postProcessing && [self isMailValid] && [self isPassValid] && [self isTermAccepted])
 		[self clickedConfirm:YES];
 }
@@ -299,9 +299,9 @@
 		
 		[mailInput.animator setFrameOrigin:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y - 51)];
 		[passInput.animator setFrameOrigin:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y - 51)];
-
+		
 		[container.animator setFrame : NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight)];
-
+		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
 		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
 		
@@ -363,7 +363,7 @@
 	}
 	else
 		[_login setHidden:NO];
-
+	
 	CGFloat border = (container.bounds.size.width - 40 - forgottenPass.bounds.size.width - _login.bounds.size.width) / 3;
 	
 	if(appear)
@@ -445,7 +445,7 @@
 					break;
 				}
 			}
-
+			
 			break;
 		}
 	}
@@ -457,7 +457,7 @@
 		[self.view.window makeFirstResponder:mailInput];
 	else if([[passInput stringValue] length] == 0)
 		[self.view.window makeFirstResponder:passInput];
-
+	
 	else if(currentMode == AUTH_MODE_NEW_ACCOUNT)
 	{
 		if([self isTermAccepted])

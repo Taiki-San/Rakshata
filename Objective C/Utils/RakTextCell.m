@@ -72,7 +72,7 @@
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [self initTextCell:text];
-    if (self != nil)
+	if (self != nil)
 	{
 		self.editable = NO;
 		self.bordered = NO;
@@ -86,8 +86,8 @@
 		
 		self.selectable = NO;
 		self.customizedInjectionPoint = NO;
-    }
-    return self;
+	}
+	return self;
 }
 
 - (void) setBackgroundColor:(NSColor *)color

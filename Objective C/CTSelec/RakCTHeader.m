@@ -15,7 +15,7 @@
 - (instancetype) initWithData : (NSRect) frameRect : (PROJECT_DATA) project
 {
 	RakCTHeaderImage * localHeader = [[RakCTHeaderImage alloc] initWithData : frameRect : project];
-
+	
 	if(localHeader != nil)
 	{
 		self = [self initWithFrame:[self frameByParent:frameRect : localHeader]];
@@ -25,7 +25,7 @@
 			header = localHeader;
 			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : self];
 			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
-
+			
 			[header setFrame : _bounds];
 			[self addSubview:header];
 			
@@ -49,7 +49,7 @@
 		[header updateHeaderProjectInternal:getCopyOfProjectData(project)];
 	else
 		[header updateHeaderProject:project];
-
+	
 	if(synopsis != nil)
 		[synopsis updateProject : project];
 	else
@@ -96,7 +96,7 @@
 		_cachedFrame = frameRect;
 		return;
 	}
-		
+	
 	[super setFrame:[self frameByParent:frameRect : header]];
 	
 	[header setFrame : _bounds];
@@ -112,9 +112,9 @@
 	}
 	
 	frame = [self frameByParent : frame : header];
-
+	
 	[self.animator setFrame:frame];
-
+	
 	NSSize headerSize = [header frameByParent : frame].size;
 	
 	[header resizeAnimation:frame];
@@ -144,7 +144,7 @@
 		NSRectFill(NSMakeRect(0, dirtyRect.size.height - _synopsisTitleHeight, dirtyRect.size.width, _synopsisTitleHeight));
 		dirtyRect.size.height -= _synopsisTitleHeight;
 	}
-
+	
 	[_backgroundColor setFill];
 	
 	CGFloat maxX = NSMaxX(synopsis.frame);

@@ -36,7 +36,7 @@
 	[super fillWindow];
 	
 	activeView = PREFS_BUTTON_CODE_UNUSED;
-
+	
 	header = [[RakPrefsButtons alloc] initWithFrame : NSMakeRect(0, 0, PREF_WINDOW_WIDTH, PREF_BUTTON_BAR_HEIGHT) :self];
 	if(header != nil)
 	{
@@ -74,7 +74,7 @@
 - (void) focusChanged : (byte) newTab
 {
 	NSView * old = [self viewForCode : activeView : NO], * new = [self viewForCode : newTab : YES];
-
+	
 	if(old == nil)
 	{
 		NSRect newWindowFrame = window.frame;
@@ -87,7 +87,7 @@
 		diff = oldSize.width - new.bounds.size.width;
 		newWindowFrame.size.width -= diff;
 		newWindowFrame.origin.x = MAX(0, newWindowFrame.origin.x + diff / 2);
-
+		
 		[header setFrameSize:NSMakeSize(newWindowFrame.size.width - 4, PREF_BUTTON_BAR_HEIGHT)];
 		[window setFrame:newWindowFrame display:YES animate:NO];
 	}
@@ -100,13 +100,13 @@
 			
 			context.duration = 0.1f;
 			old.animator.alphaValue = 0;
-		
+			
 		} completionHandler:^{
 			
 			NSRect newWindowFrame = window.frame;
-
+			
 			CGFloat diff = old.bounds.size.height - new.bounds.size.height;
-
+			
 			newWindowFrame.size.height -= diff + 0.5;
 			newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff / 2);
 			
@@ -116,24 +116,24 @@
 			
 			if(diff < 0)	//We expand
 				[header setFrameSize:NSMakeSize(newWindowFrame.size.width - 4, PREF_BUTTON_BAR_HEIGHT)];
-
+			
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
+				
 				context.duration = 0.1f;
 				[window.animator setFrame:newWindowFrame display:YES animate:YES];
-			
+				
 			} completionHandler:^{
 				
 				if(diff > 0)	//We shrink
 					[header setFrameSize:NSMakeSize(newWindowFrame.size.width - 4, PREF_BUTTON_BAR_HEIGHT)];
-			
+				
 				[new setFrameOrigin:NSMakePoint(0, PREF_BUTTON_BAR_HEIGHT)];
 				
 				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
+					
 					context.duration = 0.1f;
 					new.animator.alphaValue = 1;
-				
+					
 				} completionHandler:^{
 					old.hidden = YES;
 				}];
@@ -152,7 +152,7 @@
 		{
 			if(generalView != nil)
 				return generalView;
-
+			
 			else if(createIfNeeded)
 			{
 				generalView = [[RakPrefsGeneralView alloc] initWithFrame:[self mainFrame]];
@@ -165,7 +165,7 @@
 			
 			break;
 		}
-
+			
 		case PREFS_BUTTON_CODE_REPO:
 		{
 			if(repoView != nil)
@@ -219,7 +219,7 @@
 			
 			break;
 		}
-  	}
+	}
 	
 	return nil;
 }

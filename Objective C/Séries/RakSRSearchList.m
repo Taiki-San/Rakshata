@@ -82,7 +82,7 @@
 		
 		selection = [NSMutableArray array];
 		
- 		NSString * notificationName = [self getNotificationName];
+		NSString * notificationName = [self getNotificationName];
 		if(notificationName != nil)
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerFired:) name:notificationName object:nil];
 	}
@@ -175,7 +175,7 @@
 			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
 			[selection addObject:@(rowIndex)];
 		}
-
+		
 		lastWasSelected = !lastWasSelected;
 		selectedRowIndex = rowIndex;
 		[view setNeedsDisplay];

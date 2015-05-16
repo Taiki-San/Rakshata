@@ -38,13 +38,13 @@
 {
 	char * teamPath;
 	NSImage * image = nil;
-
+	
 	if(data.repo != NULL && (teamPath = getPathForRepo(data.repo)) != NULL)
 	{
 		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
 		if(bundle != nil)
 			image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]];
-
+		
 		free(teamPath);
 	}
 	
@@ -115,7 +115,7 @@
 	NSRect frame = [super grandientBounds];
 	frame.origin.y = frame.size.height - DEFAULT_TITLE_HEIGHT;
 	frame.size.height = DEFAULT_TITLE_HEIGHT;
-
+	
 	[_titleGradient drawInRect : frame angle : self.angle];
 }
 

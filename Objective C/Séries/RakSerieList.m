@@ -35,7 +35,7 @@
 		if(content != nil)
 		{
 			[content expandItem:nil expandChildren:YES];
-
+			
 			initializationStage = INIT_OVER;
 			
 			uint8_t i = 0;
@@ -134,7 +134,7 @@
 			break;
 		}
 	}
-
+	
 }
 
 #pragma mark - Loading routines
@@ -448,7 +448,7 @@
 	
 	if(tmp.nombreTomes != 0)
 		getUpdatedCTList(&tmp, true);
-
+	
 	[RakTabView broadcastUpdateContext: content : tmp : NO : VALEUR_FIN_STRUCT];
 	
 	releaseCTData(tmp);
@@ -570,7 +570,7 @@
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification
 {
-    if (notification.object == content && initializationStage == INIT_OVER)
+	if (notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}
@@ -578,7 +578,7 @@
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification
 {
-    if (notification.object == content && initializationStage == INIT_OVER)
+	if (notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}
@@ -693,7 +693,7 @@
 		return NO;
 	
 	RakSerieListItem * item = [items objectAtIndex:0];
-							  
+	
 	if(item == nil || [item isRootItem] || [item isMainList])
 		return NO;
 	

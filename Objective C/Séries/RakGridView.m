@@ -27,7 +27,7 @@ enum
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager
 {
 	self = [self init];
-
+	
 	if(self != nil)
 	{
 		_currentDragItem = UINT_MAX;
@@ -190,7 +190,7 @@ enum
 - (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint dragOperation:(NSDragOperation)operation
 {
 	[RakList propagateDragAndDropChangeState : NO : lastDragCouldDL];
-
+	
 }
 
 - (BOOL) grantDropAuthorization : (BOOL) canDL

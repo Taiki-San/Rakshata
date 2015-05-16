@@ -14,8 +14,8 @@
 
 - (instancetype) initWithFrame : (NSRect) frame
 {
-    self = [super initWithNibName:nil bundle:nil];
-    if (self)
+	self = [super initWithNibName:nil bundle:nil];
+	if (self)
 	{
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
@@ -25,14 +25,14 @@
 		{
 			[button setTarget:self];
 			[button setAction:@selector(updateUITheme)];
-
+			
 			frame.origin = NSZeroPoint;
 			[button setFrameOrigin:NSCenteredRect(frame, button.bounds)];
-
+			
 			[mainView addSubview:button];
 		}
 	}
-    return self;
+	return self;
 }
 
 - (void) updateUITheme
@@ -62,29 +62,29 @@
 
 - (void)createPopover
 {
-    if (popover == nil)
-    {
-        popover = [[NSPopover alloc] init];
-        
-		popover.contentViewController = viewControllerHUD;
-        popover.appearance = NSPopoverAppearanceHUD;
+	if (popover == nil)
+	{
+		popover = [[NSPopover alloc] init];
 		
-        popover.animates = YES;
-        
-        // AppKit will close the popover when the user interacts with a user interface element outside the popover.
-        // note that interacting with menus or panels that become key only when needed will not cause a transient popover to close.
-        popover.behavior = NSPopoverBehaviorTransient;
-        
-        // so we can be notified when the popover appears or closes
-        popover.delegate = self;
-
+		popover.contentViewController = viewControllerHUD;
+		popover.appearance = NSPopoverAppearanceHUD;
+		
+		popover.animates = YES;
+		
+		// AppKit will close the popover when the user interacts with a user interface element outside the popover.
+		// note that interacting with menus or panels that become key only when needed will not cause a transient popover to close.
+		popover.behavior = NSPopoverBehaviorTransient;
+		
+		// so we can be notified when the popover appears or closes
+		popover.delegate = self;
+		
 		viewControllerHUD.popover = popover;
-    }
+	}
 }
 
 - (void)showPopover
 {
-    [self createPopover];
+	[self createPopover];
 	[popover showRelativeToRect:[anchor bounds] ofView:anchor preferredEdge:NSMaxYEdge];
 }
 
@@ -97,28 +97,28 @@
 
 - (void)popoverDidShow:(NSNotification *)notification
 {
-    // add new code here after the popover has been shown
+	// add new code here after the popover has been shown
 }
 
 - (void)popoverWillClose:(NSNotification *)notification
 {
-    NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
-
+	NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
+	
 	if (closeReason)
-    {
-        // closeReason can be:
-        //      NSPopoverCloseReasonStandard
-        //      NSPopoverCloseReasonDetachToWindow
-        //
-        // add new code here if you want to respond "before" the popover closes
-        //
-    }
+	{
+		// closeReason can be:
+		//      NSPopoverCloseReasonStandard
+		//      NSPopoverCloseReasonDetachToWindow
+		//
+		// add new code here if you want to respond "before" the popover closes
+		//
+	}
 }
 
 - (void)popoverDidClose:(NSNotification *)notification
 {
 	//Ajouter des codes à la fermeture
-    popover = nil;
+	popover = nil;
 }
 
 @end

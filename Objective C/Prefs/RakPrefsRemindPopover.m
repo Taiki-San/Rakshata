@@ -25,7 +25,7 @@
 		return NO;
 	
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
+	
 	NSNumber* object = [defaults objectForKey:element];
 	
 	if(object == nil)

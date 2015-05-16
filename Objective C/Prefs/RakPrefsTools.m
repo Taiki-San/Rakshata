@@ -18,7 +18,7 @@ NSRect prefsPercToFrame(NSRect percentage, NSSize superview)
 	percentage.origin.y *= superview.height / 100.0f;
 	percentage.size.width *= superview.width / 100.0f;
 	percentage.size.height *= superview.height / 100.0f;
-
+	
 	return percentage;
 }
 

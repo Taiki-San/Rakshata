@@ -20,8 +20,8 @@ enum
 
 - (instancetype) initWithFrame : (NSRect) frame : (BOOL) isOneLevelBack
 {
-    self = [super initWithFrame : [self frameFromParent:frame]];
-    if (self != nil)
+	self = [super initWithFrame : [self frameFromParent:frame]];
+	if (self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
 		[self setWantsLayer:YES];
@@ -30,15 +30,15 @@ enum
 		cursorOnMe = NO;
 		
 		[Prefs getCurrentTheme:self];	//We register to theme change
-
+		
 		//On initialise la cellule
 		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
 		ID = isOneLevelBack ? LEVEL_CT : LEVEL_SERIE;
-	
+		
 		//Set tracking area
 		tag = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:NO];
 	}
-    return self;
+	return self;
 }
 
 - (NSRect) frameFromParent : (NSRect) frame
@@ -57,7 +57,7 @@ enum
 	[super setFrame: newFrame];
 	
 	newFrame.origin = NSZeroPoint;
-
+	
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:newFrame owner:self userData:NULL assumeInside:NO];
 }
@@ -196,7 +196,7 @@ enum
 		[self.cell setAnimationInProgress:NO];
 		[self performClick:self];
 	}
-
+	
 	_animation = nil;
 }
 
@@ -259,7 +259,7 @@ enum
 			[[controlView getColorBackgroundSlider] setFill];
 			NSRectFill(drawingRect);
 		}
-			
+		
 		if(animationStatus != 1)
 		{
 			drawingRect.origin.x = drawingRect.size.width;

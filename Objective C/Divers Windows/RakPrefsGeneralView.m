@@ -13,10 +13,10 @@
 enum
 {
 	BORDER = 150,
-
+	
 	WIDTH = 600,
 	HEIGHT = 170,
-
+	
 	THEME_BASE_Y = 130,
 	EMAIL_BASE_Y = 83,
 	RESET_BASE_Y = 25

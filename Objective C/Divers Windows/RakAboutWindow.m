@@ -43,7 +43,7 @@ enum
 
 - (void) resetWindow
 {
-	[self updateFrames];	
+	[self updateFrames];
 }
 
 - (BOOL) windowShouldClose:(id)sender
@@ -78,7 +78,7 @@ enum
 	{
 		projectName.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_ABOUT] size:18];
 		[projectName sizeToFit];
-
+		
 		projectName.URL = PROJECT_URL;
 		[contentView addSubview:projectName];
 	}
@@ -132,7 +132,7 @@ enum
 		planchette.URL = PATRICK_URL;
 		[contentView addSubview:planchette];
 	}
-
+	
 	blag = [[RakClickableText alloc] initWithText:@"Blag" :[self mainTextColor] responder:self];
 	if(blag != nil)
 	{
@@ -205,7 +205,7 @@ enum
 	else
 		mainEaster.hidden = NO;
 	mainEaster.alphaValue = 0;
-
+	
 	if(easterLink == nil)
 	{
 		easterLink = [[RakClickableText alloc] initWithText:@"Check them out!" :[self mainTextColor] responder:self];
@@ -220,7 +220,7 @@ enum
 	easterLink.alphaValue = 0;
 	
 	[NSAnimationContext beginGrouping];
-
+	
 	[self updateFrames];
 	
 	mainEaster.animator.alphaValue = 1;
@@ -278,7 +278,7 @@ enum
 	[GET_VIEW(icon) setFrameOrigin: NSMakePoint(viewSize.width / 2 - BORDER_ICON / 2, currentY = (currentY - BORDER_TOP_ICON - BORDER_ICON))];
 	[GET_VIEW(projectName) setFrameOrigin:NSMakePoint(viewSize.width / 2 - projectName.bounds.size.width / 2, currentY = (currentY - BORDER_TOP_ICON - projectName.bounds.size.height))];
 	[GET_VIEW(version) setFrameOrigin:NSMakePoint(viewSize.width / 2 - version.bounds.size.width / 2, currentY = (currentY - version.bounds.size.height))];
-
+	
 	steps[0] = currentY - BORDER_SEPARATOR;
 	currentY -= 2 * BORDER_SEPARATOR;
 	
@@ -291,7 +291,7 @@ enum
 	currentY = MIN(designTitle.frame.origin.y, planchette.frame.origin.y) - INTERLINE_OFFSET - blag.bounds.size.height;
 	
 	[GET_VIEW(blag) setFrameOrigin:NSMakePoint(viewSize.width / 2, currentY)];
-
+	
 	steps[1] = currentY - BORDER_SEPARATOR;
 	currentY -= 2 * BORDER_SEPARATOR;
 	

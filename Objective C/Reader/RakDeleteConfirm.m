@@ -40,9 +40,9 @@
 	_isTome = receiver.isTome;
 	_receiver = receiver;
 	_anchor = anchor;
-
+	
 	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
-
+	
 	return YES;
 }
 

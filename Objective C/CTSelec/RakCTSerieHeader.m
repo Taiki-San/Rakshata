@@ -30,7 +30,7 @@ enum
 		[Prefs getCurrentTheme:self];
 		[self updateGradient];
 		_projectHaveFocus = NO;
-
+		
 		placeholder = [self craftField:NSLocalizedString(@"SUGGESTIONS", nil)];
 		if(placeholder != nil)
 		{
@@ -49,7 +49,7 @@ enum
 		if(rating != nil)
 		{
 			rating.wantNumber = YES;
-
+			
 			[rating setFrameOrigin:[self ratingOrigin:frameRect]];
 			[self addSubview:rating];
 		}
@@ -96,7 +96,7 @@ enum
 		return;
 	
 	BOOL inOrOut = [_inOrOut boolValue];
-
+	
 	if(!inOrOut)	//Leaving
 	{
 		[self changeFocus : NO];
@@ -155,7 +155,7 @@ enum
 		releaseCTData(project);
 	
 	[rating updateProject : project];
-
+	
 	NSString * newName = getStringForWchar(project.projectName);
 	
 	//Animation is not required
@@ -191,12 +191,12 @@ enum
 		if(newStars != nil)
 		{
 			rating = newStars;
-
+			
 			[newStars setFrameOrigin:NSMakePoint([self ratingOrigin:_bounds].x, frame.origin.y)];
 			
 			[self addSubview:newStars];
 		}
-
+		
 		title = newTitle;
 		frame.origin.y = oldY;
 	}
@@ -210,7 +210,7 @@ enum
 		[newStars.animator setFrameOrigin:[self ratingOrigin:_bounds]];
 	
 	frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
-
+	
 	[oldTitle.animator setFrameOrigin:frame.origin];
 	[oldRating.animator setFrameOrigin:NSMakePoint(newStars.frame.origin.x, frame.origin.y)];
 	
@@ -224,7 +224,7 @@ enum
 - (void) setFrame : (NSRect) frameRect
 {
 	_cachedFrame = frameRect;
-
+	
 	if(!self.isHidden)
 	{
 		[super setFrame:frameRect];
@@ -239,7 +239,7 @@ enum
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	_cachedFrame = frameRect;
-
+	
 	if(!self.isHidden)
 	{
 		[self.animator setFrame:frameRect];
@@ -266,14 +266,14 @@ enum
 	if(isPlaceholder)
 	{
 		frame.origin.x = _projectHaveFocus ? -frame.size.width : TITLE_OFFSET;
-
+		
 		frame.origin.y = frame.size.height / 2 - placeholder.bounds.size.height / 2;
 		frame.size.height = placeholder.bounds.size.height;
 	}
 	else
 	{
 		frame.origin.x = _projectHaveFocus ? TITLE_OFFSET : frame.size.width;
-
+		
 		frame.origin.y = frame.size.height / 2 - title.bounds.size.height / 2;
 		frame.size.height = title.bounds.size.height;
 	}

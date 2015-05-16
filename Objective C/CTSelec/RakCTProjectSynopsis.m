@@ -29,7 +29,7 @@
 			_title.drawGradient = YES;
 			_title.barWidth = 1;
 			_title.widthGradient = 0.4f;
-
+			
 			[_title setFrame : [self frameForTitle:_bounds : _title.bounds.size.height]];
 			[_title setAlignment : NSRightTextAlignment];
 			[self addSubview:_title];
@@ -76,14 +76,14 @@
 {
 	NSRect mainFrame = [self frameFromParent:frame : headerSize];
 	const CGFloat titleHeight = _title.bounds.size.height;
-
+	
 	[self _updateFrame:mainFrame :animated];
 	
 	const NSRect titleFrame = [self frameForTitle : mainFrame : titleHeight];
-
+	
 	//Update content frames
 	NSRect scrollviewRect = [self frameForContent : mainFrame : titleHeight];
-
+	
 	if(animated)
 	{
 		[_title.animator setFrame:titleFrame];
@@ -95,14 +95,14 @@
 	else
 	{
 		[_title setFrame:titleFrame];
-
+		
 		[_scrollview setFrame: scrollviewRect];
 		if(placeholderString)
 		{
 			[_placeholder setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
 		}
 	}
-
+	
 	[self updateScrollViewState];
 }
 
@@ -128,7 +128,7 @@
 - (NSRect) frameFromParent : (NSRect) parentFrame : (NSSize) image
 {
 	parentFrame = [self frameFromParent:parentFrame];
-
+	
 	parentFrame.origin.y = 0;
 	parentFrame.origin.x += image.width;
 	parentFrame.size.width -= image.width + SYNOPSIS_BORDER;

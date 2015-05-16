@@ -37,7 +37,7 @@ enum
 			_invalidData = YES;
 			return nil;
 		}
-
+		
 		previousStatus = MDL_CODE_UNUSED;
 		
 		self.autoresizesSubviews = NO;
@@ -136,7 +136,7 @@ enum
 	
 	if(wasMultiLine)
 		return [NSString stringWithFormat:@"%@\n%@", getStringForWchar((*todoList)->datas->projectName), localized];
-
+	
 	return [NSString stringWithFormat:@"%@ - %@", getStringForWchar((*todoList)->datas->projectName), localized];
 }
 
@@ -153,7 +153,7 @@ enum
 	
 	[requestName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
 	[statusText setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
-
+	
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;
 	[_remove removeFromSuperview];	_remove = nil;
@@ -186,7 +186,7 @@ enum
 	if(wasMultiLine != (frame.size.height > 30 && frame.size.width < 300))
 	{
 		wasMultiLine = !wasMultiLine;
-
+		
 		[self multilineStateUpdated];
 	}
 	
@@ -239,7 +239,7 @@ enum
 	if(_read != nil)
 	{
 		curFrame = _read.frame;
-
+		
 		if(wasMultiLine)
 		{
 			newPoint.y = Y_OFFSET_MULTILINE_BUTTON;
@@ -282,7 +282,7 @@ enum
 		
 		curFrame.origin.x = [RakProgressBar getLeftBorder];
 		curFrame.size.width -= [RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder];
-
+		
 		[DLprogress setFrame:curFrame];
 		[DLprogress setRightTextBorder: newPoint.x - 10];
 		[DLprogress centerText];
@@ -296,7 +296,7 @@ enum
 			newPoint.y = Y_OFFSET_MULTILINE_TEXT;
 		else
 			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
-
+		
 		newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
 		
 		if(requestName == nil || requestName.frame.size.width + requestName.frame.origin.x + 25 < newPoint.x)
@@ -325,7 +325,7 @@ enum
 		_invalidData = NO;
 	
 	[requestName setStringValue : [self getName]];
-
+	
 	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
 	[_pause setNeedsDisplay : YES];
 	[_remove.cell setState:RB_STATE_STANDARD];
@@ -364,9 +364,9 @@ enum
 - (void) rowDeleted : (NSNotification *) notification
 {
 	NSDictionary *userInfo = [notification userInfo];
-
+	
 	NSNumber * deletedRow = [userInfo objectForKey:@"deletedRow"];
-
+	
 	if(deletedRow != nil && _row > [deletedRow unsignedIntValue])
 		_row--;
 }
@@ -395,7 +395,7 @@ enum
 			[DLprogress setHidden:NO];
 			
 			DATA_LOADED ** entry = [_controller getData : _row : YES];
-
+			
 			if(entry != NULL && *entry != NULL)
 			{
 				//We update the buttons state
@@ -428,7 +428,7 @@ enum
 			break;
 		}
 	}
-
+	
 	//Force them to refresh, otherwise, we may end up with an outdated, pressed button
 	[_remove setNeedsDisplay];
 	[_read setNeedsDisplay];
@@ -459,7 +459,7 @@ enum
 		return NO;
 	
 	int8_t status = [_controller statusOfID:_row :YES];
-
+	
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
 	if((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED && (*todoList)->curlHandler != NULL)
@@ -476,11 +476,11 @@ enum
 - (void) sendRemove
 {
 	int8_t status = [_controller statusOfID:_row :YES];
-
+	
 	[self abortProcessing];
 	
 	[_controller discardElement: _row withSimilar: status == MDL_CODE_INSTALL_OVER];
-
+	
 	if(status == MDL_CODE_DL)
 		MDLDownloadOver(false);
 }
@@ -507,7 +507,7 @@ enum
 - (void) sendRead
 {
 	[[(RakAppDelegate*) [NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
-
+	
 	[_controller discardElement: _row withSimilar: YES];
 }
 

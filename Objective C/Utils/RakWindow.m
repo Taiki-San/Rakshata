@@ -30,7 +30,7 @@
 	self.hideTitleBarInFullScreen = YES;
 	
 	self.titleTextShadow = self.inactiveTitleTextShadow = [[NSShadow alloc] init];
-
+	
 	self.titleTextColor = [Prefs getSystemColor:GET_COLOR_SURVOL : self];
 	self.inactiveTitleTextColor = [Prefs getSystemColor:GET_COLOR_ACTIVE : nil];
 	
@@ -101,10 +101,10 @@
 	
 	if ([event type] == NSKeyDown)
 	{
-        if (([event modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSCommandKeyMask)
+		if (([event modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSCommandKeyMask)
 		{
 			NSString * character = [event charactersIgnoringModifiers];
-
+			
 			if(_isMainWindow)
 			{
 				if ([character isEqualToString:@"f"])

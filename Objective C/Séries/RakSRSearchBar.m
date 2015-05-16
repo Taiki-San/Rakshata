@@ -24,7 +24,7 @@
 	
 	output.drawsBackground = YES;
 	output.backgroundColor = [RakSRSearchBar getBackgroundColor];
-
+	
 	return output;
 }
 
@@ -36,7 +36,7 @@
 	//Basically, positionning of text would get completly nuts
 	//We fixed most of the issues with the hooks below, but one remained, if text was inputed, then focus was lost,
 	//we couldn't fix the y positionning. It seems that kill this function achieve that without significant issues
-
+	
 	if([self.stringValue isEqualToString:@""])
 	{
 		[super endEditing:textObj];
@@ -102,7 +102,7 @@
 		self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
-
+		
 		[self updatePlaceholder:YES];
 		[Prefs getCurrentTheme:self];
 		
@@ -132,7 +132,7 @@
 		_oldButton = cell.searchButtonCell;
 		button.target = _oldButton.target;
 		button.action = _oldButton.action;
-
+		
 		[cell setSearchButtonCell:button];
 	}
 	
@@ -218,7 +218,7 @@
 											   @{NSForegroundColorAttributeName : [self getPlaceholderTextColor],
 												 NSBackgroundColorAttributeName : [RakSRSearchBar getBackgroundColor],
 												 NSBaselineOffsetAttributeName : @(inactive ? -3 : 0)}]];
-
+	
 	[RakSRSearchBar triggeringSearchBar : !inactive : _ID];
 }
 
@@ -248,10 +248,10 @@
 		return;
 	
 	[self initCell];
-
+	
 	self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 	self.layer.borderColor = [self getBorderColor].CGColor;
-
+	
 	[self.cell setTextColor:[self getTextColor]];
 	[self updatePlaceholder : _currentPlaceholderState];
 }
@@ -322,7 +322,7 @@
 		IMP imp = [textView methodForSelector:commandSelector];
 		void (*func)(id, SEL, id) = (void *)imp;
 		func(textView, commandSelector, nil);
-
+		
 		noRecursive = NO;
 		
 		result = YES;

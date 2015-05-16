@@ -17,7 +17,7 @@
 - (void) initView: (NSView *)superview : (NSString *) state
 {
 	[super setFrame:[self createFrameWithSuperView:superview]];
-
+	
 	_initWithNoContent = NO;
 	_waitingLogin = NO;
 	canDeploy = YES;
@@ -70,7 +70,7 @@
 	
 	if(!project.isInitialized || project.repo == NULL)
 		return NO;
-
+	
 	//We get our current tab
 	while (sender != nil && [sender superclass] != [RakTabView class])
 		sender = [sender superview];
@@ -92,8 +92,8 @@
 	
 	//Ladies and gentlemen, your eyes are about to burn
 	NSDictionary * userInfo = [NSDictionary dictionaryWithObjects:@[[[NSData alloc] initWithBytes:&project length:sizeof(project)], @(isTome), @(element)] forKeys : @[@"project", @"selectionType", @"selection"]];
-    [[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_UPDATE_TAB_CONTENT object:sender userInfo:userInfo];
-
+	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_UPDATE_TAB_CONTENT object:sender userInfo:userInfo];
+	
 	if(shouldFreeAfterward)
 		releaseCTData(project);
 	
@@ -220,7 +220,7 @@
 	
 	[self setFrame:[self createFrame]];
 	[foregroundView setFrame: _bounds];
-
+	
 	[self refreshDataAfterAnimation];
 }
 
@@ -249,7 +249,7 @@
 		[self.animator setFrame : frame];
 		
 		frame.origin = NSZeroPoint;
-
+		
 		[foregroundView resizeAnimation:frame];
 	}
 	else
@@ -257,7 +257,7 @@
 		[super setFrame:frame];
 		
 		frame.origin = NSZeroPoint;
-
+		
 		[foregroundView setFrame:frame];
 	}
 	
@@ -418,14 +418,14 @@
 	{
 		return YES;
 	}
-
+	
 	return NO;
 }
 
 - (NSPoint) getCursorPosInWindow	//mouseLocation return the obsolute position, not the position inside the window
 {
 	NSPoint mouseLoc = [NSEvent mouseLocation], windowLoc = self.window.frame.origin;
-
+	
 	mouseLoc.x -= windowLoc.x + WIDTH_BORDER_ALL;
 	mouseLoc.y -= windowLoc.y + WIDTH_BORDER_ALL;
 	
@@ -603,7 +603,7 @@
 	{
 		return;	//Condition not met to close the foreground filter
 	}
-
+	
 	[self performSelectorOnMainThread:@selector(animateForgroundView:) withObject:@(waitingLogin) waitUntilDone:NO];
 	
 	_waitingLogin = waitingLogin;
@@ -618,7 +618,7 @@
 	
 	[NSAnimationContext beginGrouping];
 	[[NSAnimationContext currentContext] setDuration : 0.2f];
-
+	
 	if(value)
 	{
 		[foregroundView.animator setAlphaValue:1];
@@ -654,7 +654,7 @@
 	
 	if(sharedTabMDL != nil && (!requireAvailable || [sharedTabMDL isDisplayed]))
 		return sharedTabMDL;
-
+	
 	return nil;
 }
 
@@ -722,10 +722,10 @@
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
 	uint startTab = [RakDragResponder getOwnerOfTV:[sender draggingSource]];
-
+	
 	if([self dropOperationForSender: startTab : [RakDragItem canDL:[sender draggingPasteboard]]] == NSDragOperationCopy)
 		return [self acceptDrop: startTab : sender];
-
+	
 	return NO;
 }
 
@@ -746,7 +746,7 @@
 		return NO;
 	
 	BOOL retVal = [self receiveDrop:localProject :item.isTome :item.selection :[RakDragResponder getOwnerOfTV:[sender draggingSource]]];
-
+	
 	releaseCTData(localProject);
 	releaseCTData(item.project);
 	

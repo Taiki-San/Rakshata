@@ -15,7 +15,7 @@
 - (instancetype) initWithText : (NSRect) frame : (NSString *) text
 {
 	_widthGradient = 2 / 3.0f;
-
+	
 	self = [super initWithText : [self getMenuFrame : frame] : text : [self getTextColor]];
 	if(self != nil)
 	{
@@ -60,7 +60,7 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	NSRect frame = [self getMenuFrame:frameRect];
-
+	
 	frame.origin.x -= 1;	//On retina display, sometimes, 1 pixel (0.5 pt) wide borders may appear
 	frame.size.width += 2;
 	
@@ -74,7 +74,7 @@
 	
 	frame.origin.x -= 1;
 	frame.size.width += 2;
-
+	
 	[self.animator setFrame: frame];
 	[self updateGradientOrigin : frame.size.width];
 }

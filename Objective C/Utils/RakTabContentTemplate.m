@@ -39,7 +39,7 @@
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	[self setNeedsDisplay:YES];
 }

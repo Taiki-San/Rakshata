@@ -69,7 +69,7 @@ enum
 			
 			[self addSubview:buttonFav];
 		}
-
+		
 	}
 	
 	return self;

@@ -120,6 +120,6 @@ NSImage * loadImageForRepo(BOOL isRoot, void* repo)
 	
 	if(output == nil)
 		output = [NSImage imageNamed: isRoot ? @"defaultRepoRoot" : @"defaultRepo"];
-
+	
 	return output;
 }

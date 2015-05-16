@@ -14,8 +14,8 @@
 
 - (instancetype) init : (NSView*) contentView : (NSString *) state
 {
-    self = [super init];
-    if (self)
+	self = [super init];
+	if (self)
 	{
 		flag = TAB_SERIES;
 		
@@ -26,7 +26,7 @@
 		
 		[self initContent : state];
 	}
-    return self;
+	return self;
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -144,7 +144,7 @@
 		if(animated)
 		{
 			NSRect headerFrame = [header frameFromParent:frame];
-
+			
 			[header resizeAnimation:headerFrame];
 			[searchTab resizeAnimation:[self getSearchTabFrame:headerFrame.size]];
 		}
@@ -154,7 +154,7 @@
 			[searchTab setFrame:[self getSearchTabFrame : header.bounds.size]];
 		}
 	}
-
+	
 	NSRect coreFrame = [self getCoreviewFrame : frame];
 	if(animated)
 		[coreView resizeAnimation:coreFrame];
@@ -174,7 +174,7 @@
 {
 	NSRect output;
 	NSSize sizeSuperview = self.superview.bounds.size;
-
+	
 	[Prefs getPref:PREFS_GET_TAB_CT_FRAME :&output :&sizeSuperview];
 	
 	return output;
@@ -188,7 +188,7 @@
 	frame.origin.y = headerSize.height;
 	frame.size.width = headerSize.width - 2;
 	frame.size.height = (searchTab != nil ? searchTab.height : SRSEARCHTAB_DEFAULT_HEIGHT);
-
+	
 	return frame;
 }
 
@@ -266,7 +266,7 @@
 		return NO;
 	
 	uint state;
-
+	
 	[Prefs getPref:PREFS_GET_READER_TABS_STATE :&state];
 	
 	return (state & STATE_READER_TAB_SERIE_FOCUS) == 0;

@@ -34,13 +34,13 @@
 	CTSelec  * _tabCT =		[CTSelec alloc];
 	Reader  * _tabReader =	[Reader alloc];
 	MDL * _tabMDL =			[MDL alloc];
-
+	
 	[contentView setupCtx : tabSerie : tabCT : tabReader : tabMDL];
 	self.window.defaultDispatcher = contentView;
 	[self.window makeFirstResponder:contentView];
 	
 	NSArray *context = [RakContextRestoration newContext];
-
+	
 	[Prefs initCache:[context objectAtIndex:0]];
 	tabSerie = [_tabSerie init:contentView : [context objectAtIndex:1]];
 	tabCT = [_tabCT init:contentView : [context objectAtIndex:2]];
@@ -149,7 +149,7 @@
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
 	[[[RakAddRepoController alloc] init] performSelectorInBackground:@selector(analyseFileContent:) withObject:[NSData dataWithContentsOfFile:filename]];
-
+	
 	return YES;
 }
 

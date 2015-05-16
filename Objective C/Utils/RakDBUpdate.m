@@ -64,7 +64,7 @@
 		return NO;
 	
 	NSNumber * repoIDObj = [notification objectForKey:REPO_FIELD], * projectIDObj = [notification objectForKey:PROJECT_FIELD];
-
+	
 	if(repoIDObj == nil || projectIDObj == nil)
 		return NO;
 	
@@ -90,7 +90,7 @@
 	NSNumber * val = [notification objectForKey:PROJECT_FIELD];
 	if(val == nil)
 		return NO;
-
+	
 	uint localID = [val unsignedIntValue];
 	if(localID == UNUSED_FIELD)
 		return NO;

@@ -95,7 +95,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 
 - (void) setAtIndex: (uint8_t) index : (CGFloat) data
 {
-
+	
 }
 
 - (void) reinitAtIndex : (uint8_t) index
@@ -115,7 +115,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 
 - (void) performSelfCheck
 {
-
+	
 }
 
 - (int) getNbElem

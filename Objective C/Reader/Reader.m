@@ -16,8 +16,8 @@
 
 - (instancetype) init : (NSView*)contentView : (NSString *) state
 {
-    self = [super init];
-    if (self != nil)
+	self = [super init];
+	if (self != nil)
 	{
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
@@ -29,7 +29,7 @@
 		self.layer.cornerRadius = 0;
 		
 		pthread_mutex_init(&cacheMutex, NULL);
-
+		
 		container = [[NSView alloc] initWithFrame:self.bounds];
 		[self addSubview:container];
 		
@@ -44,7 +44,7 @@
 		
 		[self initReaderMainView : state];
 	}
-    return self;
+	return self;
 }
 
 - (void) initReaderMainView : (NSString *) state
@@ -71,7 +71,7 @@
 				//We have a valid index, now, let's query the database to get the project
 				
 				const uint projectID = [[dataState objectAtIndex:1] longLongValue];
-	
+				
 				PROJECT_DATA * project = getDataFromSearch(repoID, projectID, true);
 				
 				if(project == NULL)
@@ -117,13 +117,13 @@
 	if(self.initWithNoContent)
 	{
 		self.initWithNoContent = NO;
-
+		
 		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
 		{
 			self.initWithNoContent = YES;
 			return;
 		}
-
+		
 		shouldNotifyBottomBarInitialized = YES;
 	}
 	else
@@ -132,15 +132,15 @@
 	if(bottomBar == nil)
 	{
 		bottomBar = [[RakReaderBottomBar alloc] init: self.mainThread == TAB_READER: self];
-	
+		
 		if(foregroundView.superview == self)
 			[self addSubview:bottomBar positioned:NSWindowBelow relativeTo:foregroundView];
 		else
 			[self addSubview:bottomBar];
 	}
-
+	
 	[bottomBar favsUpdated:project.favoris];
-
+	
 	if(shouldNotifyBottomBarInitialized)
 		[self updatePage:_data.pageCourante : _data.nombrePage];
 }
@@ -150,12 +150,12 @@
 	if(!self.initWithNoContent)
 	{
 		self.initWithNoContent = YES;
-
+		
 		[self flushCache];
 		releaseDataReader(&_data);
 		releaseCTData(_project);
 		_project.isInitialized = NO;
-	
+		
 		[self updatePage:0 :0];
 	}
 }
@@ -175,7 +175,7 @@
 - (void) dealloc
 {
 	[RakDBUpdate unRegister : self];
-
+	
 	[bottomBar removeFromSuperview];
 	
 	[self deallocInternal];
@@ -206,7 +206,7 @@
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
 	[self setFrameInternal: frame : animated];
-
+	
 	if(animated)
 		[bottomBar resizeAnimation:frame];
 	else
@@ -246,7 +246,7 @@
 {
 	if(bottomBar != nil)
 		bottomBar.readerMode = YES;
-
+	
 	if(_posElemInStructure != -1)
 		[self updateTitleBar :_project :_isTome :_posElemInStructure];
 }
@@ -325,14 +325,14 @@
 - (void) switchDistractionFree
 {
 	bottomBarHidden = NO;	//We reset it
-
+	
 	//We have to leave distraction-free mode
 	if(self.distractionFree && ![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
 	{
 		self.distractionFree = NO;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0])
 			[self fadeBottomBar : 1];
-
+		
 		else
 			return;
 	}
@@ -360,7 +360,7 @@
 	//Do we have to switch to fullscreen, or can we animate
 	if(self.distractionFree && !((RakWindow*) self.window).fullscreen)
 		[self.window toggleFullScreen:self];
-
+	
 	else
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
@@ -421,7 +421,7 @@
 		bottomBarHidden = YES;
 		[self fadeBottomBar: READER_BB_ALPHA_DF_STATIC];
 	}
-
+	
 	if(cursorPosBeforeLastMove.x == point.x && cursorPosBeforeLastMove.y == point.y)
 	{
 		[NSCursor setHiddenUntilMouseMoves:YES];

@@ -30,7 +30,7 @@
 			_baseSearchBar = baseSearchBar - 5;
 			_reducedWidth = _baseSearchBar - frameRect.origin.x;
 		}
-
+		
 		_currentX = _currentRow = 0;
 		tagList = [NSMutableArray array];
 		tagNames = [NSMutableArray array];
@@ -142,19 +142,19 @@
 	
 	[self insertTags:@[tagName] :self.bounds];
 	[self updateContext];
-
+	
 	//Update the UI
 	length = [tagList count];
 	for(RakSRTagItem * item; tagLength < length; tagLength++)
 	{
 		item = [tagList objectAtIndex:tagLength];
 		frame = item.frame;
-	
+		
 		if(newRow || frame.origin.x == 0 || frame.origin.y == 0)
 		{
 			item.alphaValue = 0;
 			item.animator.alphaValue = 1;
-
+			
 			if(frame.origin.x != 0)			newRow = YES;
 		}
 		else
@@ -230,7 +230,7 @@
 		{
 			if(!_currentRow)
 				width = _width;
-				
+			
 			_currentX = 0;
 			_currentRow++;
 		}
@@ -249,7 +249,7 @@
 	if(_nbRow != _currentRow + 1)
 	{
 		_nbRow = _currentRow + 1;
-
+		
 		Series * tabSerie = [(RakAppDelegate *) [NSApp delegate] serie];
 		if(tabSerie != nil)
 		{
@@ -269,9 +269,9 @@
 	
 	[tagList removeObjectAtIndex:index];
 	[tagNames removeObjectAtIndex:index];
-
+	
 	[NSAnimationContext beginGrouping];
-
+	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[tag removeFromSuperview];
 		[tag setAlphaValue:1];

@@ -72,7 +72,7 @@ enum
 {
 	parentFrame.origin.y = imageFrame.origin.y - SYNOPSIS_VERTICAL_BORDER - SYNOPSIS_HEIGHT;
 	parentFrame.size.height = SYNOPSIS_HEIGHT;
-
+	
 	parentFrame.origin.x = CONTENT_BORDER;
 	parentFrame.size.width -= 2 * CONTENT_BORDER;
 	
@@ -208,7 +208,7 @@ enum
 			string = NSLocalizedString(@"PREFS-REPO-ONE-ACTIVE-PROJECT", nil);
 		else
 			string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-REPO-%zu-ACTIVE-PROJECT", nil), nbProject];
-
+		
 		if(nbElement == nil)
 		{
 			nbElement = [[RakClickableText alloc] initWithText:string :[self textColor] responder:self];
@@ -251,7 +251,7 @@ enum
 				[deleteButton.cell setBorderWidth:2];
 				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil]];
 				[deleteButton sizeToFit];
-
+				
 				deleteButton.target = self;
 				deleteButton.action = @selector(nukeEverything);
 				
@@ -344,7 +344,7 @@ enum
 #ifdef DEV_VERSION
 	NSLog(@"Couldn't find a proper language in %@", [NSLocale preferredLanguages]);
 #endif
-
+	
 	return NULL;
 }
 
@@ -450,7 +450,7 @@ enum
 	if((CTProject.isInitialized && getRepoID(CTProject.repo) == ID) || (readerProject.isInitialized && getRepoID(readerProject.repo) == ID))
 	{
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-KILL-USE", nil);
-
+		
 		BOOL readerDeleted = !readerProject.isInitialized, CTDeleted = !CTProject.isInitialized;
 		
 		//We check which tab are using content we are about to delete
@@ -459,7 +459,7 @@ enum
 			[reader resetReader];
 			readerDeleted = YES;
 		}
-
+		
 		if(CTProject.isInitialized && getRepoID(CTProject.repo) == ID)
 		{
 			if(readerDeleted)
@@ -495,7 +495,7 @@ enum
 	}
 	
 	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);
-
+	
 	//Delete projects
 	char path[256];
 	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(repoData));
@@ -517,9 +517,9 @@ enum
 - (void) drawRect:(NSRect)dirtyRect
 {
 	[repoImage drawInRect:imageFrame
-			 fromRect:NSZeroRect
-			operation:NSCompositeSourceOver
-			 fraction:1.0];
+				 fromRect:NSZeroRect
+				operation:NSCompositeSourceOver
+				 fraction:1.0];
 }
 
 - (void) mouseUp:(NSEvent *)theEvent

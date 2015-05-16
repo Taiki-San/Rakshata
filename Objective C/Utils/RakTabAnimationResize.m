@@ -23,7 +23,7 @@
 	}];
 	
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-
+	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setDuration : fastAnimation ? 0.1 : 0.2];

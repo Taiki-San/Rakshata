@@ -62,7 +62,7 @@
 	{
 		output.textButton = YES;
 		output.wantsLayer = YES;
-
+		
 		output.cell = [output.cell initWithText:string];
 		
 		if(!NSEqualRects(frame, NSZeroRect))
@@ -205,7 +205,7 @@
 	if(self != nil)
 	{
 		_hasBorder = YES;
-
+		
 		textCell = [[RakCenteredTextFieldCell alloc] initTextCell:text];
 		if(textCell != nil)
 		{
@@ -213,7 +213,7 @@
 			textCell.alignment = NSCenterTextAlignment;
 			textCell.textColor = [self getFontColor];
 			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
-
+			
 			[Prefs getCurrentTheme:self];	//Register to changes
 		}
 	}

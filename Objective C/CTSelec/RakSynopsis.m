@@ -20,7 +20,7 @@ enum
 - (instancetype) initWithSynopsis : (charType *) synopsis : (NSRect) frame : (BOOL) haveScroller
 {
 	_haveScroller = haveScroller;
-
+	
 	self = [self initWithFrame:[self frameFromParent:frame]];
 	
 	if(self != nil)
@@ -152,7 +152,7 @@ enum
 	
 	if(!_haveScroller)
 		_scrollview.verticalScroller.alphaValue = 0;
-
+	
 	_scrollview.documentView = _synopsis;
 	[self addSubview:_scrollview];
 	
@@ -290,7 +290,7 @@ enum
 		mainBounds.origin.x = COMPACT_OFFSET;
 		mainBounds.size.width -= COMPACT_OFFSET;
 	}
-
+	
 	return mainBounds;
 }
 

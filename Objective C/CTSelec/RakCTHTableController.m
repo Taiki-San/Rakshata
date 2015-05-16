@@ -112,7 +112,7 @@ enum
 - (void) resizeScrollView : (NSRect) newFrame : (BOOL) animated
 {
 	CGFloat tableHeight = _tableView.bounds.size.height;
-
+	
 	if(tableHeight < newFrame.size.height)
 	{
 		self.scrollView.scrollingDisabled = YES;
@@ -145,7 +145,7 @@ enum
 	
 	frame = [self frameFromParent:frame];
 	
-	//Init at height = 1 in order to be sure that tableview height is not related to scrollview height 
+	//Init at height = 1 in order to be sure that tableview height is not related to scrollview height
 	self.scrollView = [[RakListScrollView alloc] initWithFrame: NSMakeRect(0, 0, frame.size.width, 1)];
 	if(self.scrollView == nil)
 		return;
@@ -158,7 +158,7 @@ enum
 		self.scrollView = nil;
 		return;
 	}
-
+	
 	//View configuration
 	_tableView.wantsLayer = NO;
 	_tableView.autoresizesSubviews = NO;
@@ -175,11 +175,11 @@ enum
 	NSTableColumn * titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_TITLE_ID];
 	titles.width = _tableView.frame.size.width * 2 / 5;
 	[_tableView addTableColumn:titles];
-
+	
 	titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_DETAILS_ID];
 	titles.width = _tableView.frame.size.width * 3 / 5;
 	[_tableView addTableColumn:titles];
-
+	
 	//End of setup
 	[_tableView setDelegate:self];
 	[_tableView setDataSource:self];
@@ -288,11 +288,11 @@ enum
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		[result setIdentifier: @"PFUDOR"];
 	}
-
+	
 	[result setTextColor : [self textColor : isTitleColumn]];
 	[result setAlignment : isTitleColumn ? NSLeftTextAlignment : NSRightTextAlignment];
 	[result setDrawsBackground:NO];
-
+	
 	return result;
 }
 
@@ -333,7 +333,7 @@ enum
 			}
 			break;
 		}
-
+			
 		case ROW_VOLUME:
 		{
 			if(titleColumn)
@@ -359,7 +359,7 @@ enum
 			}
 			break;
 		}
-
+			
 		case ROW_STATUS:
 		{
 			if(titleColumn)
@@ -411,7 +411,7 @@ enum
 				ret_value = NSLocalizedString(@"CT-NO-DRM", nil);
 			else
 				ret_value = DRM ? NSLocalizedString(@"NO", nil) : NSLocalizedString(@"YES", nil);
-
+			
 			break;
 		}
 	}

@@ -83,7 +83,7 @@
 	}
 	
 	const uint invalidValue = UINT_MAX;
-
+	
 	//We alloc memory for everything
 	*_cacheList = malloc(*_nbElemFull * sizeof(uint));
 	*_activatedList = calloc(*_nbElemFull, sizeof(BOOL));
@@ -307,12 +307,12 @@
 	
 	__block byte oldActive = _activeView;
 	_activeView = activeView;
-
+	
 	//We reveal the new view
 	if(activeView == SR_CELLTYPE_GRID)
 	{
 		[_grid contentView].hidden = NO;
-
+		
 		if(animated)
 			[_grid contentView].animator.alphaValue = 1;
 		else
@@ -335,7 +335,7 @@
 			{}
 			else if(oldActive == SR_CELLTYPE_LIST)
 			{}
-
+			
 		}];
 		
 		[NSAnimationContext endGrouping];
@@ -357,7 +357,7 @@
 	{
 		if(notification.object != nil && [notification.object isKindOfClass:[NSString class]])
 			commitedSearch = notification.object;
-	
+		
 		[self updateContext:NO];
 	}
 }
@@ -395,7 +395,7 @@
 				posNew++;
 			}
 		}
-
+		
 		while(posOld < nbElemActivated)			{	_filteredToSorted[posOld] = UINT_MAX;		removal[nbRemoval++] = sortedToFiltered[posOld++];			}
 		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[posNew] = UINT_MAX;	insertion[nbInsertion++] = newSortedToFiltered[posNew++];	}
 		
@@ -409,7 +409,7 @@
 				posOld++;
 				deletedInOld++;
 			}
-
+			
 			else if(_newFilteredToSorted[posNew] == UINT_MAX)
 			{
 				posNew++;
@@ -456,7 +456,7 @@
 		
 		if(nbInsertion)
 			qsort(insertion, nbInsertion, sizeof(uint), sortNumbers);
-
+		
 		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
 		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
 		
@@ -465,7 +465,7 @@
 		{
 			element = [[RakSRStupidDataStructure alloc] init];
 			element.index = filteredToSorted[insertion[i]];
-
+			
 			[content insertObject:element atIndex:insertion[i]];
 		}
 	}
@@ -487,7 +487,7 @@
 {
 	if(index >= nbElemFull)
 		return NULL;
-		
+	
 	return &(project[index]);
 }
 

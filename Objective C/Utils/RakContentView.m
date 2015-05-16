@@ -46,7 +46,7 @@
 {
 	if(_heightOffset)
 		frameRect.size.height -= _heightOffset;
-		
+	
 	[super setFrame:frameRect];
 	
 	if(![self.subviews count])
@@ -65,7 +65,7 @@
 	frameRect.origin.y += WIDTH_BORDER_MIDDLE;
 	
 	[self.subviews[1] setFrame:frameRect];
-		
+	
 	frameRect.size.width -= 2 * WIDTH_BORDER_INTERNAL;
 	frameRect.size.height -= 2 * WIDTH_BORDER_INTERNAL;
 	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
@@ -143,7 +143,7 @@
 {
 	if(firstResponder == nil)
 		[self craftFirstResponder];
-
+	
 	return firstResponder;
 }
 
@@ -216,12 +216,12 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:frameRect];
-
+	
 	for(RakTabView * view in self.subviews)
 	{
 		if(![view isKindOfClass:[RakTabView class]])
 			continue;
-
+		
 		BOOL isMDL = [view class] == [MDL class], oldVal;
 		
 		if(isMDL)

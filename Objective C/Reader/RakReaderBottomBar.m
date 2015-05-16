@@ -21,13 +21,13 @@
 	if(self != nil)
 	{
 		isFaved = NO;
-
+		
 		[Prefs getCurrentTheme:self];
 		[self setAutoresizesSubviews:NO];
 		
 		_parent = parent;
 		self.readerMode = parent.mainThread == TAB_READER;
-
+		
 		[self setWantsLayer:YES];
 		[self.layer setCornerRadius:RADIUS_BORDERS];
 		
@@ -36,7 +36,7 @@
 		if(!displayed)
 			[self setHidden:![self isHidden]];
 	}
-
+	
 	return self;
 }
 
@@ -74,7 +74,7 @@
 - (void) dealloc
 {
 	[self releaseIcons];
-
+	
 	if(pageCount != nil)
 	{
 		[pageCount removeFromSuperview];
@@ -113,7 +113,7 @@
 	prevPage = [RakButton allocForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement : 4 : self.frame.size.width] :NO :superview :@selector(prevPage)];
 	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
 	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
-
+	
 	trash = [RakReaderBBButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
 	
 	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
@@ -243,7 +243,7 @@
 			[icons[pos].animator setFrameOrigin:origin];
 		else
 			[icons[pos] setFrameOrigin:origin];
-
+		
 	}
 	
 	//Repositionate pageCounter
@@ -276,7 +276,7 @@
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	[self setNeedsDisplay:YES];
 }
 
@@ -299,7 +299,7 @@
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	NSRect popoverFrame = [pageCount.window convertRectToScreen: (NSRect) {[pageCount convertPoint:NSMakePoint(pageCount.frame.size.width / 2, 0) toView:nil], NSZeroSize}];
-
+	
 	if(isAnimated)
 		popoverFrame.origin.x += frameRect.origin.x - self.superview.frame.origin.x;
 	
@@ -331,7 +331,7 @@
 			popoverFrame.origin.x -= pageCount.frame.origin.x;
 		
 		[self recalculateElementsPosition : isAnimated : frameRect.size.width];
-
+		
 		if(isAnimated)
 			popoverFrame.origin.x += pageCount.frame.origin.x;
 	}

@@ -13,7 +13,7 @@
 @interface RakAddRepoList()
 {
 	ROOT_REPO_DATA ** _rootCache;
-
+	
 	NSMutableArray * rootItems;
 	
 	CGFloat givenWidth, contentWidth;
@@ -77,7 +77,7 @@ enum
 		if([rootItems count] >= index  || (output = [rootItems objectAtIndex:index]) == nil)
 		{
 			output = [[RakAddRepoItem alloc] initWithRepo:_rootCache[index] :YES];
-
+			
 			if(output != nil)
 				[rootItems insertObject:output atIndex:index];
 		}
@@ -131,7 +131,7 @@ enum
 - (void) updateViewWithItem : (RakAddRepoListItemView*) view : (RakAddRepoItem *) item
 {
 	[view updateContent:YES :NO :[item isRootItem] :[item getRepo] :nil];
-
+	
 	view.fixedWidth = contentWidth - ([item isRootItem] ? 0 : 5);
 }
 
@@ -154,13 +154,13 @@ enum
 - (void) outlineView:(NSOutlineView *)outlineView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
 	[rowView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-	{
-		if([obj class] == [RakAddRepoListItemView class])
-		{
-			((RakAddRepoListItemView *) obj).unloaded = YES;
-			*stop = YES;
-		}
-	}];
+	 {
+		 if([obj class] == [RakAddRepoListItemView class])
+		 {
+			 ((RakAddRepoListItemView *) obj).unloaded = YES;
+			 *stop = YES;
+		 }
+	 }];
 }
 
 - (NSColor *) headerTextColor

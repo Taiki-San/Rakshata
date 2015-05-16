@@ -14,8 +14,8 @@
 
 - (instancetype) initContent : (NSRect)frame : (PROJECT_DATA) project : (BOOL) isTome : (long [4]) context
 {
-    self = [super initWithFrame:frame];
-    if (self != nil)
+	self = [super initWithFrame:frame];
+	if (self != nil)
 	{
 		[self setupInternal];
 		
@@ -25,20 +25,20 @@
 		if(coreview != nil)
 		{
 			[self addSubview:coreview];
-		
+			
 			if(mainThread == TAB_SERIES)
 			{
 				coreview.alphaValue = 0;
 				coreview.hidden = YES;
 			}
 		}
-
+		
 		[self initSerieView : project : mainThread == TAB_SERIES];
 		[self initReaderView : project : mainThread == TAB_READER];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(respondToSRFocus:) name:SR_NOTIFICATION_FOCUS object:nil];
-    }
-    return self;
+	}
+	return self;
 }
 
 - (NSString *) getContextToGTFO
@@ -59,13 +59,13 @@
 	{
 		[header setFrame:newBound];
 	}
-
+	
 	if(!self.readerViewHidden)
 	{
 		[projectName setFrame:newBound];
 		[projectImage setFrame:newBound];
 	}
-
+	
 	[coreview setFrame : newBound : (header != nil ? header.bounds.size.height : 0)];
 }
 
@@ -89,7 +89,7 @@
 		[projectName resizeAnimation:newBound];
 		[projectImage resizeAnimation:newBound];
 	}
-
+	
 	[coreview resizeAnimation : newBound : headerHeight];
 }
 
@@ -122,7 +122,7 @@
 	tmpDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
 	if(tmpDetailView != nil)
 		tmpDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
-
+	
 	[super setSerieViewHidden:!serieMode];
 }
 
@@ -161,7 +161,7 @@
 		projectName.alphaValue = 0;		projectName.hidden = YES;
 		projectImage.alphaValue = 0;	projectImage.hidden = YES;
 	}
-
+	
 	[self setReaderViewHidden:!readerMode];
 }
 
@@ -280,7 +280,7 @@
 		projectName = [[RakMenuText alloc] initWithText:_bounds : projectNameString];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
-
+	
 	if(projectImage != nil)
 		[projectImage updateProject:projectNameString];
 	else
@@ -316,11 +316,11 @@
 	if((length = wstrlen(oldData.projectName)) != wstrlen(newData.projectName) || memcmp(oldData.projectName, newData.projectName, length * sizeof(charType)))
 	{
 		NSString *projectNameString = getStringForWchar(newData.projectName);
-
+		
 		[projectName setStringValue : projectNameString];
 		[projectImage updateProject:projectNameString];
 	}
-
+	
 	[header updateProjectDiff:oldData :newData];
 }
 
@@ -387,7 +387,7 @@ enum
 	{
 		tmpDetailView.project = project;
 		byte direction = wstrcmp(mainDetailView.project.projectName, project.projectName) > 0 ? DIR_DOWN : DIR_UP;
-
+		
 		[self changeSRFocus:mainDetailView :tmpDetailView : direction];
 		
 		id tmp = mainDetailView;
@@ -422,7 +422,7 @@ enum
 	[oldView setFrame: _bounds];
 	
 	[CATransaction commit];
-
+	
 	//Actual animation
 	[NSAnimationContext beginGrouping];
 	
@@ -449,7 +449,7 @@ enum
 		case DIR_UP:
 			output.y = _bounds.size.height;
 			break;
-
+			
 		case DIR_LEFT:
 			output.x = -itemBounds.size.width;
 			break;

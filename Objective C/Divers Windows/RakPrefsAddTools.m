@@ -80,7 +80,7 @@
 - (void) updateContent:(BOOL)isCompact :(BOOL)isDetailColumn :(BOOL)isRoot :(void *)repo :(NSString *)detailString
 {
 	_unloaded = NO;
-
+	
 	[super updateContent:isCompact :isDetailColumn :isRoot :repo :detailString];
 }
 

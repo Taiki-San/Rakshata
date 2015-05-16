@@ -34,7 +34,7 @@
 	fullFileName = [NSString stringWithFormat:@"%@%@%@", baseName, pathPortionHighlighted, pathPortionAvailable];
 	
 	NSBundle *bundle = nil;
-
+	
 	if(themeID == 1 || themeID == 2)
 	{
 		NSString *path = [[NSBundle mainBundle] pathForResource:fullFileName ofType:@"png" inDirectory:[NSString stringWithFormat:@"theme %d", themeID]];

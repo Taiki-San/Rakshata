@@ -14,8 +14,8 @@
 
 - (instancetype) init : (NSView *) contentView : (NSString *) state
 {
-    self = [super init];
-    if (self)
+	self = [super init];
+	if (self)
 	{
 		flag = TAB_CT;
 		[self initView:contentView : state];
@@ -40,7 +40,7 @@
 		{
 			[self addSubview:coreView];
 			[coreView focusViewChanged : self.mainThread];
-
+			
 			[self initMisc];
 		}
 		else
@@ -50,7 +50,7 @@
 			self = nil;
 		}
 	}
-    return self;
+	return self;
 }
 
 - (void) initBackButton
@@ -193,7 +193,7 @@
 	}
 	else
 		[self removeFromSuperview];
-	   
+	
 	return string;
 }
 
@@ -231,7 +231,7 @@
 	NSRect frame = [self lastFrame];
 	NSSize svSize = self.superview.bounds.size;
 	[Prefs getPref:PREFS_GET_TAB_READER_POSX : &frame.size.width : &svSize];
-
+	
 	frame.origin = NSZeroPoint;
 	frame.size.width -= _lastFrame.origin.x;
 	
@@ -274,7 +274,7 @@
 		frame.origin.y = SR_HEADER_HEIGHT_SINGLE_ROW - 3;
 		frame.size.height -= frame.origin.y;
 	}
-
+	
 	return frame;
 }
 
@@ -346,12 +346,12 @@
 				
 				if(MDLTab != nil)
 					[MDLTab.animator setFrame:MDLFrame];
-
+				
 			} completionHandler:^{
 				
 				[CATransaction begin];
 				[CATransaction setDisableActions:YES];
-
+				
 				[self updateProject : project : isTome : element];
 				
 				[CATransaction commit];
@@ -378,10 +378,10 @@
 		else	//We bypass the fancy animation
 		{
 			[self updateProject : project : isTome : element];
-
+			
 			if(self.mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
-
+			
 			//Oh, we got selected then, awesome :)
 			else if(self.mainThread == TAB_SERIES)
 			{

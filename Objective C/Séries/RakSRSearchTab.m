@@ -25,7 +25,7 @@
 		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
 		
 		[Prefs getCurrentTheme:self];
-
+		
 		self.wantsLayer = YES;
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
@@ -35,7 +35,7 @@
 		if(placeholder != nil)
 		{
 			placeholder.font = [self placeholderFont];
-
+			
 			[placeholder sizeToFit];
 			
 			[self addSubview:placeholder];
@@ -106,7 +106,7 @@
 	[super setFrame:frameRect];
 	
 	frameRect = [self getContentFrame : frameRect];
-
+	
 	[placeholder setFrameOrigin:NSCenteredRect(frameRect, placeholder.bounds)];
 	
 	if(oldWidth != frameRect.size.width)
@@ -122,7 +122,7 @@
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	CGFloat oldWidth = self.bounds.size.width;
-
+	
 	[self.animator setFrame:frameRect];
 	
 	frameRect = [self getContentFrame : frameRect];
@@ -168,7 +168,7 @@ enum
 	if(tabMDL != nil && tabMDL.mainThread == TAB_SERIES)
 	{
 		//If focus series, and MDL around, it's at our left
-
+		
 		CGFloat maxX = NSMaxX([tabMDL lastFrame]);
 		boundsFrame.origin.x += maxX;
 		boundsFrame.size.width -= maxX;
@@ -205,10 +205,10 @@ enum
 {
 	if(!_isVisible)
 		return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_BAR :nil];
-
+	
 	else if(_collapsed)
 		return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_COLLAPSED :nil];
-
+	
 	return [Prefs getSystemColor:GET_COLOR_SEARCHTAB_BORDER_DEPLOYED :nil];
 }
 
@@ -231,11 +231,11 @@ enum
 {
 	if([object class] != [Prefs class])
 		return;
-
+	
 	placeholder.font = [self placeholderFont];
 	[placeholder sizeToFit];
 	[placeholder setFrameOrigin:NSCenterPoint(self.bounds, placeholder.bounds)];
-
+	
 	placeholder.textColor = [self placeholderTextColor];
 	self.layer.borderColor = [self getBorderColor].CGColor;
 	self.layer.backgroundColor = [self getBACKGROUNDColor].CGColor;
@@ -247,7 +247,7 @@ enum
 {
 	if (!_isVisible || !_collapsed)
 		return;
-
+	
 	[self updateCollapseState:!_collapsed : NO];
 	[self updateGeneralFrame];
 }
@@ -271,17 +271,17 @@ enum
 		{
 			if(!_collapsed)
 				view.hidden = NO;
-				
+			
 			view.animator.alphaValue = !_collapsed;
 		}
 	}
-
+	
 	placeholder.hidden = !_collapsed;
-
+	
 	if(silentUpdate)
 	{
 		placeholder.alphaValue = _collapsed;
-
+		
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		return;
 	}
@@ -298,7 +298,7 @@ enum
 				view.hidden = YES;
 		}
 	}];
-
+	
 	[NSAnimationContext endGrouping];
 	
 	if(_collapsed)
