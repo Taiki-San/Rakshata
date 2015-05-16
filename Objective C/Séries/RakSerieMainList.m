@@ -86,9 +86,11 @@
 	
 	NSMutableIndexSet * index = [[NSMutableIndexSet alloc] init];
 	
+	if(installedOnly)
+		[self updateJumpTable];
+	
 	if(installedOnly && _nbElemInstalled)
 	{
-		[self updateJumpTable];
 		_nbData = _nbElemInstalled;
 	}
 	else
@@ -351,7 +353,7 @@
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
 	if(row >= _nbData)
-		return 0;
+		return 17;
 	
 	else if(preloadedRow == nil)
 		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
@@ -366,6 +368,9 @@
 
 - (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
+	if(row >= _nbData)
+		return nil;
+	
 	NSView * output = [super tableView:tableView viewForTableColumn:tableColumn row:row];
 	
 	if(output != nil && [output isKindOfClass:[RakText class]])
