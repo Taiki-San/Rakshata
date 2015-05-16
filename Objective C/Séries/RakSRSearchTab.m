@@ -31,13 +31,12 @@
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		self.layer.backgroundColor = [self getBACKGROUNDColor].CGColor;
 		
-		placeholder = [[RakText alloc] initWithText:frameRect :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
+		placeholder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
 		if(placeholder != nil)
 		{
 			placeholder.font = [self placeholderFont];
 
 			[placeholder sizeToFit];
-			[placeholder setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
 			
 			[self addSubview:placeholder];
 		}
@@ -106,7 +105,9 @@
 	
 	[super setFrame:frameRect];
 	
-	[placeholder setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
+	frameRect = [self getContentFrame : frameRect];
+
+	[placeholder setFrameOrigin:NSCenteredRect(frameRect, placeholder.bounds)];
 	
 	if(oldWidth != frameRect.size.width)
 	{
@@ -123,7 +124,10 @@
 	CGFloat oldWidth = self.bounds.size.width;
 
 	[self.animator setFrame:frameRect];
-	[placeholder.animator setFrameOrigin:NSCenterPoint(frameRect, placeholder.bounds)];
+	
+	frameRect = [self getContentFrame : frameRect];
+	
+	[placeholder.animator setFrameOrigin:NSCenteredRect(frameRect, placeholder.bounds)];
 	
 	if(oldWidth != frameRect.size.width)
 	{
@@ -146,10 +150,32 @@
 
 #pragma mark - Frame
 
-#define BORDER_HORIZON 	6
-#define BORDER_VERT 	25
-#define BORDER_INTER	10
-#define LAST_BLOCK_WIDTH 125
+enum
+{
+	BORDER_HORIZON = 6,
+	BORDER_VERT = 25,
+	BORDER_INTER = 10,
+	LAST_BLOCK_WIDTH = 125
+};
+
+//We have to keep an eye on the MDL, so we don't collapse
+- (NSRect) getContentFrame : (NSRect) boundsFrame
+{
+	boundsFrame.origin = NSZeroPoint;
+	
+	MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
+	
+	if(tabMDL != nil && tabMDL.mainThread == TAB_SERIES)
+	{
+		//If focus series, and MDL around, it's at our left
+
+		CGFloat maxX = NSMaxX([tabMDL lastFrame]);
+		boundsFrame.origin.x += maxX;
+		boundsFrame.size.width -= maxX;
+	}
+	
+	return boundsFrame;
+}
 
 - (NSRect) getBlockFrame : (NSRect) frame : (byte) position
 {
@@ -167,7 +193,7 @@
 		frame.size.width = LAST_BLOCK_WIDTH;
 	
 	
-	frame.origin.x = (position - 1) * blockWidth + BORDER_INTER;
+	frame.origin.x += (position - 1) * blockWidth + BORDER_INTER;
 	frame.origin.y = BORDER_HORIZON;
 	
 	return frame;

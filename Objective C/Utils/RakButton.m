@@ -236,6 +236,7 @@
 	if(_imageName == nil)	//text cell
 	{
 		[self reloadFontColor];
+		[self.controlView setNeedsDisplay:YES];
 	}
 	else					//img cell
 	{

@@ -330,6 +330,11 @@ enum
 		return;
 	
 	[self updateGradient];
+	
+	placeholder.textColor = [self textColor];
+	title.textColor = [self textColor];
+	
+	[self setNeedsDisplay:YES];
 }
 
 @end

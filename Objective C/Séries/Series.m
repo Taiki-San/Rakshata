@@ -250,7 +250,7 @@
 
 - (CGFloat) getHeightOfMainView
 {
-	return coreView.currentValidHeight;
+	return coreView.currentValidHeight + searchTab.bounds.size.height - 1;
 }
 
 #pragma mark - Reader code
