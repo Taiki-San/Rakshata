@@ -41,7 +41,7 @@ void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const rawData plaintext[16],
 void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16], rawData plaintext[16]);
 
 //Helpers
-void _AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory, bool ECB); //Cachés dans crypto/rijndael.c
+void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB); //Cachés dans crypto/rijndael.c
 void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB);
 void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
