@@ -28,13 +28,11 @@ byte getMasterKey(unsigned char *input)
 		return GMK_RETVAL_NEED_CREDENTIALS_MAIL;
     }
 	
-	int nombreCle, i, j;
 	uint addressLength = ustrlen(COMPTE_PRINCIPAL_MAIL);
 	bool fileInvalid;
 	char date[100];
 	unsigned char buffer[addressLength + 101 + (WP_DIGEST_SIZE+1)], bufferLoad[NOMBRE_CLE_MAX_ACCEPTE][MK_CHUNK];
 	size_t size;
-	FILE* bdd = NULL;
 	
 	if(addressLength + 101 + WP_DIGEST_SIZE + 1 < WP_DIGEST_SIZE + 102)
 		return GMK_RETVAL_INTERNALERROR;
@@ -68,11 +66,14 @@ byte getMasterKey(unsigned char *input)
     
 	} while(fileInvalid);
 
-    bdd = fopen(SECURE_DATABASE, "rb");
-    for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (i = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
+	char c;
+	uint nombreCle;
+    FILE * bdd = fopen(SECURE_DATABASE, "rb");
+
+    for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (c = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
-        for(j = 0; j < MK_CHUNK && (i = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = i);
+        for(uint j = 0; j < MK_CHUNK && (c = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = c);
     }
     fclose(bdd);
 
@@ -98,7 +99,7 @@ byte getMasterKey(unsigned char *input)
     crashTemp(hash, sizeof(hash));
 #endif
 
-    for(i = 0; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
+    for(uint i = 0, j; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
 		/*Décryptage manuel car un petit peu délicat*/
         for(j = 0; j < 3; j++)
@@ -184,6 +185,9 @@ bool validateEmail(const char* adresseEmail)
 
 void updateEmail(const char * email)
 {
+	if(email == NULL || email[0] == 0)
+		return deleteEmail();
+	
 	uint length = strlen(email);
 	
 	if(length + 1 == 0)		//Overflow, 4GB, we're messing with us
@@ -206,6 +210,14 @@ void updateEmail(const char * email)
 	snprintf(prefs, length + 30, "<"SETTINGS_EMAIL_FLAG">\n%s\n</"SETTINGS_EMAIL_FLAG">\n", email);
 	updatePrefs(SETTINGS_EMAIL_FLAG, prefs);
 	free(prefs);
+}
+
+void deleteEmail()
+{
+	free(COMPTE_PRINCIPAL_MAIL);
+	COMPTE_PRINCIPAL_MAIL = NULL;
+	
+	removeFromPref(SETTINGS_EMAIL_FLAG);
 }
 
 void addPassToCache(const char * hashedPassword)

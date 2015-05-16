@@ -104,7 +104,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	return true;
 }
 
-int positionnementApresChar(char* input, char *stringToFind)
+uint positionnementApresChar(char* input, char *stringToFind)
 {
     uint i = 0, lengthToFind = strlen(stringToFind);
     while(input[i])
@@ -112,7 +112,7 @@ int positionnementApresChar(char* input, char *stringToFind)
         for(; input[i] != stringToFind[0] && input[i]; i++);
         if(input[i] == stringToFind[0])
         {
-            int j = 0;
+            uint j = 0;
             for(; j < lengthToFind && input[j+i] && stringToFind[j] && input[j+i] == stringToFind[j]; j++);
             if(stringToFind[j] == 0)
             {

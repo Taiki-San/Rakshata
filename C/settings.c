@@ -134,11 +134,10 @@ bool loadEmailProfile()
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
-		uint start, end, delta;
-		if((start = positionnementApresChar(prefs, "<"SETTINGS_EMAIL_FLAG">")) && (end = positionnementApresChar(prefs, "</"SETTINGS_EMAIL_FLAG">")))
+		const uint start = positionnementApresChar(prefs, "<"SETTINGS_EMAIL_FLAG">"), end = positionnementApresChar(prefs, "</"SETTINGS_EMAIL_FLAG">");
+		if(start != 0 && end > 6 && start < end - 6)
         {
-			end -= 6;
-			delta = end - start;
+			const uint delta = end - 6 - start;
 
 			COMPTE_PRINCIPAL_MAIL = malloc((delta + 1) * sizeof(char));
 			if(COMPTE_PRINCIPAL_MAIL != NULL)
@@ -167,9 +166,10 @@ char* loadLargePrefs(char* flag)
     basePtr = prefs = loadPrefFile();
     if(prefs != NULL)
 	{
-		int i;
+		uint i;
 		size_t bufferSize = 0;
 		char flag_db[10];
+		
 		snprintf(flag_db, 10, "<%s>", flag);
 		if((i = positionnementApresChar(prefs, flag_db)) && *(prefs+i) != '<' && *(prefs+i+1) != '/')
 		{

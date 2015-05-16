@@ -60,6 +60,7 @@ char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeO
 byte getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 void updateEmail(const char * email);
+void deleteEmail();
 void addPassToCache(const char * hashedPassword);
 bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1]);
 bool validateEmail(const char* adresseEmail);
@@ -141,7 +142,7 @@ int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 int sortRootRepo(const void *a, const void *b);
 bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b);
-int positionnementApresChar(char* input, char *stringToFind);
+uint positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void createPath(char *output);
 IMG_DATA* readFile(char * path);
