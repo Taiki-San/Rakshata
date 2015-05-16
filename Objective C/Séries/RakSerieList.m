@@ -115,10 +115,16 @@
 
 - (void) additionalResizing : (NSRect) frame : (BOOL) animated
 {
+	NSRect mainListFrame = [self getMainListFrame : frame : content];
+	BOOL widthChanged = _mainList.frame.size.width != mainListFrame.size.width;
+	
 	if(animated)
-		[_mainList resizeAnimation:[self getMainListFrame : frame : content]];
+		[_mainList resizeAnimation:mainListFrame];
 	else
-		[_mainList setFrame:[self getMainListFrame : [content bounds] : content]];
+		[_mainList setFrame:mainListFrame];
+	
+	if(widthChanged)
+		[_mainList resetHeight];
 	
 	for(byte i = 0; i < 3 && rootItems[i] != nil; i++)
 	{
@@ -554,6 +560,7 @@
 
 - (NSRect) getMainListFrame : (NSRect) frame : (NSOutlineView*) outlineView
 {
+	frame.origin = NSZeroPoint;
 	frame.size.width -= 2 * outlineView.indentationPerLevel + 5;
 	
 	return frame;

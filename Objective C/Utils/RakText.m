@@ -89,26 +89,25 @@
 		[path setLineWidth:1];
 		[[self getBorderColor] setStroke];
 		[path stroke];
-	}	
+	}
 }
 
 - (void) setFrameSize:(NSSize)newSize
 {
 	//Fix an issue when resizing with an animation
 	if(_forcedOffsetY && newSize.height != _bounds.size.height)
-	{
 		newSize.height += _forcedOffsetY;
-	}
 	
 	[super setFrameSize:newSize];
+	
+	if(_discardHeight)
+		[super setFrameSize:[self intrinsicContentSize]];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
 {
 	if(_forcedOffsetY)
-	{
 		newOrigin.y -= _forcedOffsetY;
-	}
 	
 	[super setFrameOrigin:newOrigin];
 }
@@ -122,7 +121,7 @@
 	}
 	
 	[super drawRect:dirtyRect];
-
+	
 	[self additionalDrawing];
 }
 

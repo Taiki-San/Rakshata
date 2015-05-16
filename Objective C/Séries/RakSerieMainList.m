@@ -336,6 +336,13 @@
 
 #pragma mark - Methods to deal with tableView
 
+- (void) resetHeight
+{
+	NSRange range = NSMakeRange(0, [_tableView numberOfRows]);
+	
+	[_tableView noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:range]];
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return _data == NULL ? 0 : _nbData;
@@ -345,8 +352,12 @@
 {
 	if(row >= _nbData)
 		return 0;
+	
 	else if(preloadedRow == nil)
 		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
+
+	else if(((RakText *) preloadedRow).fixedWidth != _tableView.bounds.size.width)
+		((RakText *) preloadedRow).fixedWidth = _tableView.bounds.size.width;
 	
 	((RakText *) preloadedRow).stringValue = [self tableView:tableView objectValueForTableColumn:nil row:row];
 	
@@ -360,7 +371,7 @@
 	if(output != nil && [output isKindOfClass:[RakText class]])
 	{
 		[((RakText *) output).cell setWraps:YES];
-		((RakText *) output).fixedWidth = tableColumn.width;
+		((RakText *) output).discardHeight = YES;
 	}
 	
 	return output;

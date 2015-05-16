@@ -27,4 +27,6 @@
 - (void) updateJumpTable;
 - (PROJECT_DATA) getElementAtIndex : (NSInteger) index;
 
+- (void) resetHeight;
+
 @end

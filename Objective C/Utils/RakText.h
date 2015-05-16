@@ -20,6 +20,7 @@
 @property CGFloat forcedOffsetY;
 
 @property CGFloat fixedWidth;
+@property BOOL discardHeight;
 
 @property (weak) id clicTarget;
 @property SEL clicAction;
