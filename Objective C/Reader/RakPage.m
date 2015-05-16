@@ -559,7 +559,7 @@
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
-			pthread_cond_wait([(RakAppDelegate*) [NSApp delegate]sharedLoginLock], lock);
+			pthread_cond_wait([(RakAppDelegate*) [NSApp delegate] sharedLoginLock], lock);
 		}
 		
 		pthread_mutex_unlock(lock);

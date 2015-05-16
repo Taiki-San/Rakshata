@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-/*DEFINES*/
-
 #define CURRENTVERSIONSTRING STRINGIZE(CURRENTVERSION)
 
 /*Environnement*/
@@ -42,14 +40,13 @@
 #define VERSION_RAK_FILE 1
 
 /*Réseau*/
-#define CONNEXION_TEST_IN_PROGRESS -1
-#define CONNEXION_OK 0
-#define CONNEXION_SERVEUR_DOWN 1
-#define CONNEXION_DOWN 2
-
-/*Structure principale -> paliers*/
-#define PALIER_MENU -3
-#define PALIER_QUIT -4
+enum
+{
+	CONNEXION_TEST_IN_PROGRESS = -1,
+	CONNEXION_OK,
+	CONNEXION_SERVEUR_DOWN,
+	CONNEXION_DOWN
+};
 
 /*Settings*/
 #define SECURE_DATABASE "secure.enc"
@@ -79,29 +76,35 @@ enum
 	TYPE_DEPOT_PAID 	= 1,
 	TYPE_DEPOT_DB 		= 2,
 	TYPE_DEPOT_OTHER	= 3,
-	TYPE_DEPOT_GOO		= 4
+	TYPE_DEPOT_GOO		= 4,
+	MAX_TYPE_DEPOT = TYPE_DEPOT_GOO
 };
-#define MAX_TYPE_DEPOT 4
 
 /*String macro*/
 #define STRINGIZE_HELPER(s) #s
 #define STRINGIZE(s) STRINGIZE_HELPER(s)
 
 /*Download.c*/
-#define CODE_RETOUR_OK 0
-#define CODE_RETOUR_DL_CLOSE 1
-#define CODE_FAILED_AT_RESOLVE 2
-#define CODE_RETOUR_INTERNAL_FAIL 3
-#define CODE_RETOUR_PARTIAL 4
-
-#define SSL_OFF 0
-#define SSL_ON 1
+enum
+{
+	CODE_RETOUR_OK,
+	CODE_RETOUR_DL_CLOSE,
+	CODE_FAILED_AT_RESOLVE,
+	CODE_RETOUR_INTERNAL_FAIL,
+	CODE_RETOUR_PARTIAL,
+	
+	SSL_OFF = 0,
+	SSL_ON
+};
 
 /*Sécurité*/
-#define EVERYTHING_IN_HDD 1
-#define INPUT_IN_MEMORY 2
-#define OUTPUT_IN_MEMORY 3
-#define EVERYTHING_IN_MEMORY 4
+enum
+{
+	EVERYTHING_IN_HDD,
+	INPUT_IN_MEMORY,
+	OUTPUT_IN_MEMORY,
+	EVERYTHING_IN_MEMORY
+};
 #define NOMBRE_CLE_MAX_ACCEPTE 10
 
 /*Hash algorithms*/

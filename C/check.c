@@ -69,7 +69,7 @@ void networkAndVersionTest()
     MUTEX_UNLOCK(networkMutex);
 	
 	/*Chargement de l'URL*/
-    snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version="STRINGIZE(CURRENTVERSION)"&os="BUILD);
+    snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
 
     if(download_mem(testURL, NULL, bufferDL, sizeof(bufferDL), SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;

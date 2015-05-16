@@ -226,7 +226,6 @@ memoryFail:
 char ** loadChapterConfigDat(char* input, uint *nombrePage)
 {
     char ** output, current;
-	bool scriptUsed = false;
     FILE* fileInput = fopen(input, "r");
 
 	if(fileInput == NULL)
@@ -240,10 +239,13 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 	//We extract the data from the file
     if(current != EOF)
     {
-		if(current == 'N')
-			scriptUsed = true;
-        else
-            fseek(fileInput, -1, SEEK_CUR);
+		if(current != 'N')
+		{
+			fclose(fileInput);
+			logR("Obsolete "CONFIGFILE" detected, please notify the maintainer of the repository");
+
+			return NULL;
+		}
 		
         output = calloc(*nombrePage, sizeof(char*));
 		
@@ -260,10 +262,19 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				return NULL;
 			}
 			
-            if(!scriptUsed)
-                fscanfs(fileInput, "%d %s\n", &j, output[i], LONGUEUR_NOM_PAGE);
-            else
-                fscanfs(fileInput, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE);
+			if(fscanfs(fileInput, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE) != 2)
+			{
+				//Handle the case where we got less pages than expected
+				
+				free(output[i]);
+				*nombrePage = i;
+
+				void * tmp = realloc(output, i * sizeof(char*));
+				if(tmp != NULL)
+					output = tmp;
+				
+				break;
+			}
         }
     }
     else
