@@ -367,10 +367,10 @@
 	if(_parent.distractionFree)
 	{
 		[_parent fadeBottomBar:READER_BB_ALPHA_DF];	//We recycle the call, otherwise, we'd have to rewrite the same animation block
+
+		self.highjackedMouseEvents = NO;
+		[_parent startFadeTimer:[NSEvent mouseLocation]];
 	}
-	
-	self.highjackedMouseEvents = NO;
-	[_parent startFadeTimer:[NSEvent mouseLocation]];
 }
 
 /*Constraints routines*/
