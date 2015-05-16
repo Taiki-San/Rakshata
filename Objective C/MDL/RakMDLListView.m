@@ -153,12 +153,16 @@ enum
 	
 	[requestName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
 	[statusText setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
-	
+
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;
 	[_remove removeFromSuperview];	_remove = nil;
 	
+	previousStatus = MDL_CODE_UNUSED;
+	
 	[self initIcons];
+	[self updateContext];
+	[self setPositionsOfStuffs];
 }
 
 #pragma mark - Data update
@@ -382,14 +386,30 @@ enum
 	if(![DLprogress isHidden])		[DLprogress setHidden:YES];
 	
 	previousStatus = newStatus;
-
+	
 	switch (newStatus)
 	{
 		case MDL_CODE_DL:
 		{
-			[_pause setHidden:NO];				[_pause display];
+			[_pause setHidden:NO];
 			[DLprogress setHidden:NO];
-			[DLprogress updatePercentage:0 :0];	[DLprogress display];
+			
+			DATA_LOADED ** entry = [_controller getData : _row : YES];
+
+			if(entry != NULL && *entry != NULL)
+			{
+				//We update the buttons state
+				[_pause setState:(*entry)->downloadSuspended & DLSTATUS_SUSPENDED ? NSOnState : NSOffState];
+				if((*entry)->metadata.initialized)
+					[DLprogress updatePercentage:(*entry)->metadata.percentage :(*entry)->metadata.speed];
+				else
+					[DLprogress updatePercentage:0 :0];
+			}
+			else
+				[DLprogress updatePercentage:0 :0];
+			
+			[_pause display];
+			[DLprogress display];
 			break;
 		}
 			

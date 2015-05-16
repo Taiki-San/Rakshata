@@ -53,7 +53,7 @@ void releaseDNSCache()
 
 /** Chapter download **/
 
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler)
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler)
 {
     THREAD_TYPE threadData;
 	DL_DATA downloadData;
@@ -101,8 +101,14 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 				else
 					percentage = 0;
 				
+				DLMetadata->percentage = percentage;
+				DLMetadata->speed = downloadSpeed;
+				
+				if(!DLMetadata->initialized)
+					DLMetadata->initialized = true;
+	
 				updatePercentage(*rowViewResponsible, percentage, downloadSpeed);
-
+				
 				usleep(50000);	//100 ms
             }
 			else

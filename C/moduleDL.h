@@ -11,21 +11,24 @@
 *********************************************************************************************/
 
 /*Codes*/
-#define MDL_CODE_UNPAID				(-5)
-#define MDL_CODE_INTERNAL_ERROR		(-4)
-#define MDL_CODE_ERROR_INSTALL		(-3)
-#define MDL_CODE_ERROR_DL			(-2)
-#define MDL_CODE_ABORTED			(-1)
-#define MDL_CODE_DEFAULT			0
-#define MDL_CODE_WAITING_PAY		1
-#define MDL_CODE_WAITING_LOGIN		2
-#define MDL_CODE_DL					3
-#define MDL_CODE_DL_OVER			4
-#define MDL_CODE_INSTALL			5
-#define MDL_CODE_INSTALL_OVER		6
-
-#define MDL_CODE_UNUSED				(-6)
-#define MDL_CODE_FIRST_ERROR MDL_CODE_ERROR_DL
+enum
+{
+	MDL_CODE_UNUSED = 	-6,
+	MDL_CODE_UNPAID,
+	MDL_CODE_INTERNAL_ERROR,
+	MDL_CODE_ERROR_INSTALL,
+	MDL_CODE_ERROR_DL,
+	MDL_CODE_ABORTED,
+	MDL_CODE_DEFAULT = 	0,
+	MDL_CODE_WAITING_PAY,
+	MDL_CODE_WAITING_LOGIN,
+	MDL_CODE_DL,
+	MDL_CODE_DL_OVER,
+	MDL_CODE_INSTALL,
+	MDL_CODE_INSTALL_OVER,
+	
+	MDL_CODE_FIRST_ERROR = MDL_CODE_ERROR_DL
+};
 
 #define MDLP_CODE_ERROR '#'  //En cas de données insuffisante, calloc met directement error aux manquants
 #define MDLP_CODE_PAID '0'
@@ -56,6 +59,14 @@ enum downloadStatusCodes {
 	DLSTATUS_ABORT		= 0xf0
 };
 
+typedef struct metadata_UI_data_loaded
+{
+	size_t speed;
+	double percentage;
+	bool initialized;
+	
+} METADATA_LOADED;
+
 typedef struct data_loaded_from_download_list
 {
 	void * rowViewResponsible;
@@ -69,6 +80,8 @@ typedef struct data_loaded_from_download_list
 	uint nbElemList;
 	int identifier;
 	
+	METADATA_LOADED metadata;
+	
 	uint8_t downloadSuspended;	//Divised in two parts
 } DATA_LOADED;
 
@@ -76,6 +89,7 @@ typedef struct intermediary_from_data_loaded_to_DL_thread
 {
 	void ** rowViewResponsible;
 	CURL ** curlHandler;
+	METADATA_LOADED * metadata;
 	uint8_t * downloadSuspended;	//Divised in two parts
 	
     PROJECT_DATA* datas;
@@ -156,7 +170,7 @@ typedef struct argument_to_MDL_handler
 } MDL_HANDLER_ARG;
 
 /**Download.c**/
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, uint currentPos, uint nbElem, CURL ** curlHandler);
+int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler);
 
 /**ModuleDL2.c**/
 bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
