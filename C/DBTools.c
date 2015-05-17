@@ -479,9 +479,9 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	if(data.chapitresFull != NULL)
 	{
-		newData.chapitresFull = malloc((data.nombreChapitre + 1) * sizeof(int));
+		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(int));
 		if(newData.chapitresFull != NULL)
-			memcpy(newData.chapitresFull, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
+			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(int));
 	}
 	
 	if(data.chapitresPrix != NULL)
@@ -493,21 +493,21 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	if(data.chapitresInstalled != NULL)
 	{
-		newData.chapitresInstalled = malloc((data.nombreChapitreInstalled + 1) * sizeof(int));
+		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(int));
 		if(newData.chapitresInstalled != NULL)
-			memcpy(newData.chapitresInstalled, data.chapitresInstalled, (data.nombreChapitreInstalled + 1) * sizeof(int));
+			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(int));
 	}
 	
 	if(data.tomesFull != NULL)
 	{
-		newData.tomesFull = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
+		newData.tomesFull = malloc(data.nombreTomes * sizeof(META_TOME));
 		if(newData.tomesFull != NULL)
 			copyTomeList(data.tomesFull, data.nombreTomes, newData.tomesFull);
 	}
 	
 	if(data.tomesInstalled != NULL)
 	{
-		newData.tomesInstalled = malloc((data.nombreTomesInstalled + 1) * sizeof(META_TOME));
+		newData.tomesInstalled = malloc(data.nombreTomesInstalled * sizeof(META_TOME));
 		if(newData.tomesInstalled != NULL)
 			copyTomeList(data.tomesInstalled, data.nombreTomesInstalled, newData.tomesInstalled);
 	}

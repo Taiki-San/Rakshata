@@ -288,7 +288,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
 	{
 		//Un chapitre interne peut avoir le même ID dans deux tomes différents, on a donc besoin du # du tome
-		if(projectData.tomesFull == NULL || posIndexTome == NULL || *posIndexTome > projectData.nombreTomes)
+		if(projectData.tomesFull == NULL || posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes)
 			return ERROR_CHECK;
 		
 		int IDTome = projectData.tomesFull[*posIndexTome].ID;

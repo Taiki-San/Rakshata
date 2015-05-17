@@ -63,7 +63,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	
 	uint pos = getPosForID(projectDB, false, ID), posDetails;
 	
-	if(pos == -1 || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
+	if(pos != -1 || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
 		return false;
 	
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
@@ -160,7 +160,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	project->nombreTomesInstalled = project->nombreTomes;
 	
 	size_t deletedItems = 0;
-    for(uint nbElem = 0; nbElem < project->nombreTomes && project->tomesFull[nbElem].ID != VALEUR_FIN_STRUCT; nbElem++)
+    for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*project, project->tomesFull[nbElem].ID))
@@ -188,7 +188,7 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 	if(input == NULL || output == NULL)
 		return;
 	
-	memcpy(output, input, (nombreTomes+1) * sizeof(META_TOME));
+	memcpy(output, input, nombreTomes * sizeof(META_TOME));
 	for(uint pos = 0; pos < nombreTomes && input[pos].ID != VALEUR_FIN_STRUCT; pos++)
 	{
 		if(input[pos].details == NULL)
@@ -203,9 +203,6 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 		else
 			output[pos].details = NULL;
 	}
-
-	output[nombreTomes].ID = VALEUR_FIN_STRUCT;
-	output[nombreTomes].details = NULL;
 }
 
 void freeTomeList(META_TOME * data, bool includeDetails)
@@ -270,7 +267,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 	
 	position = getPosForID(projectDB, true, tomeDelete);
 	
-	if(position != -1 && projectDB.tomesInstalled[position].details != NULL)
+	if(position != -1 && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
 	{
 		int curID;
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];

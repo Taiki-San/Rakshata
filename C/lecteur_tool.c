@@ -23,8 +23,11 @@ int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, 
 			logR("Error: failed at loading available content for the project");
 			return -1;
         }
-        for(curPosIntoStruct = 0; projectDB.chapitresInstalled[curPosIntoStruct] != VALEUR_FIN_STRUCT && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
-    }
+        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreChapitreInstalled && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
+
+		if(curPosIntoStruct == projectDB.nombreChapitreInstalled)
+			return -1;
+	}
     else
     {
         if(projectDB.tomesInstalled == NULL)
@@ -32,7 +35,10 @@ int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, 
 			logR("Error: failed at loading available content for the project");
 			return -1;
 		}
-        for(curPosIntoStruct = 0; projectDB.tomesInstalled[curPosIntoStruct].ID != VALEUR_FIN_STRUCT && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+		
+		if(curPosIntoStruct == projectDB.nombreTomesInstalled)
+			return -1;
     }
 	
 	//On vérifie que l'entrée est valide

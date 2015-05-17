@@ -391,7 +391,7 @@
 	
 	if (isTome)
 	{
-		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.tomesFull[0].ID == VALEUR_FIN_STRUCT)
+		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.nombreTomes > 0)
 			return countInjected;
 		
 		nbFull = data.nombreTomes;
@@ -399,7 +399,7 @@
 	}
 	else
 	{
-		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.chapitresFull[0] == VALEUR_FIN_STRUCT)
+		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.nombreChapitre > 0)
 			return countInjected;
 		
 		nbFull = data.nombreChapitre;

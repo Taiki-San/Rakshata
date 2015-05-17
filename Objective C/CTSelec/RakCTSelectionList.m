@@ -108,7 +108,7 @@
 		nbInstalledData = project.nombreTomesInstalled;
 		installedData = project.tomesInstalled;
 		
-		if(newData == NULL)
+		if(newData == NULL || nbElem == 0)
 			return NO;
 	}
 	else
@@ -120,7 +120,7 @@
 		installedData = project.chapitresInstalled;
 		nbInstalledData = project.nombreChapitreInstalled;
 		
-		if(newData == NULL)
+		if(newData == NULL || nbElem == 0)
 			return NO;
 		
 		//Price table

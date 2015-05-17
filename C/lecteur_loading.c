@@ -17,7 +17,7 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 {
 	uint maxValue = isTome ? projectDB.nombreTomesInstalled : projectDB.nombreChapitreInstalled;
 
-	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < projectDB.nombreTomesInstalled
+	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < maxValue
 										&& !checkReadable(projectDB, isTome, isTome ? projectDB.tomesInstalled[*currentPosIntoStructure].ID: projectDB.chapitresInstalled[*currentPosIntoStructure]);		(*currentPosIntoStructure)++);
 	
 	return *currentPosIntoStructure < maxValue;

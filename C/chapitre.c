@@ -57,7 +57,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 	
 	projectDB->nombreChapitreInstalled = 0;
 	
-    if(projectDB->chapitresFull == NULL || projectDB->chapitresFull[0] == VALEUR_FIN_STRUCT)
+    if(projectDB->chapitresFull == NULL || projectDB->nombreChapitre == 0)
 		return;
 	
     char configFilePath[256];
@@ -71,10 +71,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 	
     if(!isInstalled(configFilePath))
     {
-		projectDB->chapitresInstalled = malloc(sizeof(int));
-		
-		if(projectDB->chapitresInstalled != NULL)
-			projectDB->chapitresInstalled[0] = VALEUR_FIN_STRUCT;
+		projectDB->chapitresInstalled = NULL;
 		return;
     }
 	
@@ -92,25 +89,24 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 		}
     }
 	
-	int *temporaryInstalledList = malloc((projectDB->nombreChapitre + 1) * sizeof(int));
+	int *temporaryInstalledList = malloc(projectDB->nombreChapitre * sizeof(int));
 	size_t nbElem = 0;
 	
 	if(temporaryInstalledList == NULL)
 		return;
 
-    for(size_t pos = 0; projectDB->chapitresFull[pos] != VALEUR_FIN_STRUCT && pos < projectDB->nombreChapitre; pos++)
+    for(size_t pos = 0; pos < projectDB->nombreChapitre; pos++)
     {
         if(checkChapterReadable(*projectDB, projectDB->chapitresFull[pos]))
             temporaryInstalledList[nbElem++] = projectDB->chapitresFull[pos];
     }
-	temporaryInstalledList[nbElem] = VALEUR_FIN_STRUCT;
 
 	if(nbElem != 0)
 	{
-		projectDB->chapitresInstalled = malloc((nbElem + 1) * sizeof(int));
+		projectDB->chapitresInstalled = malloc(nbElem * sizeof(int));
 		if(projectDB->chapitresInstalled != NULL)
 		{
-			memcpy(projectDB->chapitresInstalled, temporaryInstalledList, (nbElem + 1) * sizeof(int));
+			memcpy(projectDB->chapitresInstalled, temporaryInstalledList, nbElem * sizeof(int));
 			projectDB->nombreChapitreInstalled = nbElem;
 		}
 	}

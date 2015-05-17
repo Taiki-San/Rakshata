@@ -183,7 +183,7 @@ void updateFavorites()
 	
 	if(pos != nbElem)
 	{
-		//Something new is available
+		#warning "New favorites available for download"
 	}
 }
 

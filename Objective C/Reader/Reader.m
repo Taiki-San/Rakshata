@@ -499,7 +499,7 @@
 		
 		if(isTome)
 		{
-			if(project.tomesInstalled == NULL)
+			if(project.tomesInstalled == NULL || position >= project.nombreTomesInstalled)
 				return;
 			
 			META_TOME tome = project.tomesInstalled[position];
@@ -511,7 +511,7 @@
 		}
 		else
 		{
-			if(project.chapitresInstalled == NULL)
+			if(project.chapitresInstalled == NULL || position >= project.nombreChapitreInstalled)
 				return;
 			
 			int element = project.chapitresInstalled[position];

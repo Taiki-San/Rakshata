@@ -126,10 +126,6 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 						}
 
 					}
-
-					if(isChapter)
-						((int *)output)[pos] = VALEUR_FIN_STRUCT;
-
 				}
 			}
 			else
@@ -173,8 +169,6 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 					{
 						for(((int *)output)[pos++] = first; pos < *counter; pos++)
 							((int *)output)[pos] = ((int *)output)[pos-1] + jump;
-						
-						((int *)output)[pos] = VALEUR_FIN_STRUCT;
 					}
 				}
 				
@@ -408,7 +402,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		return NULL;
 	
 	size_t nbElemMax = [volumeBloc count];
-	META_TOME * output = malloc((nbElemMax + 1) * sizeof(META_TOME));
+	META_TOME * output = malloc(nbElemMax * sizeof(META_TOME));
 
 	if(output != NULL)
 	{
@@ -464,8 +458,6 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		}
 		
 		*nbElem = cache;
-		output[*nbElem].details = NULL;
-		output[*nbElem].ID = VALEUR_FIN_STRUCT;
 	}
 	
 	return output;

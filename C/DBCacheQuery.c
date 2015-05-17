@@ -103,10 +103,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 	if(buffer != NULL)
 	{
-		output->chapitresFull = malloc((output->nombreChapitre+2) * sizeof(int));
+		output->chapitresFull = malloc(output->nombreChapitre * sizeof(int));
 		if(output->chapitresFull != NULL)
 		{
-			memcpy(output->chapitresFull, buffer, (output->nombreChapitre + 1) * sizeof(int));
+			memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(int));
 			output->chapitresInstalled = NULL;
 			checkChapitreValable(output, NULL);
 		}
@@ -129,7 +129,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
 	if(buffer != NULL)
 	{
-		output->tomesFull = malloc((output->nombreTomes + 2) * sizeof(META_TOME));
+		output->tomesFull = malloc(output->nombreTomes * sizeof(META_TOME));
 		if(output->tomesFull != NULL)
 		{
 			copyTomeList(buffer, output->nombreTomes, output->tomesFull);
