@@ -43,7 +43,7 @@ static uLong zmemread(voidpf opaque, voidpf stream, void* buf, uLong size)
 
 	for(i = 0; i < size; i++)
 	{
-		((unsigned char*) buf)[i] = ~(data->buf[*pos + i] ^ data->mask[*pos + i]);
+		((unsigned char*) buf)[i] = ~(data->buf[*pos + i] ^ (~data->mask[*pos + i]));
 	}
 
 	*pos += i;

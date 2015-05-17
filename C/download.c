@@ -294,7 +294,7 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
             if(output->data == NULL)
                 return -1;
 			
-			output->mask = calloc(1, data->length);
+			output->mask = malloc(data->length);
             if(output->mask == NULL)
                 return -1;
         }
@@ -321,7 +321,9 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
     //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
 	
 	for(i = 0; i < size * nmemb; data->current_pos++)
-		output->data[data->current_pos] = (~input[i++]) ^ ((output->mask[data->current_pos] = (getRandom() & 0xff)));
+	{
+		output->data[data->current_pos] = (~input[i++]) ^ (~output->mask[data->current_pos]);
+	}
 	
 	return size*nmemb;
 }
