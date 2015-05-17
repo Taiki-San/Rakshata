@@ -205,13 +205,13 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 	}
 }
 
-void freeTomeList(META_TOME * data, bool includeDetails)
+void freeTomeList(META_TOME * data, uint length, bool includeDetails)
 {
 	if(data == NULL)
 		return;
 	
 	if(includeDetails)
-		for(uint i = 0; data[i].ID != VALEUR_FIN_STRUCT; i++)
+		for(uint i = 0; i < length; i++)
 			free(data[i].details);
 
 	free(data);

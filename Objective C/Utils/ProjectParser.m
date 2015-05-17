@@ -511,6 +511,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	int * chapters = NULL;
 	uint * chaptersPrices = NULL;
+	uint nbChapters = 0, nbVolumes = 0;
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
@@ -531,7 +532,6 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		 
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
-	uint nbChapters = 0, nbVolumes = 0;
 	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, YES, isPaidContent, &chaptersPrices);
 	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
 
@@ -586,7 +586,7 @@ end:
 	
 	free(chapters);
 	free(chaptersPrices);
-	freeTomeList(volumes, true);
+	freeTomeList(volumes, nbVolumes, true);
 	return data;
 }
 

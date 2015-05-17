@@ -235,13 +235,14 @@
 				//Old data
 				void * oldDataBak = oldData;
 				oldData = buildInstalledList(oldData, nbOldElem, oldInstalled, nbOldInstalled, isTome);
-				nbOldElem = nbOldInstalled;
 				
 				if(isTome)
-					freeTomeList(oldDataBak, true);
+					freeTomeList(oldDataBak, nbOldElem, true);
 				else
 					free(oldDataBak);
 				
+				nbOldElem = nbOldInstalled;
+
 				//New data
 				newInstalledData = buildInstalledList(_data, _nbElem, _installedJumpTable, _nbInstalled, isTome);
 				nbNewData = _nbInstalled;
@@ -281,7 +282,7 @@
 	
 	
 	if(isTome)
-		freeTomeList(oldData, true);
+		freeTomeList(oldData, nbOldElem, true);
 	else
 		free(oldData);
 	free(oldInstalled);
@@ -295,10 +296,8 @@
 	if(animated)
 		[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _tableView.numberOfRows)] withAnimation:NSTableViewAnimationSlideLeft];
 	
-	_nbElem = _nbInstalled = 0;
-	
 	if(self.isTome)
-		freeTomeList(_data, true);
+		freeTomeList(_data, _nbElem, true);
 	else
 	{
 		free(_data);
@@ -306,6 +305,8 @@
 	}
 	
 	_data = NULL;
+	_nbElem = _nbInstalled = 0;
+
 	free(_installedJumpTable);	_installedJumpTable = NULL;
 	free(_installedTable);		_installedTable = NULL;
 	

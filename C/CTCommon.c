@@ -82,8 +82,8 @@ void releaseCTData(PROJECT_DATA data)
 		free(data.chapitresFull);
 		free(data.chapitresInstalled);
 		free(data.chapitresPrix);
-		freeTomeList(data.tomesFull, true);
-		freeTomeList(data.tomesInstalled, true);
+		freeTomeList(data.tomesFull, data.nombreTomes, true);
+		freeTomeList(data.tomesInstalled, data.nombreTomesInstalled, true);
 #endif
 	}
 }

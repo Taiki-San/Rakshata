@@ -137,7 +137,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		
 		free(cacheCopy.chapitresFull);	//updateCache en fait une copie
 		free(cacheCopy.chapitresPrix);
-		freeTomeList(cacheCopy.tomesFull, true);
+		freeTomeList(cacheCopy.tomesFull, cacheCopy.nombreTomes, true);
 	}
 
 end:

@@ -220,7 +220,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 
 			free(newData[posNew].chapitresFull);	//updateCache en fait une copie
 			free(newData[posNew].chapitresPrix);
-			freeTomeList(newData[posNew].tomesFull, true);
+			freeTomeList(newData[posNew].tomesFull, newData[posNew].nombreTomes, true);
 			
 			posOld++;
 			posNew++;

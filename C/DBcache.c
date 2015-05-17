@@ -163,7 +163,7 @@ uint setupBDDCache()
 
 				free(projects[pos].chapitresFull);
 				free(projects[pos].chapitresPrix);
-				freeTomeList(projects[pos].tomesFull, true);
+				freeTomeList(projects[pos].tomesFull, projects[pos].nombreTomes, true);
 			}
 			
 			flushSearchJumpTable(searchData);
@@ -275,13 +275,13 @@ void flushDB()
 	MUTEX_LOCK(cacheMutex);
 
 	sqlite3_stmt* request = NULL;
-	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)" FROM rakSQLite", &request) == SQLITE_OK)
+	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)" FROM rakSQLite", &request) == SQLITE_OK)
 	{
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
 			free((void*) sqlite3_column_int64(request, 0));
 			free((void*) sqlite3_column_int64(request, 1));
-			freeTomeList((void*) sqlite3_column_int64(request, 2), true);
+			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3) ,true);
 		}
 		
 		destroyRequest(request);

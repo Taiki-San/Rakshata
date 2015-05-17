@@ -128,7 +128,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID);
 void checkTomeValable(PROJECT_DATA *project, int *dernierLu);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
-void freeTomeList(META_TOME * data, bool includeDetails);
+void freeTomeList(META_TOME * data, uint length, bool includeDetails);
 int extractNumFromConfigTome(char *input, int ID);
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
