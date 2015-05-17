@@ -25,12 +25,12 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 		return NULL;
 	}
 	
-	else if(parseData == nil || ![parseData isKindOfClass: [NSDictionary class]])
+	else if(parseData == nil || ARE_CLASSES_DIFFERENT(parseData, [NSDictionary class]))
 		return NULL;
 	
 	//Check the file version
 	NSNumber * version = objectForKey(parseData, JSON_RAK_MIN_VERSION, @"version");
-	if(version == nil || ![version isKindOfClass:[NSNumber class]] || [version unsignedIntValue] > VERSION_RAK_FILE)
+	if(version == nil || ARE_CLASSES_DIFFERENT(version, [NSNumber class]) || [version unsignedIntValue] > VERSION_RAK_FILE)
 	{
 		NSLog(@"Rakshata couldn't read the file you submitted, sorry :/");
 		return NULL;
@@ -39,7 +39,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 	//Ok, let's extract the payload
 	uint nbElements;
 	NSArray * payload = objectForKey(parseData, JSON_RAK_PAYLOAD, @"payload");
-	if(payload == nil || ![payload isKindOfClass:[NSArray class]] || !(nbElements = [payload count]))
+	if(payload == nil || ARE_CLASSES_DIFFERENT(payload, [NSArray class]) || !(nbElements = [payload count]))
 	{
 		NSLog(@"Empty file");
 		return NULL;
@@ -59,7 +59,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 	//We can now interate the paypload entries
 	for (NSDictionary * entry in payload)
 	{
-		if(entry == nil || ![entry isKindOfClass:[NSDictionary class]])
+		if(entry == nil || ARE_CLASSES_DIFFERENT(entry, [NSDictionary class]))
 		{
 #ifdef DEV_VERSION
 			NSLog(@"Invalid entry: %@", entry);
@@ -73,15 +73,15 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 		NSArray * preselection;
 		
 		type = objectForKey(entry, JSON_RAK_TYPE, @"type");
-		if(type == nil || ![type isKindOfClass:[NSNumber class]] || ![type unsignedCharValue] || [type unsignedCharValue] > MAX_TYPE_DEPOT)
+		if(type == nil || ARE_CLASSES_DIFFERENT(type, [NSNumber class]) || ![type unsignedCharValue] || [type unsignedCharValue] > MAX_TYPE_DEPOT)
 			continue;
 		
 		URL = objectForKey(entry, JSON_RAK_URL, @"URL");
-		if(URL == nil || ![URL isKindOfClass:[NSString class]] || ![URL length] || [URL length] >= REPO_URL_LENGTH)
+		if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || ![URL length] || [URL length] >= REPO_URL_LENGTH)
 			continue;
 		
 		preselection = objectForKey(entry, JSON_RAK_PRESELECTION, @"preselection");
-		if(preselection != nil && (![preselection isKindOfClass:[NSArray class]] || ![preselection count]))
+		if(preselection != nil && (ARE_CLASSES_DIFFERENT(preselection, [NSArray class]) || ![preselection count]))
 			continue;
 		
 		//Craft a structure to send to the update routine in order to gather the data
@@ -106,7 +106,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 			{
 				for(NSNumber * object in preselection)
 				{
-					if(![object isKindOfClass:[NSNumber class]])
+					if(ARE_CLASSES_DIFFERENT(object, [NSNumber class]))
 						continue;
 					
 					uint currentValue = [object unsignedIntValue];

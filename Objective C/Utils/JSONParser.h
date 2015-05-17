@@ -26,6 +26,7 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
+#define ARE_CLASSES_DIFFERENT(a, b) (![a isKindOfClass:b])
 
 #define JSON_PROJ_PROJECTS @"0"
 #define JSON_PROJ_ID @"1"
