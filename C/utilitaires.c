@@ -208,6 +208,9 @@ IMG_DATA* readFile(char * path)
 
 bool isDownloadValid(char *input)
 {
+	if(input == NULL)
+		return false;
+	
     int i = 0;
     for(; input[i] && (input[i] <= ' ' || input[i] > '~') && i < 10; i++);
     return (i < 10 && input[i] != '<' && input[i]);

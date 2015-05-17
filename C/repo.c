@@ -12,19 +12,18 @@
 
 #include "crypto.h"
 
-bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
+bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput)
 {
-	if(type == 0 || type > MAX_TYPE_DEPOT || repoURL == NULL || output == NULL || !sizeOutput)
+	if(type == 0 || type > MAX_TYPE_DEPOT || repoURL == NULL || output == NULL || sizeOutput == NULL)
 		return false;
-	
-	output[0] = 0;
+
 	if(type == TYPE_DEPOT_DB || type == TYPE_DEPOT_OTHER)
 	{
 		short versionRepo = VERSION_REPO;
 		char fullURL[512];
 		
 		snprintf(fullURL, sizeof(fullURL), type == TYPE_DEPOT_DB ? "https://dl.dropboxusercontent.com/u/%s/rakshata-repo-%d" : "http://%s/rakshata-repo-%d", repoURL, versionRepo);
-		download_mem(fullURL, NULL, output, sizeOutput, type == 1 ? SSL_ON : SSL_OFF);
+		download_mem(fullURL, NULL, output, sizeOutput, type == TYPE_DEPOT_PAID ? SSL_ON : SSL_OFF);
 	}
 	else
 	{
@@ -33,7 +32,7 @@ bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput)
 		download_mem(fullURL, NULL, output, sizeOutput, SSL_OFF);
 	}
 	
-	return isDownloadValid(output);
+	return isDownloadValid(*output);
 }
 
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)

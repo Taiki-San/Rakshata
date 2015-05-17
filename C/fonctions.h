@@ -32,8 +32,8 @@ void releaseCTData(PROJECT_DATA data);
 /**Download.c**/
 void initializeDNSCache();
 void releaseDNSCache();
-int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled);
-int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled);
+int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_length, bool SSL_enabled);
+int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled);
 
 /**Error.c**/
 void logR(char *error);
@@ -92,7 +92,7 @@ void ouvrirSite(const char *URL);
 bool checkDirExist(char *dirname);
 
 /**Repo.c**/
-bool getRepoData(byte type, char * repoURL, char * output, uint sizeOutput);
+bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput);
 char * getPathForRepo(REPO_DATA * repo);
 char * getPathForRootRepo(ROOT_REPO_DATA * repo);
 byte defineTypeRepo(char *URL);

@@ -190,25 +190,26 @@ char* loadLargePrefs(char* flag)
 	if (flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
-        char temp[200], buffer[65000], buffer2[65100];
+		
+		char temp[200], *downloadData = NULL;
+		size_t downloadLength;
+		
         if(flag[0] == SETTINGS_PROJECTDB_FLAG[0])
             strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
         else
 			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
 
-        crashTemp(buffer, sizeof(buffer));
-        download_mem(temp, NULL, buffer, sizeof(buffer), SSL_ON);
-        snprintf(buffer2, sizeof(buffer2), "<%s>\n%s\n</%s>\n", flag, buffer, flag);
-        addToPref(flag, buffer2);
-		
-		uint length = strlen(buffer);
-		char * output = malloc(length + 1);
-		if(output != NULL)
+		if(download_mem(temp, NULL, &downloadData, &downloadLength, SSL_ON) == CODE_RETOUR_OK && downloadData != NULL && downloadLength > 0)
 		{
-			memcpy(output, buffer, length);
-			output[length] = 0;
-			return output;
+			char settingBuffer[downloadLength + 100];
+			
+			snprintf(settingBuffer, sizeof(settingBuffer), "<%s>\n%s\n</%s>\n", flag, downloadData, flag);
+			addToPref(flag, settingBuffer);
+
+			return downloadData;
 		}
+
+		free(downloadData);
 	}
     return NULL;
 }

@@ -62,7 +62,8 @@ void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int hostNotReached = 0;
-	char testURL[512], bufferDL[100] = {0};
+	char testURL[512], * bufferDL = NULL;
+	size_t lengthBufferDL;
 
     MUTEX_LOCK(networkMutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
@@ -71,26 +72,31 @@ void networkAndVersionTest()
 	/*Chargement de l'URL*/
     snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
 
-    if(download_mem(testURL, NULL, bufferDL, sizeof(bufferDL), SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
+    if(download_mem(testURL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
     /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
 	 Si ce n'est pas le cas, il y a un problème avec le serveur  */
 
-    if(bufferDL[0] != '0' && bufferDL[0] != '1') //Pas le fichier attendu
+    if(lengthBufferDL == 0 || bufferDL == NULL || (bufferDL[0] != '0' && bufferDL[0] != '1')) //Pas le fichier attendu
     {
 #ifdef _WIN32 //On check le fichier HOST
         checkHostNonModifie();
 #endif
-        crashTemp(bufferDL, 100);
-        if(download_mem(BACKUP_INTERNET_CHECK, NULL, bufferDL, 100, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
+		free(bufferDL);
+		bufferDL = NULL;
+		
+        if(download_mem(BACKUP_INTERNET_CHECK, NULL, &bufferDL, &lengthBufferDL, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
+		
         MUTEX_LOCK(networkMutex);
-        if(hostNotReached == 2 || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
+        if(hostNotReached == 2 || bufferDL == NULL || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
         MUTEX_UNLOCK(networkMutex);
+		
+		free(bufferDL);
     }
 
 	else
@@ -99,31 +105,32 @@ void networkAndVersionTest()
         NETWORK_ACCESS = CONNEXION_OK;
         MUTEX_UNLOCK(networkMutex);
 
-        //Nouveau killswitch
+		free(bufferDL);
+		bufferDL = NULL;
+
+		//Nouveau killswitch
         if(COMPTE_PRINCIPAL_MAIL != NULL)
 		{
 			uint length = strlen(COMPTE_PRINCIPAL_MAIL);
-			char * URL = malloc((length + 100) * sizeof(char));
+			char URL[length + 100];
 			
-			if(URL != NULL)
+			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
+			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || lengthBufferDL == 0 || bufferDL[0] != '0') //Compte valide
 			{
-				snprintf(URL, length + 100, "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
-				if(download_mem(URL, NULL, bufferDL, 5, SSL_ON) != CODE_RETOUR_OK || bufferDL[0] != '0') //Compte valide
-				{
-					free(URL);
-					updateFavorites();
-					quit_thread(0);
-				}
-				
-				/*A partir d'ici, le compte est killswitche*/
-				remove(SECURE_DATABASE);
-				removeFolder(PROJECT_ROOT);
-				logR("Ugh, you did wrong things =/");
-				free(URL);
-				exit(0);
+				free(bufferDL);
+				updateFavorites();
+				quit_thread(0);
 			}
+
+			free(bufferDL);
+			
+			/*A partir d'ici, le compte est killswitche*/
+			remove(SECURE_DATABASE);
+			removeFolder(PROJECT_ROOT);
+			logR("Ugh, you did wrong things =/");
+			exit(0);
 		}
-		
+	
 		updateFavorites();
     }
     quit_thread(0);

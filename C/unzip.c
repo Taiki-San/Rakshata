@@ -338,7 +338,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         }
 
 		//We generate the masterkey
-        if(getMasterKey(temp) == GMK_RETVAL_OK || COMPTE_PRINCIPAL_MAIL == NULL)
+        if(getMasterKey(temp) == GMK_RETVAL_OK && COMPTE_PRINCIPAL_MAIL != NULL)
         {
 			uint lengthEmail = strlen(COMPTE_PRINCIPAL_MAIL);
 			if(lengthEmail != 0)

@@ -328,32 +328,35 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
 	return size*nmemb;
 }
 
-static int internal_download_easy(char* adresse, char* POST, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled);
+static int internal_download_easy(char* adresse, char* POST, bool printToAFile, char **buffer_out, size_t * buffer_length, bool SSL_enabled);
 static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_dl_void);
 
-int download_mem(char* adresse, char *POST, char *buffer_out, size_t buffer_length, int SSL_enabled)
+int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_length, bool SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
         return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, POST, 0, buffer_out, buffer_length, SSL_enabled);
+    return internal_download_easy(adresse, POST, false, buffer_out, buffer_length, SSL_enabled);
 }
 
-int download_disk(char* adresse, char * POST, char *file_name, int SSL_enabled)
+int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled)
 {
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
         return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, POST, 1, file_name, 0, SSL_enabled);
+    return internal_download_easy(adresse, POST, true, &file_name, NULL, SSL_enabled);
 }
 
-static int internal_download_easy(char* adresse, char* POST, int printToAFile, char *buffer_out, size_t buffer_length, int SSL_enabled)
+static int internal_download_easy(char* adresse, char* POST, bool printToAFile, char **buffer_out, size_t * buffer_length, bool SSL_enabled)
 {
+	TMP_DL outputData;
     FILE* output = NULL;
-    CURL *curl = NULL;
     CURLcode res;
+	
+	if(!printToAFile && buffer_length == NULL)
+		return CODE_RETOUR_INTERNAL_FAIL;
 
-    curl = curl_easy_init();
+    CURL * curl = curl_easy_init();
     if(curl == NULL)
     {
         logR("Memory error");
@@ -384,15 +387,17 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
 
     if(printToAFile)
     {
-        output = fopen(buffer_out, "wb");
+        output = fopen(*buffer_out, "wb");
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     }
     else
     {
-        TMP_DL outputData;
+		if(*buffer_out == NULL)
+			*buffer_length = 0;
+		
         outputData.buf = buffer_out;
-        outputData.length = buffer_length;
+        outputData.length = *buffer_length;
         outputData.current_pos = 0;
 
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
@@ -410,20 +415,42 @@ static int internal_download_easy(char* adresse, char* POST, int printToAFile, c
     if(res != CURLE_OK) //Si problème
 		return libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
 
+	if(!printToAFile)
+	{
+		*buffer_length = outputData.length;
+		if(*buffer_out == NULL)
+			return CODE_RETOUR_INTERNAL_FAIL;
+	}
+	
     return CODE_RETOUR_OK;
 }
 
 /**Parsing functions**/
 static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_dl_void)
 {
-    int i = 0;
+    const size_t blockSize = size * nmemb;
     char *input = ptr;
     TMP_DL *buffer_dl = buffer_dl_void;
+	
+	//Realloc memory if needed
+	if(buffer_dl->current_pos + blockSize > buffer_dl->length)
+	{
+		void * tmp = realloc(*((char**)buffer_dl->buf), buffer_dl->current_pos + blockSize + 1);
+		if(tmp != NULL)
+		{
+			*(char**)buffer_dl->buf = tmp;
+			buffer_dl->length = buffer_dl->current_pos + blockSize + 1;
+		}
+		else
+			return 0;
+	}
 
-	for(; i < size * nmemb && buffer_dl->current_pos < buffer_dl->length - 1; ((char*)buffer_dl->buf)[(buffer_dl->current_pos)++] = input[i++]);
-	((char*)buffer_dl->buf)[buffer_dl->current_pos] = 0;
+	memcpy(&((*(char**)buffer_dl->buf)[buffer_dl->current_pos]), input, blockSize);
+	buffer_dl->current_pos += blockSize;
 
-	return i;
+	(*(char**)buffer_dl->buf)[buffer_dl->current_pos] = 0;
+
+	return blockSize;
 }
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)

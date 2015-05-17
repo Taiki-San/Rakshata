@@ -81,6 +81,9 @@ uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbEl
 
 bool downloadedProjectListSeemsLegit(char *data)
 {
+	if(data == NULL)
+		return false;
+	
 	uint pos = 0;
 	for(; data[pos] && (data[pos] <= ' ' && data[pos] > 127); pos++);
 	

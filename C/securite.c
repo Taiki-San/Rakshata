@@ -403,37 +403,48 @@ void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     if(!checkNetworkState(CONNEXION_OK))
         return;
 	
-	int lengthBufferDL = (NUMBER_MAX_REPO_KILLSWITCHE+1) * (2*SHA256_DIGEST_LENGTH+1);
-    char bufferDL[lengthBufferDL], temp[350];
+    char *bufferDL = NULL, temp[350];
+	size_t lengthBuffer;
 	
 	memset(outputKS, 0, NUMBER_MAX_REPO_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
-	bufferDL[0] = 0;
 
-    download_mem("https://"SERVEUR_URL"/killswitch", NULL, bufferDL, (NUMBER_MAX_REPO_KILLSWITCHE+1) * 2*SHA256_DIGEST_LENGTH+1, SSL_ON);
-
-    if(!*bufferDL) //Rien n'a été téléchargé
+    if(download_mem("https://"SERVEUR_URL"/killswitch", NULL, &bufferDL, &lengthBuffer, SSL_ON) != CODE_RETOUR_OK || lengthBuffer == 0) //Rien n'a été téléchargé
         return;
 
 	int posBuffer = 0, posBufferOut = 0, nbElemInKS, posBufferOutInLine;
 
-	for(; posBuffer < lengthBufferDL && !isNbr(bufferDL[posBuffer]); posBuffer++);
+	for(; posBuffer < lengthBuffer && !isNbr(bufferDL[posBuffer]); posBuffer++);
 	
-	if(posBuffer == lengthBufferDL)		//pas de données
+	if(posBuffer == lengthBuffer)		//pas de données
+	{
+		free(bufferDL);
 		return;
+	}
 	
-    for(; posBufferOut < 350 - 1 && isNbr(bufferDL[posBuffer]); temp[posBufferOut++] = bufferDL[posBuffer++]);
+    for(; posBuffer < lengthBuffer && posBufferOut < 350 - 1 && isNbr(bufferDL[posBuffer]); temp[posBufferOut++] = bufferDL[posBuffer++]);
 
+	if(posBuffer == lengthBuffer)
+	{
+		free(bufferDL);
+		return;
+	}
+	
     temp[posBufferOut] = 0;
 	nbElemInKS = atoi(temp);
 	
 	if(nbElemInKS >= NUMBER_MAX_REPO_KILLSWITCHE)
 		nbElemInKS = NUMBER_MAX_REPO_KILLSWITCHE -1;
 	
-    for(posBufferOut = 0; posBufferOut < nbElemInKS; posBufferOut++)
+    for(posBufferOut = 0; posBuffer < lengthBuffer && posBufferOut < nbElemInKS; posBufferOut++)
     {
-        for(; bufferDL[posBuffer] && bufferDL[posBuffer] != '\n'; posBuffer++);
-        for(posBufferOutInLine = 0; posBufferOutInLine < 2*SHA256_DIGEST_LENGTH && isHexa(bufferDL[posBuffer]); outputKS[posBufferOut][posBufferOutInLine++] = bufferDL[posBuffer++]);
-		outputKS[posBufferOut][posBufferOutInLine] = 0;
+        for(; posBuffer < lengthBuffer && bufferDL[posBuffer] && bufferDL[posBuffer] != '\n'; posBuffer++);
+        for(posBufferOutInLine = 0; posBuffer < lengthBuffer && posBufferOutInLine < 2*SHA256_DIGEST_LENGTH && isHexa(bufferDL[posBuffer]); outputKS[posBufferOut][posBufferOutInLine++] = bufferDL[posBuffer++]);
+	
+		//Truncated line
+		if(posBuffer == lengthBuffer && posBufferOutInLine != 2 * SHA256_DIGEST_LENGTH)
+			memset(&(outputKS[posBufferOut]), 0, 2*SHA256_DIGEST_LENGTH+1);
+		else
+			outputKS[posBufferOut][posBufferOutInLine] = 0;
     }
 }
 

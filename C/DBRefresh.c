@@ -25,12 +25,10 @@ void updateDatabase(bool forced)
 
 /************** UPDATE REPO	********************/
 
-int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo)
+int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo)
 {
 	if(buffer_repo == NULL)
 		return -1;
-	else
-		buffer_repo[0] = 0;
 	
     int defaultVersion = VERSION_REPO;
 	char temp[500];
@@ -53,7 +51,7 @@ int getUpdatedRepo(char *buffer_repo, uint bufferSize, ROOT_REPO_DATA repo)
 	
 	download_mem(temp, NULL, buffer_repo, bufferSize, repo.type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF);
 	
-	return isDownloadValid(buffer_repo) ? defaultVersion : -1;
+	return isDownloadValid(*buffer_repo) ? defaultVersion : -1;
 }
 
 void updateRepo()
@@ -74,13 +72,8 @@ void updateRepo()
 	loadKS(dataKS);
 	
 	int dataVersion;
-	char * bufferDL = calloc(1, SIZE_BUFFER_UPDATE_DATABASE);
-
-	if(bufferDL == NULL)
-	{
-		freeRootRepo(oldRootData);
-		return;
-	}
+	size_t downloadLength;
+	char * bufferDL = NULL;
 
 	for(uint posRepo = 0; posRepo < nbRepoToRefresh; posRepo++)
 	{
@@ -96,8 +89,8 @@ void updateRepo()
 		}
 		
 		//Refresh effectif
-		dataVersion = getUpdatedRepo(bufferDL, SIZE_BUFFER_UPDATE_DATABASE, *oldRootData[posRepo]);
-		if(parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
+		dataVersion = getUpdatedRepo(&bufferDL, &downloadLength, *oldRootData[posRepo]);
+		if(bufferDL != NULL && downloadLength > 0 && parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
 			removeNonInstalledSubRepo(&(newData->subRepo), newData->nombreSubrepo, true);
 
@@ -116,9 +109,10 @@ void updateRepo()
 			
 			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
 		}
+		
+		free(bufferDL);
+		bufferDL = NULL;
 	}
-
-	free(bufferDL);
 	
 	if(iconsData != NULL)
 		createNewThread(updateProjectImages, iconsData);
@@ -129,10 +123,12 @@ void updateRepo()
 
 /******************* UPDATE PROJECTS ****************************/
 
-int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo)
+int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo)
 {
 	int defaultVersion = VERSION_PROJECT;
 	char URL[500];
+	size_t length;
+	
     do
 	{
 	    if(repo->type == TYPE_DEPOT_DB)
@@ -152,11 +148,15 @@ int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo)
             return -1;
         }
 		
-        projectBuf[0] = 0;
-        download_mem(URL, NULL, projectBuf, SIZE_BUFFER_UPDATE_DATABASE, repo->type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF);
+		if(download_mem(URL, NULL, projectBuf, &length, repo->type != TYPE_DEPOT_OTHER ? SSL_ON : SSL_OFF) != CODE_RETOUR_OK || length == 0)
+		{
+			free(*projectBuf);
+			*projectBuf = NULL;
+		}
+		
         defaultVersion--;
 		
-	} while(defaultVersion > 0 && !isDownloadValid(projectBuf));
+	} while(defaultVersion > 0 && !isDownloadValid(*projectBuf));
 
     return defaultVersion+1;
 }
@@ -174,16 +174,13 @@ void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, 
 {
 	REPO_DATA *globalRepo = oldData[posBase].repo;
 	uint magnitudeInput = posEnd - posBase, nbElem = 0;
-	char * bufferDL = malloc(SIZE_BUFFER_UPDATE_DATABASE);
+	char * bufferDL = NULL;
 	void * output = NULL;
 	
-	if(bufferDL == NULL)
-		return output;
-
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
 	bool paidRepo = globalRepo->type == TYPE_DEPOT_PAID;
 #endif
-	int version = getUpdatedProjectOfRepo(bufferDL, globalRepo);
+	int version = getUpdatedProjectOfRepo(&bufferDL, globalRepo);
 	
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL))		//On a des données à peu près valide
 	{

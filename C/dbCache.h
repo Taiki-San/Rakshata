@@ -75,7 +75,7 @@ void removeRecentEntryInternal(char * URLRepo, uint projectID);
 
 /**DBRefresh.c**/
 void updateRepo();
-int getUpdatedProjectOfRepo(char *projectBuf, REPO_DATA* repo);
+int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo);
 void * refreshRepo(REPO_DATA * repo, bool standalone);
 void updateProjects();
 

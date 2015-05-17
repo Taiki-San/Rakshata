@@ -48,8 +48,9 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 	//We allocate the maximum possible amount of memory
 	int repoVersion;
 	uint nbRealElements = 0;
-	char downloadBuffer[SIZE_BUFFER_UPDATE_DATABASE];
+	char * downloadBuffer = NULL;
 	ROOT_REPO_DATA ** output = malloc(nbElements * sizeof(ROOT_REPO_DATA *)), dummyRepo;
+	
 	if(output == NULL)
 	{
 		memoryError(nbElements * sizeof(ROOT_REPO_DATA *));
@@ -89,8 +90,9 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 		strncpy(dummyRepo.URL, [URL cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
 		dummyRepo.URL[REPO_URL_LENGTH - 1] = 0;
 
+		size_t length;
 		//Error when downloading the repo data
-		if((repoVersion = getUpdatedRepo(downloadBuffer, SIZE_BUFFER_UPDATE_DATABASE, dummyRepo)) == -1)
+		if((repoVersion = getUpdatedRepo(&downloadBuffer, &length, dummyRepo)) == -1 || downloadBuffer == NULL || length == 0)
 			continue;
 
 		//If parsing success
@@ -117,6 +119,9 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 
 			nbRealElements++;
 		}
+		
+		free(downloadBuffer);
+		downloadBuffer = NULL;
 	}
 	
 	//If some elements were discarded, we reduce our buffer size
