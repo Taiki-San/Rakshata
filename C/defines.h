@@ -66,6 +66,10 @@ enum
 #define MAX_TOME_NAME_LENGTH 31
 #define TOME_DESCRIPTION_LENGTH 256
 
+/*Tags*/
+#define TAG_PAR_CAT 32
+#define TAG_NO_VALUE 0
+
 /*Check environnement*/
 #define NOMBRE_DE_FICHIER_A_CHECKER 16
 #define LONGUEUR_NOMS_DATA 100

@@ -75,6 +75,7 @@
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B6824AF01AA8AB8D001837D6 /* RakPrefsRepoDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */; };
+		B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6885A281B08E67A00C2D7DD /* tagSyncParser.m */; };
 		B6898ECC1AA5E7A1006A619A /* RakCustomWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6898ECB1AA5E7A1006A619A /* RakCustomWindow.m */; };
 		B68B5225191AE3050057F35A /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5224191AE3050057F35A /* RakScroller.m */; };
 		B68B5228191AE31E0057F35A /* RakMDLListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5227191AE31E0057F35A /* RakMDLListView.m */; };
@@ -342,6 +343,7 @@
 		B67F92B718F0C2B0002FC657 /* RakPageCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageCounter.h; path = Reader/RakPageCounter.h; sourceTree = "<group>"; };
 		B67F92B818F0C2B0002FC657 /* RakPageCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageCounter.m; path = Reader/RakPageCounter.m; sourceTree = "<group>"; };
 		B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoDetails.m; path = "Divers Windows/RakPrefsRepoDetails.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6885A281B08E67A00C2D7DD /* tagSyncParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = tagSyncParser.m; path = "Objective C/Utils/tagSyncParser.m"; sourceTree = "<group>"; };
 		B6898ECA1AA5E7A1006A619A /* RakCustomWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomWindow.h; path = Utils/RakCustomWindow.h; sourceTree = "<group>"; };
 		B6898ECB1AA5E7A1006A619A /* RakCustomWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCustomWindow.m; path = Utils/RakCustomWindow.m; sourceTree = "<group>"; };
 		B68B5223191AE3050057F35A /* RakScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakScroller.h; path = Utils/RakScroller.h; sourceTree = "<group>"; };
@@ -1326,6 +1328,7 @@
 				B6F6ECD218A3001400E3B55B /* repo.c */,
 				B61279FA1A585EFF0034C241 /* RepoParser.m */,
 				B62935D61A7E848A00DE20E2 /* tagManagement.c */,
+				B6885A281B08E67A00C2D7DD /* tagSyncParser.m */,
 				B6F6ECD818A3001400E3B55B /* tome.c */,
 			);
 			name = DB;
@@ -1574,6 +1577,7 @@
 				B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */,
 				B69D61DE186CA3D0003504F9 /* MDL.m in Sources */,
 				B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */,
+				B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */,
 				B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */,
 				B6F6ED0D18A3001400E3B55B /* securite.c in Sources */,
 				B678D0321977178A00D7FE6A /* DBrecent.c in Sources */,

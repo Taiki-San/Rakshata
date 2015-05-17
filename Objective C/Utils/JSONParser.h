@@ -13,7 +13,6 @@
 id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName);
 
 //Project parser
-
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
 void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
@@ -24,6 +23,9 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 //Rak parser
 //This function will perform a lot of network task, and thus should _really_ be run in a thread
 ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
+
+//Tags management
+bool loadRemoteState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);
 
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 #define ARE_CLASSES_DIFFERENT(a, b) (![a isKindOfClass:b])
@@ -93,3 +95,10 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 #define JSON_RAK_TYPE			@"2"
 #define JSON_RAK_URL			@"3"
 #define JSON_RAK_PRESELECTION	@"4"
+
+//Tags file parser
+#define JSON_TAG_TAGS 		@"1"
+#define JSON_TAG_CATEGORY 	@"2"
+#define JSON_TAG_ID			@"3"
+#define JSON_TAG_NAME		@"4"
+#define JSON_TAG_MASTER		@"5"

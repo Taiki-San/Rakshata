@@ -24,6 +24,7 @@ typedef struct details_tome_data
 {
 	int ID;
 	bool isNative;			//Chapitre indé
+
 } CONTENT_TOME;
 
 typedef struct tome_metadata
@@ -38,13 +39,43 @@ typedef struct tome_metadata
 	
 	charType readingName[MAX_TOME_NAME_LENGTH];
 	charType description[TOME_DESCRIPTION_LENGTH];
+
 } META_TOME;
 
 typedef struct
 {
 	void* data;
 	size_t length;
+	
 } IMG_DATA;
+
+//Gestion du tag
+
+typedef struct tag_verbose_structure
+{
+	charType * name;
+	uint ID;
+	
+} TAG_VERBOSE;
+
+typedef struct tag_structure
+{
+	uint ID;
+	
+} TAG;
+
+typedef struct category_structure
+{
+	uint ID;
+	uint rootID;
+	
+	charType * name;
+	
+	TAG tags[TAG_PAR_CAT];
+	byte mainTag;
+	
+} CATEGORY;
+
 
 /**********************************************************************************************
  **
