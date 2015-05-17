@@ -343,13 +343,14 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 			uint lengthEmail = strlen(COMPTE_PRINCIPAL_MAIL);
 			if(lengthEmail != 0)
 			{
+				//We want to copy COMPTE_PRINCIPAL_MAIL ASAP in order to preven TOCTOU
+				char * encodedEmail[lengthEmail * 2 + 1];
+				decToHex((void*) COMPTE_PRINCIPAL_MAIL, lengthEmail, (char*) encodedEmail);
+
 				snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
 				FILE * output = fopen(pathToConfigFile, "wb");
 				if(output != NULL)
 				{
-					char * encodedEmail[lengthEmail * 2 + 1];
-					decToHex((void*) COMPTE_PRINCIPAL_MAIL, lengthEmail, (char*) encodedEmail);
-					
 					fputs((char*) encodedEmail, output);
 					fputc('\n', output);
 					

@@ -41,7 +41,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
 
     else if (isPaidProject(*data.datas)) //DL Payant
     {
-        char saltedPass[2*SHA256_DIGEST_LENGTH+1];
+		char saltedPass[2*SHA256_DIGEST_LENGTH+1] = {0};
         saltPassword(saltedPass);
 		
 		if(saltedPass[0] == 0)
@@ -480,6 +480,24 @@ int sortProjectsToDownload(const void *a, const void *b)
 }
 
 /*Divers*/
+
+bool dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, bool noEmail)
+{
+	bool loginRequired = false;
+	
+	for(uint pos = 0, index; pos < length; pos++)
+	{
+		index = IDToPosition == NULL ? pos : IDToPosition[pos];
+		if((*(status[index]) == MDL_CODE_DEFAULT || *(status[index]) == MDL_CODE_WAITING_PAY) &&
+		   data[index] != NULL && data[index]->datas != NULL && ((noEmail && data[index]->datas->haveDRM) || isPaidProject(*data[index]->datas)))
+		{
+			*(status[index]) = MDL_CODE_WAITING_LOGIN;
+			loginRequired = true;
+		}
+	}
+	
+	return loginRequired;
+}
 
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
 {

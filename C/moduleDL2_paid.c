@@ -133,6 +133,7 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
 				{
 					for(uint pos = 0; pos < sizeIndex; *(*status)[index[pos++]] = MDL_CODE_INTERNAL_ERROR);
 				}
+
 				free(bufferOutBak);
             }
             free(POSTRequest);

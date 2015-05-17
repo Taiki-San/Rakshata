@@ -123,6 +123,11 @@ enum
 	return NO;
 }
 
+- (void) removingEmailAddress
+{
+	[controller removingEmailAddress];
+}
+
 #pragma mark - View sizing manipulation
 
 - (CGFloat) getBottomBorder

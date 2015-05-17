@@ -65,8 +65,7 @@ enum
 		}
 		
 		//Email
-		
-		email = [[RakText alloc] initWithText:[NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-GENERAL-LOGGED-IN-ON-%s", nil), COMPTE_PRINCIPAL_MAIL] :[self textColor]];
+		email = [[RakText alloc] initWithText:[self emailString] :[self textColor]];
 		if(email != nil)
 		{
 			[self addSubview: email];
@@ -75,10 +74,19 @@ enum
 		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil)];
 		if(disconnect != nil)
 		{
-			[disconnect setEnabled:NO];
+			if(COMPTE_PRINCIPAL_MAIL != NULL)
+			{
+				[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+				[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
+			}
+			else
+			{
+				disconnect.hidden = YES;
+				[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+			}
 			
-			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
-			[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
+			disconnect.target = self;
+			disconnect.action = @selector(disconnect);
 			
 			[self addSubview: disconnect];
 			
@@ -103,6 +111,14 @@ enum
 	return self;
 }
 
+- (NSString *) emailString
+{
+	if(COMPTE_PRINCIPAL_MAIL != NULL)
+		return [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-GENERAL-LOGGED-IN-ON-%s", nil), COMPTE_PRINCIPAL_MAIL];
+
+	return NSLocalizedString(@"PREFS-GENERAL-NOT-LOGGED-IN", nil);
+}
+
 - (NSRect) frame
 {
 	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, WIDTH, HEIGHT);
@@ -123,6 +139,18 @@ enum
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
 	[animationController addAction : self : @selector(updateTheme:)];
+}
+
+- (void) disconnect
+{
+	[[[NSApp delegate] MDL] removingEmailAddress];
+	deleteEmail();
+	
+	email.stringValue = [self emailString];
+	[email sizeToFit];
+	
+	disconnect.animator.alphaValue = 0;
+	[email.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 }
 
 - (void) updateTheme : (RakSegmentedControl*) sender

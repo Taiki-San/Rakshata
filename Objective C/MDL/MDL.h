@@ -41,6 +41,7 @@
 
 - (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (int) newElem  partOfBatch : (BOOL) partOfBatch;
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
+- (void) removingEmailAddress;
 
 - (BOOL) isDisplayed;
 

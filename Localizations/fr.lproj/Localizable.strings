@@ -154,6 +154,7 @@
 "PREFS-GENERAL-THEME-CUSTOM" = "Thème personnalisé";
 "PREFS-GENERAL-CHOOSE-THEME" = "Thème graphique : ";
 "PREFS-GENERAL-LOGGED-IN-ON-%s" = "Vous êtes connecté avec le compte %1$s";
+"PREFS-GENERAL-NOT-LOGGED-IN" = "Vous n'êtes pas connecté";
 "PREFS-GENERAL-LOGOUT" = "Déconnecter";
 "PREFS-GENERAL-RESET-ALERTS" = "Réinitialiser les alertes";
 

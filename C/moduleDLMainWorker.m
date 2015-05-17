@@ -242,23 +242,14 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 	}
 }
 
-void dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController)
+bool dataRequireLoginWithNotif(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController)
 {
-	bool all = COMPTE_PRINCIPAL_MAIL == NULL;
+	bool retValue = dataRequireLogin(data, status, IDToPosition, length, COMPTE_PRINCIPAL_MAIL == NULL);
 	
-	for(uint pos = 0, index; pos < length; pos++)
-	{
-		index = IDToPosition == NULL ? pos : IDToPosition[pos];
-		
-		if(all || (data[index] != NULL && data[index]->datas != NULL && isPaidProject(*data[index]->datas)))
-		{
-			*(status[index]) = MDL_CODE_WAITING_LOGIN;
-		}
-	}
+	if(mainTabController != NULL)
+		[(__bridge RakMDLController *) mainTabController setRequestCredentials:retValue];
 	
-	RakMDLController * controller = (__bridge RakMDLController *)(mainTabController);
-	
-	controller.requestCredentials = !all;
+	return retValue;
 }
 
 //We recycle the MDL_MWORKER_ARG structure

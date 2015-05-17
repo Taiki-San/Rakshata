@@ -542,6 +542,31 @@
 		*(status[row]) = value;
 }
 
+- (void) removingEmailAddress
+{
+	if(!discardedCount)
+		return;
+	
+	dataRequireLogin(*todoList, status, IDToPosition, discardedCount, NO);
+	
+	uint indexRemoved[discardedCount], nbRemoved = 0;
+	
+	for(uint posDiscarded = 0; posDiscarded < discardedCount; posDiscarded++)
+	{
+		//We remove every similar project from which the download is done
+		if(status[IDToPosition[posDiscarded]] != NULL && (*(status[IDToPosition[posDiscarded]]) == MDL_CODE_WAITING_LOGIN || *(status[IDToPosition[posDiscarded]]) == MDL_CODE_WAITING_PAY))
+			indexRemoved[nbRemoved++] = posDiscarded;
+		else if(nbRemoved > 0)
+			IDToPosition[posDiscarded - nbRemoved] = IDToPosition[posDiscarded];
+	}
+	
+	if(nbRemoved != 0)
+	{
+		discardedCount -= nbRemoved;
+		[_list deleteElements : indexRemoved : nbRemoved];
+	}
+}
+
 #pragma mark - Main view control
 
 - (BOOL) areCredentialsComplete

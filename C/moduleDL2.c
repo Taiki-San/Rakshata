@@ -112,8 +112,7 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 		
 		if(!MDLPHandle(**todoList, status, *IDToPosition, *nbElemTotal))	//We need to login, fuck
 		{
-			dataRequireLogin(**todoList, *status, *IDToPosition, *nbElemTotal, mainTab);
-			startWatcher = true;
+			startWatcher = dataRequireLoginWithNotif(**todoList, *status, *IDToPosition, *nbElemTotal, mainTab);
 		}
 		
 		MDL_MWORKER_ARG * argument = malloc(sizeof(MDL_MWORKER_ARG));

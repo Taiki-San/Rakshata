@@ -240,6 +240,9 @@ bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1])
 
 void saltPassword(char passwordSalted[2*SHA256_DIGEST_LENGTH+1])
 {
+	if(COMPTE_PRINCIPAL_MAIL == NULL)
+		return;
+	
     uint posRemote, posPass = 2 * SHA256_DIGEST_LENGTH + 1;
     char password[2 * SHA256_DIGEST_LENGTH + 16], serverTime[300];
 	
@@ -476,7 +479,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
     crashTemp(buffer_dl, 500);
     download_mem(URL, NULL, buffer_dl, 500, SSL_ON);
 
-    if(!strncmp(buffer_dl, "success", 7) && password != NULL) //Si ça s'est bien passé
+    if(!strncmp(buffer_dl, "success", 7) && password != NULL && COMPTE_PRINCIPAL_MAIL == NULL) //Si ça s'est bien passé
     {
         int bufferDL_pos = 0;
         while(buffer_dl[bufferDL_pos++] != ' ' && buffer_dl[bufferDL_pos]);
@@ -543,7 +546,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 		free(URL);
         return false;
     }
-    else
+    else if(COMPTE_PRINCIPAL_MAIL != NULL)
     {
 		char temp[1024];
 		snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
@@ -554,6 +557,9 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 		free(URL);
         return false;
     }
+	else
+		return false;
+	
     return true;
 }
 

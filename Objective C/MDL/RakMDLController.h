@@ -50,6 +50,7 @@
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
 - (void) discardInstalled;
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value;
+- (void) removingEmailAddress;
 - (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch;
 - (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd;
 - (void) reorderElements : (uint) posStart : (uint) posEnd : (uint) injectionPoint;
