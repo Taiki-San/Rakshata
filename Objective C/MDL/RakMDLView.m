@@ -58,11 +58,10 @@ enum
 	
 	if(MDLList != nil)
 	{
-		CGFloat height = [MDLList contentHeight];
+		const CGFloat height = [MDLList contentHeight];
 		
-		if(height)	height += 5;
-		
-		contentHeight+= height;
+		if(height)
+			contentHeight += height + 5;
 	}
 	
 	return contentHeight;

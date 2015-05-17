@@ -596,7 +596,8 @@
 	
 	if(waitingLogin)
 	{
-		foregroundView = [[RakTabForegroundView alloc] initWithFrame:self.bounds : self : [self waitingLoginMessage]];
+		NSRect frame = _lastFrame;	frame.origin = NSZeroPoint;
+		foregroundView = [[RakTabForegroundView alloc] initWithFrame:frame : self : [self waitingLoginMessage]];
 		[self addSubview:foregroundView];
 	}
 	else if(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
