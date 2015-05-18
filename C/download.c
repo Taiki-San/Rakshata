@@ -431,24 +431,25 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
     const size_t blockSize = size * nmemb;
     char *input = ptr;
     TMP_DL *buffer_dl = buffer_dl_void;
+	char * dataField = *((char**)buffer_dl->buf);
 	
 	//Realloc memory if needed
 	if(buffer_dl->current_pos + blockSize > buffer_dl->length)
 	{
-		void * tmp = realloc(*((char**)buffer_dl->buf), buffer_dl->current_pos + blockSize + 1);
+		void * tmp = realloc(dataField, buffer_dl->current_pos + blockSize + 1);
 		if(tmp != NULL)
 		{
-			*(char**)buffer_dl->buf = tmp;
+			dataField = * (char**) (buffer_dl->buf) = tmp;
 			buffer_dl->length = buffer_dl->current_pos + blockSize + 1;
 		}
 		else
 			return 0;
 	}
 
-	memcpy(&((*(char**)buffer_dl->buf)[buffer_dl->current_pos]), input, blockSize);
+	memcpy(&(dataField[buffer_dl->current_pos]), input, blockSize);
 	buffer_dl->current_pos += blockSize;
 
-	(*(char**)buffer_dl->buf)[buffer_dl->current_pos] = 0;
+	dataField[buffer_dl->current_pos] = 0;
 
 	return blockSize;
 }
