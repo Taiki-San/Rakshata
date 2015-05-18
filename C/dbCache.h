@@ -114,9 +114,9 @@ int createCollate(sqlite3 * database);
 #define RDBS_dataID			20
 #define RDBS_dataType		21
 
-#define RDBS_tagCode		22
-#define RDBS_tagType		23
-#define RDBS_tagID			24
+#define RDB_tagID			22
+#define RDB_tagName			23
+#define RDBS_tagType		24
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2

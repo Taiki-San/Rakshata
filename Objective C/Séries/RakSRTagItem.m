@@ -125,7 +125,7 @@
 	else if(__dataType == RDBS_TYPE_TAG)
 		notification = SR_NOTIFICATION_TAG;
 	
-	else if(__dataType == RDBS_TYPE_TYPE)
+	else if(__dataType == RDBS_TYPE_CAT)
 		notification = SR_NOTIFICATION_TYPE;
 	else
 		return;

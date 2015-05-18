@@ -51,7 +51,7 @@ enum RDB_CODES
 #define RDBS_TYPE_AUTHOR 	1
 #define RDBS_TYPE_SOURCE	2
 #define RDBS_TYPE_TAG		3
-#define RDBS_TYPE_TYPE		4
+#define RDBS_TYPE_CAT		4
 #define RDBS_TYPE_UNUSED	5
 
 //Image cache suffixes
@@ -153,3 +153,8 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 /**tagManagement.c**/
 charType * getTypeForCode(uint32_t tagID);
 charType * getTagForCode(uint tagID);
+
+void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData);
+
+/**tagSyncParser.m**/
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);

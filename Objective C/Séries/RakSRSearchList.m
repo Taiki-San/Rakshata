@@ -215,7 +215,7 @@
 	else if(_type == RDBS_TYPE_TAG)
 		return SR_NOTIFICATION_TAG;
 	
-	else if(_type == RDBS_TYPE_TYPE)
+	else if(_type == RDBS_TYPE_CAT)
 		return SR_NOTIFICATION_TYPE;
 	
 	return nil;

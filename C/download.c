@@ -336,7 +336,15 @@ int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_l
     if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
         return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, POST, false, buffer_out, buffer_length, SSL_enabled);
+    int retValue = internal_download_easy(adresse, POST, false, buffer_out, buffer_length, SSL_enabled);
+	
+	if(*buffer_length == 0)
+	{
+		free(*buffer_out);
+		*buffer_out = NULL;
+	}
+	
+	return retValue;
 }
 
 int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled)

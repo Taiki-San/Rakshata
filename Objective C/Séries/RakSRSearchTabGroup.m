@@ -65,7 +65,7 @@
 	else if(_ID == SEARCH_BAR_ID_TAG)
 		return RDBS_TYPE_TAG;
 	else if(_ID == SEARCH_BAR_ID_TYPE)
-		return RDBS_TYPE_TYPE;
+		return RDBS_TYPE_CAT;
 	
 	NSLog(@"Not supported yet");
 	return 255;

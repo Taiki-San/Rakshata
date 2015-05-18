@@ -61,7 +61,7 @@
 	
 	BOOL insertion = (opType = [notification.userInfo objectForKey:SR_NOTIF_OPTYPE]) == nil || ![opType isKindOfClass:[NSNumber class]] || [opType boolValue];
 	
-	[self performOperation:string : [ID unsignedLongLongValue] : RDBS_TYPE_TYPE : insertion];
+	[self performOperation:string : [ID unsignedLongLongValue] : RDBS_TYPE_CAT : insertion];
 }
 
 - (void) receiveNotifTag : (NSNotification *) notification
