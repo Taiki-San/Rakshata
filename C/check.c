@@ -118,6 +118,7 @@ void networkAndVersionTest()
 			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || lengthBufferDL == 0 || bufferDL[0] != '0') //Compte valide
 			{
 				free(bufferDL);
+				updateDatabase(false);
 				updateFavorites();
 				quit_thread(0);
 			}
@@ -131,6 +132,7 @@ void networkAndVersionTest()
 			exit(0);
 		}
 	
+		updateDatabase(false);
 		updateFavorites();
     }
     quit_thread(0);
