@@ -32,7 +32,7 @@ enum
 {
 	PULL_SEARCH_AUTHORID = 10,
 	PULL_SEARCH_TAGID,
-	PULL_SEARCH_TYPEID
+	PULL_SEARCH_CATID
 };
 
 enum syncCode
@@ -151,5 +151,8 @@ bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 
 /**tagManagement.c**/
-charType * getTypeForCode(uint32_t tagID);
-charType * getTagForCode(uint tagID);
+CATEGORY getCategoryForID(uint32_t categoryID);
+uint getRootCategoryIDForID(uint32_t categoryID);
+
+charType * getCatNameForCode(uint32_t catID);
+charType * getTagNameForCode(uint tagID);

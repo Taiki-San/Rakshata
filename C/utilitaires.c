@@ -83,10 +83,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	if(a.status != b.status)
 		return false;
 	
-	if(a.type != b.type)
-		return false;
-	
-	if(a.tag != b.tag)
+	if(a.tagMask != b.tagMask)
 		return false;
 	
 	if(a.japaneseOrder != b.japaneseOrder)

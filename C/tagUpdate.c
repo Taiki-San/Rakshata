@@ -39,7 +39,7 @@ void checkIfRefreshTag()
 	
 	//We parse the updated DB
 	TAG_VERBOSE * tagDB = NULL;
-	CATEGORY * catDB = NULL;
+	CATEGORY_VERBOSE * catDB = NULL;
 	uint tagLength, catLength;
 	
 	//The parser rejected the file

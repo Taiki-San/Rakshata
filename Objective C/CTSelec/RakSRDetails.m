@@ -145,8 +145,8 @@ enum
 		infos.stringValue = [self getString:project];
 		[infos sizeToFit];
 		
-		type.stringValue = getStringForWchar(getTagForCode(project.type));		[type sizeToFit];
-		tag.stringValue = getStringForWchar(getTagForCode(project.tag));		[tag sizeToFit];
+		type.stringValue = getStringForWchar(getCatNameForCode(project.category));		[type sizeToFit];
+		tag.stringValue = getStringForWchar(getTagNameForCode(project.mainTag));		[tag sizeToFit];
 		
 		synopsis.stringValue = getStringForWchar(project.description);			[synopsis sizeToFit];
 		

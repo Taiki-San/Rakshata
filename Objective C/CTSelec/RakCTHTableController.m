@@ -76,8 +76,8 @@ enum
 		numberOfVolumesInstalled = project.nombreTomesInstalled;
 		
 		status = project.status;
-		type = project.type;
-		tag = project.tag;
+		category = project.category;
+		tag = project.mainTag;
 		
 		paidContent = project.isPaid;
 		DRM = project.haveDRM;
@@ -233,11 +233,11 @@ enum
 	{
 		case ROW_CATEGORY:
 		{
-			uint ID = _getFromSearch(NULL, PULL_SEARCH_TYPEID, &type);
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_CATID, &category);
 			
 			if(ID != UINT_MAX)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getTagForCode(type)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getCatNameForCode(category)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 				[[[NSApp delegate] serie] ownFocus];
 			}
 			break;
@@ -249,7 +249,7 @@ enum
 			
 			if(ID != UINT_MAX)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagNameForCode(tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 				[[[NSApp delegate] serie] ownFocus];
 			}
 			
@@ -384,7 +384,7 @@ enum
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-TYPE", nil);
 			else
-				ret_value = getStringForWchar(getTypeForCode(type));
+				ret_value = getStringForWchar(getCatNameForCode(category));
 			break;
 		}
 		case ROW_TAGS:
@@ -392,7 +392,7 @@ enum
 			if(titleColumn)
 				ret_value = NSLocalizedString(@"CT-TAGS", nil);
 			else
-				ret_value = getStringForWchar(getTagForCode(tag));
+				ret_value = getStringForWchar(getTagNameForCode(tag));
 			break;
 		}
 		case ROW_PAID:

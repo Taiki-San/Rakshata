@@ -44,9 +44,8 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_DESCRIPTION @"13"
 #define JSON_PROJ_AUTHOR @"14"
 #define JSON_PROJ_STATUS @"15"
-#define JSON_PROJ_TYPE @"16"
+#define JSON_PROJ_TAGMASK @"16"
 #define JSON_PROJ_ASIAN_ORDER @"17"
-#define JSON_PROJ_TAG @"18"
 #define JSON_PROJ_PRICE @"19"
 #define JSON_PROJ_DRM @"4.2"
 

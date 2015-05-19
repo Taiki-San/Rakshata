@@ -37,7 +37,7 @@
 	uint numberOfVolumesInstalled;
 	
 	uint status;
-	uint32_t type;
+	uint32_t category;
 	uint32_t tag;
 	
 	BOOL paidContent;

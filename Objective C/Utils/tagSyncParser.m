@@ -13,7 +13,7 @@
 #include "JSONParser.h"
 #include "tag.h"
 
-bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY ** _categories, uint * _nbCategories)
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY_VERBOSE ** _categories, uint * _nbCategories)
 {
 	if(remoteDump == NULL || _tags == NULL || _nbTags == NULL || _categories == NULL || _nbCategories == NULL)
 		return false;
@@ -47,7 +47,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	if(tags == NULL)
 		return false;
 	
-	CATEGORY * categories = malloc(nbCategories * sizeof(CATEGORY));
+	CATEGORY_VERBOSE * categories = malloc(nbCategories * sizeof(CATEGORY_VERBOSE));
 	if(categories == NULL)
 	{
 		free(tags);
@@ -158,7 +158,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 			return false;
 		}
 		
-		void * tmp = realloc(categories, currentPosCat * sizeof(CATEGORY));
+		void * tmp = realloc(categories, currentPosCat * sizeof(CATEGORY_VERBOSE));
 		if(tmp != NULL)
 			categories = tmp;
 		

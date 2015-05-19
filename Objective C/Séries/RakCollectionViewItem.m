@@ -52,7 +52,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[self addSubview:projectAuthor];
 	}
 	
-	mainTag = [self getTextElement:getStringForWchar(getTagForCode(getRandom() % 70)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
+	mainTag = [self getTextElement:getStringForWchar(getTagNameForCode(getRandom() % 70)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
 	if(mainTag != nil)
 		[self addSubview:mainTag];
 	
@@ -103,11 +103,11 @@ enum	{	BORDER_BOTTOM	= 7	};
 	
 	if(NSPointInRect(point, mainTag.frame))
 	{
-		uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.tag));
+		uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.mainTag));
 		
 		if(ID != UINT_MAX)
 		{
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(_project.tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagNameForCode(_project.mainTag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 		}
 	}
 	else if(NSPointInRect(point, projectAuthor.frame))

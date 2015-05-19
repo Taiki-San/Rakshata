@@ -27,6 +27,7 @@ typedef struct buildTablePointer
 	sqlite3_stmt * addProject;
 	sqlite3_stmt * updateProject;
 	sqlite3_stmt * removeProject;
+	sqlite3_stmt * flushCategories;
 	sqlite3_stmt * readProject;
 	
 } * SEARCH_JUMPTABLE;
@@ -157,6 +158,11 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
+	if(createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_CAT)";", &(output->flushCategories)) != SQLITE_OK)
+		goto fail;
+	else
+		stage++;
+	
 	if(createRequest(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", &(output->readProject)) != SQLITE_OK)
 		goto fail;
 	else
@@ -174,6 +180,7 @@ fail:
 		if(stage > 6)	destroyRequest(output->addProject);
 		if(stage > 7)	destroyRequest(output->updateProject);
 		if(stage > 8)	destroyRequest(output->removeProject);
+		if(stage > 9)	destroyRequest(output->flushCategories);
 		
 		free(output);
 		output = NULL;
@@ -198,6 +205,7 @@ void flushSearchJumpTable(void * _table)
 	destroyRequest(table->addProject);
 	destroyRequest(table->updateProject);
 	destroyRequest(table->removeProject);
+	destroyRequest(table->flushCategories);
 	destroyRequest(table->readProject);
 	
 	free(table);
@@ -207,7 +215,7 @@ void flushSearchJumpTable(void * _table)
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project)
 {
-	return _getFromSearch(_table, type, type == PULL_SEARCH_AUTHORID ? (void*) &(project.authorName) : (type == PULL_SEARCH_TAGID ? &(project.tag) : &(project.type)));
+	return _getFromSearch(_table, type, type == PULL_SEARCH_AUTHORID ? (void*) &(project.authorName) : (type == PULL_SEARCH_TAGID ? &(project.mainTag) : &(project.category)));
 }
 
 uint getIDForTag(byte type, uint code)
@@ -250,7 +258,7 @@ uint _getFromSearch(void * _table, byte type, void * data)
 			break;
 		}
 			
-		case PULL_SEARCH_TYPEID:
+		case PULL_SEARCH_CATID:
 		{
 			request = table->getTypeID;
 			sqlite3_bind_int64(request, 1, *(uint *) data);
@@ -322,15 +330,15 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 		{
 			requestType = RDBS_TYPE_TAG;
 			request = table->addTag;
-			sqlite3_bind_int64(request, 1, project.tag);
+			sqlite3_bind_int64(request, 1, project.mainTag);
 			break;
 		}
 			
-		case INSERT_TYPE:
+		case INSERT_CAT:
 		{
 			requestType = RDBS_TYPE_CAT;
 			request = table->addType;
-			sqlite3_bind_int64(request, 1, project.type);
+			sqlite3_bind_int64(request, 1, project.category);
 			break;
 		}
 			
@@ -397,13 +405,13 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project)
 
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project)
 {
-	uint typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project), tagID = getFromSearch(table, PULL_SEARCH_TAGID, project), authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
-	uint oldType, oldTag, oldAuthor;
+	uint catID = getFromSearch(table, PULL_SEARCH_CATID, project), tagID = getFromSearch(table, PULL_SEARCH_TAGID, project), authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
+	uint oldCat, oldTag, oldAuthor;
 	
-	getProjectSearchData(table, project.cacheDBID, &oldAuthor, &oldTag, &oldType);
+	getProjectSearchData(table, project.cacheDBID, &oldAuthor, &oldTag, &oldCat);
 	
-	if(typeID == UINT_MAX && insertInSearch(table, INSERT_TYPE, project))
-		typeID = getFromSearch(table, PULL_SEARCH_TYPEID, project);
+	if(catID == UINT_MAX && insertInSearch(table, INSERT_CAT, project))
+		catID = getFromSearch(table, PULL_SEARCH_CATID, project);
 	
 	if(tagID == UINT_MAX && insertInSearch(table, INSERT_TAG, project))
 		tagID = getFromSearch(table, PULL_SEARCH_TAGID, project);
@@ -411,7 +419,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	if(authorID == UINT_MAX && insertInSearch(table, INSERT_AUTHOR, project))
 		authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
 	
-	if(typeID == UINT_MAX || tagID == UINT_MAX || authorID == UINT_MAX)
+	if(catID == UINT_MAX || tagID == UINT_MAX || authorID == UINT_MAX)
 		return false;
 	
 	bool fail = false;
@@ -429,22 +437,37 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		if(fail)
 			return false;
 
-		checkIfRemainingAndDelete(authorID, RDBS_TYPE_AUTHOR);
+		checkIfRemainingAndDelete(oldAuthor, RDBS_TYPE_AUTHOR);
 	}
 
-	if(typeID != oldType)
+	if(catID != oldCat)
 	{
-		sqlite3_bind_int(request, 1, project.cacheDBID);
-		sqlite3_bind_int(request, 2, typeID);
-		sqlite3_bind_int(request, 3, RDBS_TYPE_CAT);
+		if(!wantInsert)
+		{
+			//We have to flush the previous category (as all parents are there)
+			sqlite3_bind_int(table->flushCategories, 1, project.cacheDBID);
+			sqlite3_step(table->flushCategories);
+			sqlite3_reset(table->flushCategories);
+		}
 		
-		fail = sqlite3_step(request) != SQLITE_DONE;
-		sqlite3_reset(request);
+		//Insert the catID and its parents
+		while (!fail && catID != TAG_NO_VALUE)
+		{
+			sqlite3_bind_int(request, 1, project.cacheDBID);
+			sqlite3_bind_int(request, 2, catID);
+			sqlite3_bind_int(request, 3, RDBS_TYPE_CAT);
+			
+			fail = sqlite3_step(request) != SQLITE_DONE;
+			sqlite3_reset(request);
+			
+			if(!fail)
+				catID = getRootCategoryIDForID(catID);
+		}
 		
 		if(fail)
 			return false;
 		
-		checkIfRemainingAndDelete(typeID, RDBS_TYPE_CAT);
+		checkIfRemainingAndDelete(oldCat, RDBS_TYPE_CAT);
 	}
 	
 	if(tagID != oldTag)
@@ -456,7 +479,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		fail = sqlite3_step(request) != SQLITE_DONE;
 		sqlite3_reset(request);
 		
-		checkIfRemainingAndDelete(tagID, RDBS_TYPE_TAG);
+		checkIfRemainingAndDelete(oldTag, RDBS_TYPE_TAG);
 	}
 	
 	if(wantInsert && !fail)
@@ -698,9 +721,15 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 			
 			utf8_to_wchar(utf8, strlen(utf8), (*dataName)[pos], REPO_NAME_LENGTH, 0);
 		}
+		else if(type == RDBS_TYPE_CAT)
+		{
+			(*dataName)[pos] = wstrdup(getCatNameForCode(sqlite3_column_int(request, 0)));
+			if((*dataName)[pos] == NULL)
+				continue;
+		}
 		else
 		{
-			(*dataName)[pos] = wstrdup(getTagForCode(sqlite3_column_int(request, 0)));
+			(*dataName)[pos] = wstrdup(getTagNameForCode(sqlite3_column_int(request, 0)));
 			if((*dataName)[pos] == NULL)
 				continue;
 		}

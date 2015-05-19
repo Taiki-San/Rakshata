@@ -25,7 +25,12 @@ int createRequest(sqlite3 *db, const char *zSql, sqlite3_stmt **ppStmt)
 
 int destroyRequest(sqlite3_stmt *pStmt)
 {
-	int output = sqlite3_finalize(pStmt);
+	int output;
+
+	if(pStmt != NULL)
+		output = sqlite3_finalize(pStmt);
+	else
+		output = SQLITE_ABORT;
 	
 #ifdef VERBOSE_REQUEST
 	printf("Finalizing request %p (status: %d)\n", pStmt, output);

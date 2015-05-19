@@ -82,10 +82,11 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	
 	//Divers données
 	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD
-	output->type = sqlite3_column_int(state, RDB_type-1);
+	output->category = sqlite3_column_int(state, RDB_category-1);
 	output->japaneseOrder = sqlite3_column_int(state, RDB_asianOrder-1);
 	output->isPaid = sqlite3_column_int(state, RDB_isPaid-1);
-	output->tag = sqlite3_column_int(state, RDB_tagID-1);
+	output->mainTag = sqlite3_column_int(state, RDB_mainTagID-1);
+	output->tagMask = sqlite3_column_int64(state, RDB_tagMask-1);
 	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);

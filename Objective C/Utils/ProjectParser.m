@@ -515,7 +515,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *type = nil, *asianOrder = nil, *tag = nil, *paidContent = nil, *DRM = nil;
+	NSNumber *ID, *status = nil, *asianOrder = nil, *tagMask = nil, *paidContent = nil, *DRM = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
@@ -546,14 +546,11 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status");
 	if(status == nil || ARE_CLASSES_DIFFERENT(status, [NSNumber class]))			goto end;
 	
-	type = objectForKey(bloc, JSON_PROJ_TYPE , @"type");
-	if(type == nil || ARE_CLASSES_DIFFERENT(type, [NSNumber class]))				goto end;
-	
 	asianOrder = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading");
 	if(asianOrder == nil || ARE_CLASSES_DIFFERENT(asianOrder, [NSNumber class]))	goto end;
 	
-	tag = objectForKey(bloc, JSON_PROJ_TAG , @"category");
-	if(tag == nil || ARE_CLASSES_DIFFERENT(tag, [NSNumber class]))		goto end;
+	tagMask = objectForKey(bloc, JSON_PROJ_TAGMASK , @"tagMask");
+	if(tagMask == nil || ARE_CLASSES_DIFFERENT(tagMask, [NSNumber class]))		goto end;
 	
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
@@ -561,10 +558,10 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.chapitresFull = chapters;		data.chapitresInstalled = NULL;		data.nombreChapitre = nbChapters;	data.nombreChapitreInstalled = 0;
 	data.tomesFull = volumes;			data.tomesInstalled = NULL;			data.nombreTomes = nbVolumes;		data.nombreTomesInstalled = 0;
 	data.status = [status unsignedCharValue];
-	if(data.status > STATUS_MAX)	data.status = STATUS_MAX;
-	data.type = [type unsignedIntValue];
-	if(data.type > TYPE_MAX)		data.type = TYPE_MAX;
-	data.tag = [tag unsignedIntValue];
+	if(data.status > STATUS_MAX)	data.status = STATUS_INVALID;
+	
+	convertTagMask([tagMask unsignedLongLongValue], &(data.category), &(data.tagMask), &(data.mainTag));
+
 	data.haveDRM = (DRM != nil && [DRM boolValue]) | (DRM == nil && isPaidContent);
 	data.isInitialized = true;
 	
@@ -614,9 +611,9 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 		[output setObject:getStringForWchar(project.authorName) forKey:JSON_PROJ_AUTHOR];
 	
 	[output setObject:@(project.status) forKey:JSON_PROJ_STATUS];
-	[output setObject:@(project.type) forKey:JSON_PROJ_TYPE];
+	
+	[output setObject:@(project.tagMask) forKey:JSON_PROJ_TAGMASK];
 	[output setObject:@(project.japaneseOrder) forKey:JSON_PROJ_ASIAN_ORDER];
-	[output setObject:@(project.tag) forKey:JSON_PROJ_TAG];
 	[output setObject:@(project.haveDRM) forKey:JSON_PROJ_DRM];
 	
 	if(project.isPaid)
@@ -893,4 +890,18 @@ void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * o
 		return;
 	
 	memcpy(output, &input, sizeof(PROJECT_DATA));
+}
+
+void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag)
+{
+	*category = input >> (32 + 5);
+	*tagMask = input & 0xffffffff;
+	
+	CATEGORY catData = getCategoryForID(*category);
+	if(catData.haveData)
+	{
+		*mainTag = catData.tags[(input >> 32) & 0x1f].ID;
+	}
+	else
+		*mainTag = TAG_NO_VALUE;
 }

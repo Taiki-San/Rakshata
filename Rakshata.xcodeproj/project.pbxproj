@@ -33,7 +33,6 @@
 		B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6251F731A98CC92001C4F06 /* RakAboutWindow.m */; };
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935D51A7E71E800DE20E2 /* DBSearch.c in Sources */ = {isa = PBXBuildFile; fileRef = B62935D41A7E71E800DE20E2 /* DBSearch.c */; };
-		B62935D71A7E848A00DE20E2 /* tagManagement.c in Sources */ = {isa = PBXBuildFile; fileRef = B62935D61A7E848A00DE20E2 /* tagManagement.c */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
 		B62B45011A8FAAEA0096FA45 /* RakCTSerieHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */; };
@@ -268,7 +267,6 @@
 		B62935D11A7E65EC00DE20E2 /* RakSRSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchList.h; path = "Séries/RakSRSearchList.h"; sourceTree = "<group>"; };
 		B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchList.m; path = "Séries/RakSRSearchList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62935D41A7E71E800DE20E2 /* DBSearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBSearch.c; path = C/DBSearch.c; sourceTree = "<group>"; };
-		B62935D61A7E848A00DE20E2 /* tagManagement.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tagManagement.c; path = C/tagManagement.c; sourceTree = "<group>"; };
 		B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTabGroup.h; path = "Séries/RakSRSearchTabGroup.h"; sourceTree = "<group>"; };
 		B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchTabGroup.m; path = "Séries/RakSRSearchTabGroup.m"; sourceTree = "<group>"; };
 		B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsWindow.h; path = "Divers Windows/RakPrefsWindow.h"; sourceTree = "<group>"; };
@@ -820,7 +818,6 @@
 			isa = PBXGroup;
 			children = (
 				B6C93E421B0B5BF400E07A57 /* tag.h */,
-				B62935D61A7E848A00DE20E2 /* tagManagement.c */,
 				B6885A281B08E67A00C2D7DD /* tagSyncParser.m */,
 				B6C93E401B0B5B8300E07A57 /* tagUpdate.c */,
 			);
@@ -1553,7 +1550,6 @@
 				B6F6ED1718A3001400E3B55B /* unzip_mz.c in Sources */,
 				B6A6ACF51AAEEF4D00CAF51E /* DBCacheRepo.c in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
-				B62935D71A7E848A00DE20E2 /* tagManagement.c in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,
 				B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */,
 				B68B522B191AE38D0057F35A /* RakProgressBar.m in Sources */,

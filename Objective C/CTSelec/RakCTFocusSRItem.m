@@ -87,18 +87,18 @@ enum
 		
 		//Create or update the main views
 		if(typeProject == nil)
-			typeProject = [self getTextElement:getStringForWchar(getTagForCode(_project.type)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
+			typeProject = [self getTextElement:getStringForWchar(getCatNameForCode(_project.category)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
 		else
 		{
-			typeProject.stringValue = getStringForWchar(getTagForCode(_project.type));
+			typeProject.stringValue = getStringForWchar(getCatNameForCode(_project.category));
 			[typeProject sizeToFit];
 		}
 		
 		if(tagProject == nil)
-			tagProject = [self getTextElement:getStringForWchar(getTagForCode(_project.tag)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
+			tagProject = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
 		else
 		{
-			tagProject.stringValue = getStringForWchar(getTagForCode(_project.tag));
+			tagProject.stringValue = getStringForWchar(getTagNameForCode(_project.mainTag));
 			[tagProject sizeToFit];
 		}
 		
@@ -281,20 +281,20 @@ enum
 	{
 		if(NSPointInRect(point, typeProject.frame))
 		{
-			uint ID = _getFromSearch(NULL, PULL_SEARCH_TYPEID, &(_project.type));
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_CATID, &(_project.category));
 			
 			if(ID != UINT_MAX)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getTagForCode(_project.type)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getCatNameForCode(_project.category)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 			}
 		}
 		else if(NSPointInRect(point, tagProject.frame))
 		{
-			uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.tag));
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.mainTag));
 			
 			if(ID != UINT_MAX)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagForCode(_project.tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagNameForCode(_project.mainTag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 			}
 		}
 	}

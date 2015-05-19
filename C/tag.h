@@ -16,13 +16,16 @@ extern MUTEX_VAR concurentColdUpdate;
 #define OLD_TAG_DB "old_"TAG_DB
 #define WIP_TAG_DB "WIP_"TAG_DB
 
+#define TABLE_TAGS "rakTags"
+#define TABLE_CATEGORY "rakCats"
+
 enum
 {
 	DEFAULT_TAG_VERSION = 1
 };
 
 //Remote update parser
-bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY_VERBOSE ** categories, uint * nbCategories);
 
 //Main API
 void checkIfRefreshTag();
@@ -31,5 +34,5 @@ void checkIfRefreshTag();
 bool resetTagsToLocal();
 
 void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData);
-void catUpdateCachedEntry(CATEGORY * newData, uint nbData);
-void dumpTagCat(TAG_VERBOSE * tags, uint nbTags, CATEGORY * category, uint nbCat);
+void catUpdateCachedEntry(CATEGORY_VERBOSE * newData, uint nbData);
+void dumpTagCat(TAG_VERBOSE * tags, uint nbTags, CATEGORY_VERBOSE * category, uint nbCat);

@@ -64,7 +64,7 @@ typedef struct tag_structure
 	
 } TAG;
 
-typedef struct category_structure
+typedef struct category_verbose_structure
 {
 	uint ID;
 	uint rootID;
@@ -73,6 +73,14 @@ typedef struct category_structure
 	
 	TAG tags[TAG_PAR_CAT];
 	
+} CATEGORY_VERBOSE;
+
+typedef struct category_structure
+{
+	TAG tags[TAG_PAR_CAT];
+	uint ID;
+	bool haveData;
+
 } CATEGORY;
 
 
@@ -246,9 +254,10 @@ typedef struct dataProject
 	charType authorName[LENGTH_AUTHORS];
 	bool japaneseOrder;
 	
-	//Un bloc de 64b complet
-	uint32_t type;
-	uint32_t tag;
+	//Deux blocs de 64b complets
+	uint32_t category;
+	uint32_t mainTag;
+	uint64_t tagMask;
 	
 	//Un bloc de 64b
 	uint32_t projectID;
@@ -287,20 +296,20 @@ typedef struct dataProjectWithExtra
 	charType authorName[LENGTH_AUTHORS];
 	bool japaneseOrder;
 	
-	//Un bloc de 64b complet
-	uint32_t type;
-	uint32_t tag;
+	//Deux blocs de 64b complets
+	uint32_t category;
+	uint32_t mainTag;
+	uint64_t tagMask;
 	
 	//Un bloc de 64b
 	uint32_t projectID;
 	uint32_t cacheDBID;
 	
-	//64b
 	uint8_t status;
 	bool isPaid;
 	bool haveDRM;
 	bool isInitialized;
-
+	
 	//2 x 64b
 	bool haveImages[NB_IMAGES];
 	char hashesImages[NB_IMAGES][LENGTH_HASH];
