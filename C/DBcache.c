@@ -69,6 +69,10 @@ uint setupBDDCache()
 		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}
+	else
+	{
+		initializeTags(internalDB);
+	}
 	
 	if(repoList != NULL)
 	{

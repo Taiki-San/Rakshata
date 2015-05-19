@@ -88,6 +88,9 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
 void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
 int createCollate(sqlite3 * database);
 
+/******		DBTags.c	*******/
+void initializeTags(void * mainCache);
+
 //========= Obfuscation	==========//
 
 //An enum won't be expanded by STRINGIZE, so we must use define
@@ -102,7 +105,7 @@ int createCollate(sqlite3 * database);
 #define RDB_type			9
 #define RDB_asianOrder		10
 #define RDB_isPaid			11
-#define RDB_tag				12
+#define RDB_tagID			12
 #define RDB_nombreChapitre	13
 #define RDB_chapitres		14
 #define RDB_chapitresPrice	15
@@ -113,10 +116,44 @@ int createCollate(sqlite3 * database);
 
 #define RDBS_dataID			20
 #define RDBS_dataType		21
+#define RDBS_tagType		22
 
-#define RDB_tagID			22
 #define RDB_tagName			23
-#define RDBS_tagType		24
+#define RDB_CAT_ID			24
+#define RDB_CAT_rootID		25
+#define RDB_CAT_name		26
+#define RDB_CAT_tag1		27
+#define RDB_CAT_tag2		28
+#define RDB_CAT_tag3		29
+#define RDB_CAT_tag4		30
+#define RDB_CAT_tag5		31
+#define RDB_CAT_tag6		32
+#define RDB_CAT_tag7		33
+#define RDB_CAT_tag8		34
+#define RDB_CAT_tag9		35
+#define RDB_CAT_tag10		36
+#define RDB_CAT_tag11		37
+#define RDB_CAT_tag12		38
+#define RDB_CAT_tag13		39
+#define RDB_CAT_tag14		40
+#define RDB_CAT_tag15		41
+#define RDB_CAT_tag16		42
+#define RDB_CAT_tag17		43
+#define RDB_CAT_tag18		44
+#define RDB_CAT_tag19		45
+#define RDB_CAT_tag20		46
+#define RDB_CAT_tag21		47
+#define RDB_CAT_tag22		48
+#define RDB_CAT_tag23		49
+#define RDB_CAT_tag24		50
+#define RDB_CAT_tag25		51
+#define RDB_CAT_tag26		52
+#define RDB_CAT_tag27		53
+#define RDB_CAT_tag28		54
+#define RDB_CAT_tag29		55
+#define RDB_CAT_tag30		56
+#define RDB_CAT_tag31		57
+#define RDB_CAT_tag32		58
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2

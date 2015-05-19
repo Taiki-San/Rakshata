@@ -153,8 +153,3 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 /**tagManagement.c**/
 charType * getTypeForCode(uint32_t tagID);
 charType * getTagForCode(uint tagID);
-
-void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData);
-
-/**tagSyncParser.m**/
-bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);

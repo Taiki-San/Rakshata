@@ -12,24 +12,46 @@
 
 #include "tag.h"
 
-charType * getTypeForCode(uint32_t tagID)
+MUTEX_VAR concurentColdUpdate;
+
+uint getDBVersion()
 {
-	return getTagForCode(tagID);
+	return DEFAULT_TAG_VERSION;
 }
 
-charType * getTagForCode(uint32_t tagID)
+#pragma mark - Main API
+
+void checkIfRefreshTag()
 {
-	if(tagID < 10)			return L"Shonen";
-	else if(tagID < 20)		return L"Shojo";
-	else if(tagID < 30)		return L"Seinen";
-	else if(tagID < 40)		return L"Comics";
-	else if(tagID == 42)	return L"Pony";
-	else if(tagID < 50)		return L"Manwa";
-	else if(tagID < 60)		return L"Webcomic";
-	else if(tagID < 69)		return L"Ecchi";
+	char * bufferDL = NULL;
+	size_t downloadLength;
 	
-	return L"Hentai";
+	char URL[250];
+	
+	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/getUpdatedTags.php?v=%d", getDBVersion());
+	
+	//'0' => no update available
+	if(download_mem(URL, NULL, &bufferDL, &downloadLength, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || *bufferDL == '0')
+	{
+		free(bufferDL);
+		return;
+	}
+	
+	//We parse the updated DB
+	TAG_VERBOSE * tagDB = NULL;
+	CATEGORY * catDB = NULL;
+	uint tagLength, catLength;
+	
+	//The parser rejected the file
+	if(!loadRemoteTagState(bufferDL, &tagDB, &tagLength, &catDB, &catLength))
+	{
+		free(bufferDL);
+		return;
+	}
+	
+	//Okay, we got the data, we have to insert into our dynamic DB and update the static one
+	tagUpdateCachedEntry(tagDB, tagLength);
+	catUpdateCachedEntry(catDB, catLength);
+	
+	dumpTagCat(tagDB, tagLength, catDB, catLength);
 }
-
-#pragma mark - Initialisation
-

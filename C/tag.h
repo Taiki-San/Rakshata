@@ -10,26 +10,26 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "tag.h"
+extern MUTEX_VAR concurentColdUpdate;
 
-charType * getTypeForCode(uint32_t tagID)
+#define TAG_DB "tags.db"
+#define OLD_TAG_DB "old_"TAG_DB
+#define WIP_TAG_DB "WIP_"TAG_DB
+
+enum
 {
-	return getTagForCode(tagID);
-}
+	DEFAULT_TAG_VERSION = 1
+};
 
-charType * getTagForCode(uint32_t tagID)
-{
-	if(tagID < 10)			return L"Shonen";
-	else if(tagID < 20)		return L"Shojo";
-	else if(tagID < 30)		return L"Seinen";
-	else if(tagID < 40)		return L"Comics";
-	else if(tagID == 42)	return L"Pony";
-	else if(tagID < 50)		return L"Manwa";
-	else if(tagID < 60)		return L"Webcomic";
-	else if(tagID < 69)		return L"Ecchi";
-	
-	return L"Hentai";
-}
+//Remote update parser
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);
 
-#pragma mark - Initialisation
+//Main API
+void checkIfRefreshTag();
 
+//Internal high level API
+bool resetTagsToLocal();
+
+void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData);
+void catUpdateCachedEntry(CATEGORY * newData, uint nbData);
+void dumpTagCat(TAG_VERBOSE * tags, uint nbTags, CATEGORY * category, uint nbCat);

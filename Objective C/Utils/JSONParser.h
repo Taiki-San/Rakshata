@@ -24,9 +24,6 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 //This function will perform a lot of network task, and thus should _really_ be run in a thread
 ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 
-//Tags management
-bool loadRemoteState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY ** categories, uint * nbCategories);
-
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 #define ARE_CLASSES_DIFFERENT(a, b) (![a isKindOfClass:b])
 

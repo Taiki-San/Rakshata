@@ -72,7 +72,6 @@ typedef struct category_structure
 	charType * name;
 	
 	TAG tags[TAG_PAR_CAT];
-	byte mainTag;
 	
 } CATEGORY;
 

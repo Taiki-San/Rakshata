@@ -11,8 +11,9 @@
  *********************************************************************************************/
 
 #include "JSONParser.h"
+#include "tag.h"
 
-bool loadRemoteState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY ** _categories, uint * _nbCategories)
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY ** _categories, uint * _nbCategories)
 {
 	if(remoteDump == NULL || _tags == NULL || _nbTags == NULL || _categories == NULL || _nbCategories == NULL)
 		return false;
@@ -168,6 +169,22 @@ bool loadRemoteState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CA
 	*_nbTags = nbTags;
 	*_categories = categories;
 	*_nbCategories = nbCategories;
+	
+	return true;
+}
+
+bool resetTagsToLocal()
+{
+	NSString * tags = [[NSBundle mainBundle] pathForResource:@"backupTags" ofType:@"db"];
+	
+	if(tags == nil)
+	{
+		//SHIIIIIT, can't access the local DB, no choice but download it :|
+		createNewThread(checkIfRefreshTag, NULL);
+		return false;
+	}
+	
+	[[NSData dataWithContentsOfFile:tags] writeToFile:@""TAG_DB"" options:NSDataWritingAtomic error:nil];
 	
 	return true;
 }

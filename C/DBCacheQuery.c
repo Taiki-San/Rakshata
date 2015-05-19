@@ -85,7 +85,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	output->type = sqlite3_column_int(state, RDB_type-1);
 	output->japaneseOrder = sqlite3_column_int(state, RDB_asianOrder-1);
 	output->isPaid = sqlite3_column_int(state, RDB_isPaid-1);
-	output->tag = sqlite3_column_int(state, RDB_tag-1);
+	output->tag = sqlite3_column_int(state, RDB_tagID-1);
 	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
