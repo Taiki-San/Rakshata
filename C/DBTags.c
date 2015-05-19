@@ -44,6 +44,41 @@ sqlite3_stmt * catUpdateQuery(sqlite3 * db, bool shouldUpdate)
 	return request;
 }
 
+#pragma mark - Version query search
+
+void updateTagDBVersion(uint newDBVersion)
+{
+	if(cache == NULL && immatureCache == NULL)
+		return;
+	
+	sqlite3_stmt * request = NULL;
+	
+	if(createRequest(cache != NULL ? cache : immatureCache, "INSERT OR REPLACE INTO "TABLE_TAG_VERSION" (`"VERSION_COLUMN_NAME"`) VALUES(?1);", &request) != SQLITE_OK)
+		return;
+	
+	sqlite3_bind_int(request, 1, newDBVersion);
+	sqlite3_step(request);
+	destroyRequest(request);
+}
+
+uint getTagDBVersion()
+{
+	sqlite3_stmt * request = NULL;
+	uint output;
+
+	if((cache == NULL && immatureCache == NULL) ||
+		createRequest(cache != NULL ? cache : immatureCache, "SELECT `"VERSION_COLUMN_NAME"` FROM "TABLE_TAG_VERSION" LIMIT 1", &request) != SQLITE_OK ||
+	   	sqlite3_step(request) != SQLITE_ROW)
+	{
+		output = DEFAULT_TAG_VERSION;
+	}
+	else
+		output = sqlite3_column_int(request, 0);
+	
+	destroyRequest(request);
+	return output;
+}
+
 #pragma mark - Internal API
 
 bool createTagsTable(sqlite3 * mainCache)
@@ -66,11 +101,22 @@ bool createTagsTable(sqlite3 * mainCache)
 	}
 	
 	destroyRequest(request);
-
+	
 	if(createRequest(mainCache, "CREATE TABLE "TABLE_CATEGORY" ("DBNAMETOID(RDB_CAT_ID)" INTEGER PRIMARY KEY NOT NULL, "DBNAMETOID(RDB_CAT_rootID)" INTEGER, "DBNAMETOID(RDB_CAT_name)" TEXT NOT NULL, "DBNAMETOID(RDB_CAT_tag1)" INTEGER, "DBNAMETOID(RDB_CAT_tag2)" INTEGER, "DBNAMETOID(RDB_CAT_tag3)" INTEGER, "DBNAMETOID(RDB_CAT_tag4)" INTEGER, "DBNAMETOID(RDB_CAT_tag5)" INTEGER, "DBNAMETOID(RDB_CAT_tag6)" INTEGER, "DBNAMETOID(RDB_CAT_tag7)" INTEGER, "DBNAMETOID(RDB_CAT_tag8)" INTEGER, "DBNAMETOID(RDB_CAT_tag9)" INTEGER, "DBNAMETOID(RDB_CAT_tag10)" INTEGER, "DBNAMETOID(RDB_CAT_tag11)" INTEGER, "DBNAMETOID(RDB_CAT_tag12)" INTEGER, "DBNAMETOID(RDB_CAT_tag13)" INTEGER, "DBNAMETOID(RDB_CAT_tag14)" INTEGER, "DBNAMETOID(RDB_CAT_tag15)" INTEGER, "DBNAMETOID(RDB_CAT_tag16)" INTEGER, "DBNAMETOID(RDB_CAT_tag17)" INTEGER, "DBNAMETOID(RDB_CAT_tag18)" INTEGER, "DBNAMETOID(RDB_CAT_tag19)" INTEGER, "DBNAMETOID(RDB_CAT_tag20)" INTEGER, "DBNAMETOID(RDB_CAT_tag21)" INTEGER, "DBNAMETOID(RDB_CAT_tag22)" INTEGER, "DBNAMETOID(RDB_CAT_tag23)" INTEGER, "DBNAMETOID(RDB_CAT_tag24)" INTEGER, "DBNAMETOID(RDB_CAT_tag25)" INTEGER, "DBNAMETOID(RDB_CAT_tag26)" INTEGER, "DBNAMETOID(RDB_CAT_tag27)" INTEGER, "DBNAMETOID(RDB_CAT_tag28)" INTEGER, "DBNAMETOID(RDB_CAT_tag29)" INTEGER, "DBNAMETOID(RDB_CAT_tag30)" INTEGER, "DBNAMETOID(RDB_CAT_tag31)" INTEGER, "DBNAMETOID(RDB_CAT_tag32)" INTEGER); CREATE INDEX gdbOverlldb ON "TABLE_CATEGORY"("DBNAMETOID(RDB_CAT_ID)", "DBNAMETOID(RDB_CAT_rootID)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
 	{
 		logR("Initialization error big");
-
+		
+		destroyRequest(request);
+		
+		return false;
+	}
+	
+	destroyRequest(request);
+	
+	if(createRequest(mainCache, "CREATE TABLE "TABLE_TAG_VERSION" (`"VERSION_COLUMN_NAME"` INTEGER);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	{
+		logR("Initialization error WTF");
+		
 		destroyRequest(request);
 		
 		return false;

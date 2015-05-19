@@ -93,6 +93,7 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 #define JSON_RAK_PRESELECTION	@"4"
 
 //Tags file parser
+#define JSON_TAG_VERSION	@"0"
 #define JSON_TAG_TAGS 		@"1"
 #define JSON_TAG_CATEGORY 	@"2"
 #define JSON_TAG_ID			@"3"

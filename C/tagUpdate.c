@@ -14,13 +14,6 @@
 
 MUTEX_VAR concurentColdUpdate;
 
-uint getDBVersion()
-{
-	return DEFAULT_TAG_VERSION;
-}
-
-#pragma mark - Main API
-
 void checkIfRefreshTag()
 {
 	char * bufferDL = NULL;
@@ -28,7 +21,7 @@ void checkIfRefreshTag()
 	
 	char URL[250];
 	
-	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/getUpdatedTags.php?v=%d", getDBVersion());
+	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/getUpdatedTags.php?v=%d", getTagDBVersion());
 	
 	//'0' => no update available
 	if(download_mem(URL, NULL, &bufferDL, &downloadLength, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || *bufferDL == '0')
@@ -40,10 +33,10 @@ void checkIfRefreshTag()
 	//We parse the updated DB
 	TAG_VERBOSE * tagDB = NULL;
 	CATEGORY_VERBOSE * catDB = NULL;
-	uint tagLength, catLength;
+	uint tagLength, catLength, newDBVersion;
 	
 	//The parser rejected the file
-	if(!loadRemoteTagState(bufferDL, &tagDB, &tagLength, &catDB, &catLength))
+	if(!loadRemoteTagState(bufferDL, &tagDB, &tagLength, &catDB, &catLength, &newDBVersion))
 	{
 		free(bufferDL);
 		return;
@@ -54,4 +47,5 @@ void checkIfRefreshTag()
 	catUpdateCachedEntry(catDB, catLength);
 	
 	dumpTagCat(tagDB, tagLength, catDB, catLength);
+	updateTagDBVersion(newDBVersion);
 }

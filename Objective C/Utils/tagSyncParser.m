@@ -13,7 +13,7 @@
 #include "JSONParser.h"
 #include "tag.h"
 
-bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY_VERBOSE ** _categories, uint * _nbCategories)
+bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags, CATEGORY_VERBOSE ** _categories, uint * _nbCategories, uint * newDBVersion)
 {
 	if(remoteDump == NULL || _tags == NULL || _nbTags == NULL || _categories == NULL || _nbCategories == NULL)
 		return false;
@@ -31,10 +31,17 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	}
 	else if(![parseData isKindOfClass:[NSDictionary class]])
 		return false;
+	
+	//We first extract the DB version
+	NSNumber * version = objectForKey(parseData, JSON_TAG_VERSION, @"version");
+	if(version == nil || ARE_CLASSES_DIFFERENT(version, [NSNumber class]))
+		return false;
+	else
+		*newDBVersion = [version unsignedIntValue];
 
 	//The JSON is composed of two main sections
 	NSArray * mainTags = objectForKey(parseData, JSON_TAG_TAGS, @"tags"), * mainCats = objectForKey(parseData, JSON_TAG_CATEGORY, @"type");
-	
+
 	if(mainTags == nil || ARE_CLASSES_DIFFERENT(mainTags, [NSArray class]) || mainCats == nil || ARE_CLASSES_DIFFERENT(mainCats, [NSArray class]))
 		return false;
 	
