@@ -151,40 +151,94 @@ end:
 void updateFavorites()
 {
     char *favs = NULL;
-    if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL)
+    if((favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG)) == NULL || !shouldDownloadFavorite())
 		return;
 	else
 		free(favs);
 	
     updateDatabase(false);
 	
-	uint nbElem, pos;
+	uint nbElem, pos, basePos;
     PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_REPO, &nbElem);
     if(projectDB == NULL)
         return;
+	
+	//Old dataset
+	PROJECT_DATA previousProject;
+	bool previousIsTome, firstEntry = true;
+	int previousElement;
 
 	//An optimisation by only getting projects with favorite would be nice
     for(pos = 0; pos < nbElem; pos++)
     {
         if(projectDB[pos].favoris)
         {
-			if (projectDB[pos].tomesFull && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesInstalled[projectDB[pos].nombreTomesInstalled-1].ID)))
+			//The last available volume isn't installed
+			if (projectDB[pos].tomesFull && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesFull[projectDB[pos].nombreTomes-1].ID)))
 			{
-				break;	//Le dernier tome n'est pas installé
+				//Find the last volume installed
+				if(projectDB[pos].tomesInstalled != NULL && projectDB[pos].nombreTomesInstalled > 0)
+				{
+					uint lastVol = projectDB[pos].tomesInstalled[projectDB[pos].nombreTomesInstalled-1].ID;
+					
+					for(basePos = 0; basePos < projectDB[pos].nombreTomes && projectDB[pos].tomesFull[basePos].ID != lastVol; basePos++);
+				}
+				else
+					basePos = 0;
+				
+				//Download what remains
+				for(; basePos < projectDB[pos].nombreTomes; basePos++)
+				{
+					if(firstEntry)
+						firstEntry = false;
+					else
+						addElementToMDL(previousProject, previousIsTome, previousElement, true);
+					
+					if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
+						previousProject = projectDB[pos];
+					
+					previousIsTome = true;
+					previousElement = projectDB[pos].tomesFull[basePos].ID;
+				}
 			}
 			
-			if(projectDB[pos].chapitresFull && (projectDB[pos].chapitresInstalled == NULL || !checkReadable(projectDB[pos], false, projectDB[pos].chapitresInstalled[projectDB[pos].nombreChapitreInstalled-1])))
+			//The last available chapter isn't installed
+			if(projectDB[pos].chapitresFull && (projectDB[pos].chapitresInstalled == NULL || !checkReadable(projectDB[pos], false, projectDB[pos].chapitresFull[projectDB[pos].nombreChapitre-1])))
 			{
-				break;	//Le dernier chapitre n'est pas installé
+				//Find the last volume installed
+				if(projectDB[pos].chapitresInstalled != NULL && projectDB[pos].nombreChapitreInstalled > 0)
+				{
+					uint lastChap = projectDB[pos].chapitresInstalled[projectDB[pos].nombreChapitreInstalled-1];
+					
+					for(basePos = 0; basePos < projectDB[pos].nombreChapitre && projectDB[pos].chapitresFull[basePos] != lastChap; basePos++);
+				}
+				else
+					basePos = 0;
+				
+				//Download what remains
+				for(; basePos < projectDB[pos].nombreChapitre; basePos++)
+				{
+					if(firstEntry)
+						firstEntry = false;
+					else
+						addElementToMDL(previousProject, previousIsTome, previousElement, true);
+					
+					if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
+						previousProject = projectDB[pos];
+					
+					previousIsTome = false;
+					previousElement = projectDB[pos].chapitresFull[basePos];
+				}
+				
+				break;
 			}
         }
     }
-    freeProjectData(projectDB);
 	
-	if(pos != nbElem)
-	{
-		#warning "New favorites available for download"
-	}
+	if(!firstEntry)
+		addElementToMDL(previousProject, previousIsTome, previousElement, false);
+	
+    freeProjectData(projectDB);
 }
 
 void getNewFavs()

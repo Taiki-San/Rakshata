@@ -25,6 +25,11 @@ uint32_t getMainThread()
 	return output;
 }
 
+bool shouldDownloadFavorite()
+{
+	return true;
+}
+
 void sendToLog(char * string)
 {
 	NSLog(@"%s", string);

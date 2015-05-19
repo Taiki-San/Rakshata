@@ -312,7 +312,7 @@
 
 - (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
-	if (element == VALEUR_FIN_STRUCT)
+	if(!data.isInitialized || element == VALEUR_FIN_STRUCT)
 		return;
 	
 	uint pos;
