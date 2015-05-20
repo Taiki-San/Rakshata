@@ -13,6 +13,7 @@
 #define NOTIFICATION_NAME	@"RakDatabaseGotUpdated"
 #define REPO_FIELD			@"repo"
 #define PROJECT_FIELD		@"project"
+#define REPO_MAGIC_UPDATE	1			//RepoID are the combination of two non-null 32 bit int, so >= 2^33
 #define UNUSED_FIELD		UINT_MAX
 
 @implementation RakDBUpdate
@@ -41,6 +42,11 @@
 + (void) postNotificationRepoUpdate : (REPO_DATA) repo
 {
 	[self postNotification : getRepoID(&repo) :UNUSED_FIELD];
+}
+
++ (void) postNotificationFullRepoUpdate
+{
+	[self postNotification:REPO_MAGIC_UPDATE :UNUSED_FIELD];
 }
 
 + (void) postNotificationProjectUpdate : (PROJECT_DATA) project
@@ -76,7 +82,7 @@
 	if(projectID != UNUSED_FIELD && projectID == project.cacheDBID)	//Project update
 		return YES;
 	
-	if(repoID != UNUSED_FIELD && repoID == getRepoID(project.repo))	//Team update
+	if(repoID != UNUSED_FIELD && repoID != REPO_MAGIC_UPDATE && repoID == getRepoID(project.repo))	//Team update
 		return YES;
 	
 	return NO;
@@ -112,6 +118,19 @@
 	
 	uint localID = [val unsignedIntValue];
 	return localID == UNUSED_FIELD;
+}
+
++ (BOOL) isFullRepoUpdate : (NSDictionary *) notification
+{
+	if(notification == nil)
+		return NO;
+	
+	NSNumber * val = [notification objectForKey:PROJECT_FIELD];
+	if(val == nil)
+		return NO;
+	
+	uint localID = [val unsignedIntValue];
+	return localID == REPO_MAGIC_UPDATE;
 }
 
 @end
