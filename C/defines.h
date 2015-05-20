@@ -25,10 +25,8 @@
     #define BUILD "dev"
 #elif defined(_WIN32)
 	#define BUILD "win32"
-#elif defined(__APPLE__)
-	#define BUILD "OSX"
 #else
-	#define BUILD "linux"
+	#define BUILD "OSX"
 #endif
 
 /*Standard des dépôts*/
