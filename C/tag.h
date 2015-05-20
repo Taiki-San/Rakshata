@@ -29,9 +29,6 @@ enum
 //Remote update parser
 bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, CATEGORY_VERBOSE ** categories, uint * nbCategories, uint * newDBVersion);
 
-//Main API
-void checkIfRefreshTag();
-
 //Internal high level API
 void updateTagDBVersion(uint newDBVersion);
 uint getTagDBVersion();

@@ -48,4 +48,6 @@ void checkIfRefreshTag()
 	
 	dumpTagCat(tagDB, tagLength, catDB, catLength);
 	updateTagDBVersion(newDBVersion);
+	
+	notifyFullUpdate();
 }

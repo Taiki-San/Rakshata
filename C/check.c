@@ -114,26 +114,25 @@ void networkAndVersionTest()
 			uint length = strlen(COMPTE_PRINCIPAL_MAIL);
 			char URL[length + 100];
 			
+			//Compte killswitché
 			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
-			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || lengthBufferDL == 0 || bufferDL[0] != '0') //Compte valide
+			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_RETOUR_OK && bufferDL != NULL && lengthBufferDL != 0 && bufferDL[0] == '0')
 			{
 				free(bufferDL);
-				updateDatabase(false);
-				updateFavorites();
-				quit_thread(0);
+				
+				/*A partir d'ici, le compte est killswitche*/
+				remove(SECURE_DATABASE);
+				removeFolder(PROJECT_ROOT);
+				logR("Ugh, you did wrong things =/");
+				exit(0);
 			}
-
-			free(bufferDL);
 			
-			/*A partir d'ici, le compte est killswitche*/
-			remove(SECURE_DATABASE);
-			removeFolder(PROJECT_ROOT);
-			logR("Ugh, you did wrong things =/");
-			exit(0);
+			free(bufferDL);
 		}
-	
+		
 		updateDatabase(false);
 		updateFavorites();
+		checkIfRefreshTag();
     }
     quit_thread(0);
 }

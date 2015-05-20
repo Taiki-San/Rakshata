@@ -156,3 +156,6 @@ uint getRootCategoryIDForID(uint32_t categoryID);
 
 charType * getCatNameForCode(uint32_t catID);
 charType * getTagNameForCode(uint tagID);
+
+/**		TagUpdate.c		**/
+void checkIfRefreshTag();
