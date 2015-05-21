@@ -74,16 +74,7 @@ enum
 		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil)];
 		if(disconnect != nil)
 		{
-			if(COMPTE_PRINCIPAL_MAIL != NULL)
-			{
-				[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
-				[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
-			}
-			else
-			{
-				disconnect.hidden = YES;
-				[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
-			}
+			[self emailFrameUpdate];
 			
 			disconnect.target = self;
 			disconnect.action = @selector(disconnect);
@@ -106,6 +97,8 @@ enum
 			
 			[self addSubview:resetRemind];
 		}
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emailUpdate) name:NOTIFICATION_MAIL object:nil];
 	}
 	
 	return self;
@@ -135,6 +128,34 @@ enum
 }
 
 #pragma mark - Backend
+
+- (void) emailUpdate
+{
+	email.stringValue = [self emailString];
+	[email sizeToFit];
+	
+	[self emailFrameUpdate];
+}
+
+- (void) emailFrameUpdate
+{
+	if(COMPTE_PRINCIPAL_MAIL != NULL)
+	{
+		[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+		[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
+		
+		if(disconnect.isHidden)
+		{
+			disconnect.hidden = NO;
+			disconnect.alphaValue = 1;
+		}
+	}
+	else
+	{
+		disconnect.hidden = YES;
+		[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+	}
+}
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {

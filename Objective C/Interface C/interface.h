@@ -57,6 +57,7 @@ void internalUIAlert(char *titre, char* content, UIABUTT* buttons);
 uint32_t getMainThread();
 bool shouldDownloadFavorite();
 void sendToLog(char * string);
+void notifyEmailUpdate();
 
 /*****************************************
  **										**

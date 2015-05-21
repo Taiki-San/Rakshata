@@ -210,6 +210,8 @@ void updateEmail(const char * email)
 	snprintf(prefs, length + 30, "<"SETTINGS_EMAIL_FLAG">\n%s\n</"SETTINGS_EMAIL_FLAG">\n", email);
 	updatePrefs(SETTINGS_EMAIL_FLAG, prefs);
 	free(prefs);
+	
+	notifyEmailUpdate();
 }
 
 void deleteEmail()

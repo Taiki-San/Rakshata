@@ -35,6 +35,11 @@ void sendToLog(char * string)
 	NSLog(@"%s", string);
 }
 
+void notifyEmailUpdate()
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_MAIL object:nil];
+}
+
 /*****************************************
  **										**
  **				 DB update				**
