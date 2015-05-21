@@ -98,6 +98,7 @@ void removeRepoFromCache(REPO_DATA repo);
 void deleteSubRepo(uint64_t repoID);
 void freeRootRepo(ROOT_REPO_DATA ** root);
 void freeSingleRootRepo(ROOT_REPO_DATA * root);
+void _freeSingleRootRepo(ROOT_REPO_DATA * root, bool releaseMemory);
 void freeRepo(REPO_DATA ** repos);
 
 uint64_t getRepoID(REPO_DATA * repo);

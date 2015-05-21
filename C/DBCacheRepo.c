@@ -332,8 +332,8 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData)
 			}
 		}
 		
-		freeSingleRootRepo(rootRepoList[posInMain]);
-		*rootRepoList[posInMain] = *repoData[i];
+		_freeSingleRootRepo(rootRepoList[posInMain], false);
+		*(rootRepoList[posInMain]) = *(repoData[i]);
 	}
 	
 	MUTEX_UNLOCK(cacheMutex);

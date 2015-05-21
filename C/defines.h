@@ -48,14 +48,13 @@ enum
 
 /*Settings*/
 #define SECURE_DATABASE "secure.enc"
-#define DRM_FILE	".config.enc"
-#define SETTINGS_FILE "settings"
+#define DRM_FILE		".config.enc"
+#define SETTINGS_FILE 	"settings"
 #define SETTINGS_PASSWORD "Za8zR7e|3rz@[4zEbtr!s36~8713ue68"
 #define SETTINGS_EMAIL_FLAG "E"
 #define SETTINGS_FAVORITE_FLAG "F"
 #define SETTINGS_PROJECTDB_FLAG "M"
 #define SETTINGS_REPODB_FLAG "R"
-#define SETTINGS_PASSWORD_FLAG "P" //Pass de déverrouillage
 
 /*Chapitre*/
 #define VALEUR_FIN_STRUCT INT_MIN

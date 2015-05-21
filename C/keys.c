@@ -234,8 +234,8 @@ bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1])
 	
 	if(pass != NULL)
 	{
-		usstrcpy(pass, 2*SHA256_DIGEST_LENGTH, passwordGB);
-		pass[2*SHA256_DIGEST_LENGTH] = 0;
+		usstrcpy(pass, 2 * SHA256_DIGEST_LENGTH, passwordGB);
+		pass[2 * SHA256_DIGEST_LENGTH] = 0;
 	}
 	return true;
 }

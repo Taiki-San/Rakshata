@@ -22,7 +22,7 @@ sqlite3_stmt * tagUpdateQuery(sqlite3 * db, bool shouldUpdate)
 	sqlite3_stmt * request = NULL;
 
 	char body[] = "INTO "TABLE_TAGS" ("DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_tagName)") VALUES (?1, ?2);", mainRequest[sizeof(body) + 50];
-	snprintf(mainRequest, sizeof(mainRequest), "INSERT %s %s", shouldUpdate ? " OR REPLACE" : "", body);
+	snprintf(mainRequest, sizeof(mainRequest), "INSERT %s %s", shouldUpdate ? "OR REPLACE" : "", body);
 	
 	if(createRequest(db, mainRequest, &request) != SQLITE_OK)
 		return NULL;
@@ -149,7 +149,6 @@ void tagUpdateCachedEntryWithRequest(sqlite3_stmt * request, TAG_VERBOSE * newDa
 
 void catUpdateCachedEntryWithRequest(sqlite3_stmt * request, CATEGORY_VERBOSE * newData, uint nbData)
 {
-	
 	for(uint i = 0; i < nbData; i++)
 	{
 		//We get a UTF8 version of the name
@@ -167,7 +166,6 @@ void catUpdateCachedEntryWithRequest(sqlite3_stmt * request, CATEGORY_VERBOSE * 
 			sqlite3_bind_int(request, tagCode + 4, newData[i].tags[tagCode].ID);
 		}
 
-		
 		sqlite3_step(request);
 		sqlite3_reset(request);
 	}
@@ -179,18 +177,18 @@ void catUpdateCachedEntryWithRequest(sqlite3_stmt * request, CATEGORY_VERBOSE * 
 
 void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData)
 {
-	if(newData == NULL || nbData == 0)
+	if((cache == NULL && immatureCache == NULL) || newData == NULL || nbData == 0)
 		return;
 
-	tagUpdateCachedEntryWithRequest(tagUpdateQuery(cache, true), newData, nbData);
+	tagUpdateCachedEntryWithRequest(tagUpdateQuery(cache != NULL ? cache : immatureCache, true), newData, nbData);
 }
 
 void catUpdateCachedEntry(CATEGORY_VERBOSE * newData, uint nbData)
 {
-	if(newData == NULL || nbData == 0)
+	if((cache == NULL && immatureCache == NULL) || newData == NULL || nbData == 0)
 		return;
 	
-	catUpdateCachedEntryWithRequest(catUpdateQuery(cache, true), newData, nbData);
+	catUpdateCachedEntryWithRequest(catUpdateQuery(cache != NULL ? cache : immatureCache, true), newData, nbData);
 }
 
 void dumpTagCat(TAG_VERBOSE * tags, uint nbTags, CATEGORY_VERBOSE * category, uint nbCat)
@@ -208,6 +206,8 @@ void dumpTagCat(TAG_VERBOSE * tags, uint nbTags, CATEGORY_VERBOSE * category, ui
 		logR("Couldn't open the temporary database");
 		return;
 	}
+	else
+		createTagsTable(newDB);
 	
 	//Dump the content using our helpers
 	tagUpdateCachedEntryWithRequest(tagUpdateQuery(newDB, false), tags, nbTags);
@@ -229,20 +229,20 @@ void initializeTags(void * mainCache)
 	
 	sqlite3 * coldDB;
 	
-	if(sqlite3_open(TAG_DB , &coldDB) != SQLITE_OK)
+	//Create the tables in the main cache
+	createTagsTable(mainCache);
+	
+	if((!checkFileExist(TAG_DB) || sqlite3_open(TAG_DB , &coldDB) != SQLITE_OK) && (!checkFileExist(WIP_TAG_DB) || sqlite3_open(WIP_TAG_DB, &coldDB) != SQLITE_OK))
 	{
 		//Error, we should reset it with the version we ship with then trigger an update
-		if(!resetTagsToLocal())
-			return;
-		else if(sqlite3_open(TAG_DB , &coldDB) != SQLITE_OK)
+		resetTagsToLocal();
+		
+		if(!checkFileExist(TAG_DB) || sqlite3_open(TAG_DB , &coldDB) != SQLITE_OK)
 		{
 			logR("We have significant issues setting up our environment, this may be caused by permission issues, please contact us at contact@rakshata.com");
 			exit(0);
 		}
 	}
-	
-	//Create the tables in the main cache
-	createTagsTable(mainCache);
 	
 	sqlite3_stmt * requestRead, *requestWrite;
 	
@@ -337,7 +337,7 @@ CATEGORY getCategoryForID(uint32_t categoryID)
 		retValue.haveData = false;
 	}
 	
-	else if(createRequest(cache == NULL ? immatureCache : cache, "SELECT "DBNAMETOID(RDB_CAT_tag1)", "DBNAMETOID(RDB_CAT_tag2)", "DBNAMETOID(RDB_CAT_tag3)", "DBNAMETOID(RDB_CAT_tag4)", "DBNAMETOID(RDB_CAT_tag5)", "DBNAMETOID(RDB_CAT_tag6)", "DBNAMETOID(RDB_CAT_tag7)", "DBNAMETOID(RDB_CAT_tag8)", "DBNAMETOID(RDB_CAT_tag9)", "DBNAMETOID(RDB_CAT_tag10)", "DBNAMETOID(RDB_CAT_tag11)", "DBNAMETOID(RDB_CAT_tag12)", "DBNAMETOID(RDB_CAT_tag13)", "DBNAMETOID(RDB_CAT_tag14)", "DBNAMETOID(RDB_CAT_tag15)", "DBNAMETOID(RDB_CAT_tag16)", "DBNAMETOID(RDB_CAT_tag17)", "DBNAMETOID(RDB_CAT_tag18)", "DBNAMETOID(RDB_CAT_tag19)", "DBNAMETOID(RDB_CAT_tag20)", "DBNAMETOID(RDB_CAT_tag21)", "DBNAMETOID(RDB_CAT_tag22)", "DBNAMETOID(RDB_CAT_tag23)", "DBNAMETOID(RDB_CAT_tag24)", "DBNAMETOID(RDB_CAT_tag25)", "DBNAMETOID(RDB_CAT_tag26)", "DBNAMETOID(RDB_CAT_tag27)", "DBNAMETOID(RDB_CAT_tag28)", "DBNAMETOID(RDB_CAT_tag29)", "DBNAMETOID(RDB_CAT_tag30)", "DBNAMETOID(RDB_CAT_tag31)", "DBNAMETOID(RDB_CAT_tag32)" FROM "TABLE_CATEGORY" WHERE "DBNAMETOID(RDB_CAT_ID)" = ?1", &request) == SQLITE_OK && sqlite3_step(request) == SQLITE_ROW)
+	else if(createRequest(cache == NULL ? immatureCache : cache, "SELECT "DBNAMETOID(RDB_CAT_tag1)", "DBNAMETOID(RDB_CAT_tag2)", "DBNAMETOID(RDB_CAT_tag3)", "DBNAMETOID(RDB_CAT_tag4)", "DBNAMETOID(RDB_CAT_tag5)", "DBNAMETOID(RDB_CAT_tag6)", "DBNAMETOID(RDB_CAT_tag7)", "DBNAMETOID(RDB_CAT_tag8)", "DBNAMETOID(RDB_CAT_tag9)", "DBNAMETOID(RDB_CAT_tag10)", "DBNAMETOID(RDB_CAT_tag11)", "DBNAMETOID(RDB_CAT_tag12)", "DBNAMETOID(RDB_CAT_tag13)", "DBNAMETOID(RDB_CAT_tag14)", "DBNAMETOID(RDB_CAT_tag15)", "DBNAMETOID(RDB_CAT_tag16)", "DBNAMETOID(RDB_CAT_tag17)", "DBNAMETOID(RDB_CAT_tag18)", "DBNAMETOID(RDB_CAT_tag19)", "DBNAMETOID(RDB_CAT_tag20)", "DBNAMETOID(RDB_CAT_tag21)", "DBNAMETOID(RDB_CAT_tag22)", "DBNAMETOID(RDB_CAT_tag23)", "DBNAMETOID(RDB_CAT_tag24)", "DBNAMETOID(RDB_CAT_tag25)", "DBNAMETOID(RDB_CAT_tag26)", "DBNAMETOID(RDB_CAT_tag27)", "DBNAMETOID(RDB_CAT_tag28)", "DBNAMETOID(RDB_CAT_tag29)", "DBNAMETOID(RDB_CAT_tag30)", "DBNAMETOID(RDB_CAT_tag31)", "DBNAMETOID(RDB_CAT_tag32)" FROM "TABLE_CATEGORY" WHERE "DBNAMETOID(RDB_CAT_ID)" = ?1", &request) == SQLITE_OK && sqlite3_bind_int(request, 1, categoryID) == SQLITE_OK && sqlite3_step(request) == SQLITE_ROW)
 	{
 		
 		retValue.haveData = true;

@@ -316,7 +316,7 @@ bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy)
 #endif
 	
 	if(copy->subRepo != NULL)
-		memcpy(copy->subRepo, copy->subRepo, copy->nombreSubrepo * sizeof(REPO_DATA));
+		memcpy(copy->subRepo, original.subRepo, copy->nombreSubrepo * sizeof(REPO_DATA));
 	
 	//Yep, descriptions are a pain in the ass
 	if(copy->nombreDescriptions > 0)
@@ -446,6 +446,11 @@ void freeRootRepo(ROOT_REPO_DATA ** root)
 
 void freeSingleRootRepo(ROOT_REPO_DATA * root)
 {
+	_freeSingleRootRepo(root, true);
+}
+
+void _freeSingleRootRepo(ROOT_REPO_DATA * root, bool releaseMemory)
+{
 	free(root->subRepo);
 	
 	if(root->descriptions != NULL)
@@ -462,7 +467,9 @@ void freeSingleRootRepo(ROOT_REPO_DATA * root)
 	
 	free(root->descriptions);
 	free(root->langueDescriptions);
-	free(root);
+	
+	if(releaseMemory)
+		free(root);
 }
 
 void freeRepo(REPO_DATA ** repos)

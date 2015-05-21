@@ -27,16 +27,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 	uint counterVar = 0, *counter, pos = 0, pricePos = 0;
 	size_t nbSubBloc = [chapterBloc count];
 
-	if (nbSubBloc == 0)
-	{
-		if(isChapter)
-		{
-			output = malloc(sizeof(int));
-			if (output != nil)
-				((int *)output)[0] = VALEUR_FIN_STRUCT;
-		}
-	}
-	else
+	if (nbSubBloc != 0)
 	{
 		id entry1, entry2 = nil;
 		int jump, first, last, sum;
@@ -402,6 +393,10 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		return NULL;
 	
 	size_t nbElemMax = [volumeBloc count];
+	
+	if(nbElemMax == 0)
+		return NULL;
+	
 	META_TOME * output = malloc(nbElemMax * sizeof(META_TOME));
 
 	if(output != NULL)
@@ -895,7 +890,16 @@ void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * o
 void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag)
 {
 	*category = input >> (32 + 5);
-	*tagMask = input & 0xffffffff;
+	*tagMask = input;
+	
+#ifdef DEV_VERSION
+	//Legacy support, should get rid of it asa repo are updated
+	if(*category == 0)
+	{
+		*category = 1;
+		*tagMask |= ((uint64_t) *category) << (32 + 5);
+	}
+#endif
 	
 	CATEGORY catData = getCategoryForID(*category);
 	if(catData.haveData)

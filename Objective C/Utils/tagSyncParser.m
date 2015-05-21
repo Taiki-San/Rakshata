@@ -180,18 +180,15 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	return true;
 }
 
-bool resetTagsToLocal()
+void resetTagsToLocal()
 {
 	NSString * tags = [[NSBundle mainBundle] pathForResource:@"backupTags" ofType:@"db"];
-	
+
 	if(tags == nil)
 	{
 		//SHIIIIIT, can't access the local DB, no choice but download it :|
-		createNewThread(checkIfRefreshTag, NULL);
-		return false;
+		checkIfRefreshTag();
 	}
-	
-	[[NSData dataWithContentsOfFile:tags] writeToFile:@""TAG_DB"" options:NSDataWritingAtomic error:nil];
-	
-	return true;
+	else
+		[[NSData dataWithContentsOfFile:tags] writeToFile:@""TAG_DB"" options:NSDataWritingAtomic error:nil];
 }

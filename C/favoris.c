@@ -174,7 +174,7 @@ void updateFavorites()
         if(projectDB[pos].favoris)
         {
 			//The last available volume isn't installed
-			if (projectDB[pos].tomesFull && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesFull[projectDB[pos].nombreTomes-1].ID)))
+			if (projectDB[pos].nombreTomes && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesFull[projectDB[pos].nombreTomes-1].ID)))
 			{
 				//Find the last volume installed
 				if(projectDB[pos].tomesInstalled != NULL && projectDB[pos].nombreTomesInstalled > 0)
@@ -203,7 +203,7 @@ void updateFavorites()
 			}
 			
 			//The last available chapter isn't installed
-			if(projectDB[pos].chapitresFull && (projectDB[pos].chapitresInstalled == NULL || !checkReadable(projectDB[pos], false, projectDB[pos].chapitresFull[projectDB[pos].nombreChapitre-1])))
+			if(projectDB[pos].nombreChapitre && (projectDB[pos].chapitresInstalled == NULL || !checkReadable(projectDB[pos], false, projectDB[pos].chapitresFull[projectDB[pos].nombreChapitre-1])))
 			{
 				//Find the last volume installed
 				if(projectDB[pos].chapitresInstalled != NULL && projectDB[pos].nombreChapitreInstalled > 0)
