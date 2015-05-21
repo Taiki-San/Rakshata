@@ -195,9 +195,9 @@ char* loadLargePrefs(char* flag)
 		size_t downloadLength;
 		
         if(flag[0] == SETTINGS_PROJECTDB_FLAG[0])
-            strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
+            strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
         else
-			strncpy(temp, "https://"SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
+			strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
 
 		if(download_mem(temp, NULL, &downloadData, &downloadLength, SSL_ON) == CODE_RETOUR_OK && downloadData != NULL && downloadLength > 0)
 		{

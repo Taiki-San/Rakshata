@@ -40,7 +40,7 @@ int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo)
 		snprintf(temp, 500, "http://%s/rakshata-repo-%d", repo.URL, defaultVersion);
 	
 	else if(repo.type == TYPE_DEPOT_PAID) //Payant
-		snprintf(temp, 500, "https://"SERVEUR_URL"/ressource.php?editor=%s&request=repo&version=%d", repo.URL, defaultVersion);
+		snprintf(temp, 500, SERVEUR_URL"/ressource.php?editor=%s&request=repo&version=%d", repo.URL, defaultVersion);
 	
 	else
 	{
@@ -140,7 +140,7 @@ int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo)
             snprintf(URL, sizeof(URL), "http://%s/rakshata-project-%d", repo->URL, defaultVersion);
 
         else if(repo->type == TYPE_DEPOT_PAID) //Payant
-            snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/ressource.php?editor=%s&request=project&version=%d", repo->URL, defaultVersion);
+            snprintf(URL, sizeof(URL), SERVEUR_URL"/ressource.php?editor=%s&request=project&version=%d", repo->URL, defaultVersion);
 
         else
         {

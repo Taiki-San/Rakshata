@@ -21,7 +21,7 @@ void checkIfRefreshTag()
 	
 	char URL[250];
 	
-	snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/getUpdatedTags.php?v=%d", getTagDBVersion());
+	snprintf(URL, sizeof(URL), SERVEUR_URL"/getUpdatedTags.php?v=%d", getTagDBVersion());
 	
 	//'0' => no update available
 	if(download_mem(URL, NULL, &bufferDL, &downloadLength, SSL_ON) != CODE_RETOUR_OK || bufferDL == NULL || *bufferDL == '0')

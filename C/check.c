@@ -70,7 +70,7 @@ void networkAndVersionTest()
     MUTEX_UNLOCK(networkMutex);
 	
 	/*Chargement de l'URL*/
-    snprintf(testURL, sizeof(testURL), "https://"SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
+    snprintf(testURL, sizeof(testURL), SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
 
     if(download_mem(testURL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
@@ -115,7 +115,7 @@ void networkAndVersionTest()
 			char URL[length + 100];
 			
 			//Compte killswitché
-			snprintf(URL, sizeof(URL), "https://"SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
+			snprintf(URL, sizeof(URL), SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
 			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_RETOUR_OK && bufferDL != NULL && lengthBufferDL != 0 && bufferDL[0] == '0')
 			{
 				free(bufferDL);

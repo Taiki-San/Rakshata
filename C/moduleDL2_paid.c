@@ -48,7 +48,7 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
             for(sizeIndex = 0; index[sizeIndex] != VALEUR_FIN_STRUCT; sizeIndex++);
 
 			/*Interrogration du serveur*/
-			if(download_mem("https://"SERVEUR_URL"/checkPaid.php", POSTRequest, &bufferOut, &downloadLength, SSL_ON) == CODE_RETOUR_OK && bufferOut != NULL && downloadLength != 0 && isNbr(bufferOut[0]))
+			if(download_mem(SERVEUR_URL"/checkPaid.php", POSTRequest, &bufferOut, &downloadLength, SSL_ON) == CODE_RETOUR_OK && bufferOut != NULL && downloadLength != 0 && isNbr(bufferOut[0]))
 			{
 				int prix = -1;
 				uint pos = 0, detail;
@@ -228,7 +228,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 				
 				if(URLStore != NULL)
 				{
-					snprintf(URLStore, length + 50, "http://store.rakshata.com/?mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
+					snprintf(URLStore, length + 50, STORE_URL"/?mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
 					ouvrirSite(URLStore);
 					free(URLStore);
 				}
@@ -289,7 +289,7 @@ void MDLPDestroyCache(unsigned int factureID)
     char *output = NULL, POST[length + 100];
 
 	snprintf(POST, sizeof(POST), "mail=%s&id=%d", COMPTE_PRINCIPAL_MAIL, factureID);
-	download_mem("https://"SERVEUR_URL"/cancelOrder.php", POST, &output, &outputLength, SSL_ON);
+	download_mem(SERVEUR_URL"/cancelOrder.php", POST, &output, &outputLength, SSL_ON);
 	free(output);
 }
 
@@ -334,7 +334,7 @@ bool MDLPCheckIfPaid(unsigned int factureID)
     char URL[300], *output = NULL;
 	size_t length;
 
-	snprintf(URL, 300, "https://"SERVEUR_URL"/order/%d", factureID);
+	snprintf(URL, 300, SERVEUR_URL"/order/%d", factureID);
 	
 	bool retValue = download_mem(URL, NULL, &output, &length, SSL_ON) == CODE_RETOUR_OK && output != NULL && length > 0 && output[0] == '1';
 	

@@ -196,7 +196,7 @@ static void downloadChapterCore(DL_DATA *data)
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
         defineUserAgent(curl);
 
-        if(!strncmp(&data->outputContainer->URL[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&data->outputContainer->URL[8], STORE_URL, strlen(STORE_URL))) //RSP
+        if(!strncmp(data->outputContainer->URL, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(data->outputContainer->URL, STORE_URL, strlen(STORE_URL))) //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
@@ -384,7 +384,7 @@ static int internal_download_easy(char* adresse, char* POST, bool printToAFile, 
 
     if(SSL_enabled == SSL_ON)
     {
-        if(!strncmp(&adresse[8], SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(&adresse[8], STORE_URL, strlen(STORE_URL))) //RSP
+        if(!strncmp(adresse, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(adresse, STORE_URL, strlen(STORE_URL))) //RSP
         {
             curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
             curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);

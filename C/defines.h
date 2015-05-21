@@ -13,8 +13,8 @@
 #define CURRENTVERSIONSTRING STRINGIZE(CURRENTVERSION)
 
 /*Environnement*/
-#define STORE_URL	"store.rakshata.com"
-#define SERVEUR_URL "rsp.rakshata.com"
+#define STORE_URL	"https://store.rakshata.com"
+#define SERVEUR_URL "https://rsp.rakshata.com"
 #define BACKUP_INTERNET_CHECK "http://www.apple.com/library/test/success.html"
 
 #define REPO_REC_NAME "repo"
