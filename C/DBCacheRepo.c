@@ -102,7 +102,11 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 	}
 	
 	//Remove collisions in the case there might be
-	getRideOfDuplicateInRootRepo(newReceiver, newLengthRepo);
+	//Also update the state of existing repo to reflect the one submitted there
+	REPO_DATA ** updatedRepo = NULL;
+	uint lengthUpdated = 0;
+	
+	getRideOfDuplicateInRootRepo(newReceiver, newLengthRepo, &updatedRepo, &lengthUpdated);
 	
 	//We compact the list
 	uint base = 0;
@@ -263,7 +267,7 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 	
 	cumulativeSize += lengthRepo;
 
-	REPO_DATA ** mainList = realloc(repoList, (cumulativeSize + 1) * sizeof(REPO_DATA *));
+	REPO_DATA ** mainList = realloc(repoList, (cumulativeSize + lengthUpdated + 1) * sizeof(REPO_DATA *));
 	if(mainList == NULL)
 	{
 		for(uint posRoot = 0; posRoot < newRootEntries; posRoot++)
@@ -271,6 +275,8 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 			for(uint posSub = 0; posSub < repoSize[posRoot]; free(tmpRepo[posRoot][posSub++]));
 			free(tmpRepo[posRoot]);
 		}
+		
+		free(updatedRepo);
 		
 		MUTEX_UNLOCK(cacheMutex);
 		return;
@@ -288,8 +294,15 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 		}
 	}
 	
+	//We now reflect the changes we were notified by getRideOfDuplicateInRootRepo (lengthUpdated - 0 if none)
+	//It can only mean activated repo
+	for(uint i = 0; i < lengthUpdated; i++)
+		mainList[lengthRepo++] = updatedRepo[i];
+	
+	free(updatedRepo);
 	for(; currentRoot < newRootEntries; free(tmpRepo[currentRoot++]));
 	
+	mainList[lengthRepo] = NULL;
 	repoList = mainList;
 	MUTEX_UNLOCK(cacheMutex);
 }
@@ -400,8 +413,13 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveE
 	}
 }
 
-void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo)
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_DATA *** wantUpdatedRepo, uint *lengthUpdated)
 {
+	bool wantUpdated = (wantUpdatedRepo != NULL && lengthUpdated != NULL);
+	
+	if(wantUpdated)
+		*lengthUpdated = 0;
+	
 	//On va chercher des collisions
 	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{
@@ -419,6 +437,52 @@ void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo)
 			//If the mean to access the repo is different
 			else if(data[posBase]->type != data[posToCompareWith]->type || strcmp(data[posBase]->URL, data[posToCompareWith]->URL))
 				continue;
+			
+			//Merge the active state if needed
+			if(wantUpdated)
+			{
+				if(data[posBase]->nombreSubrepo == data[posToCompareWith]->nombreSubrepo)
+				{
+					for(uint i = 0, nbSub = data[posBase]->nombreSubrepo; i < nbSub; i++)
+					{
+						//State update
+						if(data[posBase]->subRepo[i].active == false && data[posToCompareWith]->subRepo[i].active)
+						{
+							data[posBase]->subRepo[i].active = data[posToCompareWith]->subRepo[i].active;
+							
+							//We check we don't already have inserted it
+							uint posUpdated = 0;
+							
+							for(; posUpdated < *lengthUpdated; posUpdated++)
+							{
+								if(getRepoID((*wantUpdatedRepo)[posUpdated]) == getRepoID(&(data[posBase]->subRepo[i])))
+									break;
+							}
+							
+							//Nop, first time seeing you there
+							if(posUpdated == *lengthUpdated)
+							{
+								REPO_DATA * newSlot = malloc(sizeof(REPO_DATA));
+								
+								if(newSlot != NULL)
+								{
+									void * tmp = realloc(*wantUpdatedRepo, (*lengthUpdated + 1) * sizeof(REPO_DATA *));
+									if(tmp != NULL)
+									{
+										*lengthUpdated += 1;
+										
+										*newSlot = data[posBase]->subRepo[i];
+										*wantUpdatedRepo = tmp;
+										(*wantUpdatedRepo)[posUpdated] = newSlot;
+									}
+									else
+										free(newSlot);
+								}
+							}
+						}
+					}
+				}
+			}
 
 			freeSingleRootRepo(data[posToCompareWith]);
 			data[posToCompareWith] = NULL;

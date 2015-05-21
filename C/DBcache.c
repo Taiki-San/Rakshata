@@ -610,6 +610,4 @@ void setUninstalled(bool isRoot, uint64_t repoID)
 	}
 
 	destroyRequest(request);
-	
-	notifyFullUpdateRepo();
 }
