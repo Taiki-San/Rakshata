@@ -408,7 +408,7 @@ void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
 	
 	memset(outputKS, 0, NUMBER_MAX_REPO_KILLSWITCHE * (2 * SHA256_DIGEST_LENGTH + 1));
 
-    if(download_mem("https://"SERVEUR_URL"/killswitch", NULL, &bufferDL, &lengthBuffer, SSL_ON) != CODE_RETOUR_OK || lengthBuffer == 0) //Rien n'a été téléchargé
+    if(download_mem("https://"SERVEUR_URL"/damocles", NULL, &bufferDL, &lengthBuffer, SSL_ON) != CODE_RETOUR_OK || lengthBuffer == 0) //Rien n'a été téléchargé
         return;
 
 	int posBuffer = 0, posBufferOut = 0, nbElemInKS, posBufferOutInLine;
