@@ -566,13 +566,13 @@ void setInstalled(uint cacheID)
 	}
 }
 
-void setUninstalled(bool isRoot, uint repoID)
+void setUninstalled(bool isRoot, uint64_t repoID)
 {
 	if (cache == NULL)
 		return;
 	
 	sqlite3_stmt * request = NULL;
-	if(createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?2", &request) != SQLITE_OK)
+	if(createRequest(cache, "UPDATE rakSQLite SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?1", &request) != SQLITE_OK)
 		return;
 	
 	if(isRoot)
@@ -587,7 +587,7 @@ void setUninstalled(bool isRoot, uint repoID)
 					
 					if(repo.active)
 					{
-						sqlite3_bind_int(request, 1, getRepoID(&repo));
+						sqlite3_bind_int64(request, 1, getRepoID(&repo));
 						sqlite3_step(request);
 						sqlite3_reset(request);
 						
@@ -595,17 +595,21 @@ void setUninstalled(bool isRoot, uint repoID)
 					}
 				}
 				
+				notifyUpdateRootRepo(*rootRepoList[i]);
 				break;
 			}
 		}
 	}
 	else
 	{
-		
-		
-		sqlite3_bind_int(request, 1, repoID);
+		sqlite3_bind_int64(request, 1, repoID);
 		sqlite3_step(request);
+		
+		REPO_DATA emptyRepo;	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
+		notifyUpdateRepo(emptyRepo);
 	}
 
 	destroyRequest(request);
+	
+	notifyFullUpdateRepo();
 }

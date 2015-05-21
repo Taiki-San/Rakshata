@@ -119,6 +119,8 @@ void updateRepo()
 	
 	updateRootRepoCache(oldRootData);
 	free(oldRootData);
+	
+	notifyFullUpdateRepo();
 }
 
 /******************* UPDATE PROJECTS ****************************/

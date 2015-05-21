@@ -48,12 +48,22 @@ void notifyFullUpdate()
 
 void notifyUpdateRepo(REPO_DATA repo)
 {
-	[RakDBUpdate postNotificationRepoUpdate:repo];
+	[RakDBUpdate postNotificationRepoUpdate:getRepoID(&repo)];
+}
+
+void notifyUpdateRootRepo(ROOT_REPO_DATA root)
+{
+	[RakDBUpdate postNotificationRepoUpdate:root.repoID];
 }
 
 void notifyUpdateProject(PROJECT_DATA project)
 {
 	[RakDBUpdate postNotificationProjectUpdate:project];
+}
+
+void notifyFullUpdateRepo()
+{
+	[RakDBUpdate postNotificationFullRepoUpdate];
 }
 
 /*****************************************

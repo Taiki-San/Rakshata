@@ -23,6 +23,8 @@
 
 - (instancetype) initWithFrame : (NSRect) frame;
 - (void) reloadContent : (BOOL) rootMode;
+- (void) removeContentAtLine :(uint) line;
+- (void) updateContentAtLine :(uint) line;
 
 @end
 
@@ -50,7 +52,6 @@
 
 @interface RakPrefsRepoDetails : NSView
 
-
 - (instancetype) initWithRepo : (NSRect) frame : (BOOL) isRoot : (void *) repo : (RakPrefsRepoView *) responder;
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (BOOL) animated;
 
@@ -65,12 +66,13 @@
 	
 	uint nbRoot, nbRepo;
 	uint activeElementInRoot, activeElementInSubRepo;
+	BOOL _selectedIsRoot;
 	
 	RakPrefsRepoList * list;
 	RakPrefsRepoDetails * details;
 	
 	RakSwitchButton * radioSwitch;
-	RakText * switchMessage, * placeholder;
+	RakText * switchMessage, * placeholder;	
 }
 
 - (void *) dataForMode : (BOOL) rootMode index : (uint) index;

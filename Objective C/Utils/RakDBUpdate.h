@@ -16,12 +16,15 @@
 + (void) unRegister : (id) instance;
 
 + (void) postNotificationFullUpdate;
-+ (void) postNotificationRepoUpdate : (REPO_DATA) repo;
++ (void) postNotificationRepoUpdate : (uint64_t) repoID;
++ (void) postNotificationFullRepoUpdate;
 + (void) postNotificationProjectUpdate : (PROJECT_DATA) project;
 + (void) postNotification : (uint64_t) repoID : (uint) projectID;
 
 + (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project;
 + (BOOL) getIDUpdated : (NSDictionary*) notification : (uint*) ID;
 + (BOOL) isPluralUpdate : (NSDictionary *) notification;
++ (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID;
++ (BOOL) isFullRepoUpdate : (NSDictionary *) notification;
 
 @end

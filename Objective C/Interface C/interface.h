@@ -66,7 +66,9 @@ void sendToLog(char * string);
 
 void notifyFullUpdate();
 void notifyUpdateRepo(REPO_DATA repo);
+void notifyUpdateRootRepo(ROOT_REPO_DATA root);
 void notifyUpdateProject(PROJECT_DATA project);
+void notifyFullUpdateRepo();
 
 /*****************************************
  **										**

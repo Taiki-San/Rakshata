@@ -39,9 +39,9 @@
 	[self postNotification:UNUSED_FIELD :UNUSED_FIELD];
 }
 
-+ (void) postNotificationRepoUpdate : (REPO_DATA) repo
++ (void) postNotificationRepoUpdate : (uint64_t) repoID
 {
-	[self postNotification : getRepoID(&repo) :UNUSED_FIELD];
+	[self postNotification : repoID :UNUSED_FIELD];
 }
 
 + (void) postNotificationFullRepoUpdate
@@ -120,16 +120,30 @@
 	return localID == UNUSED_FIELD;
 }
 
++ (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID
+{
+	if(notification == nil || ID == NULL)
+		return NO;
+	
+	NSNumber * val = [notification objectForKey:REPO_FIELD];
+	if(val == nil)
+		return NO;
+	
+	*ID = [val unsignedLongLongValue];
+	
+	return YES;
+}
+
 + (BOOL) isFullRepoUpdate : (NSDictionary *) notification
 {
 	if(notification == nil)
 		return NO;
 	
-	NSNumber * val = [notification objectForKey:PROJECT_FIELD];
+	NSNumber * val = [notification objectForKey:REPO_FIELD];
 	if(val == nil)
 		return NO;
 	
-	uint localID = [val unsignedIntValue];
+	uint64_t localID = [val unsignedLongLongValue];
 	return localID == REPO_MAGIC_UPDATE;
 }
 

@@ -259,6 +259,117 @@ REPO_DATA * getRepoForID(uint64_t repoID)
 	return NULL;
 }
 
+ROOT_REPO_DATA * getRootRepoForID(uint repoID)
+{
+	ROOT_REPO_DATA * output = malloc(sizeof(ROOT_REPO_DATA));
+	
+	if(output != NULL)
+	{
+		for(uint i = 0; i < lengthRootRepo; i++)
+		{
+			if(rootRepoList[i] != NULL && rootRepoList[i]->repoID == repoID)
+			{
+				if(copyRootRepo(*(rootRepoList[i]), output))
+					return output;
+				
+				return NULL;
+			}
+		}
+		
+		free(output);
+	}
+	
+	return NULL;
+}
+
+bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy)
+{
+	if(copy != NULL)
+	{
+		*copy = original;
+
+		//We need to alloc those ourselves
+		copy->descriptions = NULL;
+		copy->langueDescriptions = NULL;
+		copy->subRepo = NULL;
+	}
+	else
+		return false;
+	
+#ifdef FLUSH_UNUSED_REPO
+	if(copy->nombreSubrepo == 0)
+	{
+		free(copy);
+		return false;
+	}
+	else
+	{
+#endif
+		copy->subRepo = calloc(copy->nombreSubrepo, sizeof(REPO_DATA));
+		if(copy->subRepo == NULL)
+		{
+			free(copy);
+			return false;
+		}
+#ifdef FLUSH_UNUSED_REPO
+	}
+#endif
+	
+	if(copy->subRepo != NULL)
+		memcpy(copy->subRepo, copy->subRepo, copy->nombreSubrepo * sizeof(REPO_DATA));
+	
+	//Yep, descriptions are a pain in the ass
+	if(copy->nombreDescriptions > 0)
+	{
+		copy->descriptions = calloc(copy->nombreDescriptions, sizeof(charType*));
+		copy->langueDescriptions = calloc(copy->nombreDescriptions, sizeof(char*));
+		
+		if(copy->descriptions != NULL && copy->langueDescriptions != NULL)
+		{
+			for(uint posDesc = 0; posDesc < copy->nombreDescriptions; posDesc++)
+			{
+				uint lengthDesc = wstrlen(original.descriptions[posDesc]), lengthLanguage = strlen(original.langueDescriptions[posDesc]);
+				copy->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(charType));
+				copy->langueDescriptions[posDesc] = malloc((lengthLanguage + 1) * sizeof(char));
+				
+				if(copy->descriptions[posDesc] == NULL || copy->langueDescriptions[posDesc] == NULL)
+				{
+					do
+					{
+						free(copy->descriptions[posDesc]);
+						free(copy->langueDescriptions[posDesc]);
+					} while(posDesc-- > 0);
+					
+					free(copy->descriptions);
+					free(copy->langueDescriptions);
+					free(copy->subRepo);
+					free(copy);
+					
+					return false;
+				}
+				else
+				{
+					memcpy(copy->descriptions[posDesc], original.descriptions[posDesc], lengthDesc * sizeof(charType));
+					memcpy(copy->langueDescriptions[posDesc], original.langueDescriptions[posDesc], lengthLanguage * sizeof(char));
+					copy->descriptions[posDesc][lengthDesc] = 0;
+					copy->langueDescriptions[posDesc][lengthLanguage] = 0;
+				}
+			}
+		}
+		else
+		{
+			free(copy->descriptions);
+			free(copy->langueDescriptions);
+			free(copy->subRepo);
+			free(copy);
+
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 {
 	MUTEX_LOCK(cacheMutex);
@@ -286,89 +397,12 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 					
 					if(wantRoot)
 					{
-						ROOT_REPO_DATA * currentElem = output[i], * currentOld = (ROOT_REPO_DATA *) originalData[i];
-						
-						if(currentElem->nombreSubrepo == 0)
+						if(!copyRootRepo(*((ROOT_REPO_DATA *) originalData[i]), output[i]))
 						{
-#ifdef FLUSH_UNUSED_REPO
-							free(output[index]);
 							output[index] = NULL;
 							discardedElement++;
+
 							continue;
-#else
-							currentElem->subRepo = NULL;
-#endif
-						}
-						else
-						{
-							currentElem->subRepo = calloc(currentElem->nombreSubrepo, sizeof(REPO_DATA));
-							if(currentElem->subRepo == NULL)
-							{
-								free(currentElem);
-								currentElem = NULL;
-								output[index] = NULL;
-							}
-						}
-						
-						if(currentElem != NULL)
-						{
-							//We need to alloc those ourselves
-							currentElem->descriptions = NULL;
-							currentElem->langueDescriptions = NULL;
-							
-							if(currentElem->subRepo != NULL)
-							{
-								memcpy(currentElem->subRepo, currentOld->subRepo, currentElem->nombreSubrepo * sizeof(REPO_DATA));
-							}
-							
-							//Yep, descriptions are a pain in the ass
-							if(currentElem->nombreDescriptions > 0)
-							{
-								currentElem->descriptions = calloc(currentElem->nombreDescriptions, sizeof(charType*));
-								currentElem->langueDescriptions = calloc(currentElem->nombreDescriptions, sizeof(char*));
-								
-								if(currentElem->descriptions != NULL && currentElem->langueDescriptions != NULL)
-								{
-									for(uint posDesc = 0; posDesc < currentElem->nombreDescriptions; posDesc++)
-									{
-										uint lengthDesc = wstrlen(currentOld->descriptions[posDesc]), lengthLanguage = strlen(currentOld->langueDescriptions[posDesc]);
-										currentElem->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(charType));
-										currentElem->langueDescriptions[posDesc] = malloc((lengthLanguage + 1) * sizeof(char));
-										
-										if(currentElem->descriptions[posDesc] == NULL || currentElem->langueDescriptions[posDesc] == NULL)
-										{
-											do
-											{
-												free(currentElem->descriptions[posDesc]);
-												free(currentElem->langueDescriptions[posDesc]);
-											} while(posDesc-- > 0);
-											
-											free(currentElem->descriptions);
-											free(currentElem->langueDescriptions);
-											free(currentElem->subRepo);
-											free(currentElem);
-											output[index] = NULL;
-											break;
-										}
-										else
-										{
-											memcpy(currentElem->descriptions[posDesc], currentOld->descriptions[posDesc], lengthDesc * sizeof(charType));
-											memcpy(currentElem->langueDescriptions[posDesc], currentOld->langueDescriptions[posDesc], lengthLanguage * sizeof(char));
-											currentElem->descriptions[posDesc][lengthDesc] = 0;
-											currentElem->langueDescriptions[posDesc][lengthLanguage] = 0;
-										}
-									}
-								}
-								else
-								{
-									free(currentElem->descriptions);
-									free(currentElem->langueDescriptions);
-									free(currentElem->subRepo);
-									free(currentElem);
-									output[index] = NULL;
-									i--;
-								}
-							}
 						}
 					}
 				}

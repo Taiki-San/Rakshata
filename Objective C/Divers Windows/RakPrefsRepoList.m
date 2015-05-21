@@ -146,6 +146,29 @@ enum
 	refreshing = NO;
 }
 
+- (void) removeContentAtLine :(uint) line
+{
+	if(line < _nbData)
+	{
+		[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:line] withAnimation:NSTableViewAnimationSlideLeft];
+
+		_nbData--;
+	}
+}
+
+- (void) updateContentAtLine :(uint) line
+{
+	if(line < _nbData)
+	{
+		refreshing = YES;
+
+		[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:line] withAnimation:NSTableViewAnimationSlideLeft];
+		[_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:line] withAnimation:NSTableViewAnimationSlideLeft];
+
+		refreshing = NO;
+	}
+}
+
 #pragma mark - Tableview code
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView

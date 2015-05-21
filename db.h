@@ -105,7 +105,9 @@ uint getRootFromRepoID(uint64_t repoID);
 uint getSubrepoFromRepoID(uint64_t repoID);
 uint64_t getRepoIndexFromURL(char * URL);
 REPO_DATA * getRepoForID(uint64_t repoID);
-void setUninstalled(bool isRoot, uint repoID);
+ROOT_REPO_DATA * getRootRepoForID(uint repoID);
+bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy);
+void setUninstalled(bool isRoot, uint64_t repoID);
 
 //Searches
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
