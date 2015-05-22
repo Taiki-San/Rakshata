@@ -74,9 +74,12 @@
 		}
 	}
 	
-	while (nbRoot-- > 0)
-		freeSingleRootRepo(output[nbRoot]);
-	free(output);
+	if(nbRoot > 0)
+	{
+		while (nbRoot-- > 0)
+			freeSingleRootRepo(output[nbRoot]);
+		free(output);
+	}
 }
 
 @end

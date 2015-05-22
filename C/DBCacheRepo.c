@@ -177,6 +177,14 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 				}
 			}
 			
+			//We insert the repoID in our children
+			if(newReceiver[pos]->nombreSubrepo > 0 && newReceiver[pos]->subRepo != NULL)
+			{
+				for (uint i = 0; i < newReceiver[pos]->nombreSubrepo; i++)
+					newReceiver[pos]->subRepo[i].parentRepoID = currentID;
+			}
+			
+			//We set the current root repo
 			newReceiver[pos++]->repoID = currentID++;
 		}
 	}

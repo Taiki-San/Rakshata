@@ -109,6 +109,11 @@ enum
 	[super resetSelection:tableView];
 }
 
+- (Class) contentClass
+{
+	return [RakPrefsRepoListItemView class];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])

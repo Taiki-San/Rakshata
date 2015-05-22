@@ -259,78 +259,95 @@ enum
 {
 	if(![RakDBUpdate isFullRepoUpdate:notification.userInfo])
 	{
-		uint64_t updatedRepoID;
-
-		if(![RakDBUpdate getUpdatedRepo:notification.userInfo :&updatedRepoID])
+		if(![RakDBUpdate getUpdatedRepo:notification.userInfo :NULL])
 			return;
 	
-		BOOL isRootUpdate = updatedRepoID < UINT_MAX;
-		uint selectedLine;
-		void * dataChunck[2] = {NULL, NULL};	//We get the field we removed, as we should release it before flushing it from list and details
-		
-		//The repo ID of a subRepo is [32 integer > 1 (root ID)] << 33 | [32 integer > 1 (sub ID)]
-		
-		if(isRootUpdate)
-		{
-			for(selectedLine = 0; selectedLine < nbRoot; selectedLine++)
-			{
-				if(root[selectedLine]->repoID == updatedRepoID)
-				{
-					ROOT_REPO_DATA * rootRepo = getRootRepoForID(updatedRepoID);
-					
-					if(rootRepo != NULL)
-					{
-						dataChunck[0] = root[selectedLine];
-						root[selectedLine] = rootRepo;
-					}
-					
-					break;
-				}
-			}
-			
-			if(selectedLine == nbRoot)
-				selectedLine = UINT_MAX;
-		}
-		else
-		{
-			for(selectedLine = 0; selectedLine < nbRepo; selectedLine++)
-			{
-				if(getRepoID(repo[selectedLine]) == updatedRepoID)
-				{
-					REPO_DATA * repoData = getRepoForID(updatedRepoID);
-					
-					if(repoData != NULL)
-					{
-						dataChunck[0] = repo[selectedLine];
-						repo[selectedLine] = repoData;
-					}
-					
-					break;
-				}
-			}
-			
-			if(selectedLine == nbRepo)
-				selectedLine = UINT_MAX;
-		}
-		
-		if(dataChunck[0] != NULL)			//We found something, we update the list
-		{
-			if(list.rootMode == isRootUpdate)
-				[list updateContentAtLine:selectedLine];
-			
-			if(_selectedIsRoot == isRootUpdate && (_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo) == selectedLine)
-				[self selectionUpdate:_selectedIsRoot :(_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo)];
-		}
-		else if(selectedLine == UINT_MAX) 	//Repo was removed
-		{
-			if(list.rootMode == isRootUpdate)
-				[list removeContentAtLine:selectedLine];
-
-			if(_selectedIsRoot == isRootUpdate && (_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo) == selectedLine)
-				[self selectionUpdate:_selectedIsRoot :UINT_MAX];	//UINT_MAX > the number of repo/root we have, so dataForMode will return NULL, and flush the detail
-		}
-
-		return;
+//		BOOL isRootUpdate = updatedRepoID < UINT_MAX, foundRepo = false;
+//		uint selectedLine;
+//		void * dataChunck[2] = {NULL, NULL};	//We get the field we removed, as we should release it before flushing it from list and details
+//		
+//		//The repo ID of a subRepo is [32 integer > 1 (root ID)] << 33 | [32 integer > 1 (sub ID)]
+//		
+//		if(isRootUpdate)
+//		{
+//			for(selectedLine = 0; selectedLine < nbRoot; selectedLine++)
+//			{
+//				if(root[selectedLine]->repoID == updatedRepoID)
+//				{
+//					ROOT_REPO_DATA * rootRepo = getRootRepoForID(updatedRepoID);
+//					
+//					if(rootRepo != NULL)
+//					{
+//						dataChunck[0] = root[selectedLine];
+//						root[selectedLine] = rootRepo;
+//					}
+//					else
+//					{
+//						ROOT_REPO_DATA * data = root[selectedLine];
+//						
+//						for(uint i = selectedLine; i < selectedLine; i++)
+//							root[selectedLine] = root[selectedLine + 1];
+//						
+//						freeSingleRootRepo(data);
+//						nbRoot--;
+//					}
+//					
+//					foundRepo = true;
+//					break;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			for(selectedLine = 0; selectedLine < nbRepo; selectedLine++)
+//			{
+//				if(getRepoID(repo[selectedLine]) == updatedRepoID)
+//				{
+//					REPO_DATA * repoData = getRepoForID(updatedRepoID);
+//					
+//					if(repoData != NULL)
+//					{
+//						dataChunck[0] = repo[selectedLine];
+//						repo[selectedLine] = repoData;
+//					}
+//					else
+//					{
+//						REPO_DATA * data = repo[selectedLine];
+//						
+//						for(uint i = selectedLine; i < selectedLine; i++)
+//							repo[selectedLine] = repo[selectedLine + 1];
+//						
+//						free(data);
+//						nbRepo--;
+//					}
+//					
+//					foundRepo = true;
+//					break;
+//				}
+//			}
+//		}
+//		
+//		if(!foundRepo)
+//			selectedLine = UINT_MAX;
+//		
+//		if(dataChunck[0] != NULL)			//We found something, we update the list
+//		{
+//			if(list.rootMode == isRootUpdate)
+//				[list updateContentAtLine:selectedLine];
+//			
+//			if(_selectedIsRoot == isRootUpdate && (_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo) == selectedLine)
+//				[self selectionUpdate:_selectedIsRoot :(_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo)];
+//		}
+//		else if(selectedLine != UINT_MAX) 	//Repo was removed
+//		{
+//			if(list.rootMode == isRootUpdate)
+//				[list removeContentAtLine:selectedLine];
+//
+//			if(_selectedIsRoot == isRootUpdate && (_selectedIsRoot ? activeElementInRoot : activeElementInSubRepo) == selectedLine)
+//				[self selectionUpdate:_selectedIsRoot :UINT_MAX];	//UINT_MAX > the number of repo/root we have, so dataForMode will return NULL, and flush the detail
+//		}
+//
+//		return;
 	}
 	
 	uint newNbRoot, newNbRepo;
@@ -348,7 +365,7 @@ enum
 	qsort(newRepo, newNbRepo, sizeof(REPO_DATA *), sortRepo);
 	
 	//We update the pointers
-	if(activeElementInRoot != UINT_MAX)
+	if(activeElementInRoot < nbRoot)
 	{
 		uint i = 0;
 		
@@ -359,8 +376,10 @@ enum
 		else
 			activeElementInRoot = UINT_MAX;
 	}
+	else
+		activeElementInRoot = UINT_MAX;
 	
-	if(activeElementInSubRepo != UINT_MAX)
+	if(activeElementInSubRepo < nbRepo)
 	{
 		uint i = 0;
 		uint64_t oldRepoID = getRepoID(repo[activeElementInSubRepo]);
@@ -372,6 +391,8 @@ enum
 		else
 			activeElementInSubRepo = UINT_MAX;
 	}
+	else
+		activeElementInSubRepo = UINT_MAX;
 	
 	freeRootRepo(root);		root = newRoot;		nbRoot = newNbRoot;
 	freeRepo(repo);			repo = newRepo;		nbRepo = newNbRepo;

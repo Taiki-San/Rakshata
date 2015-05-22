@@ -145,10 +145,9 @@ enum
 		[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
 		
 		if(disconnect.isHidden)
-		{
 			disconnect.hidden = NO;
-			disconnect.alphaValue = 1;
-		}
+		
+		disconnect.alphaValue = 1;
 	}
 	else
 	{

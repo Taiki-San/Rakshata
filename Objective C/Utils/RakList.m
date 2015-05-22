@@ -452,7 +452,7 @@
 		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
-			if([view isKindOfClass:[RakText class]])
+			if([view isKindOfClass:[self contentClass]])
 			{
 				_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
 				[self graphicSelection:view :NO];
@@ -464,6 +464,11 @@
 		
 		[tableView deselectRow : rowToDeselect];
 	}
+}
+
+- (Class) contentClass
+{
+	return [RakText class];
 }
 
 #pragma mark - Model manipulation

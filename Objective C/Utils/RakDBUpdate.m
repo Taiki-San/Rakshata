@@ -122,14 +122,15 @@
 
 + (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID
 {
-	if(notification == nil || ID == NULL)
+	if(notification == nil)
 		return NO;
 	
 	NSNumber * val = [notification objectForKey:REPO_FIELD];
-	if(val == nil)
+	if(val == nil || [val unsignedLongLongValue] == UNUSED_FIELD)
 		return NO;
 	
-	*ID = [val unsignedLongLongValue];
+	if(ID != NULL)
+		*ID = [val unsignedLongLongValue];
 	
 	return YES;
 }

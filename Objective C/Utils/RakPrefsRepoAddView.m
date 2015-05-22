@@ -172,7 +172,6 @@ enum
 	
 	//Perform the heavy task: insert in the DB and refresh in order to get the projects
 	addRootRepoToDB(_root, _nbRoot);
-	notifyFullUpdateRepo();
 	
 	//We remove the window
 	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];

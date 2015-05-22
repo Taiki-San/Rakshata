@@ -111,6 +111,8 @@ typedef struct smartReload_data
 - (void) selectIndex : (uint) index;
 - (void) resetSelection : (NSTableView *) tableView;
 
+- (Class) contentClass;
+
 - (uint) rowFromCoordinates : (uint) row : (uint) column;
 - (uint) coordinateForIndex : (uint) index : (uint *) column;
 

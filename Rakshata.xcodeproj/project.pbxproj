@@ -41,6 +41,7 @@
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
 		B62F1E6518DE4EB0005FF4A5 /* RakResPath.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */; };
 		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
+		B63020E81B0FE34F00582DB7 /* rak.icns in Resources */ = {isa = PBXBuildFile; fileRef = B63020E71B0FE34F00582DB7 /* rak.icns */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
 		B63401431A96AA7A003DC56E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401411A96AA7A003DC56E /* InfoPlist.strings */; };
@@ -282,6 +283,7 @@
 		B62F1E6418DE4EB0005FF4A5 /* RakResPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakResPath.m; path = Prefs/RakResPath.m; sourceTree = "<group>"; };
 		B62F67871A02E8D600157DEA /* RakCTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeader.h; path = CTSelec/RakCTHeader.h; sourceTree = "<group>"; };
 		B62F67881A02E8D600157DEA /* RakCTHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeader.m; path = CTSelec/RakCTHeader.m; sourceTree = "<group>"; };
+		B63020E71B0FE34F00582DB7 /* rak.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = rak.icns; path = default/rak.icns; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B63401421A96AA7A003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
@@ -971,6 +973,7 @@
 				B6BD45C51A7D602A00C2A675 /* loading.gif */,
 				B6BD45C61A7D602A00C2A675 /* project_large.png */,
 				B6BD45C71A7D602A00C2A675 /* project_large@2x.png */,
+				B63020E71B0FE34F00582DB7 /* rak.icns */,
 			);
 			name = Defaults;
 			sourceTree = "<group>";
@@ -1137,9 +1140,9 @@
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6CF07BC1868DD58009B16A3 /* Products */,
-				B6CF07CC1868DD58009B16A3 /* rakshata.pch */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
+				B6CF07CC1868DD58009B16A3 /* rakshata.pch */,
 				B6CF07C51868DD58009B16A3 /* Supporting Files */,
 			);
 			sourceTree = "<group>";
@@ -1455,6 +1458,7 @@
 				B69D468C1AA8830500B471AC /* defaultRepo.png in Resources */,
 				B6BD45D51A7D62A100C2A675 /* defaultSRImage@2x.png in Resources */,
 				B69D468E1AA8830500B471AC /* defaultRepoRoot.png in Resources */,
+				B63020E81B0FE34F00582DB7 /* rak.icns in Resources */,
 				B6002C31189EF15E00466654 /* window.xib in Resources */,
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,

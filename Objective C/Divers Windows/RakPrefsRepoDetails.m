@@ -491,7 +491,6 @@ enum
 		self.window.title = NSLocalizedString(@"PREFS-DELETE-REMOVE", nil);
 		removeRepoFromCache(*repoData);
 		deleteSubRepo(ID);
-		syncCacheToDisk(SYNC_ALL);
 	}
 	
 	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);

@@ -298,6 +298,7 @@ void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 	
 	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 	notifyFullUpdate();
+	notifyFullUpdateRepo();
 }
 
 void removeRepoFromCache(REPO_DATA repo)
@@ -332,7 +333,7 @@ void removeRepoFromCache(REPO_DATA repo)
 	
 	MUTEX_UNLOCK(cacheMutex);
 	
-	syncCacheToDisk(SYNC_REPO);
+	syncCacheToDisk(SYNC_PROJECTS);
 	notifyFullUpdate();
 }
 
@@ -389,6 +390,7 @@ void activateRepo(REPO_DATA repo)
 		createNewThread(updateProjectImages, iconData);
 		syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 		notifyFullUpdate();
+		notifyFullUpdateRepo();
 	}
 }
 
@@ -452,4 +454,7 @@ void deleteSubRepo(uint64_t repoID)
 	
 	MUTEX_UNLOCK(cacheMutex);
 	syncCacheToDisk(SYNC_REPO);
+	
+	REPO_DATA emptyRepo;	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
+	notifyUpdateRepo(emptyRepo);
 }

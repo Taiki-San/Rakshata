@@ -268,24 +268,16 @@ byte checkLogin(const char *adresseEmail)
 	if(!validateEmail(adresseEmail))
 		return 2;
 
-	size_t length = strlen(adresseEmail), lengthResponse = 0;
-	char *URL = malloc(length + 150), * output = NULL;
-	
-	if(URL == NULL)
-		return 2;
-	else
-		length += 150;
+	size_t length = strlen(adresseEmail) + 150, lengthResponse = 0;
+	char URL[length], * output = NULL;
 
-    snprintf(URL, length, SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
+    snprintf(URL, sizeof(URL), SERVEUR_URL"/login.php?request=1&mail=%s", adresseEmail); //Constitution de l'URL
 
 	if(download_mem(URL, NULL, &output, &lengthResponse, SSL_ON) != CODE_RETOUR_OK || length == 0)
 	{
 		free(output);
-		free(URL);
 		return 2;
 	}
-	
-	free(URL);
 
     if(length >= strlen("account_not_found") && !strncmp(output, "account_not_found", strlen("account_not_found")))
 	{
@@ -309,30 +301,24 @@ byte checkLogin(const char *adresseEmail)
 
 int login(const char * adresseEmail, const char * password, bool createAccount)
 {
-    char passHashed[2*SHA256_DIGEST_LENGTH+1], *URL, *downloadedData = NULL, dataCheck[2*SHA256_DIGEST_LENGTH+1];
+    char passHashed[2*SHA256_DIGEST_LENGTH+1], *downloadedData = NULL, dataCheck[2*SHA256_DIGEST_LENGTH+1];
 	size_t lengthRemote = 0;
 
 	if(!validateEmail(adresseEmail))
 		return 2;
 	
-	uint length = strlen(adresseEmail);
-	URL = malloc(length + 150);
-	
-	if(URL == NULL)
-		return 2;
-	else
-		length += 150;
+	uint length = strlen(adresseEmail) + 150;
+	char URL[length];
 
 	//Double SHA-256
     sha256_legacy(password, passHashed);
     sha256_legacy(passHashed, passHashed);
 
-	snprintf(URL, length, SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
+	snprintf(URL, sizeof(URL), SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
     download_mem(URL, NULL, &downloadedData, &lengthRemote, SSL_ON);
 
-    snprintf(URL, length, "%s-access_granted", passHashed);
+    snprintf(URL, sizeof(URL), "%s-access_granted", passHashed);
     sha256_legacy(URL, dataCheck);
-	free(URL);
 
     if(lengthRemote < sizeof(dataCheck) - 1 || strncmp(downloadedData, dataCheck, sizeof(dataCheck) - 1)) //access denied
 	{
