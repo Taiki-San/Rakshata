@@ -41,10 +41,11 @@ enum
 		
 		collection.delegate = self;
 		
-		scrollview = [[RakListScrollView alloc] initWithFrame : bounds];
+		scrollview = [[RakListScrollView alloc] initWithFrame : NSZeroRect];
 		if(scrollview != nil)
 		{
 			scrollview.documentView = collection;
+			[scrollview setFrame:bounds];
 			[self updateTrackingArea];
 		}
 	}
@@ -102,7 +103,6 @@ enum
 {
 	frameRect = [self frameFromParent:frameRect];
 	
-	[collection setFrame:frameRect];
 	[scrollview setFrame:frameRect];
 }
 
@@ -110,7 +110,6 @@ enum
 {
 	frameRect = [self frameFromParent:frameRect];
 	
-	[collection resizeAnimation:frameRect];
 	[scrollview.animator setFrame:frameRect];
 }
 

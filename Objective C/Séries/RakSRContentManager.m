@@ -488,6 +488,9 @@
 			
 			[content insertObject:element atIndex:insertion[i]];
 		}
+		
+		//We refresh the content frame afterward, as the scrollview tend to bitch a lot :x
+		[self setFrame:previousFrame];
 	}
 }
 
