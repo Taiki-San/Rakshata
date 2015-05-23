@@ -401,12 +401,12 @@
 		{
 			if(cacheList[posOld] < newCacheList[posNew])
 			{
-				_filteredToSorted[posOld] = UINT_MAX;	//Invalidate the entry
+				_filteredToSorted[sortedToFiltered[posOld]] = UINT_MAX;	//Invalidate the entry
 				removal[nbRemoval++] = sortedToFiltered[posOld++];
 			}
 			else if(cacheList[posOld] > newCacheList[posNew])
 			{
-				_newFilteredToSorted[posNew] = UINT_MAX;
+				_newFilteredToSorted[newSortedToFiltered[posNew]] = UINT_MAX;
 				insertion[nbInsertion++] = newSortedToFiltered[posNew++];
 			}
 			else
@@ -416,27 +416,20 @@
 			}
 		}
 		
-		while(posOld < nbElemActivated)			{	_filteredToSorted[posOld] = UINT_MAX;		removal[nbRemoval++] = sortedToFiltered[posOld++];			}
-		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[posNew] = UINT_MAX;	insertion[nbInsertion++] = newSortedToFiltered[posNew++];	}
+		while(posOld < nbElemActivated)			{	_filteredToSorted[sortedToFiltered[posOld]] = UINT_MAX;		removal[nbRemoval++] = sortedToFiltered[posOld++];			}
+		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[newSortedToFiltered[posNew]] = UINT_MAX;	insertion[nbInsertion++] = newSortedToFiltered[posNew++];	}
 		
 		//Then we look for moves
 		posOld = posNew = 0;
-		uint deletedInOld = 0, deletedInNew = 0;
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
 		{
 			if(_filteredToSorted[posOld] == UINT_MAX)
-			{
 				posOld++;
-				deletedInOld++;
-			}
 			
 			else if(_newFilteredToSorted[posNew] == UINT_MAX)
-			{
 				posNew++;
-				deletedInNew++;
-			}
 			
-			else if(_filteredToSorted[posOld] - deletedInOld != newFilteredToSorted[posNew] - deletedInNew)
+			else if(_filteredToSorted[posOld] != newFilteredToSorted[posNew])
 			{
 				removal[nbRemoval++] = posOld++;
 				insertion[nbInsertion++] = posNew++;

@@ -94,6 +94,11 @@
 	return YES;	//Required to fix issues with QuickAccesses
 }
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	
+}
+
 #pragma mark - Color
 
 - (NSColor*) getBackgroundColor
