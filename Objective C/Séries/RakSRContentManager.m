@@ -27,6 +27,7 @@
 		//Okay, we have all our data, we can register for updates
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restrictionsUpdated:) name:NOTIFICATION_SEARCH_UPDATED object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(installedOnlyTriggered:) name:NOTIFICATION_INSTALLED_ONLY_STAB object:nil];
 		
 		_sharedReference = [NSMutableArray array];
 		
@@ -40,6 +41,11 @@
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 //We craft two lists in order to make diffing feasable in O(n)
@@ -74,7 +80,7 @@
 	}
 	
 	//We get the filtered list
-	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL);
+	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL, installedOnly);
 	if(filtered == NULL)
 	{
 		if(includeCacheRefresh)
@@ -343,6 +349,20 @@
 }
 
 #pragma mark - Manage update
+
+- (void) installedOnlyTriggered : (NSNotification *) notification
+{
+	if(notification.object != nil && [notification.object isKindOfClass:[NSNumber class]])
+	{
+		BOOL newInstalledOnly = [notification.object boolValue];
+		
+		if(newInstalledOnly != installedOnly)
+		{
+			installedOnly = newInstalledOnly;
+			[self updateContext:NO];
+		}
+	}
+}
 
 //We won't try to be smartasses, we grab the new context, diff it, apply changes...
 //Because of that, it's pretty expensive, both in computation o(~5n) and in memory o(higestValue)

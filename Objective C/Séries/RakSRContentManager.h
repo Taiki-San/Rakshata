@@ -11,6 +11,7 @@
  ********************************************************************************************/
 
 #define NOTIFICATION_SEARCH_UPDATED	@"RakNotificationSearchUpdated"
+#define NOTIFICATION_INSTALLED_ONLY_STAB @"RakNotificationInstalledOnlyInSerieMode"
 
 @interface RakSRStupidDataStructure : NSObject
 
@@ -25,6 +26,7 @@
 	NSString * commitedSearch;
 	
 	//Model
+	BOOL installedOnly;
 	PROJECT_DATA * project;
 	uint nbElemFull, nbElemActivated;
 	

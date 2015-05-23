@@ -276,6 +276,9 @@
 
 - (void) setState : (NSInteger)value
 {
+	if(textCell != nil)
+		return [super setState:value];
+	
 	notAvailable = NO;
 	
 	if(value == RB_STATE_HIGHLIGHTED && _highlightAllowed)

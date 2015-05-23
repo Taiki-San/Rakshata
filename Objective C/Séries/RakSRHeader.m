@@ -62,6 +62,9 @@
 	storeSwitch = [RakButton allocWithText:NSLocalizedString(@"PROJ-STORE", nil)];
 	if(storeSwitch != nil)
 	{
+		storeSwitch.target = self;
+		storeSwitch.action = @selector(installOnlyToogle);
+		
 		[storeSwitch setFrameSize:NSMakeSize(storeSwitch.bounds.size.width, preferenceButton.bounds.size.height)];
 		
 		storeSwitch.hasBorder = NO;
@@ -332,6 +335,11 @@
 - (void) backButtonClicked
 {
 	[RakTabView broadcastUpdateFocus : TAB_SERIES];
+}
+
+- (void) installOnlyToogle
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INSTALLED_ONLY_STAB object:@(storeSwitch.state == NSOnState)];
 }
 
 #ifdef SEVERAL_VIEWS

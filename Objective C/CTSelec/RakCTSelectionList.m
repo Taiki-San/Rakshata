@@ -901,11 +901,15 @@
 {
 	row = [self rowFromCoordinates : row : column];
 	
-	if(row >= _nbData)
-		return nil;
-	
-	if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
-		return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
+	if(row < _nbData)
+	{
+		if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
+			return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
+	}
+	else
+	{
+		NSLog(@"Humpf, something is not perfectly right");
+	}
 	
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
 }
