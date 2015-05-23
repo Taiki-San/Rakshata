@@ -348,7 +348,7 @@
 
 - (NSColor *) getFontColor
 {
-	if([self isHighlighted] || self.forceHighlight)
+	if([self isHighlighted] || self.forceHighlight || self.state == NSOnState)
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED : nil];
 	else if([self isEnabled])
 		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED : nil];

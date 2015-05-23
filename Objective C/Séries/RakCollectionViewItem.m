@@ -52,7 +52,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[self addSubview:projectAuthor];
 	}
 	
-	mainTag = [self getTextElement:getStringForWchar(getTagNameForCode(getRandom() % 70)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
+	mainTag = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
 	if(mainTag != nil)
 		[self addSubview:mainTag];
 	
