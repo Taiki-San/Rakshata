@@ -755,6 +755,19 @@
 	[self flushCache];
 	releaseDataReader(&_data);
 	
+	if(previousDataLoaded)
+	{
+		releaseDataReader(&_previousData);
+		previousDataLoaded = NO;
+	}
+	
+	if(nextDataLoaded)
+	{
+		releaseDataReader(&_nextData);
+		nextDataLoaded = NO;
+	}
+	
+	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
 		[self updateCTTab];
@@ -789,8 +802,11 @@
 			[self failure : 0 : nil];
 		}
 	}
-	else
-		_data.pageCourante = 0;
+	else if(_data.pageCourante != 0)
+	{
+		NSLog(@"Wut?");
+		//		_data.pageCourante = 0;
+	}
 	
 	[self changePage:READER_ETAT_DEFAULT];
 }

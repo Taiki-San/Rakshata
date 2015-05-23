@@ -80,7 +80,7 @@
 - (void) sendEvent:(NSEvent *)event
 {
 	//In some cases, the window would end up becoming the first responder, which is not an expected scenario
-	if(self.firstResponder == self)
+	if(self.firstResponder == self || [self.firstResponder class] == [RakContentView class])
 	{
 		uint thread;
 		[Prefs getPref:PREFS_GET_MAIN_THREAD :&thread];

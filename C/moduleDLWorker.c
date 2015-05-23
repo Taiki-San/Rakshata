@@ -295,7 +295,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 			}
 			
 			for(i = 0; i < 19 && dataDL.buf != NULL && ((DATA_DL_OBFS *) dataDL.buf)->data != NULL && ((DATA_DL_OBFS *) dataDL.buf)->mask != NULL; i++)
-				firstTwentyBytesOfArchive[i] = ~((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ ((DATA_DL_OBFS *) dataDL.buf)->mask[i];
+				firstTwentyBytesOfArchive[i] = ~(((DATA_DL_OBFS *) dataDL.buf)->data[i] ^ (~((DATA_DL_OBFS *) dataDL.buf)->mask[i]));
 			firstTwentyBytesOfArchive[i] = 0;
 			
             if(dataDL.length < 50 && dataDL.buf != NULL && isPaidProject(*input->todoList->datas))
@@ -324,6 +324,8 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
                 }
                 output = true;
             }
+			
+			//If some data are missing, or if this isn't a valid zip archive, and if this is not a redirection
             else if(dataDL.buf == NULL || ((DATA_DL_OBFS *) dataDL.buf)->data == NULL || ((DATA_DL_OBFS *) dataDL.buf)->mask == NULL || dataDL.length < 50 || ((firstTwentyBytesOfArchive[0] != 'P' || firstTwentyBytesOfArchive[1] != 'K') && strncmp(firstTwentyBytesOfArchive, "http://", 7) && strncmp(firstTwentyBytesOfArchive, "https://", 8)))
             {
                 if(dataDL.buf != NULL)
@@ -336,6 +338,8 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
                 if(ret_value != CODE_RETOUR_DL_CLOSE)
                     output = true;
             }
+			
+			//Redirection
             else if(!strncmp(firstTwentyBytesOfArchive, "http://", 7) || !strncmp(firstTwentyBytesOfArchive, "https://", 8))
             {
                 //Redirection
