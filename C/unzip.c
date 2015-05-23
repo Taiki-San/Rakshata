@@ -319,7 +319,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         }
         free(nomPage);
 		
-		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH+1) * nombreFichiers + 15) * sizeof(byte));
+		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nombreFichiers + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
         if(hugeBuffer == NULL)
         {
 #ifdef DEV_VERSION
@@ -328,14 +328,15 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
             quit_thread(0); //Libérer la mémoire serait pas mal
         }
 		
-        sprintf((char *) hugeBuffer, "%d", nombreFichiers);
-		uint posBlob = ustrlen(hugeBuffer);
+        uint posBlob = sprintf((char *) hugeBuffer, "%d", nombreFichiers);
 
 		for(uint i = 0; i < nombreFichiers; i++) //Write config.enc
         {
             hugeBuffer[posBlob++] = ' ';
             for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[posBlob++] = pass[i][keyPos++]);
         }
+		
+		for(short remaining = posBlob % CRYPTO_BUFFER_SIZE; remaining && remaining < CRYPTO_BUFFER_SIZE; hugeBuffer[posBlob++] = 0, remaining++);
 
 		//We generate the masterkey
         if(getMasterKey(temp) == GMK_RETVAL_OK && COMPTE_PRINCIPAL_MAIL != NULL)
@@ -360,11 +361,9 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 					internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
 					
 					crashTemp(temp, sizeof(temp));
+					
 					_AESEncrypt(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, 1);
 					crashTemp(hash, SHA256_DIGEST_LENGTH);
-					
-					if(posBlob % CRYPTO_BUFFER_SIZE)
-						posBlob += CRYPTO_BUFFER_SIZE - (posBlob % CRYPTO_BUFFER_SIZE);
 					
 					fwrite(hugeBuffer, posBlob, 1, output);
 					fclose(output);

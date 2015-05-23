@@ -508,7 +508,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
             generateRandomKey(derivation);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
             internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, 2 * SHA256_DIGEST_LENGTH + 1, 2048, PBKDF2_OUTPUT_LENGTH, passDer);
-            _AESEncrypt(passDer, derivation, 0, passSeed, EVERYTHING_IN_MEMORY, 1);
+            _AESEncrypt(passDer, derivation, SHA256_DIGEST_LENGTH, passSeed, EVERYTHING_IN_MEMORY, 1);
 
 			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
 			

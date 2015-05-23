@@ -9,7 +9,7 @@
 //Generals
 "CHAPTER%c" = "Chapitre%1$c";
 "%u-CHAPTER%c" = "%1$zu Chapitre%2$c";
-"CHAPTERS" = "Chaptitres";
+"CHAPTERS" = "Chapitres";
 "CHAPTER-NO-CAP" = "chapitre";
 "CHAPTER-%d" = "Chapitre %1$d";
 "CHAPTER-%d.%d" = "Chapitre %1$d.%2$d";

@@ -348,7 +348,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
 
 	//Là, decryptedPass[curPosInConfigEnc] est la première lettre de la clé. On la parse
 	for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && decryptedPass[curPosInConfigEnc]; encryptionKey[posInKeyOut++] = decryptedPass[curPosInConfigEnc++]);
-    if(curPosInConfigEnc < sizeDBPass && decryptedPass[curPosInConfigEnc] != ' ')
+    if(curPosInConfigEnc < sizeDBPass && decryptedPass[curPosInConfigEnc] != '\0' && decryptedPass[curPosInConfigEnc] != ' ')
     {
 #ifdef DEV_VERSION
 		logR("Decryption probably failed, ended up in the middle of other keys");

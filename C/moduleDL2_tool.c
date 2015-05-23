@@ -336,12 +336,17 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	snprintf(pathConfig, sizeof(pathConfig), "%s/%s/%s", basePath, nameChapter, CONFIGFILE);
 	if(checkFileExist(pathConfig))
 	{
+		snprintf(pathConfig, sizeof(pathConfig), "%s/%s/installing", basePath, nameChapter);
+		if(checkFileExist(pathConfig))
+		{
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-		snprintf(pathInstall, sizeof(pathInstall), "%s/%s/installing", basePath, nameChapter);
-		return checkFileExist(pathInstall) ? INSTALLING : ALREADY_INSTALLED;
+			return checkFileExist(pathConfig) ? INSTALLING : ALREADY_INSTALLED;
 #else
-		return ALREADY_INSTALLED;
+			snprintf(pathConfig, sizeof(pathConfig), "%s/%s/", basePath, nameChapter);
+			removeFolder(pathConfig);
 #endif
+		}
+		return ALREADY_INSTALLED;
 	}
 	
 	//Le chapitre est pas dans le repertoire par défaut, on va voir si un tome ne l'a pas choppé

@@ -829,6 +829,8 @@
 	
 	if(mainScroller != nil)
 	{
+		_flushingCache = YES;
+
 		MUTEX_LOCK(cacheMutex);
 		
 		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
@@ -837,6 +839,8 @@
 		mainScroller.selectedIndex = _data.pageCourante + 1;
 		
 		MUTEX_UNLOCK(cacheMutex);
+		
+		_flushingCache = NO;
 	}
 	
 	[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];

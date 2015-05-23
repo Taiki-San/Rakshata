@@ -1286,19 +1286,14 @@ void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_pa
 		if(!inputMemory)
         {
             fseek(input, -1, SEEK_CUR);
-            j = fread(plaintext, 1, SHA256_DIGEST_LENGTH, input);
-            while(j < SHA256_DIGEST_LENGTH)
+            j = fread(plaintext, 1, CRYPTO_BUFFER_SIZE, input);
+            while(j < CRYPTO_BUFFER_SIZE)
                 plaintext[j++] = 0;
         }
         else
         {
-            for (j = 0; j < CRYPTO_BUFFER_SIZE; j++)
-            {
-                if (!path_input[positionDansInput])
-                    plaintext[j] = 0;
-                else
-                    plaintext[j] = path_input[positionDansInput++];
-            }
+			memcpy(plaintext, &(path_input[positionDansInput]), CRYPTO_BUFFER_SIZE);
+			positionDansInput += CRYPTO_BUFFER_SIZE;
         }
         if(!ECB)
         {
@@ -1320,15 +1315,14 @@ void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_pa
         }
         else
         {
-            memcpy(path_output+positionDansOutput, ciphertext, sizeof(ciphertext));
-            positionDansOutput+=sizeof(ciphertext);
+            memcpy(&(path_output[positionDansOutput]), ciphertext, sizeof(ciphertext));
+            positionDansOutput += sizeof(ciphertext);
         }
     }
     if(!outputMemory)
         fclose(output);
-    else
-        path_output[positionDansOutput] = 0;
-    if(!inputMemory)
+
+	if(!inputMemory)
         fclose(input);
 }
 

@@ -454,7 +454,7 @@
 		{
 			if([view isKindOfClass:[self contentClass]])
 			{
-				_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
+				_tmpColor = normal != nil ? normal : [self getTextColor:column++ / _nbElemPerCouple :selectedRowIndex];
 				[self graphicSelection:view :NO];
 			}
 		}
