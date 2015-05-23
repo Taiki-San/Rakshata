@@ -26,30 +26,6 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 
 /*****************************************
  **										**
- **				  ERRORS				**
- **										**
- *****************************************/
-
-enum BUTTONS_CODES {
-	UIABUTTDefault		= 1,
-	UIABUTTAlternate	= 2,
-	UIABUTTOther		= 3
-};
-
-typedef struct UIABUTT UIABUTT;
-struct UIABUTT
-{
-	char *buttonName;
-	char priority;
-	int ret_value;
-	UIABUTT * next;
-};
-
-void internalUIAlert(char *titre, char* content, UIABUTT* buttons);
-
-
-/*****************************************
- **										**
  **				  PREFS					**
  **										**
  *****************************************/

@@ -298,24 +298,9 @@ void removeFolder(char *path)
 #ifdef DEV_VERSION
 	if(!depth)
 	{
-		char charOK[10] = "Ok", charCancel[10] = "Cancel";
-		UIABUTT buttonOK, buttonCancel;
-		
-		buttonOK.buttonName = charOK;
-		buttonOK.ret_value = 1;
-		buttonOK.priority =	UIABUTTDefault;
-		buttonOK.next = &buttonCancel;
-		
-		buttonCancel.buttonName = charCancel;
-		buttonCancel.ret_value = 0;
-		buttonCancel.priority = UIABUTTOther;
-		buttonCancel.next = NULL;
-		
-		internalUIAlert("Suppression detectee", path, &buttonOK);
-
-		char temp2[300];
-		snprintf(temp2, 300, "Will remove %s/*\n", path);
-		logR(temp2);
+		char temp[100 + strlen(path)];
+		snprintf(temp, sizeof(temp), "Will remove %s/*\n", path);
+		logR(temp);
 	}
 #endif
 	

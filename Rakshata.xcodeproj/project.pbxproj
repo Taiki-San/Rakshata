@@ -48,7 +48,6 @@
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
-		B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */ = {isa = PBXBuildFile; fileRef = B646EA7918A6EEFF00F96F8A /* errors.m */; };
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
 		B64C926819571DDF000D60CC /* RakSegmentedButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */; };
 		B64D1561191058A200B6E47F /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
@@ -295,7 +294,6 @@
 		B64640D71870DBD2005705E7 /* PrefsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = PrefsUI.m; path = PrefsUI/PrefsUI.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B646E7871A52F3D600923C95 /* RakCTDragableTitle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTDragableTitle.h; path = CTSelec/RakCTDragableTitle.h; sourceTree = "<group>"; };
 		B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTDragableTitle.m; path = CTSelec/RakCTDragableTitle.m; sourceTree = "<group>"; };
-		B646EA7918A6EEFF00F96F8A /* errors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = errors.m; path = "Objective C/Interface C/errors.m"; sourceTree = "<group>"; };
 		B64B2A73198C6CC20044344B /* RakTabViewTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTabViewTools.h; path = Utils/RakTabViewTools.h; sourceTree = "<group>"; };
 		B64B2A74198C6CC20044344B /* RakTabViewTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabViewTools.m; path = Utils/RakTabViewTools.m; sourceTree = "<group>"; };
 		B64C926619571DDF000D60CC /* RakSegmentedButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedButtonCell.h; path = Utils/RakSegmentedButtonCell.h; sourceTree = "<group>"; };
@@ -1313,7 +1311,6 @@
 		B6F6ED1C18A3006700E3B55B /* Interface with UI */ = {
 			isa = PBXGroup;
 			children = (
-				B646EA7918A6EEFF00F96F8A /* errors.m */,
 				B6EA520818A4161100A9B16E /* interface.h */,
 				B6EA520618A4111000A9B16E /* interface.m */,
 			);
@@ -1601,7 +1598,6 @@
 				B678D0321977178A00D7FE6A /* DBrecent.c in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
-				B646EA7A18A6EEFF00F96F8A /* errors.m in Sources */,
 				B6F6ED0A18A3001400E3B55B /* native.c in Sources */,
 				B62182471873527A008AC5DD /* Prefs.m in Sources */,
 				B68B5225191AE3050057F35A /* RakScroller.m in Sources */,
