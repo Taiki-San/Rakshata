@@ -142,7 +142,7 @@
 "PREFS-CANCEL" = "Cancel";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 
-"PREFS-REPO-PLACEHOLDER-TUTORIAL" = "You can control from here the sources you are suscribed to.\n\nYou may delete the installed content or delete from Rakshata any source.\n\nYou may also control sources via the group from which they come from (activate and disable sources from the group).";
+"PREFS-REPO-PLACEHOLDER-TUTORIAL" = "You can control from here the sources you are suscribed to.\n\nYou may delete the installed content or delete from Rakshata any source.\n\nYou may also control sources via the group from which they come from (activate and disable sources from the group).\n\nClick one line to get started.";
 "PREFS-REPO-SWITCH-MESSAGE" = "Display groups of sources";
 
 "PREFS-DELETE-KILL-USE" = "Stopping the use of the ressources to delete";
@@ -162,6 +162,9 @@
 "PREFS-ADD-REPO-ONE-REPO" = "this source";
 "PREFS-ADD-REPO-SEVERAL-REPO" = "the following sources";
 "PREFS-ADD-REPO-CONFIRM" = "Confirm";
+
+"PREFS-FAVORITE-HEADER" = "Favorite a series will make sure you have the lastest releases each time you launch Rakshata";
+"PREFS-FAVORITE-AUTODL" = "Enable the automatic download of new releases when Rakshata is launched";
 
 //Others
 "FOSS-USAGE" = "Rakshata use some open source technologies";
