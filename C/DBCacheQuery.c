@@ -12,7 +12,7 @@
 
 #include "dbCache.h"
 
-bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
+bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic)
 {
 	void* buffer;
 
@@ -89,56 +89,74 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	output->tagMask = sqlite3_column_int64(state, RDB_tagMask-1);
 	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
-	buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
-	if(buffer != NULL)
+	if(copyDynamic)
 	{
-		output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(uint));
-		if(output->chapitresPrix != NULL)
-			memcpy(output->chapitresPrix, buffer, (output->nombreChapitre + 1) * sizeof(int));
-		else
-			output->chapitresPrix = NULL;
-	}
-	else
-		output->chapitresPrix = NULL;
-	
-	buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
-	if(buffer != NULL)
-	{
-		output->chapitresFull = malloc(output->nombreChapitre * sizeof(int));
-		if(output->chapitresFull != NULL)
+		buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
+		if(buffer != NULL)
 		{
-			memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(int));
-			output->chapitresInstalled = NULL;
-			checkChapitreValable(output, NULL);
+			output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(uint));
+			if(output->chapitresPrix != NULL)
+				memcpy(output->chapitresPrix, buffer, (output->nombreChapitre + 1) * sizeof(int));
+			else
+				output->chapitresPrix = NULL;
 		}
 		else
+			output->chapitresPrix = NULL;
+		
+		buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
+		if(buffer != NULL)
+		{
+			output->chapitresFull = malloc(output->nombreChapitre * sizeof(int));
+			if(output->chapitresFull != NULL)
+			{
+				memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(int));
+				output->chapitresInstalled = NULL;
+				checkChapitreValable(output, NULL);
+			}
+			else
+				output->chapitresInstalled = NULL;
+		}
+		else
+		{
+			output->chapitresFull = NULL;
 			output->chapitresInstalled = NULL;
+			output->nombreChapitreInstalled = 0;
+			
+			free(output->chapitresPrix);
+			output->chapitresPrix = NULL;
+		}
 	}
 	else
 	{
 		output->chapitresFull = NULL;
 		output->chapitresInstalled = NULL;
-		output->nombreChapitreInstalled = 0;
-		
-		free(output->chapitresPrix);
 		output->chapitresPrix = NULL;
 	}
 	
 	output->nombreTomes = sqlite3_column_int(state, RDB_nombreTomes-1);
 	output->haveDRM = sqlite3_column_int(state, RDB_DRM-1);
 	
-	buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
-	if(buffer != NULL)
+	if(copyDynamic)
 	{
-		output->tomesFull = malloc(output->nombreTomes * sizeof(META_TOME));
-		if(output->tomesFull != NULL)
+		buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
+		if(buffer != NULL)
 		{
-			copyTomeList(buffer, output->nombreTomes, output->tomesFull);
-			output->tomesInstalled = NULL;
-			checkTomeValable(output, NULL);
+			output->tomesFull = malloc(output->nombreTomes * sizeof(META_TOME));
+			if(output->tomesFull != NULL)
+			{
+				copyTomeList(buffer, output->nombreTomes, output->tomesFull);
+				output->tomesInstalled = NULL;
+				checkTomeValable(output, NULL);
+			}
+			else
+			{
+				output->tomesInstalled = NULL;
+				output->nombreTomesInstalled = 0;
+			}
 		}
 		else
 		{
+			output->tomesFull = NULL;
 			output->tomesInstalled = NULL;
 			output->nombreTomesInstalled = 0;
 		}
@@ -147,7 +165,6 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output)
 	{
 		output->tomesFull = NULL;
 		output->tomesInstalled = NULL;
-		output->nombreTomesInstalled = 0;
 	}
 	
 	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
@@ -183,6 +200,8 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		
 		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
+		else if((maskRequest & RDB_LOADMASK) == RDB_LOAD_FAVORITE)
+			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY %s ASC", sortRequest);
 		else
 			snprintf(requestString, 200, "SELECT * FROM rakSQLite ORDER BY %s ASC", sortRequest);
 		
@@ -192,7 +211,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		
 		while(pos < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 		{
-			if(!copyOutputDBToStruct(request, &output[pos]))
+			if(!copyOutputDBToStruct(request, &output[pos], (maskRequest & RDB_COPY_MASK) != RDB_EXCLUDE_DYNAMIC))
 				continue;
 			
 			if(output[pos].isInitialized)

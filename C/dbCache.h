@@ -34,7 +34,7 @@ sqlite3_stmt * getAddToCacheRequest();
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled, bool wantID);
 void removeFromCache(PROJECT_DATA data);
 void consolidateCache();
-bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output);
+bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic);
 
 //Repository
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);

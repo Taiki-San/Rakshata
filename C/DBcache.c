@@ -356,7 +356,7 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-		if(!copyOutputDBToStruct(request, output))
+		if(!copyOutputDBToStruct(request, output, true))
 		{
 			free(output);
 			output = NULL;
@@ -542,7 +542,7 @@ PROJECT_DATA getElementByID(uint cacheID)
 		sqlite3_bind_int(request, 1, cacheID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
-			copyOutputDBToStruct(request, &output);
+			copyOutputDBToStruct(request, &output, true);
 		
 		destroyRequest(request);
 	}
