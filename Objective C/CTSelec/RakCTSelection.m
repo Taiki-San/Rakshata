@@ -365,7 +365,7 @@
 
 - (void) switchIsTome : (RakCTCoreViewButtons*) sender
 {
-	BOOL isTome = [sender selectedSegment] != 0;
+	BOOL isTome = [_buttons selectedSegment] != 0;
 	
 	[_chapterView setWantIsTome : isTome];
 	[_volView setWantIsTome : isTome];

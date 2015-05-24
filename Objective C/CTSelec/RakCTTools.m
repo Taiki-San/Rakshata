@@ -63,6 +63,8 @@
 				chapOrigin.x = - _chapter.frame.size.width;
 				[_chapter setFrameOrigin : chapOrigin];
 			}
+			
+			_chapter.hidden = _volume.hidden = NO;
 		}
 		else	//Aborted
 		{
