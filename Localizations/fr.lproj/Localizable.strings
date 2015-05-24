@@ -163,6 +163,9 @@
 "PREFS-ADD-REPO-SEVERAL-REPO" = "les sources suivantes";
 "PREFS-ADD-REPO-CONFIRM" = "Confirmer";
 
+"PREFS-FAVORITE-HEADER" = "Mettre une série en favoris vous permet de rester à jour à chaque lancement";
+"PREFS-FAVORITE-AUTODL" = "Activer le téléchargement automatique des nouvelles sorties de vos séries favorites au démarage";
+
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";
 "COPYRIGHT" = "© 2011-2015 Taiki. Tous droits réservées";

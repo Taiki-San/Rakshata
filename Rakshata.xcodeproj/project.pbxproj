@@ -52,6 +52,7 @@
 		B64C926819571DDF000D60CC /* RakSegmentedButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */; };
 		B64D1561191058A200B6E47F /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
 		B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65BC54419071BE4006DA59F /* RakSerieListItem.m */; };
+		B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */ = {isa = PBXBuildFile; fileRef = B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */; };
 		B660542D1B0A3295003CC79E /* DBTags.c in Sources */ = {isa = PBXBuildFile; fileRef = B660542C1B0A3295003CC79E /* DBTags.c */; };
 		B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */; };
 		B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
@@ -302,6 +303,8 @@
 		B64D1560191058A200B6E47F /* RakMDLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakMDLController.m; path = MDL/RakMDLController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B65BC54319071BE4006DA59F /* RakSerieListItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieListItem.h; path = "Séries/RakSerieListItem.h"; sourceTree = "<group>"; };
 		B65BC54419071BE4006DA59F /* RakSerieListItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSerieListItem.m; path = "Séries/RakSerieListItem.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B65D6CCB1B11424900DAC30C /* RakPrefsFavoriteView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsFavoriteView.h; path = "Divers Windows/RakPrefsFavoriteView.h"; sourceTree = "<group>"; };
+		B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsFavoriteView.m; path = "Divers Windows/RakPrefsFavoriteView.m"; sourceTree = "<group>"; };
 		B660542C1B0A3295003CC79E /* DBTags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTags.c; path = C/DBTags.c; sourceTree = "<group>"; };
 		B668D6AE1953A1B000E3127D /* RakReaderControllerUIQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakReaderControllerUIQuery.h; path = Reader/RakReaderControllerUIQuery.h; sourceTree = "<group>"; };
 		B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakReaderControllerUIQuery.m; path = Reader/RakReaderControllerUIQuery.m; sourceTree = "<group>"; };
@@ -736,6 +739,15 @@
 			path = OptimizationProfiles;
 			sourceTree = "<group>";
 		};
+		B65D6CCE1B11424E00DAC30C /* Favorite */ = {
+			isa = PBXGroup;
+			children = (
+				B65D6CCB1B11424900DAC30C /* RakPrefsFavoriteView.h */,
+				B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */,
+			);
+			name = Favorite;
+			sourceTree = "<group>";
+		};
 		B6694F55194A8A8200D656A9 /* Drag'n Drop */ = {
 			isa = PBXGroup;
 			children = (
@@ -828,6 +840,7 @@
 			isa = PBXGroup;
 			children = (
 				B6D126FE1AC713AE003FFEC6 /* Add Repo */,
+				B65D6CCE1B11424E00DAC30C /* Favorite */,
 				B6D9043C1AB8C85C001A2D6B /* General */,
 				B69D46821AA868E800B471AC /* Manage Repo */,
 				B69D467A1AA7592700B471AC /* RakPrefsButtons.m */,
@@ -1518,6 +1531,7 @@
 				B68B5228191AE31E0057F35A /* RakMDLListView.m in Sources */,
 				B6AC08031AD6A46600F750D3 /* RakOutlineListItem.m in Sources */,
 				B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */,
+				B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */,
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6C93E411B0B5B8300E07A57 /* tagUpdate.c in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,

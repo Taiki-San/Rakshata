@@ -191,7 +191,7 @@
 			
 			else if(createIfNeeded)
 			{
-				favoriteView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				favoriteView = [[RakPrefsFavoriteView alloc] init];
 				
 				if(favoriteView != nil)
 					[contentView addSubview:favoriteView];
