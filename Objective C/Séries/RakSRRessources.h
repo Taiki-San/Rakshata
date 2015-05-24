@@ -45,5 +45,3 @@
 #import "RakSerieList.h"
 
 #import "RakSerieView.h"
-
-NSImage * loadImage (const PROJECT_DATA project, const char * suffix);

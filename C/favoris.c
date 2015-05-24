@@ -234,68 +234,64 @@ void getNewFavs()
 {
 	bool prevIsTome;
 	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
-	uint posProject, nbProject, prevProjectIndex;
-	size_t posFull, maxPos;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOADINSTALLED | SORT_REPO, &nbProject), *current;
+	uint nbProject, prevProjectIndex;
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO, &nbProject), *current;
 
     if(projectDB == NULL)
         return;
 
-	for(posProject = 0; posProject < nbProject; posProject++)
+	for(size_t posProject = 0, posFull, maxPos; posProject < nbProject; posProject++)
     {
 		if(projectDB[posProject].repo == NULL)
 			continue;
-		else
-			current = &projectDB[posProject];
 		
-        if(current->favoris)
-        {
-			getUpdatedChapterList(current, true);
-            if(current->chapitresFull != NULL && current->nombreChapitre > current->nombreChapitreInstalled)
-			{
-				lastInstalled = current->chapitresInstalled[current->nombreChapitreInstalled-1];
-				maxPos = current->nombreChapitre;
-				
-				for (posFull = 0; posFull < maxPos && current->chapitresFull[posFull] <= lastInstalled; posFull++);
-				for(; posFull < maxPos; posFull++)
-				{
-					if (!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
-					{
-						if(prevElem != VALEUR_FIN_STRUCT)
-						{
-							addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
-						}
-						
-						prevProjectIndex = posProject;
-						prevIsTome = false;
-						prevElem = current->chapitresFull[posFull];
-					}
-				}
-			}
+		current = &projectDB[posProject];
+		
+		getUpdatedChapterList(current, true);
+		if(current->chapitresFull != NULL && current->nombreChapitre > current->nombreChapitreInstalled)
+		{
+			lastInstalled = current->chapitresInstalled[current->nombreChapitreInstalled-1];
+			maxPos = current->nombreChapitre;
 			
-			getUpdatedTomeList(current, true);
-			if(current->tomesFull != NULL && current->nombreTomes > current->nombreTomesInstalled)
+			for (posFull = 0; posFull < maxPos && current->chapitresFull[posFull] <= lastInstalled; posFull++);
+			for(; posFull < maxPos; posFull++)
 			{
-				lastInstalled = current->tomesInstalled[current->nombreTomesInstalled-1].ID;
-				maxPos = current->nombreTomes;
-				
-				for (posFull = 0; posFull < maxPos && current->tomesInstalled[posFull].ID <= lastInstalled; posFull++);
-				for(; posFull < maxPos; posFull++)
+				if (!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
 				{
-					if (!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
+					if(prevElem != VALEUR_FIN_STRUCT)
 					{
-						if(prevElem != VALEUR_FIN_STRUCT)
-						{
-							addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
-						}
-						
-						prevProjectIndex = posProject;
-						prevIsTome = true;
-						prevElem = current->tomesFull[posFull].ID;
+						addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
 					}
+					
+					prevProjectIndex = posProject;
+					prevIsTome = false;
+					prevElem = current->chapitresFull[posFull];
 				}
 			}
-        }
+		}
+		
+		getUpdatedTomeList(current, true);
+		if(current->tomesFull != NULL && current->nombreTomes > current->nombreTomesInstalled)
+		{
+			lastInstalled = current->tomesInstalled[current->nombreTomesInstalled-1].ID;
+			maxPos = current->nombreTomes;
+			
+			for (posFull = 0; posFull < maxPos && current->tomesInstalled[posFull].ID <= lastInstalled; posFull++);
+			for(; posFull < maxPos; posFull++)
+			{
+				if (!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
+				{
+					if(prevElem != VALEUR_FIN_STRUCT)
+					{
+						addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
+					}
+					
+					prevProjectIndex = posProject;
+					prevIsTome = true;
+					prevElem = current->tomesFull[posFull].ID;
+				}
+			}
+		}
     }
 	
 	if(prevElem != VALEUR_FIN_STRUCT)

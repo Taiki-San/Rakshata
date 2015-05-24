@@ -904,10 +904,12 @@
 		if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
 			return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
 	}
+#ifdef DEV_VERSION
 	else
 	{
 		NSLog(@"Humpf, something is not perfectly right");
 	}
+#endif
 	
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
 }

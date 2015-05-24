@@ -43,7 +43,7 @@ enum
 
 - (void) initContent
 {
-	NSImage * image = loadImage(_project, PROJ_IMG_SUFFIX_SRGRID);
+	NSImage * image = loadImageGrid(_project);
 	if(image != nil)
 	{
 		thumbnail = [[NSImageView alloc] initWithFrame: (NSRect) {{0,0}, [self thumbSize]}];

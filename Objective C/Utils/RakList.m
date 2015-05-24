@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define SCROLLER_WIDTH 15
 @implementation RakList
 
 #pragma mark - Classical initialization
@@ -21,7 +20,7 @@
 	
 	if(self != nil)
 	{
-		_scrollerWidth = SCROLLER_WIDTH;
+		_scrollerWidth = [RakScroller width] + 2;
 		_nbCoupleColumn = 1;
 		_nbElemPerCouple = 1;
 		selectedRowIndex = LIST_INVALID_SELECTION;

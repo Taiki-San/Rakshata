@@ -36,28 +36,7 @@
 
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
-	char * teamPath;
-	NSImage * image = nil;
-	
-	if(data.repo != NULL && (teamPath = getPathForRepo(data.repo)) != NULL)
-	{
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", teamPath]];
-		if(bundle != nil)
-			image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_HEAD, data.projectID]];
-		
-		free(teamPath);
-	}
-	
-	if(image == nil)
-	{
-		if(defaultImage == nil)
-			defaultImage = [NSImage imageNamed:@"project_large"];
-		
-		image = defaultImage;
-	}
-	
-	self.image = image;
-	return YES;
+	return (self.image = loadCTHeader(data)) != nil;
 }
 
 - (RakCTHImageGradient *) gradientView

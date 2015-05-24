@@ -49,3 +49,10 @@ NSString * getStringForWchar(const charType * string);
 #define NSCenterPoint(base, content) NSMakePoint(base.size.width / 2 - content.size.width / 2, base.size.height / 2 - content.size.height / 2)
 #define NSCenterSize(base, content) NSMakePoint(base.width / 2 - content.width / 2, base.height / 2 - content.height / 2)
 #define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)
+
+//Image loading
+NSImage * loadImageForRepo(BOOL isRoot, void* repo);
+NSImage * loadCTHeader(const PROJECT_DATA project);
+NSImage * loadCTThumb(const PROJECT_DATA project);
+NSImage * loadDDThumbnail(const PROJECT_DATA project);
+NSImage * loadImageGrid(const PROJECT_DATA project);

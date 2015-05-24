@@ -12,7 +12,7 @@
 
 enum
 {
-	LIST_ROW_HEIGHT = 45,
+	LIST_ROW_HEIGHT = LIST_WIDE_LINE_HEIGHT,
 	LIST_ROW_COMPACT_HEIGHT = 25,
 	LIST_ROW_COMPACT_WIDTH = 25,
 	LIST_ROW_IMAGE_DIAMETER = 40,
@@ -120,6 +120,8 @@ enum
 		return;
 	
 	scrollView.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil];
+	
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 #pragma mark - Switch code

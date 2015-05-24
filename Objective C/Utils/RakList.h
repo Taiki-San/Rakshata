@@ -15,6 +15,7 @@
 
 #define RAKLIST_MAIN_COLUMN_ID @"For the New Lunar Republic!"
 #define LIST_INVALID_SELECTION	UINT_MAX
+#define LIST_WIDE_LINE_HEIGHT 45
 
 @interface RakTableView : NSTableView
 {

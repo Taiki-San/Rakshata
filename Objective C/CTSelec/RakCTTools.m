@@ -109,27 +109,9 @@
 
 @implementation RakCTProjectImageView
 
-- (instancetype) initWithImageName : (REPO_DATA*) repo : (NSString *) imageName : (NSRect) superviewFrame
+- (instancetype) initWithImageName : (PROJECT_DATA) project : (NSRect) superviewFrame
 {
-	NSImage * projectImageBase = nil;
-	
-	if(repo != NULL && imageName != nil)
-	{
-		char * encodedHash = getPathForRepo(repo);
-		if(encodedHash != NULL)
-		{
-			NSString * path = [NSString stringWithFormat:@"imageCache/%s/", encodedHash];
-			free(encodedHash);
-			
-			if(path != nil)
-				projectImageBase = [[NSBundle bundleWithPath: path] imageForResource:[NSString stringWithFormat:@"%@_"PROJ_IMG_SUFFIX_CT, imageName]];
-		}
-	}
-	
-	if(projectImageBase == nil)
-	{
-		projectImageBase = [RakResPath getImageFromTheme:@"defaultCTImage" :1];
-	}
+	NSImage * projectImageBase = loadCTThumb(project);
 	
 	if(projectImageBase != nil)
 	{

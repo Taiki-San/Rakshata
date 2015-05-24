@@ -149,9 +149,9 @@
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	if(project.isInitialized)
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, project.projectID] : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project : _bounds];
 	else
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: NULL : nil : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: getEmptyProject() : _bounds];
 	
 	if(projectImage != nil)
 		[self addSubview:projectImage];
@@ -285,7 +285,7 @@
 		[projectImage updateProject:projectNameString];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data.repo : [NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_CT, data.projectID] : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data : _bounds];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	

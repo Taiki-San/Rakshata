@@ -120,7 +120,7 @@ enum
 	
 	_project = project;
 	
-	NSImage * image = loadImage(_project, PROJ_IMG_SUFFIX_SRGRID);
+	NSImage * image = loadImageGrid(_project);
 	if(image != nil)
 		thumbnail.image = image;
 	

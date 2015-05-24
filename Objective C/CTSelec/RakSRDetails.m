@@ -136,7 +136,7 @@ enum
 		return;
 	}
 	
-	NSImage * image = loadImage(project, PROJ_IMG_SUFFIX_SRGRID);
+	NSImage * image = loadImageGrid(project);
 	if(image != nil)
 	{
 		thumb.image = image;

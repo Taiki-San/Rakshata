@@ -19,24 +19,7 @@
 	_originalWidth = self.bounds.size.width;
 	
 	if(projectImage != nil)
-	{
-		char * encodedHash = getPathForRepo(projectData.repo);
-		
-		if(encodedHash != NULL)
-		{
-			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", encodedHash]];
-			if(bundle != nil)
-			{
-				projectImage.image = [bundle imageForResource:[NSString stringWithFormat:@"%d_"PROJ_IMG_SUFFIX_DD, projectData.projectID]];
-			}
-			
-			if(projectImage.image == nil)
-			{
-				projectImage.image = [RakResPath getImageFromTheme:@"defaultDragImage" :1];
-			}
-			free(encodedHash);
-		}
-	}
+		projectImage.image = loadDDThumbnail(projectData);
 	
 	if (projectName != nil)
 	{
