@@ -28,7 +28,9 @@
 
 @end
 
-@interface RakPrefsRepoListItemView : NSView
+#import "RakListItemView.h"
+
+@interface RakPrefsRepoListItemView : RakListItemView
 {
 	RakSwitchButton * activationButton;
 	
@@ -39,7 +41,6 @@
 @property id __weak responder;
 
 @property BOOL wantActivationState;
-@property (nonatomic) CGFloat fixedWidth;
 
 - (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;
 - (void) updateContent : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString;

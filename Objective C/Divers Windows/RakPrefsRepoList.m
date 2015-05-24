@@ -15,25 +15,17 @@ enum
 	LIST_ROW_HEIGHT = LIST_WIDE_LINE_HEIGHT,
 	LIST_ROW_COMPACT_HEIGHT = 25,
 	LIST_ROW_COMPACT_WIDTH = 25,
-	LIST_ROW_IMAGE_DIAMETER = 40,
 	
-	OFFSET_IMAGE_ROW = 10,
-	OFFSET_TITLE_X = 5,
 	OFFSET_TITLE_Y = 22,
 	OFFSET_DETAIL_Y = 6
 };
 
 @interface RakPrefsRepoListItemView()
 {
-	NSImage * image;
-	RakText * title;
 	RakClickableText * detail;
 	
 	BOOL _isCompact;
 	BOOL _isDetailColumn;
-	
-	NSRect imageFrame;
-	BOOL haveFixedWidth;
 }
 
 @property BOOL highlighted;
@@ -226,7 +218,7 @@ enum
 
 - (instancetype) initWithRepo : (BOOL) isCompact : (BOOL) isDetailColumn : (BOOL) isRoot : (void *) repo : (NSString *) detailString
 {
-	self = [self initWithFrame:NSMakeRect(0, 0, haveFixedWidth ? _fixedWidth : 300, isCompact ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT)];
+	self = [self initWithFrame:NSMakeRect(0, 0, haveFixedWidth ? self.fixedWidth : 300, isCompact ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT)];
 	
 	if(self != nil)
 	{
@@ -394,57 +386,30 @@ enum
 
 #pragma mark - Frame forcing & drawing
 
-- (void) setFrameSize:(NSSize)newSize
+- (CGFloat) imageDiameter
 {
-	if(haveFixedWidth)
-		newSize.width = _fixedWidth;
-	
-	[super setFrameSize:newSize];
+	return _isCompact ? [super imageDiameter] / 2 : [super imageDiameter];
 }
 
-- (void) setFixedWidth:(CGFloat)fixedWidth
+- (void) frameChanged : (NSSize) newSize
 {
-	if(!haveFixedWidth)
-		haveFixedWidth = YES;
-	
-	_fixedWidth = fixedWidth;
-	
-	NSRect frame = self.frame;
-	
-	if(frame.size.width != _fixedWidth)
-	{
-		frame.size.width = _fixedWidth;
-		[self setFrame:frame];
-	}
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	if(haveFixedWidth)
-		frameRect.size.width = _fixedWidth;
-	
-	[super setFrame:frameRect];
-	
 	if(_isDetailColumn || _wantActivationState)
 	{
-		frameRect.origin = NSZeroPoint;
-		[activationButton setFrameOrigin:NSMakePoint(_isDetailColumn ? 0 : (frameRect.size.width - activationButton.bounds.size.width - (_isRoot ? 0 : 2)), frameRect.size.height / 2 - activationButton.bounds.size.height / 2)];
+		[activationButton setFrameOrigin:NSMakePoint(_isDetailColumn ? 0 : (newSize.width - activationButton.bounds.size.width - (_isRoot ? 0 : 2)), newSize.height / 2 - activationButton.bounds.size.height / 2)];
 	}
 	
 	if(!_isDetailColumn)
 	{
-		const CGFloat diameter = _isCompact ? LIST_ROW_IMAGE_DIAMETER / 2 : LIST_ROW_IMAGE_DIAMETER;
-		
-		imageFrame = NSMakeRect(OFFSET_IMAGE_ROW, frameRect.size.height / 2 - diameter / 2, diameter, diameter);
+		[super frameChanged:newSize];
 		
 		if(_isCompact)
 		{
-			[title setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, _bounds.size.height / 2 - title.bounds.size.height / 2)];
+			[title setFrameOrigin:NSMakePoint([self titleX], _bounds.size.height / 2 - title.bounds.size.height / 2)];
 		}
 		else
 		{
-			[title setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_TITLE_Y)];
-			[detail setFrameOrigin:NSMakePoint(NSMaxX(imageFrame) + OFFSET_TITLE_X, OFFSET_DETAIL_Y)];
+			[title setFrameOrigin:NSMakePoint([self titleX], OFFSET_TITLE_Y)];
+			[detail setFrameOrigin:NSMakePoint([self titleX], OFFSET_DETAIL_Y)];
 		}
 	}
 }
@@ -460,32 +425,10 @@ enum
 	if(_isDetailColumn)
 		return;
 	
-	[NSGraphicsContext saveGraphicsState];
-	
-	NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:imageFrame
-														 xRadius:LIST_ROW_IMAGE_DIAMETER / 2
-														 yRadius:LIST_ROW_IMAGE_DIAMETER / 2];
-	[path addClip];
-	
-	[image drawInRect:imageFrame
-			 fromRect:NSZeroRect
-			operation:NSCompositeSourceOver
-			 fraction:1.0];
-	
-	[NSGraphicsContext restoreGraphicsState];
+	[super drawRect:dirtyRect];
 }
 
 #pragma mark - Color
-
-- (NSColor *) textColor
-{
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
-}
-
-- (NSColor *) detailTextColor
-{
-	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
-}
 
 - (NSColor *) backgroundColor
 {
@@ -497,10 +440,9 @@ enum
 	if([object class] != [Prefs class])
 		return;
 	
-	title.textColor = [self textColor];
 	detail.textColor = [self detailTextColor];
 	
-	[self setNeedsDisplay:YES];
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 @end

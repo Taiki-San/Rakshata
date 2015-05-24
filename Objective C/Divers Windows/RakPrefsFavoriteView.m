@@ -17,12 +17,15 @@ enum
 	HEIGHT = 410,
 	
 	SWITCH_Y_OFFSET = 10,
+	BORDER_X_LIST = 20
 };
 
 @interface RakPrefsFavoriteView()
 {
 	RakText * header, * autoDLMessage;
 	RakSwitchButton * autoDLButton;
+	
+	RakPrefsFavoriteList * list;
 }
 
 @end
@@ -67,6 +70,12 @@ enum
 			else
 				autoDLButton = nil;
 		}
+		
+		list = [[RakPrefsFavoriteList alloc] initWithFrame:[self listFrame]];
+		if(list != nil)
+		{
+			[self addSubview:[list getContent]];
+		}
 	}
 	
 	return self;
@@ -88,7 +97,10 @@ enum
 
 - (NSRect) listFrame
 {
-	return NSZeroRect;
+	const NSSize base = _bounds.size;
+	const CGFloat heightBelow = NSMaxY(autoDLButton.frame) + BORDER;
+	
+	return NSMakeRect(BORDER_X_LIST, heightBelow, base.width - 2 * BORDER_X_LIST, header.frame.origin.y - BORDER - heightBelow);
 }
 
 - (NSPoint) switchButtonOrigin

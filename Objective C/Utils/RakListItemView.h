@@ -10,18 +10,25 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsFavoriteView : NSView
-
-@end
-
-@interface RakPrefsFavoriteList : RakList
+@interface RakListItemView : NSView
 {
-	PROJECT_DATA * projectDB;
-	
-	//Internal data
-	uint lastTransmittedSelectedRowIndex;
+	BOOL haveFixedWidth;
+
+	NSRect imageFrame;
+	NSImage * image;
+	RakText * title;
 }
 
-- (instancetype) initWithFrame : (NSRect) frame;
+@property (nonatomic) CGFloat fixedWidth;
+
+- (CGFloat) imageDiameter;
+- (CGFloat) titleX;
+
+- (void) refreshImageFrame : (NSSize) newSize;
+
+- (void) frameChanged : (NSSize) newSize;
+
+- (NSColor *) textColor;
+- (NSColor *) detailTextColor;
 
 @end
