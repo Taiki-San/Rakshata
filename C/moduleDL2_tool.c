@@ -256,7 +256,7 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 				return NULL;
 			}
 			
-			memcpy(&(output->listChapitreOfTome), data->tomesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));
+			memcpy(output->listChapitreOfTome, data->tomesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));
 		}
 	}
 	

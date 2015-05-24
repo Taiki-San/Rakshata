@@ -33,7 +33,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 		int jump, first, last, sum;
 		void* tmp;
 		
-		BOOL isNativeIfVolume = NO;
+		BOOL isNativeIfVolume = YES;
 		uint typeSize = isChapter ? sizeof(int) : sizeof(CONTENT_TOME);
 		
 		if (nbElem != NULL)		counter = nbElem;
@@ -146,7 +146,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 						if(entry2 != nil && !ARE_CLASSES_DIFFERENT(entry2, [NSNumber class]))
 							isNativeIfVolume = [entry2 boolValue];
 						else
-							isNativeIfVolume = NO;
+							isNativeIfVolume = YES;
 
 						//The first element have to be initialized early
 						((CONTENT_TOME *) output)[pos].isNative = isNativeIfVolume;
@@ -487,9 +487,9 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		if(paidContent && volume[pos].price != UINT_MAX)
 			[dict setObject:@(volume[pos].price) forKey:JSON_PROJ_PRICE];
 		
-		if(volume->details != NULL)
+		if(volume[pos].details != NULL)
 		{
-			NSArray * data = recoverChapterStructure(volume->details, NO, NULL, volume->lengthDetails);
+			NSArray * data = recoverChapterStructure(volume[pos].details, NO, NULL, volume[pos].lengthDetails);
 			if(data != nil)
 				[dict setObject:data forKey:JSON_PROJ_CHAPTERS];
 		}

@@ -98,7 +98,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		}
 		
 		//We rewrite the line on the output buffer
-		snprintf(line, sizeof(line), "%s %d\n", URLRepo, projectDB->projectID);
+		snprintf(line, sizeof(line), "%s %d\n", URLRepo, projectID);
 		strncat(favsNew, line, length - posOutput);
 		posOutput += strlen(line);
 	}
@@ -164,7 +164,7 @@ void updateFavorites()
     for(uint pos = 0, basePos; pos < nbElem; pos++)
     {
 		//The last available volume isn't installed
-		if (projectDB[pos].nombreTomes && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesFull[projectDB[pos].nombreTomes-1].ID)))
+		if(projectDB[pos].nombreTomes && (projectDB[pos].tomesInstalled == NULL || !checkReadable(projectDB[pos], true, projectDB[pos].tomesFull[projectDB[pos].nombreTomes-1].ID)))
 		{
 			//Find the last volume installed
 			if(projectDB[pos].tomesInstalled != NULL && projectDB[pos].nombreTomesInstalled > 0)

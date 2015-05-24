@@ -63,7 +63,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	
 	uint pos = getPosForID(projectDB, false, ID), posDetails;
 	
-	if(pos != -1 || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
+	if(pos == -1 || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
 		return false;
 	
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
@@ -75,7 +75,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		return false;
 	}
 	
-	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d/", encodedRepo, projectDB.projectID);
+	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
 	free(encodedRepo);
 	
 	for(posDetails = 0; posDetails < projectDB.tomesFull[pos].lengthDetails; posDetails++)
