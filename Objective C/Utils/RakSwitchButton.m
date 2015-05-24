@@ -94,7 +94,7 @@ enum
 		uint stage = _animation.stage;
 		
 		if(self.state != NSOnState)
-			stage = _animation.animationFrame - 1 - stage;
+			stage = _animation.animationFrame - stage;
 		
 		CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 		

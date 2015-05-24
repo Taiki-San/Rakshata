@@ -69,7 +69,7 @@
 
 - (void) setState:(NSInteger)value
 {
-	if(initialized)
+	if(initialized && self.state != value)
 	{
 		if(_animation == nil)
 		{

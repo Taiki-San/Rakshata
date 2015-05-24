@@ -67,7 +67,7 @@
 	_animation.delegate = self;
 	
 	NSAnimationProgress progress = 0;
-	for(uint i = 0; i < steps; i++)
+	for(uint i = 0; i <= steps; i++)
 	{
 		[_animation addProgressMark:progress];
 		progress += 1.0f / steps;
