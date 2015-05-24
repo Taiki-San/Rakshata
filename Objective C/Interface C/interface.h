@@ -35,6 +35,10 @@ bool shouldDownloadFavorite();
 void sendToLog(char * string);
 void notifyEmailUpdate();
 
+#ifdef DEV_VERSION
+void logStack(void * address);
+#endif
+
 /*****************************************
  **										**
  **				 DB update				**

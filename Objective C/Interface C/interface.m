@@ -35,6 +35,13 @@ void sendToLog(char * string)
 	NSLog(@"%s", string);
 }
 
+#ifdef DEV_VERSION
+void logStack(void * address)
+{
+	[[NSString stringWithFormat:@"%@", [NSThread callStackSymbols]] writeToFile:[NSString stringWithFormat:@"log/%p.txt", address] atomically:NO encoding:NSASCIIStringEncoding error:nil];
+}
+#endif
+
 void notifyEmailUpdate()
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_MAIL object:nil];

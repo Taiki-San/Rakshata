@@ -77,7 +77,8 @@ void releaseCTData(PROJECT_DATA data)
 		}
 #else
 #ifdef DEV_VERSION
-		printf("Freeing chapitre full: %p\n", data.chapitresFull);
+		printf("Freeing data: %p - %p - %p - %p - %p\n", data.chapitresFull, data.chapitresInstalled, data.chapitresInstalled, data.tomesFull, data.tomesInstalled);
+		logStack(data.chapitresFull);
 #endif
 		
 		free(data.chapitresFull);

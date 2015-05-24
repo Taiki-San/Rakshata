@@ -42,6 +42,11 @@ int main(int argc, const char *argv[])
 	resetUpdateDBCache();
 	initializeDNSCache();
 	
+#ifdef DEV_VERSION
+	removeFolder("log");
+	mkdirR("log");
+#endif
+	
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 	
 	if(setupBDDCache() != 0)
