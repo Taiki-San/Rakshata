@@ -133,6 +133,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName: SR_NOTIF_NAME_SEARCH_TRIGGERED
 														object:@(SEARCH_BAR_ID_FORCE_CLOSE) userInfo: @{SR_NOTIF_NEW_STATE:@(NO)}];
 	[self.window makeFirstResponder:nil];
+	close.state = NSOffState;
 }
 
 @end
