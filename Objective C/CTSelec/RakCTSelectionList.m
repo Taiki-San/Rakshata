@@ -277,9 +277,7 @@
 			[self selectElement : element];
 			_UIOnlySelection = NO;
 		}
-		
 	}
-	
 	
 	if(isTome)
 		freeTomeList(oldData, nbOldElem, true);

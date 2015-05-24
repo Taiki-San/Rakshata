@@ -283,8 +283,7 @@
 			if(retValue)
 				[_placeholder setHidden : YES];
 			else
-				[_content setHidden : YES];
-			
+				[_content setHidden : YES];			
 		}];
 	}
 	

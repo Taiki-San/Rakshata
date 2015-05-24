@@ -27,7 +27,11 @@ uint32_t getMainThread()
 
 bool shouldDownloadFavorite()
 {
-	return true;
+	bool output = true;
+	
+	[Prefs getPref:PREFS_GET_FAVORITE_AUTODL :&output];
+	
+	return output;
 }
 
 void sendToLog(char * string)

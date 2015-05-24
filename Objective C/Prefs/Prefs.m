@@ -12,11 +12,10 @@
 
 Prefs * __strong prefsCache;
 
-#define MAX_THEME_ID 2
-
 // Contexte
 static uint mainThread = TAB_SERIES;
 static uint stateTabsReader = STATE_READER_TAB_DEFAULT;
+static bool favoriteAutoDL = true;
 
 enum
 {
@@ -693,6 +692,12 @@ enum
 			break;
 		}
 			
+		case PREFS_GET_FAVORITE_AUTODL:
+		{
+			* (bool *) outputContainer = favoriteAutoDL;
+			break;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);
@@ -714,6 +719,14 @@ enum
 			ret_value = mainThread != (uint) value;
 			mainThread = value & TAB_MASK;
 			[prefsCache refreshFirstResponder];
+			
+			break;
+		}
+			
+		case PREFS_SET_FAVORITE_AUTODL:
+		{
+			ret_value = favoriteAutoDL != (bool) value;
+			favoriteAutoDL = value;
 			
 			break;
 		}
@@ -929,31 +942,35 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 	
 	uint pos = 0;
-	int value;
 	
 	for(NSString * element in dataState)
 	{
-		value = [element intValue];
-		
-		if(!value)
-			continue;
-		
-		if(pos == 0)
+		int value = [element intValue];
+
+		switch (pos++)
 		{
-			if(value == TAB_SERIES || value == TAB_CT || value == TAB_READER)
-				mainThread = value;
+			case 0:
+			{
+				if(value == TAB_SERIES || value == TAB_CT || value == TAB_READER)
+					mainThread = value;
+				break;
+			}
+				
+			case 1:
+			{
+				if(value >= THEME_CODE_DARK && value <= MAX_THEME_ID)
+					_themeCode = value;
+
+				break;
+			}
+				
+			case 2:
+			{
+				favoriteAutoDL = value;
+				break;
+			}
 		}
-		else if(pos == 1)
-		{
-			if(value > 0 && value <= MAX_THEME_ID)
-				_themeCode = value;
-		}
-		else
-			break;
-		
-		pos++;
 	}
-	
 }
 
 #ifdef MUTABLE_SIZING
@@ -978,7 +995,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (NSString *) dumpPrefs
 {
-	return [NSString stringWithFormat:@"%d\n%d", mainThread, _themeCode];
+	return [NSString stringWithFormat:@"%d\n%d\n%d", mainThread, _themeCode, favoriteAutoDL];
 }
 
 - (void) refreshFirstResponder

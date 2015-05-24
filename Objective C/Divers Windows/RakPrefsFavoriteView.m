@@ -51,6 +51,7 @@ enum
 			autoDLMessage = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-FAVORITE-AUTODL", nil) :[self textColor]];
 			if(autoDLMessage != nil)
 			{
+				autoDLButton.state = shouldDownloadFavorite() ? NSOnState : NSOffState;
 				autoDLButton.target = self;
 				autoDLButton.action = @selector(autoDLToggled);
 				
@@ -117,7 +118,7 @@ enum
 
 - (void) autoDLToggled
 {
-
+	[Prefs setPref:PREFS_SET_FAVORITE_AUTODL :autoDLButton.state == NSOnState];
 }
 
 @end
