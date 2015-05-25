@@ -77,8 +77,13 @@ void releaseCTData(PROJECT_DATA data)
 		}
 #else
 #ifdef DEV_VERSION
-		printf("Freeing data: %p - %p - %p - %p - %p\n", data.chapitresFull, data.chapitresInstalled, data.chapitresInstalled, data.tomesFull, data.tomesInstalled);
-		logStack(data.chapitresFull);
+		FILE * output = fopen("log/log.txt", "a+");
+		if(output != NULL)
+		{
+			fprintf(output, "Freeing data: %p - %p - %p - %p - %p\n", data.chapitresFull, data.chapitresInstalled, data.chapitresInstalled, data.tomesFull, data.tomesInstalled);
+			logStack(data.chapitresFull);
+			fclose(output);
+		}
 #endif
 		
 		free(data.chapitresFull);
