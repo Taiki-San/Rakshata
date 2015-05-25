@@ -50,7 +50,7 @@
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data;
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
 - (void) buildCache : (NSNumber *) session;
-- (void) updatePCState : (NSMutableArray **) data : (uint) page : (NSView *) view;
+- (void) updatePCState : (uint) page : (NSView *) view;
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize;
 

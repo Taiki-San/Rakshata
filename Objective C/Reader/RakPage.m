@@ -98,7 +98,11 @@
 	
 	if(_scrollView == nil)
 	{
-		RakImageView * view = [mainScroller.selectedViewController.view.subviews objectAtIndex:0];
+		NSArray * subview = mainScroller.selectedViewController.view.subviews;
+		if(subview == nil || [subview count] == 0)
+			return;
+		
+		RakImageView * view = [subview objectAtIndex:0];
 		if([view class] == [RakImageView class])
 		{
 			NSRect frame = view.frame;		//view is smaller than the smallest possible reader, so its h/w won't change
@@ -292,10 +296,10 @@
 
 - (void) failure
 {
-	[self failure : UINT32_MAX : nil];
+	[self failure : UINT32_MAX];
 }
 
-- (void) failure : (uint) page : (NSMutableArray**) data
+- (void) failure : (uint) page
 {
 	NSLog(@"Something went wrong delete?");
 	
@@ -309,13 +313,11 @@
 		
 		if(image != nil)
 		{
-			__autoreleasing NSMutableArray* bak = nil;
-			if(data == nil)
-				data = &bak;
-			
 			image.page = page;
 			
-			[self updatePCState : data : page : image];
+			dispatch_sync(dispatch_get_main_queue(), ^{
+				[self updatePCState : page : image];
+			});
 		}
 	}
 	
@@ -519,7 +521,9 @@
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
-		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
+		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self checkIfNewElements];
+		});
 	}
 	
 	if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
@@ -620,7 +624,10 @@
 		}
 		else
 		{
+			[CATransaction begin];
+			[CATransaction setDisableActions:YES];
 			mainScroller.selectedIndex = _data.pageCourante + 1;
+			[CATransaction commit];
 		}
 		self.preventRecursion = NO;
 		
@@ -796,14 +803,18 @@
 	
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
-		[self performSelectorInBackground:@selector(checkIfNewElements) withObject:nil];
+	{
+		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self checkIfNewElements];
+		});
+	}
 	
 	if(!dataLoaded)
 	{
 		if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
 		{
 			_data.nombrePage = 1;
-			[self failure : 0 : nil];
+			[self failure : 0];
 		}
 	}
 	
@@ -828,21 +839,24 @@
 	
 	if(mainScroller != nil)
 	{
-		_flushingCache = YES;
-
 		MUTEX_LOCK(cacheMutex);
+
+		_flushingCache = YES;
 		
 		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
 		
 		mainScroller.arrangedObjects = array;
 		mainScroller.selectedIndex = _data.pageCourante + 1;
 		
-		MUTEX_UNLOCK(cacheMutex);
-		
 		_flushingCache = NO;
+
+		MUTEX_UNLOCK(cacheMutex);
 	}
 	
-	[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
+	uint cacheCode = ++cacheSession;
+	dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		[self buildCache:@(cacheCode)];
+	});
 }
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
@@ -888,7 +902,7 @@
 	{
 		_data.pageCourante = 0;
 		_data.nombrePage = 1;
-		[self failure : 0 : nil];
+		[self failure : 0];
 		mainScroller.selectedIndex = 1;
 	}
 }
@@ -909,6 +923,7 @@
 	scrollView.documentView = pageView;
 	
 	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
 	
 	[self initialPositionning : scrollView];
 	
@@ -988,13 +1003,7 @@
 	
 	@autoreleasepool
 	{
-		MUTEX_LOCK(cacheMutex);
-		
-		NSMutableArray * data = mainScroller.arrangedObjects.mutableCopy;
-		
-		MUTEX_UNLOCK(cacheMutex);
-		
-		[self _buildCache : [session unsignedIntValue] : data];
+		[self _buildCache : [session unsignedIntValue]];
 		
 		[CATransaction begin];
 		[CATransaction setDisableActions:YES];
@@ -1004,14 +1013,18 @@
 	_cacheBeingBuilt = NO;
 }
 
-- (void) _buildCache : (uint) session : (NSMutableArray *) data
+- (void) _buildCache : (uint) session
 {
 	while(session == cacheSession)	//While the active chapter is still the same
 	{
+		MUTEX_LOCK(cacheMutex);
+		NSArray * data = mainScroller.arrangedObjects;
+		MUTEX_UNLOCK(cacheMutex);
+		
 		//Page courante
 		if(![self entryValid : data : _data.pageCourante + 1])
 		{
-			[self loadPageCache: _data.pageCourante : session : &data];
+			[self loadPageCache: _data.pageCourante : session];
 		}
 		
 		//Encore de la place dans le cache
@@ -1025,7 +1038,7 @@
 			{
 				if(![self entryValid : data : _data.pageCourante + 1 + i * move])
 				{
-					[self loadPageCache:_data.pageCourante + i * move :session :&data];
+					[self loadPageCache:_data.pageCourante + i * move :session];
 					move = 0;
 					break;
 				}
@@ -1036,7 +1049,7 @@
 			
 			else if(i != 5)	//We hit the max
 			{
-				if([self loadAdjacentChapter : move == 1 : &data : session])
+				if([self loadAdjacentChapter : move == 1 : data : session])
 					continue;
 			}
 			
@@ -1046,13 +1059,13 @@
 			{
 				if(![self entryValid : data :_data.pageCourante + 1 - move])
 				{
-					[self loadPageCache:_data.pageCourante - move : session : &data];
+					[self loadPageCache:_data.pageCourante - move : session];
 					continue;
 				}
 			}
 			else	//We are at the begining/end of the chapter
 			{
-				if([self loadAdjacentChapter : move == -1 : &data : session])
+				if([self loadAdjacentChapter : move == -1 : data : session])
 					continue;
 			}
 			
@@ -1061,7 +1074,7 @@
 			{
 				if(![self entryValid : data : i + 1])
 				{
-					[self loadPageCache : i :session :&data];
+					[self loadPageCache : i :session];
 					break;
 				}
 			}
@@ -1074,7 +1087,7 @@
 	}
 }
 
-- (BOOL) loadAdjacentChapter : (BOOL) loadNext : (NSMutableArray **) data : (uint) currentSession
+- (BOOL) loadAdjacentChapter : (BOOL) loadNext : (NSArray *) data : (uint) currentSession
 {
 	int nextElement;
 	uint nextElementPos = _posElemInStructure;
@@ -1085,17 +1098,17 @@
 		//Load next CT data
 		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, (loadNext ? &_nextData : &_previousData)))
 		{
-			if(loadNext && ![self entryValid : *data : _data.nombrePage + 1])
+			if(loadNext && ![self entryValid : data : _data.nombrePage + 1])
 			{
 				nextDataLoaded = YES;
-				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePage + 1 : data];
+				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePage + 1];
 				
 				return YES;
 			}
-			else if(!loadNext && ![self entryValid : *data : 0])
+			else if(!loadNext && ![self entryValid : data : 0])
 			{
 				previousDataLoaded = YES;
-				[self loadPageCache : _previousData.nombrePage - 1 : &_previousData : currentSession : 0 : data];
+				[self loadPageCache : _previousData.nombrePage - 1 : &_previousData : currentSession : 0];
 				
 				return YES;
 			}
@@ -1127,6 +1140,9 @@
 
 - (BOOL) entryValid : (NSArray*) data : (uint) index
 {
+	if(index >= [data count])
+		return NO;
+	
 	Class class = [data[index] class];
 	
 	return class == [RakPageScrollView class] || class == [RakImageView class];
@@ -1139,12 +1155,15 @@
 	NSMutableArray * internalData, *freeList = [NSMutableArray array];
 	RakPageScrollView* object;
 	
+	MUTEX_LOCK(cacheMutex);
+
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
 	if(data == nil)
 		internalData = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	else
 		internalData = data;
-	
-	MUTEX_LOCK(cacheMutex);
 	
 	for(uint pos = 0, max = [internalData count]; pos < max; pos++)
 	{
@@ -1177,53 +1196,62 @@
 		MUTEX_UNLOCK(cacheMutex);
 	}
 	
+	[CATransaction commit];
+	
 	if(validFound != NB_ELEM_MAX_IN_CACHE && !_cacheBeingBuilt)
 	{
-		[self performSelectorInBackground:@selector(buildCache:) withObject:@(++cacheSession)];
+		uint cacheCode = ++cacheSession;
+		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self buildCache:@(cacheCode)];
+		});
 	}
 }
 
-- (BOOL) loadPageCache : (uint) page : (uint) currentSession : (NSMutableArray **) data
+- (BOOL) loadPageCache : (uint) page : (uint) currentSession
 {
-	return [self loadPageCache: page : &_data : currentSession : page + 1 : data];
+	return [self loadPageCache: page : &_data : currentSession : page + 1];
 }
 
-- (BOOL) loadPageCache : (uint) page : (DATA_LECTURE*) dataLecture : (uint) currentSession : (uint) position : (NSMutableArray **) data
+- (BOOL) loadPageCache : (uint) page : (DATA_LECTURE*) dataLecture : (uint) currentSession : (uint) position
 {
 	RakPageScrollView *view = [self getScrollView : page : dataLecture];
 	
 	if(view == nil)			//Loading failure
 	{
-		[self failure : position : data];
+		[self failure : position];
 		return NO;
 	}
 	
 	if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
 		return NO;
 	
-	[self updatePCState : data : position : view];
+	__block BOOL retValue = YES;
+	
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		
+		if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
+			retValue = NO;
+		else
+			[self updatePCState : position : view];
+	});
 	
 	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
 		_scrollView = view;
 	
-	return YES;
+	return retValue;
 }
 
 #pragma mark - NSPageController interface
 
-- (void) updatePCState : (NSMutableArray **) data : (uint) page : (NSView *) view
+- (void) updatePCState : (uint) page : (NSView *) view
 {
-	[CATransaction begin];
-	
 	MUTEX_LOCK(cacheMutex);
 	
-	*data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-	[*data replaceObjectAtIndex:page withObject:view];
-	mainScroller.arrangedObjects = *data;
+	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+	[data replaceObjectAtIndex:page withObject:view];
+	mainScroller.arrangedObjects = data;
 	
 	MUTEX_UNLOCK(cacheMutex);
-	
-	[CATransaction commit];
 }
 
 - (NSString *)pageController:(NSPageController *)pageController identifierForObject : (RakPageScrollView*) object
@@ -1257,6 +1285,15 @@
 	
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
+		//Somehow, the cache isn't running
+		if(!self.initWithNoContent && !_cacheBeingBuilt)
+		{
+			uint cacheCode = ++cacheSession;
+			dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[self buildCache:@(cacheCode)];
+			});
+		}
+		
 		NSImage * imagePlaceholder = !self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder;
 		
 		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
@@ -1414,12 +1451,13 @@
 - (void) flushCache
 {
 	cacheSession++;		//tell the cache to stop
-	_flushingCache = YES;
 	
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
 		
+		_flushingCache = YES;
+
 		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 		
 		[array removeAllObjects];
@@ -1430,10 +1468,10 @@
 		mainScroller.selectedIndex = 0;
 		mainScroller.arrangedObjects = array;
 		
+		_flushingCache = NO;
+		
 		MUTEX_UNLOCK(cacheMutex);
 	}
-	
-	_flushingCache = NO;
 }
 
 - (void) deallocInternal
