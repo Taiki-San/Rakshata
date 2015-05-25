@@ -38,11 +38,16 @@ enum
 	{
 		responder = delegate;
 		
-		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_general" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
+		NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+		paragraphStyle.alignment                = kCTTextAlignmentCenter;
+		
+		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_settings" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
 		if(buttonGeneral != nil)
 		{
+			[buttonGeneral setFrameSize:NSMakeSize(buttonGeneral.bounds.size.width + 7, buttonGeneral.bounds.size.height + 7)];
 			buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-GENERAL", nil) attributes:
-											 @{NSForegroundColorAttributeName : [delegate textColor]}];
+											 @{NSForegroundColorAttributeName : [delegate textColor],
+											   NSParagraphStyleAttributeName : paragraphStyle}];
 			
 			[buttonGeneral setFrameOrigin:NSMakePoint(BUTTON_OFFSET_X, BUTTON_OFFSET_Y)];
 			[self addSubview:buttonGeneral];
@@ -52,18 +57,21 @@ enum
 		if(buttonRepo != nil)
 		{
 			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-REPO", nil) attributes:
-										  @{NSForegroundColorAttributeName : [delegate textColor]}];
+										  @{NSForegroundColorAttributeName : [delegate textColor],
+											NSParagraphStyleAttributeName : paragraphStyle}];
 			
 			[buttonRepo setFrameOrigin:NSMakePoint(NSMaxX(buttonGeneral.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
 			
 			[self addSubview:buttonRepo];
 		}
 		
-		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_fav" :RB_STATE_STANDARD :self :@selector(clicFav)];
+		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"p_favs" :RB_STATE_STANDARD :self :@selector(clicFav)];
 		if(buttonFav != nil)
 		{
+			[buttonFav setFrameSize:buttonGeneral.bounds.size];
 			buttonFav.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-FAVS", nil) attributes:
-										 @{NSForegroundColorAttributeName : [delegate textColor]}];
+										 @{NSForegroundColorAttributeName : [delegate textColor],
+										   NSParagraphStyleAttributeName : paragraphStyle}];
 			
 			[buttonFav setFrameOrigin:NSMakePoint(NSMaxX(buttonRepo.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
 			

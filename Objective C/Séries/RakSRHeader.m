@@ -41,9 +41,10 @@
 {
 	NSRect frame = self.bounds;
 	
-	preferenceButton = [RakButton allocImageWithBackground: @"parametre" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
+	preferenceButton = [RakButton allocImageWithBackground: @"settings" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
+		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
 		[preferenceButton.cell setHighlightAllowed:NO];
 		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
 		

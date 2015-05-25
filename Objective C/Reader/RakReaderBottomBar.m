@@ -106,13 +106,13 @@
 
 - (void) loadIcons : (Reader*) superview
 {
-	favorite = [RakButton allocForReader:self :@"fav" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(switchFavs)];
+	favorite = [RakButton allocForReader:self :@"favs" : RB_STATE_STANDARD :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(switchFavs)];
 	fullscreen = [RakButton allocForReader:self :@"fullscreen" : RB_STATE_STANDARD :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
 	
-	prevChapter = [RakButton allocForReader:self :@"first" : RB_STATE_STANDARD :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton allocForReader:self :@"before" : RB_STATE_STANDARD :[self getPosXElement : 4 : self.frame.size.width] :NO :superview :@selector(prevPage)];
+	prevChapter = [RakButton allocForReader:self :@"prev_chap" : RB_STATE_STANDARD :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton allocForReader:self :@"prev" : RB_STATE_STANDARD :[self getPosXElement : 4 : self.frame.size.width] :NO :superview :@selector(prevPage)];
 	nextPage = [RakButton allocForReader:self :@"next" : RB_STATE_STANDARD :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton allocForReader:self :@"last" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
+	nextChapter = [RakButton allocForReader:self :@"next_chap" : RB_STATE_STANDARD :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
 	
 	trash = [RakReaderBBButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
 	

@@ -167,6 +167,18 @@ enum
 		refresh = [RakButton allocImageWithoutBackground:@"refresh" :RB_STATE_STANDARD :self :@selector(refresh)];
 		[self addSubview: refresh];
 	}
+	
+	if(read == nil)
+	{
+		read = [RakButton allocImageWithoutBackground:@"p_voir" :RB_STATE_STANDARD :self :@selector(read)];
+		[self addSubview:read];
+	}
+	
+	if(remove == nil)
+	{
+		remove = [RakButton allocImageWithoutBackground:@"p_X" :RB_STATE_STANDARD :self :@selector(remove)];
+		[self addSubview:remove];
+	}
 }
 
 #pragma mark - Update width
@@ -179,11 +191,23 @@ enum
 	[repo setFrameOrigin:NSMakePoint([self titleX], OFFSET_Y_REPO)];
 	
 	[refresh setFrameOrigin:NSMakePoint(newSize.width - 100, newSize.height / 2 - refresh.bounds.size.height / 2)];
+	[read setFrameOrigin:NSMakePoint(NSMaxX(refresh.frame) + 10, newSize.height / 2 - read.bounds.size.height / 2)];
+	[remove setFrameOrigin:NSMakePoint(NSMaxX(read.frame) + 10, newSize.height / 2 - remove.bounds.size.height / 2)];
 }
 
 #pragma mark - Responder
 
 - (void) refresh
+{
+	
+}
+
+- (void) read
+{
+	
+}
+
+- (void) remove
 {
 	
 }

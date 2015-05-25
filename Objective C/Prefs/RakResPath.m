@@ -22,12 +22,12 @@
 	NSString * pathPortionHighlighted, *pathPortionAvailable, *fullFileName;
 	
 	if(highlighted)
-		pathPortionHighlighted = @"_focus";
+		pathPortionHighlighted = @"_active";
 	else
 		pathPortionHighlighted = @"";
 	
 	if(!available)
-		pathPortionAvailable = @"_unavailable";
+		pathPortionAvailable = @"_template";
 	else
 		pathPortionAvailable = @"";
 	
