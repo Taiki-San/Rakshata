@@ -680,13 +680,15 @@
 			
 			if(goToNext)
 			{
-				releaseDataReader(&_previousData);
+				if(previousDataLoaded)
+					releaseDataReader(&_previousData);
+	
 				currentPage = _data.nombrePage + 1;
 				
-				memcpy(&_previousData, &_data, sizeof(DATA_LECTURE));
+				_previousData = _data;
 				previousDataLoaded = dataLoaded;
 				
-				memcpy(&_data, &_nextData, sizeof(DATA_LECTURE));
+				_data = _nextData;
 				_data.pageCourante = 0;
 				dataLoaded = nextDataLoaded;
 				
@@ -695,10 +697,12 @@
 			}
 			else
 			{
-				releaseDataReader(&_nextData);
+				if(nextDataLoaded)
+					releaseDataReader(&_nextData);
+	
 				currentPage = 0;
 				
-				memcpy(&_nextData, &_data, sizeof(DATA_LECTURE));
+				_nextData = _data;
 				nextDataLoaded = dataLoaded;
 				
 				memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
@@ -801,11 +805,6 @@
 			_data.nombrePage = 1;
 			[self failure : 0 : nil];
 		}
-	}
-	else if(_data.pageCourante != 0)
-	{
-		NSLog(@"Wut?");
-		//		_data.pageCourante = 0;
 	}
 	
 	[self changePage:READER_ETAT_DEFAULT];

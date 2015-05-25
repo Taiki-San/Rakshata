@@ -105,7 +105,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
             dataReader->nombrePage += nombrePageInChunck;
 			
             ///pathNumber
-            intermediaryPtr = realloc(dataReader->pathNumber, (dataReader->nombrePage+1) * sizeof(int));
+            intermediaryPtr = realloc(dataReader->pathNumber, dataReader->nombrePage * sizeof(int));
             if(intermediaryPtr != NULL)
                 dataReader->pathNumber = intermediaryPtr;
             else
@@ -119,7 +119,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
                 goto memoryFail;
 			
             ///nomPages
-            intermediaryPtr = realloc(dataReader->nomPages, (dataReader->nombrePage+1) * sizeof(char*));
+            intermediaryPtr = realloc(dataReader->nomPages, dataReader->nombrePage * sizeof(char*));
             if(intermediaryPtr != NULL)
                 dataReader->nomPages = intermediaryPtr;
             else
@@ -211,12 +211,9 @@ memoryFail:
 	}
 	
     if(dataReader->pathNumber != NULL && dataReader->nomPages != NULL)
-    {
         dataReader->IDDisplayed = IDRequested;
-        dataReader->pathNumber[prevPos] = VALEUR_FIN_STRUCT;
-        dataReader->nomPages[dataReader->nombrePage] = NULL; //On signale la fin de la structure
-    }
-    if(dataReader->pageCourante >= dataReader->nombrePage)
+
+	if(dataReader->pageCourante >= dataReader->nombrePage)
 		dataReader->pageCourante = dataReader->nombrePage != 0 ? dataReader->nombrePage - 1 : 0;
 	
 	free(encodedRepo);
