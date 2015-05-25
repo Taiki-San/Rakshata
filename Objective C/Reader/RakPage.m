@@ -1157,45 +1157,47 @@
 	
 	MUTEX_LOCK(cacheMutex);
 
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
-	
-	if(data == nil)
-		internalData = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-	else
-		internalData = data;
-	
-	for(uint pos = 0, max = [internalData count]; pos < max; pos++)
-	{
-		object = [internalData objectAtIndex:pos];
+	@autoreleasepool {
+
+		if(data == nil)
+			internalData = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
+		else
+			internalData = data;
 		
-		if ([object class] == [RakPageScrollView class])
+		for(uint pos = 0, max = [internalData count]; pos < max; pos++)
 		{
-			objectPage = object.page;
+			object = [internalData objectAtIndex:pos];
 			
-			if(objectPage < MAX(curPage, 5) - 5 ||	//Too far behind
-			   objectPage > curPage + 24)			//Too far ahead
+			if ([object class] == [RakPageScrollView class])
 			{
-				[freeList addObject:object];
-				[internalData replaceObjectAtIndex:pos withObject:@(pos)];
-				invalidFound++;
+				objectPage = object.page;
+				
+				if(objectPage < MAX(curPage, 5) - 5 ||	//Too far behind
+				   objectPage > curPage + 24)			//Too far ahead
+				{
+					[freeList addObject:object];
+					[internalData replaceObjectAtIndex:pos withObject:@(pos)];
+					invalidFound++;
+				}
+				else
+					validFound++;
 			}
-			else
-				validFound++;
 		}
-	}
-	
-	if(invalidFound)
-	{
-		mainScroller.arrangedObjects = internalData;
 		
-		MUTEX_UNLOCK(cacheMutex);
+		if(invalidFound)
+		{
+			mainScroller.arrangedObjects = internalData;
+			
+			MUTEX_UNLOCK(cacheMutex);
+		}
+		else
+		{
+			MUTEX_UNLOCK(cacheMutex);
+		}
+		
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
 	}
-	else
-	{
-		MUTEX_UNLOCK(cacheMutex);
-	}
-	
 	[CATransaction commit];
 	
 	if(validFound != NB_ELEM_MAX_IN_CACHE && !_cacheBeingBuilt)
@@ -1225,6 +1227,9 @@
 	if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
 		return NO;
 	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
 	__block BOOL retValue = YES;
 	
 	dispatch_sync(dispatch_get_main_queue(), ^{
@@ -1237,6 +1242,8 @@
 	
 	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
 		_scrollView = view;
+	
+	[CATransaction commit];
 	
 	return retValue;
 }
