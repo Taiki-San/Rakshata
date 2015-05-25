@@ -96,7 +96,7 @@ enum
 			[_read setButtonType:NSMomentaryChangeButton];
 			[self addSubview:_read];
 			[_read setHidden:YES];
-			[_read.cell setHighlightAllowed: NO];
+			[_read.cell setActiveAllowed: NO];
 		}
 	}
 	
@@ -108,7 +108,7 @@ enum
 			[_remove setButtonType:NSMomentaryChangeButton];
 			[self addSubview:_remove];
 			[_remove setHidden:NO];
-			[_remove.cell setHighlightAllowed: NO];
+			[_remove.cell setActiveAllowed: NO];
 		}
 	}
 }

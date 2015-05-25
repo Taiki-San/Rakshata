@@ -117,12 +117,12 @@
 	trash = [RakReaderBBButton allocForReader:self :@"trash": RB_STATE_STANDARD :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
 	
 	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
-	if(fullscreen != nil)		[fullscreen.cell setHighlightAllowed:NO];
-	if(prevChapter != nil)		[prevChapter.cell setHighlightAllowed:NO];
-	if(prevPage != nil)			[prevPage.cell setHighlightAllowed:NO];
-	if(nextPage != nil)			[nextPage.cell setHighlightAllowed:NO];
-	if(nextChapter != nil)		[nextChapter.cell setHighlightAllowed:NO];
-	if(trash != nil)			[trash.cell setHighlightAllowed:NO];
+	if(fullscreen != nil)		[fullscreen.cell setActiveAllowed:NO];
+	if(prevChapter != nil)		[prevChapter.cell setActiveAllowed:NO];
+	if(prevPage != nil)			[prevPage.cell setActiveAllowed:NO];
+	if(nextPage != nil)			[nextPage.cell setActiveAllowed:NO];
+	if(nextChapter != nil)		[nextChapter.cell setActiveAllowed:NO];
+	if(trash != nil)			[trash.cell setActiveAllowed:NO];
 }
 
 - (void) favsUpdated : (BOOL) isNewStatedFaved

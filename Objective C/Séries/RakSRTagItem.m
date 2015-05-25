@@ -49,7 +49,7 @@
 	close = [RakButton allocImageWithoutBackground:BUTTON_NAME :RB_STATE_STANDARD :self :@selector(close)];
 	if(close != nil)
 	{
-		[close.cell setHighlightAllowed:NO];
+		[close.cell setActiveAllowed:NO];
 		[close setFrameOrigin:NSMakePoint(5, TAG_BUTTON_MIDDLE - close.bounds.size.height / 2)];
 		[self addSubview:close];
 		return YES;

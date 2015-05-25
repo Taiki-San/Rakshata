@@ -21,7 +21,7 @@
 	
 	if(output != nil)
 	{
-		[output.cell setHighlightAllowed:NO];
+		[output.cell setActiveAllowed:NO];
 		output = [output initImages : imageNames : defaultState];
 	}
 	

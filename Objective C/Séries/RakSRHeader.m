@@ -45,7 +45,7 @@
 	if(preferenceButton != nil)
 	{
 		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
-		[preferenceButton.cell setHighlightAllowed:NO];
+		[preferenceButton.cell setActiveAllowed:NO];
 		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
 		
 		[self addSubview:preferenceButton];

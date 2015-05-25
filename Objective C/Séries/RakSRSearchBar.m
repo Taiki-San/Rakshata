@@ -127,7 +127,7 @@
 	if(button != nil)
 	{
 		[button setBordered:NO];
-		[button setHighlightAllowed:NO];
+		[button setActiveAllowed:NO];
 		
 		_oldButton = cell.searchButtonCell;
 		button.target = _oldButton.target;
@@ -140,7 +140,7 @@
 	if(button != nil)
 	{
 		[button setBordered:NO];
-		[button setHighlightAllowed:NO];
+		[button setActiveAllowed:NO];
 		
 		_oldButton = cell.cancelButtonCell;
 		_cancelTarget = _oldButton.target;

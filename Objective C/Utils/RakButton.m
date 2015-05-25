@@ -187,7 +187,7 @@
 		_imageName = [imageName copy];
 		
 		notAvailable = NO;
-		_highlightAllowed = YES;
+		_activeAllowed = YES;
 		
 		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
 		{
@@ -281,7 +281,7 @@
 	
 	notAvailable = NO;
 	
-	if(value == RB_STATE_HIGHLIGHTED && _highlightAllowed)
+	if(value == RB_STATE_HIGHLIGHTED && _activeAllowed)
 	{
 		[self setImage:clicked];
 	}

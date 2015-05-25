@@ -51,7 +51,7 @@
 @property (nonatomic) CGFloat borderWidth;
 @property BOOL forceHighlight;
 @property BOOL hasBorder;
-@property (nonatomic, getter=isHighlightAllowed) BOOL highlightAllowed;
+@property (nonatomic, getter=isActiveAllowed) BOOL activeAllowed;
 
 - (instancetype) initWithPage : (NSString*) imageName : (short) state;
 
