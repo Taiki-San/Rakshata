@@ -309,11 +309,7 @@ enum
 					if(_lastFrame.size.height != contentHeight)
 						_needUpdateMainViews = YES;
 				}
-				
-				[coreView updateScroller:YES];
 			}
-			else
-				[coreView updateScroller:NO];
 			
 			if(self.mainThread == TAB_SERIES && seriesCollapsedBySetting)
 			{

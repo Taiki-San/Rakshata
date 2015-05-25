@@ -59,12 +59,6 @@ enum
 	return nbElem * ([self tableView:_tableView heightOfRow:0] + _tableView.intercellSpacing.height) + _tableView.intercellSpacing.height;
 }
 
-- (void) setScrollerHidden : (BOOL) hidden
-{
-	if(scrollView != nil)
-		[scrollView setHasVerticalScroller:!hidden];
-}
-
 #pragma mark - Interface
 
 - (void) checkIfShouldReload
@@ -106,6 +100,14 @@ enum
 	while(length--)
 		[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(indexes[length])}];
 	
+}
+
+- (void) additionalResizing : (NSSize) newSize : (BOOL) animated
+{
+	if(animated)
+		[_tableView.animator setFrameSize: NSMakeSize(_tableView.bounds.size.width, [self contentHeight])];
+	else
+		[_tableView setFrameSize: NSMakeSize(_tableView.bounds.size.width, [self contentHeight])];
 }
 
 #pragma mark - Methods to deal with tableView

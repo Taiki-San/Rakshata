@@ -25,7 +25,6 @@
 - (NSRect) getMainListFrame : (NSRect) output;
 - (NSPoint) getPosDropPlaceHolder : (NSSize) frameSize;
 
-- (void) updateScroller : (BOOL) hidden;
 - (void) wakeUp;
 - (void) hideList : (BOOL) hide;
 

@@ -88,7 +88,7 @@ typedef struct smartReload_data
 
 - (void) updateMultiColumn : (NSSize) scrollviewSize;
 //Overwrite only
-- (void) additionalResizing : (NSSize) newSize;
+- (void) additionalResizing : (NSSize) newSize : (BOOL) animated;
 
 - (NSRect) getFrameFromParent : (NSRect) superviewFrame;
 - (void) needUpdateTableviewHeight;

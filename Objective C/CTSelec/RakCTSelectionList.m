@@ -713,7 +713,7 @@
 	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
 		[_tableView setFrameSize:initialSize];
 	
-	[self additionalResizing : initialSize];
+	[self additionalResizing : initialSize : NO];
 }
 
 - (void) postProcessColumnUpdate
@@ -747,12 +747,12 @@
 
 - (void) additionalResizingProxy
 {
-	[self additionalResizing : _tableView.bounds.size];
+	[self additionalResizing : _tableView.bounds.size : NO];
 	[self reloadSize];
 	_resizingQueued = NO;
 }
 
-- (void) additionalResizing : (NSSize) newSize
+- (void) additionalResizing : (NSSize) newSize : (BOOL) animated
 {
 	CGFloat width = newSize.width / _nbCoupleColumn, detailWidth = self.compactMode ? 0 : _detailWidth, mainWidth = width - detailWidth;
 	
@@ -904,12 +904,6 @@
 		if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
 			return [Prefs getSystemColor : GET_COLOR_CLICKABLE_TEXT : nil];
 	}
-#ifdef DEV_VERSION
-	else
-	{
-		NSLog(@"Humpf, something is not perfectly right");
-	}
-#endif
 	
 	return [Prefs getSystemColor : GET_COLOR_SURVOL : nil];
 }

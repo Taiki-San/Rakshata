@@ -186,16 +186,16 @@
 		if(immatureFrame)
 			[self updateMultiColumn : scrollviewFrame.size];
 		else
-			[self additionalResizing : scrollviewFrame.size];
+			[self additionalResizing : scrollviewFrame.size : animate];
 	}
 }
 
 - (void) updateMultiColumn :(NSSize)scrollviewSize
 {
-	[self additionalResizing : scrollviewSize];
+	[self additionalResizing : scrollviewSize : NO];
 }
 
-- (void) additionalResizing : (NSSize) newSize
+- (void) additionalResizing : (NSSize) newSize : (BOOL) animated
 {
 	
 }

@@ -117,12 +117,6 @@ enum
 	[MDLList checkIfShouldReload];
 }
 
-- (void) updateScroller : (BOOL) hidden
-{
-	if(MDLList != nil)
-		[MDLList setScrollerHidden:hidden];
-}
-
 - (void) wakeUp
 {
 	if([MDLList isHidden])
