@@ -87,7 +87,7 @@ void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 
 void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t length)
 {
-    int jobIsDone = 1;
+    volatile int jobIsDone = 1;
 	
 	//On génère les données qui seront envoyés au worker
 	
@@ -198,6 +198,9 @@ void getFileDate(const char *filename, char *date, void* internalData)
 
 IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
 {
+	if(pathRoot == NULL || pathPage == NULL)
+		return IMGLOAD_NODATA;
+	
 	byte retValue;
     uint curPosInConfigEnc, posInKeyOut, lengthPath = strlen(pathRoot) + 60;
     char path[lengthPath], *pathPageCopy;

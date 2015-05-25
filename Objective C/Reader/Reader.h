@@ -31,7 +31,7 @@
 	NSImage * loadingFailedPlaceholder;
 	
 	MUTEX_VAR cacheMutex;
-	uint cacheSession;
+	uint cacheSession, workingCacheSession;
 	byte previousMove;
 	
 	BOOL bottomBarHidden;

@@ -316,7 +316,7 @@
 			image.page = page;
 			
 			dispatch_sync(dispatch_get_main_queue(), ^{
-				[self updatePCState : page : image];
+				[self updatePCState : page : cacheSession : image];
 			});
 		}
 	}
@@ -544,7 +544,7 @@
 
 - (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
 {
-	if(_data.path == NULL)
+	if(_data.path == NULL || posData >= data->nombrePage)
 		return nil;
 	
 	IMG_DATA * dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
@@ -673,15 +673,19 @@
 {
 	uint newPosIntoStruct = _posElemInStructure;
 	
+	MUTEX_LOCK(cacheMutex);
+	
 	if(changeChapter(&_project, self.isTome, &_currentElem, &newPosIntoStruct, goToNext))
 	{
+		MUTEX_UNLOCK(cacheMutex);
+
 		cacheSession++;
 		_posElemInStructure = newPosIntoStruct;
 		
 		[self updateTitleBar:_project :self.isTome :_posElemInStructure];
 		[self updateCTTab];
 		
-		if((goToNext && nextDataLoaded) || (!goToNext && previousDataLoaded))
+		if((goToNext && nextDataLoaded && _nextData.IDDisplayed == _currentElem) || (!goToNext && previousDataLoaded && _previousData.IDDisplayed == _currentElem))
 		{
 			uint currentPage;
 			
@@ -742,12 +746,25 @@
 		}
 		else
 		{
+			if(goToNext && nextDataLoaded)
+			{
+				nextDataLoaded = NO;
+				releaseDataReader(&_nextData);
+			}
+			else if(!goToNext && previousDataLoaded)
+			{
+				previousDataLoaded = NO;
+				releaseDataReader(&_previousData);
+			}
+			
 			if(!byChangingPage)
 				_data.pageCourante = 0;
 			
 			[self updateContext : NO];
 		}
 	}
+	else
+		MUTEX_UNLOCK(cacheMutex);
 }
 
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
@@ -1003,32 +1020,37 @@
 	
 	@autoreleasepool
 	{
-		[self _buildCache : [session unsignedIntValue]];
+		NSArray * data = nil;
+		
+		[self _buildCache : [session unsignedIntValue] : &data];
+
+		_cacheBeingBuilt = NO;
 		
 		[CATransaction begin];
 		[CATransaction setDisableActions:YES];
 	}
 	[CATransaction commit];
-	
-	_cacheBeingBuilt = NO;
 }
 
-- (void) _buildCache : (uint) session
+- (void) _buildCache : (uint) session : (NSArray **) data
 {
+	if(session == cacheSession)
+		workingCacheSession = session;
+	
 	while(session == cacheSession)	//While the active chapter is still the same
 	{
 		MUTEX_LOCK(cacheMutex);
-		NSArray * data = mainScroller.arrangedObjects;
+		* data = mainScroller.arrangedObjects;
 		MUTEX_UNLOCK(cacheMutex);
 		
 		//Page courante
-		if(![self entryValid : data : _data.pageCourante + 1])
+		if(![self entryValid : *data : _data.pageCourante + 1])
 		{
 			[self loadPageCache: _data.pageCourante : session];
 		}
 		
 		//Encore de la place dans le cache
-		else if([self nbEntryRemaining : data])
+		else if([self nbEntryRemaining : *data])
 		{
 			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
 			uint i, max = _data.nombrePage;
@@ -1036,7 +1058,7 @@
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
 			for(i = 0; i < 5 && _data.pageCourante + i * move < max; i++)
 			{
-				if(![self entryValid : data : _data.pageCourante + 1 + i * move])
+				if(![self entryValid : *data : _data.pageCourante + 1 + i * move])
 				{
 					[self loadPageCache:_data.pageCourante + i * move :session];
 					move = 0;
@@ -1049,7 +1071,7 @@
 			
 			else if(i != 5)	//We hit the max
 			{
-				if([self loadAdjacentChapter : move == 1 : data : session])
+				if([self loadAdjacentChapter : move == 1 : *data : session])
 					continue;
 			}
 			
@@ -1057,7 +1079,7 @@
 			//First, we check if we are in the general case
 			if(_data.pageCourante - move < max)
 			{
-				if(![self entryValid : data :_data.pageCourante + 1 - move])
+				if(![self entryValid : *data :_data.pageCourante + 1 - move])
 				{
 					[self loadPageCache:_data.pageCourante - move : session];
 					continue;
@@ -1065,14 +1087,14 @@
 			}
 			else	//We are at the begining/end of the chapter
 			{
-				if([self loadAdjacentChapter : move == -1 : data : session])
+				if([self loadAdjacentChapter : move == -1 : *data : session])
 					continue;
 			}
 			
 			//Ok then, we cache everythin after
 			for (i = _data.pageCourante + 1; i < max; i++)
 			{
-				if(![self entryValid : data : i + 1])
+				if(![self entryValid : *data : i + 1])
 				{
 					[self loadPageCache : i :session];
 					break;
@@ -1092,28 +1114,45 @@
 	int nextElement;
 	uint nextElementPos = _posElemInStructure;
 	
+	MUTEX_LOCK(cacheMutex);
 	//Check if next CT is readable
 	if(changeChapter(&_project, self.isTome, &nextElement, &nextElementPos, loadNext))
 	{
+		MUTEX_UNLOCK(cacheMutex);
+		
+		DATA_LECTURE newData;
+
 		//Load next CT data
-		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, (loadNext ? &_nextData : &_previousData)))
+		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, &newData))
 		{
 			if(loadNext && ![self entryValid : data : _data.nombrePage + 1])
 			{
-				nextDataLoaded = YES;
-				[self loadPageCache : 0 : &_nextData : currentSession : _data.nombrePage + 1];
-				
+				[self loadPageCache : 0 : &newData : currentSession : newData.nombrePage + 1];
+
+				if(!nextDataLoaded && currentSession == cacheSession)
+				{
+					_nextData = newData;
+					nextDataLoaded = YES;
+				}
+
 				return YES;
 			}
 			else if(!loadNext && ![self entryValid : data : 0])
 			{
-				previousDataLoaded = YES;
-				[self loadPageCache : _previousData.nombrePage - 1 : &_previousData : currentSession : 0];
+				[self loadPageCache : newData.nombrePage - 1 : &newData : currentSession : 0];
+				
+				if(!previousDataLoaded && currentSession == cacheSession)
+				{
+					_previousData = newData;
+					previousDataLoaded = YES;
+				}
 				
 				return YES;
 			}
 		}
 	}
+	else
+		MUTEX_UNLOCK(cacheMutex);
 	
 	return NO;
 }
@@ -1152,12 +1191,12 @@
 {
 	uint curPage = _data.pageCourante + 1, objectPage, validFound = 0, invalidFound = 0;
 	
-	NSMutableArray * internalData, *freeList = [NSMutableArray array];
-	RakPageScrollView* object;
-	
-	MUTEX_LOCK(cacheMutex);
-
 	@autoreleasepool {
+		
+		NSMutableArray * internalData, *freeList = [NSMutableArray array];
+		RakPageScrollView* object;
+		
+		MUTEX_LOCK(cacheMutex);
 
 		if(data == nil)
 			internalData = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
@@ -1200,7 +1239,7 @@
 	}
 	[CATransaction commit];
 	
-	if(validFound != NB_ELEM_MAX_IN_CACHE && !_cacheBeingBuilt)
+	if(validFound != NB_ELEM_MAX_IN_CACHE && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 	{
 		uint cacheCode = ++cacheSession;
 		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1216,6 +1255,24 @@
 
 - (BOOL) loadPageCache : (uint) page : (DATA_LECTURE*) dataLecture : (uint) currentSession : (uint) position
 {
+	BOOL retValue;
+	
+	@autoreleasepool
+	{
+		retValue = [self _loadPageCache: page : &_data : currentSession : page + 1];
+		
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+	}
+	
+	[CATransaction commit];
+	
+	return retValue;
+
+}
+
+- (BOOL) _loadPageCache : (uint) page : (DATA_LECTURE*) dataLecture : (uint) currentSession : (uint) position
+{
 	RakPageScrollView *view = [self getScrollView : page : dataLecture];
 	
 	if(view == nil)			//Loading failure
@@ -1227,36 +1284,34 @@
 	if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
 		return NO;
 	
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
-	
 	__block BOOL retValue = YES;
 	
 	dispatch_sync(dispatch_get_main_queue(), ^{
 		
-		if(currentSession != cacheSession)	//Didn't changed of chapter since the begining of the loading
-			retValue = NO;
-		else
-			[self updatePCState : position : view];
+		[self updatePCState : position : currentSession : view];
 	});
 	
 	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
+	{
 		_scrollView = view;
-	
-	[CATransaction commit];
+	}
 	
 	return retValue;
 }
 
 #pragma mark - NSPageController interface
 
-- (void) updatePCState : (uint) page : (NSView *) view
+- (void) updatePCState : (uint) page : (uint) currentCacheSession : (NSView *) view
 {
 	MUTEX_LOCK(cacheMutex);
 	
 	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-	[data replaceObjectAtIndex:page withObject:view];
-	mainScroller.arrangedObjects = data;
+	
+	if(page < [data count] && currentCacheSession == cacheSession)
+	{
+		[data replaceObjectAtIndex:page withObject:view];
+		mainScroller.arrangedObjects = data;
+	}
 	
 	MUTEX_UNLOCK(cacheMutex);
 }
@@ -1293,7 +1348,7 @@
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
 		//Somehow, the cache isn't running
-		if(!self.initWithNoContent && !_cacheBeingBuilt)
+		if(!self.initWithNoContent && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 		{
 			uint cacheCode = ++cacheSession;
 			dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
