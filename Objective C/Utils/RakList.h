@@ -54,8 +54,6 @@ typedef struct smartReload_data
 	RakListScrollView * scrollView;
 	RakTableView * _tableView;
 	
-	NSView * preloadedRow;
-	
 	uint selectedRowIndex;
 	uint selectedColumnIndex;
 	uint _nbElemPerCouple;

@@ -98,10 +98,9 @@
 	if(_forcedOffsetY && newSize.height != _bounds.size.height)
 		newSize.height += _forcedOffsetY;
 	
-	[super setFrameSize:newSize];
+	_suggestedWidth = newSize.width;
 	
-	if(_discardHeight)
-		[super setFrameSize:[self intrinsicContentSize]];
+	[super setFrameSize: _discardHeight ? [self intrinsicContentSize] : newSize];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
@@ -134,10 +133,19 @@
 #endif
 		aString = @"";
 	}
+	
 	[super setStringValue : aString];
 	
 	if ([self.cell wraps])
-		[self setFrameSize:[self intrinsicContentSize]];
+		[self setFrameSize: _discardHeight ? NSZeroSize : [self intrinsicContentSize]];
+}
+
+- (void) setObjectValue:(id<NSCopying>)obj
+{
+	if([(NSObject *) obj isKindOfClass:[NSString class]])
+		[self setStringValue: (NSString *) obj];
+	else
+		[super setObjectValue:obj];
 }
 
 - (void) dealloc
@@ -174,8 +182,10 @@
 	
 	if(haveFixedWidth)
 		frame.size.width = _fixedWidth;
-	else
+	else if(_bounds.size.width != 0)
 		frame.size.width = _bounds.size.width;
+	else
+		frame.size.width = _suggestedWidth;
 	
 	// Make the frame very high, while keeping the width
 	frame.size.height = CGFLOAT_MAX;

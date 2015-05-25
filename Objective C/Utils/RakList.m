@@ -66,9 +66,6 @@
 	[_tableView setDataSource:self];
 	[_tableView reloadData];
 	
-	//We call our complex resizing routine to update everything
-	[self reloadSize];
-	
 	if(activeRow != LIST_INVALID_SELECTION)
 	{
 		[self tableView:_tableView shouldSelectRow:activeRow];		//Apply graphic changes
@@ -326,7 +323,7 @@
 {
 	NSTableRowView * output = [[NSTableRowView alloc] init];
 	
-	output.autoresizesSubviews = NO;
+//	output.autoresizesSubviews = NO;
 	output.wantsLayer = NO;
 	
 	return output;

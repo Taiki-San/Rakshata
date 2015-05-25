@@ -18,6 +18,8 @@
 	uint* _jumpToInstalled;
 	
 	BOOL installedRequested;
+	
+	RakText * preloadedRow;	
 }
 
 @property (setter=setInstallOnly:, getter=installOnlyMode) BOOL installOnlyMode;

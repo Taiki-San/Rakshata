@@ -352,16 +352,18 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
+	CGFloat width = _tableView.bounds.size.width;
+	
 	if(row >= _nbData)
 		return 17;
 	
 	else if(preloadedRow == nil)
-		preloadedRow = [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
+		preloadedRow = (RakText *) [self tableView:tableView viewForTableColumn:[[tableView tableColumns] firstObject] row:row];
 	
-	else if(((RakText *) preloadedRow).fixedWidth != _tableView.bounds.size.width)
-		((RakText *) preloadedRow).fixedWidth = _tableView.bounds.size.width;
+	else if(preloadedRow.fixedWidth != width && width > 0)
+		preloadedRow.fixedWidth = width;
 	
-	((RakText *) preloadedRow).stringValue = [self tableView:tableView objectValueForTableColumn:nil row:row];
+	preloadedRow.stringValue = [self tableView:tableView objectValueForTableColumn:nil row:row];
 	
 	return preloadedRow.bounds.size.height;
 }
@@ -391,8 +393,8 @@
 		
 		return getStringForWchar(((PROJECT_DATA*) _data)[rowIndex].projectName);
 	}
-	else
-		return @"Error D:";
+
+	return @"Error D:";
 }
 
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row

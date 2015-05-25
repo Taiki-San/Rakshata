@@ -14,6 +14,7 @@
 {
 	BOOL haveFixedWidth;
 	CGFloat _fixedWidth;
+	CGFloat _suggestedWidth;
 }
 
 @property BOOL wantCustomBorder;
