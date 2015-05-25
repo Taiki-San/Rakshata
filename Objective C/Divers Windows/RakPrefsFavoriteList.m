@@ -10,6 +10,12 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	OFFSET_Y_TITLE = 22,
+	OFFSET_Y_REPO = 6
+};
+
 @interface RakPrefsFavoriteListView : RakListItemView
 {
 	PROJECT_DATA _project;
@@ -156,10 +162,11 @@
 	
 	[repo sizeToFit];
 	
-//	if(refresh == nil)
-//	{
-//		
-//	}
+	if(refresh == nil)
+	{
+		refresh = [RakButton allocImageWithoutBackground:@"refresh" :RB_STATE_STANDARD :self :@selector(refresh)];
+		[self addSubview: refresh];
+	}
 }
 
 #pragma mark - Update width
@@ -168,8 +175,17 @@
 {
 	[super frameChanged:newSize];
 	
-	[title setFrameOrigin:NSMakePoint([self titleX], 22)];
-	[repo setFrameOrigin:NSMakePoint([self titleX], 6)];
+	[title setFrameOrigin:NSMakePoint([self titleX], OFFSET_Y_TITLE)];
+	[repo setFrameOrigin:NSMakePoint([self titleX], OFFSET_Y_REPO)];
+	
+	[refresh setFrameOrigin:NSMakePoint(newSize.width - 100, newSize.height / 2 - refresh.bounds.size.height / 2)];
+}
+
+#pragma mark - Responder
+
+- (void) refresh
+{
+	
 }
 
 @end
