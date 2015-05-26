@@ -336,6 +336,8 @@
 			releaseCTData(_project);
 			_project = project;
 			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+			
+			[bottomBar favsUpdated:_project.favoris];
 		}
 	}
 }

@@ -136,6 +136,8 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		updateProjectSearch(NULL, cacheCopy);
 		
 		releaseCTData(cacheCopy);	//updateCache en fait une copie
+
+		notifyUpdateProject(*projectDB);
 	}
 
 end:

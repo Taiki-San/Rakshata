@@ -20,12 +20,14 @@ enum
 {
 	PROJECT_DATA _project;
 
-	RakText * repo;
+	RakClickableText * repo;
 	RakButton * refresh, * read, * remove;
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 - (void) updateContent : (PROJECT_DATA) project;
+
++ (void) readProject : (PROJECT_DATA) project;
 
 @end
 
@@ -40,6 +42,8 @@ enum
 		lastTransmittedSelectedRowIndex = LIST_INVALID_SELECTION;
 		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
 		
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		
 		[self applyContext:frame : selectedRowIndex : -1];
 
 		scrollView.wantsLayer = YES;
@@ -51,20 +55,14 @@ enum
 	return self;
 }
 
-- (void) tableViewSelectionDidChange:(NSNotification *)notification
+- (void) DBUpdated : (NSNotification*) notification
 {
-	if(selectedRowIndex != lastTransmittedSelectedRowIndex)
-	{
-		
-		lastTransmittedSelectedRowIndex = selectedColumnIndex;
-	}
-}
-
-- (void) resetSelection:(NSTableView *)tableView
-{
-	lastTransmittedSelectedRowIndex = VALEUR_FIN_STRUCT;
+	PROJECT_DATA * old = projectDB;
 	
-	[super resetSelection:tableView];
+	projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
+	[_tableView reloadData];
+	
+	freeProjectData(old);
 }
 
 - (Class) contentClass
@@ -83,6 +81,12 @@ enum
 }
 
 #pragma mark - Tableview code
+
+- (void) tableViewSelectionDidChange:(NSNotification *)notification
+{
+	if(selectedRowIndex < _nbData)
+		[RakPrefsFavoriteListView readProject:projectDB[selectedRowIndex]];
+}
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
@@ -138,10 +142,15 @@ enum
 
 	if(title == nil)
 	{
-		title = [[RakText alloc] initWithText:getStringForWchar(_project.projectName) :[self textColor]];
+		title = [[RakClickableText alloc] initWithText:getStringForWchar(_project.projectName) :[self textColor]];
 		if(title != nil)
 		{
 			title.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:15];
+			
+			((RakClickableText *) title).ignoreURL = YES;
+			title.clicTarget = self;
+			title.clicAction = @selector(read);
+			
 			[self addSubview:title];
 		}
 	}
@@ -153,9 +162,15 @@ enum
 	
 	if(repo == nil)
 	{
-		repo = [[RakText alloc] initWithText:getStringForWchar(_project.repo->name) :[self detailTextColor]];
+		repo = [[RakClickableText alloc] initWithText:getStringForWchar(_project.repo->name) :[self detailTextColor]];
 		if(repo != nil)
+		{
+			repo.ignoreURL = YES;
+			repo.clicTarget = self;
+			repo.clicAction = @selector(clickRepo);
+			
 			[self addSubview:repo];
+		}
 	}
 	else
 		repo.stringValue = getStringForWchar(_project.repo->name);
@@ -165,23 +180,35 @@ enum
 	if(refresh == nil)
 	{
 		refresh = [RakButton allocImageWithoutBackground:@"refresh" :RB_STATE_STANDARD :self :@selector(refresh)];
-		[self addSubview: refresh];
+		if(refresh != nil)
+		{
+			[refresh.cell setActiveAllowed:NO];
+			[self addSubview:refresh];
+		}
 	}
 	
 	if(read == nil)
 	{
 		read = [RakButton allocImageWithoutBackground:@"p_voir" :RB_STATE_STANDARD :self :@selector(read)];
-		[self addSubview:read];
+		if(read != nil)
+		{
+			[read.cell setActiveAllowed:NO];
+			[self addSubview:read];
+		}
 	}
 	
 	if(remove == nil)
 	{
 		remove = [RakButton allocImageWithoutBackground:@"p_X" :RB_STATE_STANDARD :self :@selector(remove)];
-		[self addSubview:remove];
+		if(remove != nil)
+		{
+			[remove.cell setActiveAllowed:NO];
+			[self addSubview:remove];
+		}
 	}
 }
 
-#pragma mark - Update width
+#pragma mark - UI management
 
 - (void) frameChanged : (NSSize) newSize
 {
@@ -190,12 +217,22 @@ enum
 	[title setFrameOrigin:NSMakePoint([self titleX], OFFSET_Y_TITLE)];
 	[repo setFrameOrigin:NSMakePoint([self titleX], OFFSET_Y_REPO)];
 	
-	[refresh setFrameOrigin:NSMakePoint(newSize.width - 100, newSize.height / 2 - refresh.bounds.size.height / 2)];
-	[read setFrameOrigin:NSMakePoint(NSMaxX(refresh.frame) + 10, newSize.height / 2 - read.bounds.size.height / 2)];
-	[remove setFrameOrigin:NSMakePoint(NSMaxX(read.frame) + 10, newSize.height / 2 - remove.bounds.size.height / 2)];
+	[remove setFrameOrigin:NSMakePoint(newSize.width - 10 - remove.bounds.size.width, newSize.height / 2 - remove.bounds.size.height / 2)];
+	[read setFrameOrigin:NSMakePoint(remove.frame.origin.x - 10 - read.bounds.size.width, newSize.height / 2 - read.bounds.size.height / 2)];
+	[refresh setFrameOrigin:NSMakePoint(read.frame.origin.x - 10 - refresh.bounds.size.width, newSize.height / 2 - refresh.bounds.size.height / 2)];
+}
+
+- (NSColor *) textColor
+{
+	return [self detailTextColor];
 }
 
 #pragma mark - Responder
+
+- (void) clickRepo
+{
+	
+}
 
 - (void) refresh
 {
@@ -204,12 +241,19 @@ enum
 
 - (void) read
 {
-	
+	[[self class] readProject:_project];
+}
+
++ (void) readProject : (PROJECT_DATA) project
+{
+	[RakTabView broadcastUpdateContext:nil :project :NO :VALEUR_FIN_STRUCT];
+	[RakTabView broadcastUpdateFocus:TAB_CT];
+	[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
 }
 
 - (void) remove
 {
-	
+	setFavorite(&_project);
 }
 
 @end

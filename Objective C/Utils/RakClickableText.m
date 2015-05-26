@@ -54,19 +54,19 @@
 
 - (void) mouseEntered : (NSEvent *) theEvent
 {
-	if(_URL != nil)
+	if(_URL != nil || _ignoreURL)
 		self.textColor = [self focusTextColor];
 }
 
 - (void) mouseExited : (NSEvent *) theEvent
 {
-	if(_URL != nil)
+	if(_URL != nil || _ignoreURL)
 		self.textColor = classicalTextColor;
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	if(_URL != nil)
+	if(_URL != nil || _ignoreURL)
 		[super mouseDown:theEvent];
 	else
 		[self overrideMouseUp:theEvent];
@@ -74,7 +74,7 @@
 
 - (void) mouseUp : (NSEvent *) theEvent
 {
-	if(_URL != nil)
+	if(_URL != nil || _ignoreURL)
 		[super mouseUp:theEvent];
 	else
 		[self overrideMouseUp:theEvent];

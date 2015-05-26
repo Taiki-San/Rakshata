@@ -18,6 +18,7 @@
 }
 
 @property id URL;
+@property BOOL ignoreURL;
 
 - (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (NSObject *) responder;
 
