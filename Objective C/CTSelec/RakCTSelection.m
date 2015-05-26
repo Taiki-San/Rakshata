@@ -376,12 +376,7 @@
 	if(data.cacheDBID != projectID || self.dontNotify)
 		return;
 	
-	RakCTSelectionListContainer * tab = nil;
-	
-	if(isTome)
-		tab = _volView;
-	else if(!isTome)
-		tab = _chapterView;
+	RakCTSelectionListContainer * tab = isTome ? _volView : _chapterView;
 	
 	if(tab != nil)
 	{

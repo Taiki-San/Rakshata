@@ -131,24 +131,35 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 		
 		length = MIN(length, 5000);
 #elif defined(__APPLE__)
-		int c = 0;
 		unsigned char buffer_fingerprint[5000];
 		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
 		
 		FILE *system_output;
-		for(int j = 0; j < 4; j++)
+		for(byte j = 0; j < 4; j++)
 		{
+			char currentSection[1024];
+			
 			system_output = popen(command_line[j], "r");
-			usleep(10000);
-			while(fgetc(system_output) == EOF); //On attend la fin de l'execution de la commande
-			while((c = fgetc(system_output)) != ':' && c != EOF); //On saute la première partie
-			
-			fgetc(system_output);
-			
-			for(; (c = fgetc(system_output)) != EOF && c != '\n' && length < 4998; buffer_fingerprint[length++] = c);
-			buffer_fingerprint[length++] = ' ';
-			buffer_fingerprint[length] = 0;
-			pclose(system_output);
+			if(system_output != NULL && fread(currentSection, sizeof(char), sizeof(currentSection), system_output) > 0)
+			{
+				short pos = 0;
+				
+				while(pos < sizeof(currentSection) && currentSection[pos] && currentSection[pos++] != ':');
+				for(; pos < sizeof(currentSection) && currentSection[pos] && currentSection[pos] == ' '; pos++);
+				
+				while(pos < sizeof(currentSection) && currentSection[pos] && currentSection[pos] != '\n')
+					buffer_fingerprint[length++] = currentSection[pos++];
+				
+				buffer_fingerprint[length++] = ' ';
+				buffer_fingerprint[length] = 0;
+				pclose(system_output);
+			}
+#ifdef DEV_VERSION
+			else
+			{
+				logR("Hum, fingerprint generation fuckup...");
+			}
+#endif
 		}
 #else
 		

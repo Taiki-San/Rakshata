@@ -757,10 +757,19 @@
 				releaseDataReader(&_previousData);
 			}
 			
+			if(dataLoaded)
+			{
+				dataLoaded = NO;
+				releaseDataReader(&_data);
+			}
+			
 			if(!byChangingPage)
 				_data.pageCourante = 0;
 			
 			[self updateContext : NO];
+			
+			if(byChangingPage)
+				[self jumpToPage : _data.nombrePage - 1];
 		}
 	}
 	else
@@ -1348,7 +1357,7 @@
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
 		//Somehow, the cache isn't running
-		if(!self.initWithNoContent && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
+		if(!self.initWithNoContent && !_flushingCache && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 		{
 			uint cacheCode = ++cacheSession;
 			dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
