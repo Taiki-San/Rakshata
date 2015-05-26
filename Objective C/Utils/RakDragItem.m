@@ -65,6 +65,24 @@ typedef struct project_data_for_drag_drop
 	return [NSData dataWithBytes:&structure length:sizeof(structure)];
 }
 
+- (BOOL) isFavorite
+{
+	return self.project.favoris;
+}
+
++ (BOOL) isFavorite : (NSPasteboard*) pasteboard
+{
+	if(pasteboard != nil)
+	{
+		RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
+		if(item != nil)
+		{
+			return [item isFavorite];
+		}
+	}
+	return YES;
+}
+
 - (BOOL) canDL
 {
 	return canDL;

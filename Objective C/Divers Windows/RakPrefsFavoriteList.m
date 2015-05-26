@@ -50,6 +50,8 @@ enum
 		scrollView.layer.cornerRadius = 3;
 		scrollView.drawsBackground = YES;
 		scrollView.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :self];
+		
+		[self enableDrop];
 	}
 	
 	return self;
@@ -114,6 +116,29 @@ enum
 		[result updateContent : project];
 	
 	return result;
+}
+
+#pragma mark - Drop support
+
+- (BOOL) grantDropAuthorization : (RakDragItem *) item
+{
+	return ![item isFavorite];
+}
+
+- (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
+{
+	return [RakDragItem isFavorite:[item draggingPasteboard]] ? NSDragOperationNone : NSDragOperationCopy;
+}
+
+- (uint) getSelfCode
+{
+	return TAB_UNKNOWN;
+}
+
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+{
+	setFavorite(&project);
+	return YES;
 }
 
 @end

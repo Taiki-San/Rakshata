@@ -26,7 +26,7 @@
 
 + (void) registerToPasteboard : (NSPasteboard *) pboard;
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation;
-- (BOOL) grantDropAuthorization : (BOOL) canDL;
+- (BOOL) grantDropAuthorization : (RakDragItem *) item;
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation;
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
 - (NSImage*) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing;

@@ -26,6 +26,8 @@
 - (instancetype) initWithData : (NSData *) data;
 
 - (NSData *) getData;
+- (BOOL) isFavorite;
++ (BOOL) isFavorite : (NSPasteboard*) pasteboard;
 - (BOOL) canDL;
 + (BOOL) canDL : (NSPasteboard*) pasteboard;
 + (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;

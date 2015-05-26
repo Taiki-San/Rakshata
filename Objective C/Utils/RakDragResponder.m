@@ -29,7 +29,7 @@
 			return TAB_MDL;
 	}
 	
-	return 0;
+	return TAB_UNKNOWN;
 }
 
 - (BOOL) supportReorder
@@ -71,7 +71,7 @@
 	return NSDragOperationNone;
 }
 
-- (BOOL) grantDropAuthorization : (BOOL) canDL
+- (BOOL) grantDropAuthorization : (RakDragItem *) item
 {
 	return YES;
 }
@@ -84,7 +84,7 @@
 		RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 		if(item != nil)
 		{
-			if(![self grantDropAuthorization : [item canDL]])
+			if(![self grantDropAuthorization : item])
 				return NSDragOperationNone;
 		}
 	}

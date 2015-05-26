@@ -50,6 +50,7 @@ enum PREFS_PROVIDER
 
 enum TAB_CODE
 {
+	TAB_UNKNOWN = 	0,
 	TAB_READER = 	(1 << 0),
 	TAB_READER_DF = (0x0010 & TAB_READER),
 	TAB_CT = 		(1 << 1),

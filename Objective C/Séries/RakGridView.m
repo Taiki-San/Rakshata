@@ -192,7 +192,7 @@ enum
 	
 }
 
-- (BOOL) grantDropAuthorization : (BOOL) canDL
+- (BOOL) grantDropAuthorization : (RakDragItem *) item
 {
 	return NO;
 }

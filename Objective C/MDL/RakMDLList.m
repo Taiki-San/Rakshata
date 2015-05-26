@@ -265,9 +265,9 @@ enum
 	return YES;
 }
 
-- (BOOL) grantDropAuthorization : (BOOL) canDL
+- (BOOL) grantDropAuthorization : (RakDragItem *) item
 {
-	return canDL;
+	return [item canDL];
 }
 
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
