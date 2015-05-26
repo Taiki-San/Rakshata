@@ -90,7 +90,7 @@
 		[projectImage resizeAnimation:newBound];
 	}
 	
-	[coreview resizeAnimation : newBound : headerHeight];
+	[coreview setFrame : newBound : headerHeight];
 }
 
 - (void) dealloc

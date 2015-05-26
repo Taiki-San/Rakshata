@@ -44,10 +44,6 @@ enum {
 
 @property BOOL forceNextFrameUpdate;
 
-#define CREATE_CUSTOM_VIEW_TAB_SERIE	1
-#define CREATE_CUSTOM_VIEW_TAB_CT		2
-#define CREATE_CUSTOM_VIEW_TAB_READER	3
-
 - (void) initView: (NSView *)superview : (NSString *) state;
 - (NSString *) byebye;
 

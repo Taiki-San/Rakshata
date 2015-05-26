@@ -717,8 +717,11 @@ enum
 		case PREFS_SET_OWNMAINTAB:
 		{
 			ret_value = mainThread != (uint) value;
-			mainThread = value & TAB_MASK;
-			[prefsCache refreshFirstResponder];
+			if(ret_value)
+			{
+				mainThread = value & TAB_MASK;
+				[prefsCache refreshFirstResponder];
+			}
 			
 			break;
 		}

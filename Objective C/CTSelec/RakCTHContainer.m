@@ -113,7 +113,6 @@
 	else if(![currentElem isEqualToString:projectName.stringValue])
 	{
 		[projectName setStringValue : currentElem];
-		[projectName sizeToFit];
 		[projectName setFrameOrigin : [self projectNamePos : _bounds.size]];
 	}
 	

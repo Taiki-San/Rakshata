@@ -301,7 +301,7 @@
 		[backButton resizeAnimation:frame];
 		[SRHeader setFrame:[self headerFrame : frame]];
 		
-		[coreView resizeAnimation:[self contentFrame : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
+		[coreView setFrame:[self contentFrame : frame : RBB_TOP_BORDURE + RBB_BUTTON_HEIGHT]];
 	}
 	else
 	{
@@ -359,7 +359,7 @@
 				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 				
-				else	//Fuck, we have to cancel the animation...
+				else if(self.mainThread == TAB_READER)	//Fuck, we have to cancel the animation...
 				{
 					readerFrame.origin.x += widthCTTab;
 					readerFrame.size.width -= widthCTTab;

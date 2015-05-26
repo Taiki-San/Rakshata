@@ -23,6 +23,9 @@ enum
 	ROW_DRM = 6
 };
 
+#define WIDTH_TITLE_COLUMN (7.0f / 20.0f)
+#define WIDTH_CONTENT_COLUMN (11.0f / 20.0f)
+
 @implementation RakCTHTableController
 
 - (instancetype) initWithProject : (PROJECT_DATA) project frame : (NSRect) frame
@@ -132,8 +135,8 @@ enum
 		[self.scrollView setFrame : newFrame];
 	
 	//Force columns width
-	[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID].width = newFrame.size.width * 2 / 5;
-	[_tableView tableColumnWithIdentifier : RCTH_DETAILS_ID].width = newFrame.size.width / 2;
+	[_tableView tableColumnWithIdentifier : RCTH_TITLE_ID].width = newFrame.size.width * WIDTH_TITLE_COLUMN;
+	[_tableView tableColumnWithIdentifier : RCTH_DETAILS_ID].width = newFrame.size.width * WIDTH_CONTENT_COLUMN;
 }
 
 #pragma mark - UI tools
@@ -173,17 +176,16 @@ enum
 	
 	//TableView columns init
 	NSTableColumn * titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_TITLE_ID];
-	titles.width = _tableView.frame.size.width * 2 / 5;
+	titles.width = _tableView.frame.size.width * WIDTH_TITLE_COLUMN;
 	[_tableView addTableColumn:titles];
 	
 	titles = [[NSTableColumn alloc] initWithIdentifier:RCTH_DETAILS_ID];
-	titles.width = _tableView.frame.size.width * 3 / 5;
+	titles.width = _tableView.frame.size.width * WIDTH_CONTENT_COLUMN;
 	[_tableView addTableColumn:titles];
 	
 	//End of setup
 	[_tableView setDelegate:self];
 	[_tableView setDataSource:self];
-	[_tableView reloadData];
 	[_tableView scrollRowToVisible:0];
 	
 	//Update positions once the table was populated
@@ -196,7 +198,6 @@ enum
 	parentBounds.origin.x = parentBounds.size.width / 2;
 	
 	parentBounds.size.width -= parentBounds.origin.x;
-	parentBounds.size.width *= 9 / 10.0f;
 	parentBounds.size.height -= 2 * BOTTOM_BORDER;
 	
 	return parentBounds;
@@ -283,7 +284,6 @@ enum
 	if (result == nil)
 	{
 		result = [[RakText alloc] init];
-		[result setFrame:NSMakeRect(0, 0, tableColumn.width, 35)];
 		
 		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
 		[result setIdentifier: @"PFUDOR"];

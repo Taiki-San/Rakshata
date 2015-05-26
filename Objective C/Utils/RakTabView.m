@@ -72,11 +72,14 @@
 		return NO;
 	
 	//We get our current tab
-	while (sender != nil && [sender superclass] != [RakTabView class])
-		sender = [sender superview];
-	
-	if(sender == nil)
-		return NO;
+	if(sender != nil)
+	{
+		while (sender != nil && [sender superclass] != [RakTabView class])
+			sender = [sender superview];
+		
+		if(sender == nil)
+			return NO;
+	}
 	
 	//Sanity checks
 	BOOL shouldFreeAfterward = NO;
