@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include <dirent.h>
-#include <curl/curl.h>
+#include <libcurl/curl.h>
 
 #include "main.h"
 #include "encoding.h"

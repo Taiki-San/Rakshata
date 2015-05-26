@@ -10,10 +10,10 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "../Libraries/openssl/bio.h"
-#include "../Libraries/openssl/pem.h"
-#include "../Libraries/openssl/x509.h"
-#include "../Libraries/openssl/ssl.h"
+#include <openssl/bio.h>
+#include <openssl/pem.h>
+#include <openssl/x509.h>
+#include <openssl/ssl.h>
 
 static CURLSH* cacheDNS;
 
