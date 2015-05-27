@@ -22,6 +22,8 @@ enum
 
 	RakClickableText * repo;
 	RakButton * refresh, * read, * remove;
+	
+	BOOL refreshing;
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
@@ -256,12 +258,59 @@ enum
 
 - (void) clickRepo
 {
+	uint mainThread;
+	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	
+	if(mainThread != TAB_SERIES)
+	{
+		[RakTabView broadcastUpdateFocus:TAB_SERIES];
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * 1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[self clickRepo];
+		});
+	}
+	else
+	{
+		[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getStringForWchar(_project.repo->name) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_project.repo)), SR_NOTIF_OPTYPE : @(YES)}];
+	}
 }
 
 - (void) refresh
 {
+	//This code should only be initiated from the main thread, not a problem if it comes from the event queue
+	if(![NSThread isMainThread] && !refreshing)
+	{
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			[self refresh];
+		});
+		return;
+	}
 	
+	//No concurent refreshing
+	if(refreshing)
+		return;
+	
+	refreshing = YES;
+	uint currentID = _project.cacheDBID;
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		refreshRepo(_project.repo);
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			if(currentID != _project.cacheDBID)
+				[self refreshCallback];
+	
+			refreshing = NO;
+		});
+	});
+}
+
+- (void) refreshCallback
+{
+	NSLog(@"Yay");
 }
 
 - (void) read

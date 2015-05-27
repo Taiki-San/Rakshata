@@ -163,7 +163,16 @@ int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo)
     return defaultVersion+1;
 }
 
-void * refreshRepo(REPO_DATA * repo, bool standalone)
+void refreshRepo(REPO_DATA * repo)
+{
+	ICONS_UPDATE * iconData = refreshRepoHelper(repo, true);
+	
+	createNewThread(updateProjectImages, iconData);
+	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
+	notifyUpdateRepo(*repo);
+}
+
+void * refreshRepoHelper(REPO_DATA * repo, bool standalone)
 {
 	PROJECT_DATA project = getEmptyProject();
 	
@@ -313,7 +322,7 @@ void updateProjects()
 				{
 					if(!refreshedTable[i])
 					{
-						newIcon = refreshRepo(repo[i], false);
+						newIcon = refreshRepoHelper(repo[i], false);
 						
 						if(newIcon != NULL)
 						{

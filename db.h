@@ -148,6 +148,7 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
+void refreshRepo(REPO_DATA * repo);
 int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
 void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);

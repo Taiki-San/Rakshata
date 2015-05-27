@@ -385,10 +385,8 @@ void activateRepo(REPO_DATA repo)
 	if(!alreadyActive)
 	{
 		//We now, we need to update the new repo to reflect changes
-		ICONS_UPDATE * iconData = refreshRepo(&repo, false);
+		refreshRepo(&repo);
 
-		createNewThread(updateProjectImages, iconData);
-		syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
 		notifyFullUpdate();
 		notifyFullUpdateRepo();
 	}

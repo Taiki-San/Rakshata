@@ -26,7 +26,7 @@
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
-		[context setDuration : fastAnimation ? 0.1 : 0.2];
+		[context setDuration : fastAnimation ? ANIMATION_DURATION_SHORT : ANIMATION_DURATION_LONG];
 		
 		for(RakTabView * currentView in validatedViews)
 			[currentView setUpViewForAnimation : mainThread];

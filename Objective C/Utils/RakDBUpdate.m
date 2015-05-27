@@ -116,8 +116,7 @@
 	if(val == nil)
 		return NO;
 	
-	uint localID = [val unsignedIntValue];
-	return localID == UNUSED_FIELD;
+	return [val unsignedIntValue] == UNUSED_FIELD;
 }
 
 + (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID
