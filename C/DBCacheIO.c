@@ -160,9 +160,9 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	if(data.chapitresFull != NULL)
 	{
-		buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
+		buffer = malloc(data.nombreChapitre * sizeof(int));
 		if(buffer != NULL)
-			memcpy(buffer, data.chapitresFull, (data.nombreChapitre + 1) * sizeof(int));
+			memcpy(buffer, data.chapitresFull, data.nombreChapitre * sizeof(int));
 		
 		sqlite3_bind_int64(request, 11, (int64_t) buffer);
 	}
@@ -171,9 +171,9 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	if(data.chapitresPrix != NULL)
 	{
-		buffer = malloc((data.nombreChapitre + 1) * sizeof(int));
+		buffer = malloc(data.nombreChapitre * sizeof(uint));
 		if(buffer != NULL)
-			memcpy(buffer, data.chapitresPrix, (data.nombreChapitre + 1) * sizeof(int));
+			memcpy(buffer, data.chapitresPrix, data.nombreChapitre * sizeof(uint));
 		
 		sqlite3_bind_int64(request, 12, (int64_t) buffer);
 	}
@@ -186,7 +186,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	if(data.tomesFull != NULL)
 	{
-		buffer = malloc((data.nombreTomes + 1) * sizeof(META_TOME));
+		buffer = malloc(data.nombreTomes * sizeof(META_TOME));
 		if(buffer != NULL)
 			copyTomeList(data.tomesFull, data.nombreTomes, buffer);
 		
@@ -207,6 +207,15 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 
 	MUTEX_UNLOCK(cacheParseMutex);
 	
+#ifdef DEV_VERSION
+	if(data.chapitresPrix)
+	{
+		PROJECT_DATA project = getElementByID(data.cacheDBID);
+		
+		printf("Project %ls [%d vs %d]: %p - %p - %p\n", project.projectName, data.cacheDBID, project.cacheDBID, project.chapitresFull, project.chapitresPrix, project.tomesFull);
+		releaseCTData(project);
+	}
+#endif
 	destroyRequest(request);
 	
 	return true;

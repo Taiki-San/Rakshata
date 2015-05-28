@@ -162,6 +162,9 @@ uint setupBDDCache()
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].repo), isInstalled(pathInstall), false))
 					{
+#ifdef DEV_VERSION
+						printf("Validated %ls ~ %p - %p - %p\n", projects[pos].projectName, projects[pos].chapitresFull, projects[pos].chapitresPrix, projects[pos].tomesFull);
+#endif
 						projects[pos].cacheDBID = cacheID++;
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos]);
 						continue;
@@ -173,6 +176,7 @@ uint setupBDDCache()
 				freeTomeList(projects[pos].tomesFull, projects[pos].nombreTomes, true);
 			}
 			
+			free(projects);
 			flushSearchJumpTable(searchData);
 		}
 		

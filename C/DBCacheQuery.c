@@ -94,9 +94,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
 		if(buffer != NULL)
 		{
-			output->chapitresPrix = malloc((output->nombreChapitre+2) * sizeof(uint));
+			output->chapitresPrix = malloc(output->nombreChapitre * sizeof(uint));
 			if(output->chapitresPrix != NULL)
-				memcpy(output->chapitresPrix, buffer, (output->nombreChapitre + 1) * sizeof(int));
+				memcpy(output->chapitresPrix, buffer, output->nombreChapitre * sizeof(int));
 			else
 				output->chapitresPrix = NULL;
 		}

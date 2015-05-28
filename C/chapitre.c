@@ -14,6 +14,16 @@ void refreshChaptersList(PROJECT_DATA *projectDB)
 {
     if(projectDB->chapitresFull != NULL || projectDB->chapitresPrix != NULL || projectDB->chapitresInstalled != NULL)
 	{
+#ifdef DEV_VERSION
+		FILE * output = fopen("log/log.txt", "a+");
+		if(output != NULL)
+		{
+			fprintf(output, "Freeing data: %p - %p - %p\n", projectDB->chapitresFull, projectDB->chapitresInstalled, projectDB->chapitresInstalled);
+			logStack(projectDB->chapitresFull);
+			fclose(output);
+		}
+#endif
+		
 		free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
 		free(projectDB->chapitresPrix);		projectDB->chapitresPrix = NULL;
 		free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
