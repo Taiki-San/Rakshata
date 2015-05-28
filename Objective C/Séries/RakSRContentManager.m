@@ -21,7 +21,7 @@
 	
 	if(self != nil)
 	{
-		if(![self initData:&project :&cacheList :&activatedList :&filteredToSorted :&sortedToFiltered :&nbElemFull :&nbElemActivated : YES])
+		if(![self initData:&project :&cacheList :&filteredToSorted :&filteredToOrdered :&orderedToSorted :&nbElemFull :&nbElemActivated : YES])
 			return nil;
 		
 		//Okay, we have all our data, we can register for updates
@@ -51,14 +51,13 @@
 //We craft two lists in order to make diffing feasable in O(n)
 
 //cacheList contain a sorted list of the cacheID in the active projects
-//orderedToSorted contain the indexes of the elements whose cacheID was at this position in cacheList
-//filteredToSorted tell the index of the item of rank N in case of filters
+//filteredToOrdered tell the index of the item of rank N in case of filters
 
 //cacheList makes it easy to detect insertion and deletion
 //orderedToSorted makes it easy to detect moves
-//filteredToSorted serve as a jumptable to deal with filters
+//filteredToOrdered serve as a jumptable to deal with filters
 
-- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (BOOL **) _activatedList : (uint **) _filteredToSorted : (uint **) _orderedToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated : (BOOL) includeCacheRefresh
+- (BOOL) initData : (PROJECT_DATA **) _project : (uint **) _cacheList : (uint **) _filteredToSorted : (uint **) _filteredToOrdered : (uint **) _orderedToSorted : (uint *) _nbElemFull : (uint *) _nbElemActivated : (BOOL) includeCacheRefresh
 {
 	if(!includeCacheRefresh && project == NULL)
 		includeCacheRefresh = YES;
@@ -81,22 +80,31 @@
 	
 	//We get the filtered list
 	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL, installedOnly);
-	if(filtered == NULL)
+	if(filtered == NULL && *_nbElemActivated != 0)
 	{
 		if(includeCacheRefresh)
 			freeProjectData(*_project);
 		return NO;
 	}
 	
+	BOOL noData = *_nbElemActivated == 0;
 	const uint invalidValue = UINT_MAX;
 	
 	//We alloc memory for everything
 	*_cacheList = malloc(*_nbElemFull * sizeof(uint));
-	*_activatedList = calloc(*_nbElemFull, sizeof(BOOL));
-	*_filteredToSorted = malloc(*_nbElemActivated * sizeof(uint));
 	*_orderedToSorted = malloc(*_nbElemFull * sizeof(uint));
 	
-	if(*_cacheList == NULL || *_activatedList == NULL || *_filteredToSorted == NULL || 	*_orderedToSorted == NULL)
+	if(!noData)
+	{
+		*_filteredToSorted = malloc(*_nbElemActivated * sizeof(uint));
+		*_filteredToOrdered = malloc(*_nbElemActivated * sizeof(uint));
+	}
+	else
+	{
+		*_filteredToSorted = *_filteredToOrdered = NULL;
+	}
+	
+	if(*_cacheList == NULL || *_orderedToSorted == NULL || (!noData && (*_filteredToSorted == NULL || *_filteredToOrdered == NULL)))
 	{
 		if(includeCacheRefresh)
 		{
@@ -105,8 +113,8 @@
 		}
 		free(filtered);
 		free(*_cacheList);			*_cacheList = NULL;
-		free(*_activatedList);		*_activatedList = NULL;
 		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_filteredToOrdered);	*_filteredToOrdered = NULL;
 		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
@@ -133,8 +141,8 @@
 		}
 		free(filtered);
 		free(*_cacheList);			*_cacheList = NULL;
-		free(*_activatedList);		*_activatedList = NULL;
 		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_filteredToOrdered);	*_filteredToOrdered = NULL;
 		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
@@ -150,8 +158,8 @@
 		}
 		free(filtered);
 		free(*_cacheList);			*_cacheList = NULL;
-		free(*_activatedList);		*_activatedList = NULL;
 		free(*_filteredToSorted);	*_filteredToSorted = NULL;
+		free(*_filteredToOrdered);	*_filteredToOrdered = NULL;
 		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
@@ -162,38 +170,49 @@
 		collector[(*_project)[i].cacheDBID] = i;
 	
 	//We compact the large dataset in the reduced final structure
+	uint tmpSortedToOrdered[*_nbElemFull];
 	for(uint i = 0, pos = 0; i < highestValue; i++)
 	{
 		if(collector[i] != invalidValue)
 		{
 			(*_cacheList)[pos] = i;
+			tmpSortedToOrdered[collector[i]] = pos;
 			(*_orderedToSorted)[pos++] = collector[i];
 		}
 	}
 	
 	free(collector);
 	
+	//_nbElemFull > 0, donc _nbElemActivated == 0 pas un problème pour la première branche
 	if(*_nbElemFull == *_nbElemActivated)
 	{
-		memset(*_activatedList, 1, *_nbElemFull);
 		for(uint i = 0; i < *_nbElemActivated; i++)
+		{
 			(*_filteredToSorted)[i] = i;
+			(*_filteredToOrdered)[i] = i;
+		}
 	}
-	else
+	else if(!noData)
 	{
+		BOOL activatedList[*_nbElemFull];
+		memset(activatedList, YES, *_nbElemFull * sizeof(BOOL));
+		
 		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
 		{
 			if(filtered[filteredPos] == (*_cacheList)[i])
 			{
-				(*_activatedList)[(*_orderedToSorted)[i]] = YES;
+				activatedList[i] = YES;
 				filteredPos++;
 			}
 		}
 		
-		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
+		for(uint i = 0, filteredPosOrder = 0, filteredPosSorted = 0; i < *_nbElemFull && MIN(filteredPosOrder, filteredPosSorted) < *_nbElemActivated; i++)
 		{
-			if((*_activatedList)[i])
-				(*_filteredToSorted)[filteredPos++] = i;
+			if(filteredPosOrder < *_nbElemActivated && activatedList[i])
+				(*_filteredToOrdered)[filteredPosOrder++] = i;
+			
+			if(filteredPosSorted < *_nbElemActivated && activatedList[tmpSortedToOrdered[i]])
+				(*_filteredToSorted)[filteredPosSorted++] = i;
 		}
 	}
 	
@@ -385,29 +404,39 @@
 - (void) updateContext : (BOOL) includeCacheRefresh
 {
 	PROJECT_DATA * newProject;
-	uint * newCacheList, * newFilteredToSorted, * newSortedToFiltered, newNbElemFull, newNbElemActivated;
-	BOOL * newActivatedList;
+	uint * newCacheList, * newFilteredToSorted, * newFilteredToOrdered, * newOrderedToSorted, newNbElemFull, newNbElemActivated;
 	
-	if([self initData:&newProject :&newCacheList :&newActivatedList :&newFilteredToSorted :&newSortedToFiltered :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
+	if([self initData:&newProject :&newCacheList :&newFilteredToSorted :&newFilteredToOrdered :&newOrderedToSorted :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
 	{
-		uint removal[nbElemActivated], insertion[newNbElemActivated], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
-		uint _filteredToSorted[nbElemActivated], _newFilteredToSorted[newNbElemActivated];
+		//+ 1 to remove the case where newNbElemActivated == 0
+		uint removal[nbElemActivated + 1], insertion[newNbElemActivated + 1], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
+		BOOL maskValidated[nbElemFull], newMaskValidated[newNbElemFull];
 		
-		memcpy(_filteredToSorted, filteredToSorted, nbElemActivated * sizeof(uint));
-		memcpy(_newFilteredToSorted, newFilteredToSorted, newNbElemActivated * sizeof(uint));
+		memset(maskValidated, 1, nbElemFull * sizeof(BOOL));
+		memset(newMaskValidated, 1, newNbElemFull * sizeof(BOOL));
 		
-		//First, we detect suppressions/deletions
-		while(posOld < nbElemActivated && posNew < newNbElemActivated)
+		//First, we detect suppressions/deletions in the global cache list
+		while(posOld < nbElemFull && posNew < newNbElemFull)
 		{
+			//Deletion
 			if(cacheList[posOld] < newCacheList[posNew])
 			{
-				_filteredToSorted[sortedToFiltered[posOld]] = UINT_MAX;	//Invalidate the entry
-				removal[nbRemoval++] = sortedToFiltered[posOld++];
+				maskValidated[posOld] = NO;	//Invalidate the entry
+				removal[nbRemoval++] = orderedToSorted[posOld++];
 			}
+			
+			//Insertion
 			else if(cacheList[posOld] > newCacheList[posNew])
 			{
-				_newFilteredToSorted[newSortedToFiltered[posNew]] = UINT_MAX;
-				insertion[nbInsertion++] = newSortedToFiltered[posNew++];
+				newMaskValidated[posNew] = NO;	//Invalidate the entry
+				insertion[nbInsertion++] = newOrderedToSorted[posNew++];
+			}
+			
+			//Move
+			else if(maskValidated[posOld] && newMaskValidated[posNew] && orderedToSorted[posOld] != newOrderedToSorted[posNew])
+			{
+				removal[nbRemoval++] = orderedToSorted[posOld];			maskValidated[orderedToSorted[posOld++]] = NO;
+				insertion[nbInsertion++] = newOrderedToSorted[posNew];	newMaskValidated[newOrderedToSorted[posNew++]] = NO;
 			}
 			else
 			{
@@ -416,50 +445,61 @@
 			}
 		}
 		
-		while(posOld < nbElemActivated)			{	_filteredToSorted[sortedToFiltered[posOld]] = UINT_MAX;		removal[nbRemoval++] = sortedToFiltered[posOld++];			}
-		while(posNew < newNbElemActivated)		{	_newFilteredToSorted[newSortedToFiltered[posNew]] = UINT_MAX;	insertion[nbInsertion++] = newSortedToFiltered[posNew++];	}
+		while(posOld < nbElemFull)
+		{	removal[nbRemoval++] = orderedToSorted[posOld];		maskValidated[posOld++] = NO;	}
 		
-		//Then we look for moves
+		while(posNew < newNbElemFull)
+		{	insertion[nbInsertion++] = newOrderedToSorted[posNew];	newMaskValidated[posNew++] = NO;		}
+
+		//We then track modification in the installed list
 		posOld = posNew = 0;
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
 		{
-			if(_filteredToSorted[posOld] == UINT_MAX)
+			if(!maskValidated[filteredToOrdered[posOld]])
 				posOld++;
 			
-			else if(_newFilteredToSorted[posNew] == UINT_MAX)
+			else if(!newMaskValidated[newFilteredToOrdered[posNew]])
 				posNew++;
 			
-			else if(_filteredToSorted[posOld] != newFilteredToSorted[posNew])
-			{
-				removal[nbRemoval++] = posOld++;
-				insertion[nbInsertion++] = posNew++;
-			}
+			//Removal
+			else if(filteredToOrdered[posOld] < newFilteredToOrdered[posNew])
+				removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld++]];
+			
+			//Insertion
+			else if(filteredToOrdered[posOld] > newFilteredToOrdered[posNew])
+				insertion[nbInsertion++] = newOrderedToSorted[newFilteredToOrdered[posNew++]];
 			
 			else
 			{
-				posOld++;
 				posNew++;
+				posOld++;
 			}
 		}
 		
+		while(posOld < nbElemActivated)
+		{	removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld++]];	}
+		
+		while(posNew < newNbElemActivated)
+		{	insertion[nbInsertion++] = newOrderedToSorted[newFilteredToOrdered[posNew++]];	}
+
+		
 		//We replace the old data structure
 		PROJECT_DATA * oldProject = project;
-		uint * oldCacheList = cacheList, * oldFilteredToSorted = filteredToSorted;
-		BOOL * oldActivatedList = activatedList;
+		uint * oldCacheList = cacheList, * oldFilteredToOrdered = filteredToOrdered, * oldFilteredToSorted = filteredToSorted;
 		
 		project = newProject;
 		cacheList = newCacheList;
+		filteredToOrdered = newFilteredToOrdered;
+		orderedToSorted = newOrderedToSorted;
 		filteredToSorted = newFilteredToSorted;
-		sortedToFiltered = newSortedToFiltered;
-		activatedList = newActivatedList;
 		nbElemActivated = newNbElemActivated;
 		nbElemFull = newNbElemFull;
 		
 		if(includeCacheRefresh)
 			freeProjectData(oldProject);
 		free(oldCacheList);
+		free(oldFilteredToOrdered);
 		free(oldFilteredToSorted);
-		free(oldActivatedList);
 		
 		//Apply changes, yay
 		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
@@ -471,7 +511,18 @@
 			qsort(insertion, nbInsertion, sizeof(uint), sortNumbers);
 		
 		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
-		for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
+		uint realLengthRemoval = 0, index = 0;
+		for(RakSRStupidDataStructure * entry in content)
+		{
+			if(realLengthRemoval >= nbRemoval)
+				break;
+			
+			if(entry.index == removal[realLengthRemoval])
+				removal[realLengthRemoval++] = index;
+			
+			index++;
+		}
+		for(uint i = realLengthRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
 		
 		RakSRStupidDataStructure * element;
 		for(uint i = 0; i < nbInsertion; i++)
