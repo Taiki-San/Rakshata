@@ -195,7 +195,7 @@
 	else if(!noData)
 	{
 		BOOL activatedList[*_nbElemFull];
-		memset(activatedList, YES, *_nbElemFull * sizeof(BOOL));
+		memset(activatedList, NO, *_nbElemFull * sizeof(BOOL));
 		
 		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
 		{
@@ -504,33 +504,40 @@
 		//Apply changes, yay
 		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
 		
+		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
 		if(nbRemoval)
+		{
 			qsort(removal, nbRemoval, sizeof(uint), sortNumbers);
+			
+			uint realLengthRemoval = 0, index = 0;
+			for(RakSRStupidDataStructure * entry in content)
+			{
+				if(realLengthRemoval >= nbRemoval)
+					break;
+				
+				if(entry.index == removal[realLengthRemoval])
+					removal[realLengthRemoval++] = index;
+				
+				index++;
+			}
+			for(uint i = realLengthRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
+		}
 		
 		if(nbInsertion)
+		{
 			qsort(insertion, nbInsertion, sizeof(uint), sortNumbers);
-		
-		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
-		uint realLengthRemoval = 0, index = 0;
-		for(RakSRStupidDataStructure * entry in content)
-		{
-			if(realLengthRemoval >= nbRemoval)
-				break;
 			
-			if(entry.index == removal[realLengthRemoval])
-				removal[realLengthRemoval++] = index;
-			
-			index++;
-		}
-		for(uint i = realLengthRemoval; i != 0; [content removeObjectAtIndex:removal[--i]]);
-		
-		RakSRStupidDataStructure * element;
-		for(uint i = 0; i < nbInsertion; i++)
-		{
-			element = [[RakSRStupidDataStructure alloc] init];
-			element.index = filteredToSorted[insertion[i]];
-			
-			[content insertObject:element atIndex:insertion[i]];
+			RakSRStupidDataStructure * element;
+			for(uint i = 0, indexInFinal = 0; i < nbInsertion; i++)
+			{
+				element = [[RakSRStupidDataStructure alloc] init];
+				element.index = insertion[i];
+				
+				while(indexInFinal < nbElemActivated && filteredToSorted[indexInFinal] != insertion[i])
+					indexInFinal++;
+				
+				[content insertObject:element atIndex:indexInFinal++];
+			}
 		}
 		
 		//We refresh the content frame afterward, as the scrollview tend to bitch a lot :x
