@@ -128,6 +128,7 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
 bool insertRestriction(uint64_t code, byte type);
 bool removeRestriction(uint64_t code, byte type);
+bool flushRestriction();
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 uint getIDForTag(byte type, uint code);

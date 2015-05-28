@@ -41,6 +41,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifType:) name:SR_NOTIFICATION_TYPE object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifAuthor:) name:SR_NOTIFICATION_AUTHOR object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifSource:) name:SR_NOTIFICATION_SOURCE object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(flushTags) name:SR_NOTIFICATION_FLUSH object:nil];
 	}
 	
 	return self;
@@ -282,6 +283,14 @@
 	[self reorderTags:self.bounds : YES];
 	
 	[NSAnimationContext endGrouping];
+}
+
+- (void) flushTags
+{
+	while([tagList count])
+		[self removeTag:0];
+	
+	flushRestriction();
 }
 
 #pragma mark - Properties

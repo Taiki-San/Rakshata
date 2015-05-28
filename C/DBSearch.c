@@ -555,6 +555,25 @@ bool removeRestriction(uint64_t code, byte type)
 	return output;
 }
 
+bool flushRestriction()
+{
+	if(cache == NULL)
+		return false;
+	
+	sqlite3_stmt * request;
+	
+	if(createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS";", &request) != SQLITE_OK)
+		return false;
+	
+	bool output = sqlite3_step(request) == SQLITE_DONE;
+	
+	destroyRequest(request);
+	
+	notifyRestrictionChanged();
+	
+	return output;
+}
+
 #pragma mark - Maintenance API
 
 void updateElementCount(byte type, int change)
@@ -748,6 +767,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 {
 	if(dataLength == NULL)
 		return NULL;
+	else
+		*dataLength = UINT_MAX;
 	
 	sqlite3_stmt * request;
 	
@@ -813,6 +834,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	destroyRequest(request);
 	
+	*dataLength = realLength;
+
 	if(realLength < nbElemInCache)
 	{
 		if(realLength == 0)	//No data :/
@@ -825,8 +848,6 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(tmp != NULL)
 			output = tmp;
 	}
-	
-	*dataLength = realLength;
 	
 	return output;
 }

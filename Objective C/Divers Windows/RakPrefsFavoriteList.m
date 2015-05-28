@@ -272,6 +272,7 @@ enum
 	else
 	{
 		[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FLUSH object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getStringForWchar(_project.repo->name) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_project.repo)), SR_NOTIF_OPTYPE : @(YES)}];
 	}
 }

@@ -23,6 +23,7 @@ enum
 #define SR_NOTIFICATION_TYPE 	@"RakSRTypeSelectionNotification"
 #define SR_NOTIFICATION_AUTHOR 	@"RakSRAuthorSelectionNotification"
 #define SR_NOTIFICATION_SOURCE 	@"RakSRSourceSelectionNotification"
+#define SR_NOTIFICATION_FLUSH 	@"RakSRFlushSelectionNotification"
 #define SR_NOTIFICATION_SELECTION_TRIGGERED	@"RakSRSelectionTriggeredNotification"
 
 #define RCVC_FOCUS_DELAY 		0.2f
