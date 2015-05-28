@@ -640,7 +640,7 @@
 	if (item == nil || [item class] != [RakDragItem class])
 		return NO;
 	
-	PROJECT_DATA localProject = getElementByID(item.project.cacheDBID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
+	PROJECT_DATA localProject = getProjectByID(item.project.cacheDBID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)
 	
 	if(!localProject.isInitialized)
 	{

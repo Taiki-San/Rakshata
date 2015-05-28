@@ -143,7 +143,7 @@ enum
 	if([collection isValidIndex:[indexes firstIndex]])
 	{
 		_currentDragItem = [indexes firstIndex];
-		_dragProject = getElementByID([collection cacheIDForIndex:_currentDragItem]);
+		_dragProject = getProjectByID([collection cacheIDForIndex:_currentDragItem]);
 		return YES;
 	}
 	

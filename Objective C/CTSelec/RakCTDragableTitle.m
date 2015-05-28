@@ -51,7 +51,7 @@
 		return;
 	
 	//We get a copy of the project data
-	PROJECT_DATA projectData = getElementByID(self.currentID);
+	PROJECT_DATA projectData = getProjectByID(self.currentID);
 	if(!projectData.isInitialized)
 		return;
 	

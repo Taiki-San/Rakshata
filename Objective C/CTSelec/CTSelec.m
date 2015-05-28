@@ -199,7 +199,7 @@
 
 - (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	PROJECT_DATA newProject = getElementByID(project.cacheDBID);	//Isole le tab des données
+	PROJECT_DATA newProject = getProjectByID(project.cacheDBID);	//Isole le tab des données
 	
 	if(newProject.isInitialized)
 	{

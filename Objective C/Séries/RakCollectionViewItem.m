@@ -123,7 +123,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	{
 		if(NSPointInRect(point, _workingArea))	//We check we are actually inside the valid area (excluding the padding
 		{
-			PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
+			PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
 			
 			if(dataToSend.isInitialized)
 				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];

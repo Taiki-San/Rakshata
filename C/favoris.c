@@ -128,7 +128,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	else
 		removeFromPref(SETTINGS_FAVORITE_FLAG);
 	
-	PROJECT_DATA cacheCopy = getElementByID(projectDB->cacheDBID);
+	PROJECT_DATA cacheCopy = getProjectByID(projectDB->cacheDBID);
 	if(cacheCopy.isInitialized)
 	{
 		cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;

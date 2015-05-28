@@ -210,7 +210,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 #ifdef DEV_VERSION
 	if(data.chapitresPrix)
 	{
-		PROJECT_DATA project = getElementByID(data.cacheDBID);
+		PROJECT_DATA project = getProjectByID(data.cacheDBID);
 		
 		printf("Project %ls [%d vs %d]: %p - %p - %p\n", project.projectName, data.cacheDBID, project.cacheDBID, project.chapitresFull, project.chapitresPrix, project.tomesFull);
 		releaseCTData(project);

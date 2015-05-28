@@ -159,7 +159,7 @@
 		{
 			if(((PROJECT_DATA*)_data)[pos].cacheDBID == updatedID)
 			{
-				PROJECT_DATA newElem = getElementByID(updatedID), *current = &((PROJECT_DATA*)_data)[pos];
+				PROJECT_DATA newElem = getProjectByID(updatedID), *current = &((PROJECT_DATA*)_data)[pos];
 				
 				if(!newElem.isInitialized)
 					return;

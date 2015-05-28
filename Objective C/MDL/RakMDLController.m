@@ -112,7 +112,7 @@
 		if(pos < sizeCache)
 		{
 			prevData = *cache[pos];
-			*cache[pos] = getElementByID(updatedID);
+			*cache[pos] = getProjectByID(updatedID);
 			releaseCTData(prevData);
 		}
 	}

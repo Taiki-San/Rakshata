@@ -263,7 +263,7 @@ enum
 	
 	if(NSPointInRect(point, thumbnail.frame) || NSPointInRect(point, projectName.frame))
 	{
-		PROJECT_DATA dataToSend = getElementByID(_project.cacheDBID);
+		PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
 		
 		if(dataToSend.isInitialized)
 			[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];

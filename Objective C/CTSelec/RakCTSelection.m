@@ -276,7 +276,7 @@
 			return;
 		}
 		
-		PROJECT_DATA newData = getElementByID(data.cacheDBID);
+		PROJECT_DATA newData = getProjectByID(data.cacheDBID);
 		
 		if(newData.isInitialized)
 		{

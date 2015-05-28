@@ -57,7 +57,7 @@
 		return;
 	
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_data])
-		[self updateHeaderProjectInternal:getElementByID(_data.cacheDBID)];
+		[self updateHeaderProjectInternal:getProjectByID(_data.cacheDBID)];
 }
 
 #pragma mark - Interface

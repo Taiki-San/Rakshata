@@ -147,7 +147,7 @@ enum
 		return;
 	
 	_activeProject = projectID;
-	PROJECT_DATA project = getElementByID(projectID);
+	PROJECT_DATA project = getProjectByID(projectID);
 	
 	if (!project.isInitialized)
 		return;

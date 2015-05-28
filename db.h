@@ -92,7 +92,8 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
 void freeProjectData(PROJECT_DATA* projectDB);
 
 PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installed);
-PROJECT_DATA getElementByID(uint cacheID);
+PROJECT_DATA getProjectByID(uint cacheID);
+PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic);
 
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
@@ -120,6 +121,7 @@ void setUninstalled(bool isRoot, uint64_t repoID);
 //Searches
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
 void setInstalled(uint cacheID);
+uint * getFavoritesID(uint * nbFavorites);
 
 /**DBSearch.c**/
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);

@@ -358,7 +358,7 @@ enum
 	if(_project == nil || ![_project isKindOfClass:[NSNumber class]] || _inOrOut == nil || ![_inOrOut isKindOfClass:[NSNumber class]])
 		return;
 	
-	PROJECT_DATA project = getElementByID([_project unsignedIntValue]);
+	PROJECT_DATA project = getProjectByID([_project unsignedIntValue]);
 	if(!project.isInitialized)
 		return;
 	

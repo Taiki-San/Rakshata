@@ -330,7 +330,7 @@
 {
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
 	{
-		PROJECT_DATA project = getElementByID(_project.cacheDBID);
+		PROJECT_DATA project = getProjectByID(_project.cacheDBID);
 		if(project.isInitialized)
 		{
 			releaseCTData(_project);
