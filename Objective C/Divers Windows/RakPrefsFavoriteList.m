@@ -18,13 +18,13 @@ enum
 
 @interface RakPrefsFavoriteListView : RakListItemView
 {
-	PROJECT_DATA _project;
-
 	RakClickableText * repo;
 	RakButton * refresh, * read, * remove;
 	
 	BOOL refreshing;
 }
+
+@property PROJECT_DATA project;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 - (void) updateContent : (PROJECT_DATA) project;
@@ -43,6 +43,13 @@ enum
 	{
 		lastTransmittedSelectedRowIndex = LIST_INVALID_SELECTION;
 		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
+		IDList = getFavoritesID(&lengthList);
+		
+		if(lengthList != _nbData || IDList == NULL)
+		{
+			lengthList = _nbData;
+			free(IDList);	IDList = NULL;
+		}
 		
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
@@ -59,14 +66,129 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[RakDBUpdate unRegister:self];
+	free(projectDB);
+	free(IDList);
+}
+
 - (void) DBUpdated : (NSNotification*) notification
 {
-	PROJECT_DATA * old = projectDB;
+	//Full reload if we lack too much data
+	if(_nbData == 0 || IDList == NULL)
+	{
+		PROJECT_DATA * old = projectDB;
+		
+		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
+		[_tableView reloadData];
+		
+		free(old);
+		return;
+	}
 	
-	projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
-	[_tableView reloadData];
+	//We check if stuffs were added/removed
+	uint newNbFavorites, * newIDList = getFavoritesID(&newNbFavorites), checkNbFavorites;
+	PROJECT_DATA * newFavorites = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &checkNbFavorites);
 	
-	freeProjectData(old);
+	//No more favorites :O
+	if(newNbFavorites == 0 || newIDList == NULL || newFavorites == NULL)
+	{
+		if(lengthList != 0)
+			[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, lengthList)] withAnimation:NSTableViewAnimationSlideLeft];
+		
+		free(IDList);		IDList = NULL;
+		free(projectDB);	projectDB = NULL;
+		free(newIDList);
+		free(newFavorites);
+
+		_nbData = 0;
+		return;
+	}
+	
+	//Let's diff that
+	uint oldNbData = _nbData, posOld = 0, posNew = 0, nbInsert = 0, insertions[oldNbData], nbRemoval = 0, removal[newNbFavorites];
+
+	while(posOld < lengthList && posNew < newNbFavorites)
+	{
+		if(IDList[posOld] > newIDList[posNew])
+			insertions[nbInsert++] = newIDList[posNew++];
+		
+		else if(IDList[posOld] < newIDList[posNew])
+			removal[nbRemoval++] = IDList[posOld++];
+		
+		else
+		{
+			posNew++;
+			posOld++;
+		}
+	}
+	
+	//Now, apply the changes, first, deletion
+	NSMutableIndexSet * indexSet = [NSMutableIndexSet indexSet];
+
+	if(nbRemoval)
+	{
+		for(posOld = 0; posOld < oldNbData && [indexSet count] < nbRemoval; posOld++)
+		{
+			for(uint posRemoval = 0; posRemoval < nbRemoval; posRemoval++)
+			{
+				if(projectDB[posOld].cacheDBID == removal[posRemoval])
+				{
+					[indexSet addIndex:posOld];
+					break;
+				}
+			}
+		}
+		
+		if([indexSet count])
+		{
+			[_tableView removeRowsAtIndexes:indexSet withAnimation:NSTableViewAnimationSlideLeft];
+
+			if(nbInsert)
+				[indexSet removeAllIndexes];
+		}
+	}
+	
+	//We check for updates on what is remaining
+	[_tableView enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
+		
+		for(RakPrefsFavoriteListView * subview in rowView.subviews)
+		{
+			if([subview class] == [RakPrefsFavoriteListView class])
+			{
+				if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :subview.project])
+				{
+					PROJECT_DATA tmp = getProjectByIDHelper(subview.project.cacheDBID, false);
+					if(tmp.isInitialized && !areProjectsIdentical(subview.project, tmp))
+						[subview updateContent:tmp];
+				}
+			}
+		}
+	}];
+	
+	//Now, insertion
+	free(projectDB);	free(IDList);
+	projectDB = newFavorites;	IDList = newIDList;
+	_nbData = newNbFavorites;
+
+	if(nbInsert)
+	{
+		for(posNew = 0; posNew < _nbData && [indexSet count] < nbInsert; posNew++)
+		{
+			for(uint posInsert = 0; posInsert < nbInsert; posInsert++)
+			{
+				if(projectDB[posNew].cacheDBID == insertions[posInsert])
+				{
+					[indexSet addIndex:posNew];
+					break;
+				}
+			}
+		}
+		
+		if([indexSet count])
+			[_tableView insertRowsAtIndexes:indexSet withAnimation:NSTableViewAnimationSlideLeft];
+	}
 }
 
 - (Class) contentClass

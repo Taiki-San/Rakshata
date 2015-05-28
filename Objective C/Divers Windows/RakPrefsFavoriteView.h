@@ -17,6 +17,7 @@
 @interface RakPrefsFavoriteList : RakList
 {
 	PROJECT_DATA * projectDB;
+	uint * IDList, lengthList;
 	
 	//Internal data
 	uint lastTransmittedSelectedRowIndex;

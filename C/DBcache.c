@@ -535,7 +535,7 @@ bool isProjectInstalledInCache (uint ID)
 	return output;
 }
 
-PROJECT_DATA getElementByID(uint cacheID)
+PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
 {
 	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output = getEmptyProject();
@@ -546,11 +546,52 @@ PROJECT_DATA getElementByID(uint cacheID)
 		sqlite3_bind_int(request, 1, cacheID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
-			copyOutputDBToStruct(request, &output, true);
+			copyOutputDBToStruct(request, &output, copyDynamic);
 		
 		destroyRequest(request);
 	}
 
+	return output;
+}
+
+PROJECT_DATA getProjectByID(uint cacheID)
+{
+	return getProjectByIDHelper(cacheID, true);
+}
+
+uint * getFavoritesID(uint * nbFavorites)
+{
+	if(nbFavorites == NULL || cache == NULL)
+		return NULL;
+	
+	uint * output = malloc(nbElemInCache * sizeof(uint));	//nbMax of entries
+	if(output == NULL)
+		return NULL;
+	
+	sqlite3_stmt * request;
+	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM rakSQLite WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", &request) != SQLITE_OK)
+	{
+		free(output);
+		return NULL;
+	}
+	
+	*nbFavorites = 0;
+	while(sqlite3_step(request) == SQLITE_ROW && *nbFavorites < nbElemInCache)
+		output[(*nbFavorites)++] = sqlite3_column_int(request, 0);
+	
+	destroyRequest(request);
+	
+	if(*nbFavorites == 0)
+	{
+		free(output);	output = NULL;
+	}
+	else if(*nbFavorites != nbElemInCache)
+	{
+		void * tmp = realloc(output, *nbFavorites * sizeof(uint));
+		if(tmp != NULL)
+			output = tmp;
+	}
+	
 	return output;
 }
 
