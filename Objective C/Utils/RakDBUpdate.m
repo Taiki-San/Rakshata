@@ -66,7 +66,7 @@
 
 + (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project
 {
-	if(notification == nil)
+	if(notification == nil || !project.isInitialized)
 		return NO;
 	
 	NSNumber * repoIDObj = [notification objectForKey:REPO_FIELD], * projectIDObj = [notification objectForKey:PROJECT_FIELD];

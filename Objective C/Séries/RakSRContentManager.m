@@ -415,6 +415,14 @@
 		memset(maskValidated, 1, nbElemFull * sizeof(BOOL));
 		memset(newMaskValidated, 1, newNbElemFull * sizeof(BOOL));
 		
+#ifdef DEV_VERSION
+		printf("Dumping orderedToSorted: ");
+		for(uint i = 0; i < nbElemFull; printf("%d - ", orderedToSorted[i++]));
+		printf("\nDumping newOrderedToSorted: ");
+		for(uint i = 0; i < newNbElemFull; printf("%d - ", newOrderedToSorted[i++]));
+		putc('\n', stdout);
+#endif
+		
 		//First, we detect suppressions/deletions in the global cache list
 		while(posOld < nbElemFull && posNew < newNbElemFull)
 		{
@@ -445,7 +453,7 @@
 			}
 		}
 		
-		while(posOld < nbElemFull)
+		while(MAX(posOld, nbRemoval) < nbElemActivated)
 		{	removal[nbRemoval++] = orderedToSorted[posOld];		maskValidated[posOld++] = NO;	}
 		
 		while(posNew < newNbElemFull)
@@ -476,7 +484,7 @@
 			}
 		}
 		
-		while(posOld < nbElemActivated)
+		while(MAX(posOld, nbRemoval) < nbElemActivated)
 		{	removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld++]];	}
 		
 		while(posNew < newNbElemActivated)
@@ -535,6 +543,9 @@
 				
 				while(indexInFinal < nbElemActivated && filteredToSorted[indexInFinal] != insertion[i])
 					indexInFinal++;
+				
+				if(indexInFinal == nbElemActivated)
+					indexInFinal = [content count];
 				
 				[content insertObject:element atIndex:indexInFinal++];
 			}

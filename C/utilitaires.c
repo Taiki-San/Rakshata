@@ -44,7 +44,13 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	if(a.projectID != b.projectID)
 		return false;
 	
-	if(a.nombreChapitre != b.nombreChapitre || memcmp(a.chapitresFull, b.chapitresFull, a.nombreChapitre * sizeof(int)))
+	if(a.nombreChapitre != b.nombreChapitre)
+		return false;
+	
+	if(a.chapitresFull == NULL ^ b.chapitresFull == NULL)
+		return false;
+	
+	if(a.chapitresFull != NULL && memcmp(a.chapitresFull, b.chapitresFull, a.nombreChapitre * sizeof(int)))
 		return false;
 	
 	if(a.nombreTomes != b.nombreTomes)

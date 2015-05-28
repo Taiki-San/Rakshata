@@ -157,6 +157,10 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 8, data.mainTag);
 	sqlite3_bind_int64(request, 9, data.tagMask);
 	sqlite3_bind_int(request, 10, data.nombreChapitre);
+
+#ifdef DEV_VERSION
+	printf("Updating cache of %ls: %p - %p - %p\n", data.projectName, data.chapitresFull, data.chapitresPrix, data.tomesFull);
+#endif
 	
 	if(data.chapitresFull != NULL)
 	{
@@ -228,21 +232,42 @@ void removeFromCache(PROJECT_DATA data)
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = NULL;
-	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
-	sqlite3_bind_int(request, 1, data.cacheDBID);
 	
-	if(sqlite3_step(request) == SQLITE_ROW)
+	if(	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)" FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
-		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
-		freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+		sqlite3_bind_int(request, 1, data.cacheDBID);
+		
+		if(sqlite3_step(request) == SQLITE_ROW)
+		{
+#ifdef DEV_VERSION
+			printf("Flushing %ls: %p - %p - %p\n", data.projectName, (void*) sqlite3_column_int64(request, 0), (void*) sqlite3_column_int64(request, 1), (void*) sqlite3_column_int64(request, 2));
+#endif
+			free((void*) sqlite3_column_int64(request, 0));
+			free((void*) sqlite3_column_int64(request, 1));
+			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+		}
+		destroyRequest(request);
 	}
-	destroyRequest(request);
+#ifdef DEV_VERSION
+	else
+	{
+		printf("Lolnop");
+	}
+#endif
 	
-	createRequest(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
-	sqlite3_bind_int(request, 1, data.cacheDBID);
-	sqlite3_step(request);
-	destroyRequest(request);
+	if(createRequest(cache, "DELETE FROM rakSQLite WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
+	{
+		sqlite3_bind_int(request, 1, data.cacheDBID);
+		sqlite3_step(request);
+		destroyRequest(request);
+	}
+#ifdef DEV_VERSION
+	else
+	{
+		printf("Lolnop");
+	}
+#endif
+
 	
 	nbElemInCache--;
 }

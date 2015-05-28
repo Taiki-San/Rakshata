@@ -174,11 +174,31 @@ void refreshRepo(REPO_DATA * repo)
 
 void * refreshRepoHelper(REPO_DATA * repo, bool standalone)
 {
-	PROJECT_DATA project = getEmptyProject();
+	uint nbElem, posBase = 0, posEnd = 0;
+	uint64_t requestedID = getRepoID(repo);
+	PROJECT_DATA * project = getCopyCache(SORT_REPO, &nbElem);
 	
-	project.repo = repo;
+	while(posBase < nbElem && getRepoID(project[posBase].repo) != requestedID)		posBase++;
 	
-	return updateProjectsFromRepo(&project, 0, 0, standalone);
+	//Repo couldn't be found :|
+	if(posBase == nbElem)
+	{
+		freeProjectData(project);
+		
+		PROJECT_DATA emptyProject = getEmptyProject();
+		emptyProject.repo = repo;
+		
+		return updateProjectsFromRepo(&emptyProject, 0, 0, standalone);
+	}
+	
+	posEnd = posBase + 1;
+	while(posEnd < nbElem && requestedID == getRepoID(project[posEnd].repo))			posEnd++;
+	
+	void * output = updateProjectsFromRepo(project, posBase, posEnd, standalone);
+	
+	freeProjectData(project);
+	
+	return output;
 }
 
 void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
@@ -240,6 +260,11 @@ void updateProjects()
 	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO, &nbElem);
 	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 	
+	for(uint i = 0; i < nbElem; i++)
+	{
+		printf("[%d] - %ls\n", i, oldData[i].projectName);
+	}
+	
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsRepoOnProjectDB(oldData, posBase, nbElem);
@@ -289,12 +314,12 @@ void updateProjects()
 					if(posEnd != UINT_MAX)
 					{
 						//Now, find the repo in our base, starting from where we left (it's supposed to be ordered)
-						for(; posRepo < realNumberOfRepo && (repo[posRepo]->parentRepoID != oldData[posBase].repo->parentRepoID || repo[posRepo]->repoID != oldData[posBase].repo->repoID); posRepo++);
+						for(; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].repo); posRepo++);
 						
 						//Couldn't find the repo, weird, let's recheck from the begining
 						if(posRepo == realNumberOfRepo)
 						{
-							for(posRepo = 0; posRepo < realNumberOfRepo && (repo[posRepo]->parentRepoID != oldData[posBase].repo->parentRepoID || repo[posRepo]->repoID != oldData[posBase].repo->repoID); posRepo++);
+							for(posRepo = 0; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].repo); posRepo++);
 							
 							//Okay, the repo was probably deleted
 							if(posRepo == realNumberOfRepo)

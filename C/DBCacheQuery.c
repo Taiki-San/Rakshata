@@ -193,7 +193,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		char sortRequest[50], requestString[200];
 		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
 			strncpy(sortRequest, DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC, 50);
-		else if((maskRequest & RDB_SORTMASK) == SORT_ID)
+		else if((maskRequest & RDB_SORTMASK) == SORT_REPO)
 			strncpy(sortRequest, DBNAMETOID(RDB_repo), 50);
 		else
 			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
