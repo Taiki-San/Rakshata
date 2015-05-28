@@ -83,6 +83,11 @@
 
 #pragma mark - UI Drawing
 
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	
+}
+
 - (void) drawRect : (NSRect) dirtyRect
 {
 	NSSize size = self.bounds.size;
@@ -133,7 +138,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:notification object:@(_index) userInfo:@{SR_NOTIF_CACHEID : @(__dataID), SR_NOTIF_OPTYPE : @(NO)}];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if ([object class] != [Prefs class])
 		return;
