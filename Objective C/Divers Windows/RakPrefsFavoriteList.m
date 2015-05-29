@@ -19,7 +19,7 @@ enum
 @interface RakPrefsFavoriteListView : RakListItemView
 {
 	RakClickableText * repo;
-	RakButton * refresh, * read, * remove;
+	RakButton * refresh, * read, * remove, * download;
 	
 	BOOL refreshing;
 }
@@ -331,7 +331,7 @@ enum
 		refresh = [RakButton allocImageWithoutBackground:@"refresh" :RB_STATE_STANDARD :self :@selector(refresh)];
 		if(refresh != nil)
 		{
-			[refresh.cell setActiveAllowed:NO];
+			[refresh.cell setActiveAllowed:YES];
 			[self addSubview:refresh];
 		}
 	}
@@ -355,6 +355,17 @@ enum
 			[self addSubview:remove];
 		}
 	}
+	
+	if(download == nil)
+	{
+		download = [RakButton allocImageWithoutBackground:@"p_dl" :RB_STATE_STANDARD :self :@selector(download)];
+		if(download != nil)
+		{
+			[download setHidden:YES];
+			[download.cell setActiveAllowed:NO];
+			[self addSubview:download];
+		}
+	}
 }
 
 #pragma mark - UI management
@@ -369,6 +380,7 @@ enum
 	[remove setFrameOrigin:NSMakePoint(newSize.width - 10 - remove.bounds.size.width, newSize.height / 2 - remove.bounds.size.height / 2)];
 	[read setFrameOrigin:NSMakePoint(remove.frame.origin.x - 10 - read.bounds.size.width, newSize.height / 2 - read.bounds.size.height / 2)];
 	[refresh setFrameOrigin:NSMakePoint(read.frame.origin.x - 10 - refresh.bounds.size.width, newSize.height / 2 - refresh.bounds.size.height / 2)];
+	[download setFrameOrigin:NSMakePoint(refresh.frame.origin.x, newSize.height / 2 - download.bounds.size.height / 2)];
 }
 
 - (NSColor *) textColor
@@ -417,15 +429,18 @@ enum
 	refreshing = YES;
 	uint currentID = _project.cacheDBID;
 	
+	[refresh.cell setState : RB_STATE_HIGHLIGHTED];
+	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		
 		refreshRepo(_project.repo);
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
-			if(currentID != _project.cacheDBID)
+			if(currentID == _project.cacheDBID)
 				[self refreshCallback];
 	
+			[refresh.cell setState : RB_STATE_STANDARD];
 			refreshing = NO;
 		});
 	});
@@ -433,6 +448,7 @@ enum
 
 - (void) refreshCallback
 {
+	
 	NSLog(@"Yay");
 }
 
@@ -451,6 +467,11 @@ enum
 - (void) remove
 {
 	setFavorite(&_project);
+}
+
+- (void) download
+{
+	
 }
 
 @end
