@@ -514,38 +514,94 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
-	if (ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]))					goto end;
+	if (ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: couldn't find ID in %@", bloc);
+#endif
+		goto end;
+	}
 	
 	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
-	if(ARE_CLASSES_DIFFERENT(projectName, [NSString class]))						goto end;
+	if(ARE_CLASSES_DIFFERENT(projectName, [NSString class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: couldn't find name for ID %@ in %@", ID, bloc);
+#endif
+		goto end;
+	}
 	
 	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil);
-	if(DRM != nil && ARE_CLASSES_DIFFERENT(DRM, [NSNumber class]))					goto end;
+	if(DRM != nil && ARE_CLASSES_DIFFERENT(DRM, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid DRM for ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
+
 	
 	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price");
-	if(paidContent != nil && ARE_CLASSES_DIFFERENT(paidContent, [NSNumber class]))	goto end;
-		 
+	if(paidContent != nil && ARE_CLASSES_DIFFERENT(paidContent, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid paid status for ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
+	
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, YES, isPaidContent, &chaptersPrices);
 	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
 
-	if(nbChapters == 0 && nbVolumes == 0)									goto end;
+	if(nbChapters == 0 && nbVolumes == 0)
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
 	
 	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description");
 	if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]))	description = nil;
 	
 	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author");
-	if(authors == nil || ARE_CLASSES_DIFFERENT(authors, [NSString class]))			goto end;
+	if(authors == nil || ARE_CLASSES_DIFFERENT(authors, [NSString class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: no author for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
 	
 	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status");
-	if(status == nil || ARE_CLASSES_DIFFERENT(status, [NSNumber class]))			goto end;
+	if(status == nil || ARE_CLASSES_DIFFERENT(status, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: no status for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
 	
 	asianOrder = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading");
-	if(asianOrder == nil || ARE_CLASSES_DIFFERENT(asianOrder, [NSNumber class]))	goto end;
+	if(asianOrder == nil || ARE_CLASSES_DIFFERENT(asianOrder, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid asian_order_of_reading for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
+
 	
 	tagMask = objectForKey(bloc, JSON_PROJ_TAGMASK , @"tagMask");
-	if(tagMask == nil || ARE_CLASSES_DIFFERENT(tagMask, [NSNumber class]))		goto end;
+	if(tagMask == nil || ARE_CLASSES_DIFFERENT(tagMask, [NSNumber class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid tagMask for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
 	
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
@@ -666,7 +722,12 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 	NSArray * projects = objectForKey(remoteData, JSON_PROJ_PROJECTS, @"projects");
 	
 	if(projects == nil || ARE_CLASSES_DIFFERENT(projects, [NSArray class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid 'projects' in %@", remoteData);
+#endif
 		return NULL;
+	}
 	
 	size_t size = [projects count];
 	outputData = malloc(size * (parseExtra ? sizeof(PROJECT_DATA_EXTRA) : sizeof(PROJECT_DATA)));
@@ -675,12 +736,17 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 	{
 		size_t validElements = 0;
 		
-		for (remoteData in projects)
+		for(remoteData in projects)
 		{
 			if(validElements >= size)
 				break;
 			else if(ARE_CLASSES_DIFFERENT(remoteData, [NSDictionary class]))
+			{
+#ifdef DEV_VERSION
+				NSLog(@"Project parser error: invalid bloc %@", remoteData);
+#endif
 				continue;
+			}
 			
 			if(parseExtra)
 			{
@@ -746,7 +812,12 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 	NSMutableDictionary * remoteData = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:remoteDataRaw length:ustrlen(remoteDataRaw)] options:0 error:&error];
 	
 	if(error != nil || remoteData == nil || ARE_CLASSES_DIFFERENT(remoteData, [NSArray class]))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Local project parser error: invalid 'projects' in %@", remoteData);
+#endif
 		return NULL;
+	}
 	
 	uint nbElemPart, posRepo;
 	PROJECT_DATA *output = NULL, *currentPart;
@@ -759,7 +830,12 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 		
 		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID");
 		if (repoID == nil || ARE_CLASSES_DIFFERENT(repoID, [NSNumber class]))
+		{
+#ifdef DEV_VERSION
+			NSLog(@"Project parser error: no authorID %@", remoteDataPart);
+#endif
 			continue;
+		}
 		
 		for(posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
