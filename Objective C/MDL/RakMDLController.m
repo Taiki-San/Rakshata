@@ -391,7 +391,7 @@
 	
 	if (isTome)
 	{
-		if(data.tomesFull == NULL || data.nombreTomes > 0)
+		if(data.tomesFull == NULL || data.nombreTomes == 0)
 			return countInjected;
 		
 		nbFull = data.nombreTomes;
@@ -399,7 +399,7 @@
 	}
 	else
 	{
-		if(data.chapitresFull == NULL || data.nombreChapitre > 0)
+		if(data.chapitresFull == NULL || data.nombreChapitre == 0)
 			return countInjected;
 		
 		nbFull = data.nombreChapitre;
