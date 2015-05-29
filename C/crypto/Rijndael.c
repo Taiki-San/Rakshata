@@ -1408,10 +1408,10 @@ void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_pa
 
 void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	_AESEncrypt(_password, _path_input, 0, _path_output, cryptIntoMemory, 0);
+	_AESEncrypt(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, 0);
 }
 
 void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	_AESDecrypt(_password, _path_input, 0, _path_output, cryptIntoMemory, 0);
+	_AESDecrypt(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, 0);
 }
