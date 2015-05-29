@@ -20,6 +20,7 @@
 	{
 		self.autoresizesSubviews = NO;
 		
+		currentSize = frame.size;
 		_width = 2;
 		_percentage = 0;
 		_speed = 0;
@@ -136,6 +137,12 @@
 	[self setNeedsDisplay:YES];
 }
 
+- (void) setFrameSize:(NSSize)newSize
+{
+	currentSize = newSize;
+	[super setFrameSize:newSize];
+}
+
 - (void) centerText
 {
 	[_speedText sizeToFit];
@@ -145,12 +152,12 @@
 	if(_posX)
 		frame.origin.x = _posX - frame.size.width;
 	else
-		frame.origin.x = self.frame.size.width * 3 / 4 - frame.size.width / 2;
+		frame.origin.x = currentSize.width * 3 / 4 - frame.size.width / 2;
 	
 	if(wasOffsetSet)
 		frame.origin.y = _offsetYSpeed;
 	else
-		frame.origin.y = self.frame.size.height / 2 - frame.size.height / 2;
+		frame.origin.y = currentSize.height / 2 - frame.size.height / 2;
 	
 	[_speedText setFrameOrigin:frame.origin];
 }
@@ -165,7 +172,7 @@
 	[slotColor setStroke];
 	CGContextBeginPath(context);
 	CGContextMoveToPoint(context, 0, 0);
-	CGContextAddLineToPoint(context, self.frame.size.width, 0);
+	CGContextAddLineToPoint(context, currentSize.width, 0);
 	CGContextStrokePath(context);
 	
 	// Progress Arc:
@@ -174,7 +181,7 @@
 		[progressColor setStroke];
 		CGContextBeginPath(context);
 		CGContextMoveToPoint(context, 0, 0);
-		CGContextAddLineToPoint(context, self.frame.size.width * _percentage / 100, 0);
+		CGContextAddLineToPoint(context, currentSize.width * _percentage / 100, 0);
 		CGContextStrokePath(context);
 	}
 }

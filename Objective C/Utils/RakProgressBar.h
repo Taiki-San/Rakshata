@@ -12,6 +12,7 @@
 
 @interface RakProgressBar : NSView
 {
+	NSSize currentSize;
 	CGFloat _width;
 	
 	CGFloat _percentage;
