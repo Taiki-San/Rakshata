@@ -487,6 +487,6 @@ void deleteSubRepo(uint64_t repoID)
 	MUTEX_UNLOCK(cacheMutex);
 	syncCacheToDisk(SYNC_REPO);
 	
-	REPO_DATA emptyRepo;	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
+	REPO_DATA emptyRepo = getEmptyRepo();	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
 	notifyUpdateRepo(emptyRepo);
 }

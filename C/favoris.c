@@ -182,12 +182,17 @@ void updateFavorites()
 			for(; basePos < projectDB[pos].nombreTomes; basePos++)
 			{
 				if(firstEntry)
+				{
 					firstEntry = false;
-				else
-					addElementToMDL(previousProject, previousIsTome, previousElement, true);
-				
-				if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
 					previousProject = projectDB[pos];
+				}
+				else
+				{
+					addElementToMDL(previousProject, previousIsTome, previousElement, true);
+
+					if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
+						previousProject = projectDB[pos];
+				}
 				
 				previousIsTome = true;
 				previousElement = projectDB[pos].tomesFull[basePos].ID;
@@ -211,12 +216,16 @@ void updateFavorites()
 			for(; basePos < projectDB[pos].nombreChapitre; basePos++)
 			{
 				if(firstEntry)
+				{
 					firstEntry = false;
-				else
-					addElementToMDL(previousProject, previousIsTome, previousElement, true);
-				
-				if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
 					previousProject = projectDB[pos];
+				}
+				else
+				{
+					addElementToMDL(previousProject, previousIsTome, previousElement, true);
+					if(previousProject.cacheDBID != projectDB[pos].cacheDBID)
+						previousProject = projectDB[pos];
+				}
 				
 				previousIsTome = false;
 				previousElement = projectDB[pos].chapitresFull[basePos];

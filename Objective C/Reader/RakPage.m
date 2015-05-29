@@ -1131,7 +1131,7 @@
 	{
 		MUTEX_UNLOCK(cacheMutex);
 		
-		DATA_LECTURE newData;
+		DATA_LECTURE newData = loadNext ? _nextData : _previousData;
 
 		//Load next CT data
 		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, &newData))

@@ -649,7 +649,7 @@ void setUninstalled(bool isRoot, uint64_t repoID)
 		sqlite3_bind_int64(request, 1, repoID);
 		sqlite3_step(request);
 		
-		REPO_DATA emptyRepo;	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
+		REPO_DATA emptyRepo = getEmptyRepo();	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);
 		notifyUpdateRepo(emptyRepo);
 	}
 

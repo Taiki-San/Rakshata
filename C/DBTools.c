@@ -578,6 +578,15 @@ PROJECT_DATA getEmptyProject()
 	return project;
 }
 
+REPO_DATA getEmptyRepo()
+{
+	REPO_DATA repo;
+	
+	memset(&repo, 0, sizeof(REPO_DATA));
+	
+	return repo;
+}
+
 #pragma mark - Sort function
 
 //Declared in 

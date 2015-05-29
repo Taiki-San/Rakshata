@@ -87,6 +87,7 @@ void flushDB();
 PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
 PROJECT_DATA getEmptyProject();
+REPO_DATA getEmptyRepo();
 bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
 
 void freeProjectData(PROJECT_DATA* projectDB);

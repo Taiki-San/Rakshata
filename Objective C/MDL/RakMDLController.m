@@ -391,7 +391,7 @@
 	
 	if (isTome)
 	{
-		if(data.tomesFull == NULL || data.tomesInstalled == NULL || data.nombreTomes > 0)
+		if(data.tomesFull == NULL || data.nombreTomes > 0)
 			return countInjected;
 		
 		nbFull = data.nombreTomes;
@@ -399,7 +399,7 @@
 	}
 	else
 	{
-		if(data.chapitresFull == NULL || data.chapitresInstalled == NULL || data.nombreChapitre > 0)
+		if(data.chapitresFull == NULL || data.nombreChapitre > 0)
 			return countInjected;
 		
 		nbFull = data.nombreChapitre;
@@ -407,7 +407,7 @@
 	}
 	
 	//On choppe les trous
-	for (; posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCT && posInst < nbInst && MDLCTRL_getDataInstalled(data, posInst, isTome) != VALEUR_FIN_STRUCT; posFull++)
+	for (; posFull < nbFull && posInst < nbInst; posFull++)
 	{
 		if (MDLCTRL_getDataFull(data, posFull, isTome) == MDLCTRL_getDataInstalled(data, posInst, isTome))
 			posInst++;
@@ -424,7 +424,7 @@
 	}
 	
 	//Le burst de fin
-	while (posFull < nbFull && MDLCTRL_getDataFull(data, posFull, isTome) != VALEUR_FIN_STRUCT)
+	while (posFull < nbFull)
 	{
 		if(previousElem != VALEUR_FIN_STRUCT)
 		{
