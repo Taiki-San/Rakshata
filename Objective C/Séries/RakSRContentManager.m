@@ -440,12 +440,12 @@
 				insertion[nbInsertion++] = newOrderedToSorted[posNew++];
 			}
 			
-			//Move
-			else if(maskValidated[posOld] && newMaskValidated[posNew] && orderedToSorted[posOld] != newOrderedToSorted[posNew])
+			else if(wstrcmp(project[orderedToSorted[posOld]].projectName, newProject[newOrderedToSorted[posNew]].projectName))
 			{
 				removal[nbRemoval++] = orderedToSorted[posOld];			maskValidated[orderedToSorted[posOld++]] = NO;
 				insertion[nbInsertion++] = newOrderedToSorted[posNew];	newMaskValidated[newOrderedToSorted[posNew++]] = NO;
 			}
+			
 			else
 			{
 				posOld++;
@@ -453,12 +453,25 @@
 			}
 		}
 		
-		while(MAX(posOld, nbRemoval) < nbElemActivated)
-		{	removal[nbRemoval++] = orderedToSorted[posOld];		maskValidated[posOld++] = NO;	}
+		//Complete the list
+		for(; MAX(posOld, nbRemoval) < nbElemFull; posOld++)
+		{
+			if(maskValidated[posOld])
+			{
+				removal[nbRemoval++] = orderedToSorted[posOld];
+				maskValidated[posOld] = NO;
+			}
+		}
 		
-		while(posNew < newNbElemFull)
-		{	insertion[nbInsertion++] = newOrderedToSorted[posNew];	newMaskValidated[posNew++] = NO;		}
-
+		for(; posNew < newNbElemFull; posNew++)
+		{
+			if(newMaskValidated[posNew])
+			{
+				insertion[nbInsertion++] = newOrderedToSorted[posNew];
+				newMaskValidated[posNew] = NO;
+			}
+		}
+		
 		//We then track modification in the installed list
 		posOld = posNew = 0;
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
@@ -484,12 +497,18 @@
 			}
 		}
 		
-		while(MAX(posOld, nbRemoval) < nbElemActivated)
-		{	removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld++]];	}
+		//Complete the list
+		for(; MAX(posOld, nbRemoval) < nbElemActivated; posOld++)
+		{
+			if(maskValidated[posOld])
+				removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld]];
+		}
 		
-		while(posNew < newNbElemActivated)
-		{	insertion[nbInsertion++] = newOrderedToSorted[newFilteredToOrdered[posNew++]];	}
-
+		for(; posNew < newNbElemActivated; posNew++)
+		{
+			if(newMaskValidated[posNew])
+				insertion[nbInsertion++] = newOrderedToSorted[newFilteredToOrdered[posNew]];
+		}
 		
 		//We replace the old data structure
 		PROJECT_DATA * oldProject = project;
