@@ -305,7 +305,9 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 						else
 						{
 							[output addObject:[NSDictionary dictionaryWithObjects:@[@(((CONTENT_TOME *) structure)[pos - counter].ID), @(((CONTENT_TOME *) structure)[pos].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
-							currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos + 1].isNative;
+							
+							if(pos + 1 < length)
+								currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos + 1].isNative;
 						}
 						
 					}
