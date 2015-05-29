@@ -1,11 +1,3 @@
-/* 
-  Localizable.strings
-  Rakshata
-
-  Created by Taiki on 20/02/2015.
-  Copyright (c) 2015 Taiki. All rights reserved.
-*/
-
 //Generals
 "CHAPTER%c" = "Chapitre%1$c";
 "%u-CHAPTER%c" = "%1$zu Chapitre%2$c";
@@ -36,7 +28,7 @@
 "MDL-TAB-TITLE" = "Téléchargement";
 "MDL-DROP-PLACEHOLDER" = "Lâchez ici pour télécharger";
 
-"MDL-FLUSH-INSTALLED" = "Retirer les lignes installés";
+"MDL-FLUSH-INSTALLED" = "Retirer les lignes installées";
 
 //Authentification controller
 "AUTH-REQUIRED" = "Connexion requise";

@@ -415,14 +415,6 @@
 		memset(maskValidated, 1, nbElemFull * sizeof(BOOL));
 		memset(newMaskValidated, 1, newNbElemFull * sizeof(BOOL));
 		
-#ifdef DEV_VERSION
-		printf("Dumping orderedToSorted: ");
-		for(uint i = 0; i < nbElemFull; printf("%d - ", orderedToSorted[i++]));
-		printf("\nDumping newOrderedToSorted: ");
-		for(uint i = 0; i < newNbElemFull; printf("%d - ", newOrderedToSorted[i++]));
-		putc('\n', stdout);
-#endif
-		
 		//First, we detect suppressions/deletions in the global cache list
 		while(posOld < nbElemFull && posNew < newNbElemFull)
 		{
@@ -454,7 +446,7 @@
 		}
 		
 		//Complete the list
-		for(; MAX(posOld, nbRemoval) < nbElemFull; posOld++)
+		for(; posOld < nbElemFull; posOld++)
 		{
 			if(maskValidated[posOld])
 			{
