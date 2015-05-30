@@ -260,11 +260,6 @@ void updateProjects()
 	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO, &nbElem);
 	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 	
-	for(uint i = 0; i < nbElem; i++)
-	{
-		printf("[%d] - %ls\n", i, oldData[i].projectName);
-	}
-	
 	while(posBase != nbElem)
 	{
 		posEnd = defineBoundsRepoOnProjectDB(oldData, posBase, nbElem);

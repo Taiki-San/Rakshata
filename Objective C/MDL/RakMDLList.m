@@ -43,7 +43,12 @@ enum
 
 - (void) wakeUp
 {
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
 	[_tableView reloadData];
+	
+	[CATransaction commit];
 }
 
 - (CGFloat) contentHeight
@@ -67,9 +72,7 @@ enum
 	{
 		wasSerie = !wasSerie;
 		
-		uint nbRow = [self numberOfRowsInTableView : _tableView];
-		
-		[self fullAnimatedReload:nbRow :nbRow];
+		[_tableView noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])]];
 	}
 }
 
@@ -104,10 +107,7 @@ enum
 
 - (void) additionalResizing : (NSSize) newSize : (BOOL) animated
 {
-	if(animated)
-		[_tableView.animator setFrameSize: NSMakeSize(_tableView.bounds.size.width, [self contentHeight])];
-	else
-		[_tableView setFrameSize: NSMakeSize(_tableView.bounds.size.width, [self contentHeight])];
+	[_tableView setFrameSize: NSMakeSize(_tableView.bounds.size.width, [self contentHeight])];
 }
 
 #pragma mark - Methods to deal with tableView

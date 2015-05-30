@@ -146,7 +146,7 @@
 	if(isTome)
 		copyTomeList(newData, nbElem, newDataBuf);
 	else
-		memcpy(newDataBuf, newData, (nbElem + 1) * allocSize);
+		memcpy(newDataBuf, newData, nbElem * allocSize);
 	
 	//Set up table of installed
 	if(newData != NULL && installedData != NULL)
