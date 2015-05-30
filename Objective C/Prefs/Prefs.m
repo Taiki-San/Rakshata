@@ -406,6 +406,12 @@ enum
 			output = [NSColor colorWithDeviceWhite:148/255.0f alpha:1.0];
 			break;
 		}
+			
+		case GET_COLOR_BACKGROUND_CT_LIST:
+		{
+			output = [NSColor colorWithDeviceWhite:28/255.0f alpha:1.0];
+			break;
+		}
 	}
 	
 	return output;

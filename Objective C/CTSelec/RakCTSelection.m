@@ -139,6 +139,16 @@
 	return parentBounds;
 }
 
+- (void) drawRect:(NSRect)dirtyRect
+{
+	if(_currentContext != TAB_READER)
+		return [super drawRect:dirtyRect];
+	
+	[[Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_LIST :nil] setFill];
+	
+	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, dirtyRect.size.height - CT_READERMODE_HEIGHT_CT_BUTTON - CT_READERMODE_HEIGHT_BORDER_TABLEVIEW + 2));
+}
+
 #pragma mark - Buttons management
 
 - (void) setupButtons : (BOOL*) isTome
