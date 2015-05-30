@@ -62,7 +62,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 		if(isTome)
 		{
 			tmp = localBuffer[nombreTours].ID;
-			if(localBuffer[nombreTours].isNative)
+			if(localBuffer[nombreTours].isPrivate)
 			{
 				if(isChapterShared(NULL, projectDB, tmp))
 				{

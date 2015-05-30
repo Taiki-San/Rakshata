@@ -80,7 +80,14 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	
 	for(posDetails = 0; posDetails < projectDB.tomesFull[pos].lengthDetails; posDetails++)
 	{
-		if(cache[posDetails].isNative)
+		if(cache[posDetails].isPrivate)
+		{
+			if(cache[posDetails].ID % 10)
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+			else
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d", ID, cache[posDetails].ID / 10);
+		}
+		else
 		{
 			if(cache[posDetails].ID % 10)
 				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
@@ -103,13 +110,6 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 					MDL_createSharedFile(projectDB, cache[posDetails].ID, pos);
 				}
 			}
-		}
-		else
-		{
-			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
-			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d", ID, cache[posDetails].ID / 10);
 		}
 		
 		snprintf(fullPath, sizeof(fullPath), "%s/%s/%s", basePath, intermediaryDirectory, CONFIGFILE);
@@ -277,7 +277,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		
 		for(uint posDetails = 0; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
 		{
-			if(details[posDetails].isNative)
+			if(!details[posDetails].isPrivate)
 			{
 				curID = details[posDetails].ID;
 				if (curID % 10)

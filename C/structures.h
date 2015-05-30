@@ -23,7 +23,7 @@ typedef struct sqlite3_stmt sqlite3_stmt;
 typedef struct details_tome_data
 {
 	int ID;
-	bool isNative;			//Chapitre indé
+	bool isPrivate;			//Chapitre indé
 
 } CONTENT_TOME;
 

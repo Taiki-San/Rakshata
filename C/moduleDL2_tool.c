@@ -24,17 +24,17 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         {
             if(data.partOfTome == VALEUR_FIN_STRUCT || data.subFolder == false)
             {
-                if(data.chapitre%10)
-                    snprintf(output, length, "%s/%d/Chapitre_%d.%d.zip", output, data.datas->projectID, data.chapitre/10, data.chapitre%10);
+                if(data.chapitre % 10)
+                    snprintf(output, length, "%s/%d/Chapitre_%d.%d.zip", output, data.datas->projectID, data.chapitre / 10, data.chapitre % 10);
                 else
-                    snprintf(output, length, "%s/%d/Chapitre_%d.zip", output, data.datas->projectID, data.chapitre/10);
+                    snprintf(output, length, "%s/%d/Chapitre_%d.zip", output, data.datas->projectID, data.chapitre / 10);
             }
             else
             {
-                if(data.chapitre%10)
-                    snprintf(output, length, "%s/%d/Tome_%d/Chapitre_%d.%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre/10, data.chapitre%10);
+                if(data.chapitre % 10)
+                    snprintf(output, length, "%s/%d/Tome_%d/Chapitre_%d.%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10, data.chapitre % 10);
                 else
-                    snprintf(output, length, "%s/%d/Tome_%d/Chapitre_%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre/10);
+                    snprintf(output, length, "%s/%d/Tome_%d/Chapitre_%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10);
             }
         }
     }
@@ -369,7 +369,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		
 		for(pos2 = 0; pos2 < projectData.tomesFull[pos].lengthDetails; pos2++)
 		{
-			if(buf[pos2].ID == IDChap && buf[pos2].isNative)
+			if(buf[pos2].ID == IDChap && !buf[pos2].isPrivate)
 			{
 				//On a trouvé le tome, on a plus qu'à faire le test
 				if(posIndexTome != NULL)

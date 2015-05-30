@@ -61,7 +61,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	
 	if(a.tomesFull != NULL && b.tomesFull != NULL)
 	{
-		for(uint i = 0, j, max; i < a.nombreTomes; i++)
+		for(uint i = 0; i < a.nombreTomes; i++)
 		{
 			if(a.tomesFull[i].price != b.tomesFull[i].price)
 				return false;
@@ -76,12 +76,9 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 			{
 				if(a.tomesFull[i].lengthDetails != b.tomesFull[i].lengthDetails)
 					return false;
-
-				for(j = 0, max = a.tomesFull[i].lengthDetails; j < max; j++)
-				{
-					if(a.tomesFull[i].details[j].ID != b.tomesFull[i].details[j].ID)
-						return false;
-				}
+				
+				if(memcmp(a.tomesFull[i].details, b.tomesFull[i].details, a.tomesFull[i].lengthDetails * sizeof(CONTENT_TOME)))
+					return false;
 			}
 		}
 	}
