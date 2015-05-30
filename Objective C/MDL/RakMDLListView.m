@@ -175,7 +175,6 @@ enum
 		DLprogress.offsetYSpeed = -1;
 	
 	[requestName setStringValue : [self getName]];
-	[requestName sizeToFit];
 }
 
 - (void) setPositionsOfStuffs
@@ -193,14 +192,7 @@ enum
 	//Text at extreme left
 	if (requestName != nil)
 	{
-		curFrame = requestName.frame;
-		
-		if(NSEqualRects(curFrame, NSZeroRect))
-		{
-			[requestName sizeToFit];
-			curFrame = requestName.frame;
-		}
-		
+		curFrame.size.height = wasMultiLine ? 34 : 17;
 		curFrame.size.width = frame.size.width - REQUEST_OFFSET_WIDTH;
 		
 		if(wasMultiLine)
@@ -214,7 +206,6 @@ enum
 	}
 	
 	newPoint.x = frame.size.width - 3;
-	
 	
 	//Icon at extreme right
 	if (_remove != nil)
@@ -324,7 +315,7 @@ enum
 	else
 		_invalidData = NO;
 	
-	[requestName setStringValue : [self getName]];
+	[self multilineStateUpdated];
 	
 	[_pause.cell setState: ((*todoList)->downloadSuspended & DLSTATUS_SUSPENDED ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD)];
 	[_pause setNeedsDisplay : YES];

@@ -22,6 +22,7 @@
 
 @property CGFloat fixedWidth;
 @property BOOL discardHeight;
+@property NSRect currentFrame;
 
 @property (weak) id clicTarget;
 @property SEL clicAction;

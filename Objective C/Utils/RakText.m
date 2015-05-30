@@ -100,7 +100,8 @@
 	
 	_suggestedWidth = newSize.width;
 	
-	[super setFrameSize: _discardHeight ? [self intrinsicContentSize] : newSize];
+	_currentFrame.size = _discardHeight ? [self intrinsicContentSize] : newSize;
+	[super setFrameSize: _currentFrame.size];
 }
 
 - (void) setFrameOrigin:(NSPoint)newOrigin
@@ -108,7 +109,7 @@
 	if(_forcedOffsetY)
 		newOrigin.y -= _forcedOffsetY;
 	
-	[super setFrameOrigin:newOrigin];
+	[super setFrameOrigin: (_currentFrame.origin = newOrigin)];
 }
 
 - (void) drawRect:(NSRect)dirtyRect
