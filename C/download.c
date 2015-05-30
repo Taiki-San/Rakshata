@@ -40,13 +40,17 @@ void initializeDNSCache()
 
 void useDNSCache(CURL* curl)
 {
-    curl_easy_setopt(curl, CURLOPT_SHARE, cacheDNS);
+	if(cacheDNS != NULL)
+	    curl_easy_setopt(curl, CURLOPT_SHARE, cacheDNS);
 }
 
 void releaseDNSCache()
 {
     if(cacheDNS != NULL)
-        curl_share_cleanup(cacheDNS);
+	{
+		curl_share_cleanup(cacheDNS);
+		cacheDNS = NULL;
+	}
 	
 	curl_global_cleanup();
 }
