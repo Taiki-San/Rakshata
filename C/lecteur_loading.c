@@ -64,6 +64,13 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 			tmp = localBuffer[nombreTours].ID;
 			if(localBuffer[nombreTours].isPrivate)
 			{
+				if(tmp % 10)
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
+				else
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, tmp / 10);
+			}
+			else
+			{
 				if(isChapterShared(NULL, projectDB, tmp))
 				{
 					if(tmp % 10)
@@ -79,13 +86,6 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d", IDRequested, tmp / 10);
 				}
 				
-			}
-			else
-			{
-				if(tmp % 10)
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
-				else
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, tmp / 10);
 			}
 		}
 		else
