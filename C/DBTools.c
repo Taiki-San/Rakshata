@@ -13,7 +13,7 @@
 #include "crypto/crypto.h"
 #include "dbCache.h"
 
-/**********		REFRESH REPOS		***************/
+#pragma mark - Refresh repos
 
 bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA **output)
 {
@@ -63,7 +63,7 @@ bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output)
 	return parseRemoteRepoEntry(data, NULL, version, output);
 }
 
-/**********		REFRESH PROJECTS		***********/
+#pragma mark - Refresh Projects
 
 uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem)
 {
@@ -270,7 +270,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	destroyRequest(request);
 }
 
-/**************		REFRESH ICONS		**************/
+#pragma mark - Refresh icons
 
 bool ressourcesDownloadInProgress = false;
 ICONS_UPDATE * _queue;
@@ -466,7 +466,7 @@ void updateProjectImages(void * _todo)
 	MUTEX_UNLOCK(DBRefreshMutex);
 }
 
-/*****************		DIVERS		******************/
+#pragma mark - Divers
 
 void resetUpdateDBCache()
 {

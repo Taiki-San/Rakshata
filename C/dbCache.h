@@ -165,6 +165,7 @@ void initializeTags(void * mainCache);
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 
+#define MAIN_CACHE "thisWouldBeADumbName"
 #define SORT_FUNC "LEGOLAS"
 
 enum SEARCH_REQUEST

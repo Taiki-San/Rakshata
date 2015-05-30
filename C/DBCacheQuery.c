@@ -199,11 +199,11 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
 		
 		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
-			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
+			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
 		else if((maskRequest & RDB_LOADMASK) == RDB_LOAD_FAVORITE)
-			snprintf(requestString, 200, "SELECT * FROM rakSQLite WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY %s ASC", sortRequest);
+			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY %s ASC", sortRequest);
 		else
-			snprintf(requestString, 200, "SELECT * FROM rakSQLite ORDER BY %s ASC", sortRequest);
+			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" ORDER BY %s ASC", sortRequest);
 		
 		
 		sqlite3_stmt* request = NULL;
