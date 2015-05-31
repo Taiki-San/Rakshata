@@ -84,6 +84,7 @@ enum
 			[self updateTrackingArea];
 	}
 }
+
 - (BOOL) isHidden 	{	return scrollview.isHidden;	}
 
 #pragma mark - Resizing code
@@ -101,16 +102,12 @@ enum
 
 - (void) setFrame : (NSRect) frameRect
 {
-	frameRect = [self frameFromParent:frameRect];
-	
-	[scrollview setFrame:frameRect];
+	[scrollview setFrame : [self frameFromParent:frameRect]];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	frameRect = [self frameFromParent:frameRect];
-	
-	[scrollview.animator setFrame:frameRect];
+	[scrollview.animator setFrame : [self frameFromParent:frameRect]];
 }
 
 - (void) updateTrackingArea

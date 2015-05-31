@@ -295,7 +295,6 @@
 	}
 }
 
-
 - (uint) updateNumberColumn
 {
 	NSView * scrollview = self.superview;
