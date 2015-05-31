@@ -1455,6 +1455,16 @@
 - (void)pageControllerDidEndLiveTransition : (NSPageController *) pageController
 {
 	[pageController completeTransition];
+	
+	//Before the first page
+	if(pageController.selectedIndex == 0 && _posElemInStructure == 0)
+		pageController.selectedIndex = 1;
+
+	//After the last page
+	if(pageController.selectedIndex == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
+	{
+		pageController.selectedIndex = [pageController.arrangedObjects count] - 2;
+	}
 }
 
 #pragma mark - Checks if new elements to download
