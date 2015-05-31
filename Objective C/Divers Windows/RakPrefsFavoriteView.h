@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define NOTIFICATION_FAVS_REPO_UPDATE @"RakNotificationFavoriteLocalUpdate"
+
 @interface RakPrefsFavoriteView : NSView
 
 @end
@@ -21,8 +23,33 @@
 	
 	//Internal data
 	uint lastTransmittedSelectedRowIndex;
+	
+	NSMutableArray * repoRefresh;
 }
 
 - (instancetype) initWithFrame : (NSRect) frame;
+
+- (BOOL) isRepoRefreshing : (uint64_t) repoID;
+- (BOOL) tryInsertRepo : (uint64_t) repoID;
+- (void) removeRepo : (uint64_t) repoID;
+
+@end
+
+@interface RakPrefsFavoriteListView : RakListItemView
+{
+	RakPrefsFavoriteList * _mainList;
+	
+	RakClickableText * repo;
+	RakButton * refresh, * read, * remove, * download;
+	
+	BOOL refreshing;
+}
+
+@property PROJECT_DATA project;
+
+- (instancetype) initWithProject : (PROJECT_DATA) project andList : (RakPrefsFavoriteList *) mainList;
+- (void) updateContent : (PROJECT_DATA) project;
+
++ (void) readProject : (PROJECT_DATA) project;
 
 @end
