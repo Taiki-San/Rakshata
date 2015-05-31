@@ -966,7 +966,7 @@
 		}
 		else
 		{
-			for(uint i = 0; i < size; i++)
+			for(uint i = 0; i < _nbElem; i++)
 			{
 				if(!_installedTable[i])
 				{
@@ -992,7 +992,10 @@
 			if(foundOneIn)
 				[_tableView insertRowsAtIndexes:indexIn withAnimation:NSTableViewAnimationSlideLeft];
 			
-		} completionHandler:^{}];
+		} completionHandler:^{
+			[_tableView tile];
+			[scrollView updateScrollerState:scrollView.bounds];
+		}];
 	}
 }
 
