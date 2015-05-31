@@ -272,7 +272,6 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 
 #pragma mark - Refresh icons
 
-bool ressourcesDownloadInProgress = false;
 ICONS_UPDATE * _queue;
 
 void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
@@ -320,8 +319,8 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			if(!project[pos].haveImages[i])
 				continue;
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "" : "@2x");
-			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
+			snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(imagePath));
 			
 			if(strncmp(crcHash, project[pos].hashesImages[i], LENGTH_HASH))
 			{
@@ -381,7 +380,7 @@ void updateProjectImages(void * _todo)
 	if(todo == NULL)
 		return;
 	
-	if(ressourcesDownloadInProgress)
+	if(pthread_mutex_trylock(&DBRefreshMutex) == EBUSY)
 	{
 		if(_queue == NULL)
 			_queue = todo;
@@ -398,10 +397,6 @@ void updateProjectImages(void * _todo)
 		quit_thread(0);
 	}
 
-	MUTEX_LOCK(DBRefreshMutex);
-	ressourcesDownloadInProgress = true;
-	MUTEX_UNLOCK(DBRefreshMutex);
-	
 	FILE * newFile;
 	char filename[1024];
 	
@@ -446,7 +441,11 @@ void updateProjectImages(void * _todo)
 			remove(filename);
 		else
 		{
-			remove(todo->filename);
+			snprintf(filename, sizeof(filename), "%s.old", todo->filename);
+			rename(todo->filename, filename);
+			remove(filename);
+
+			snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
 			rename(filename, todo->filename);
 		}
 		
@@ -461,8 +460,6 @@ void updateProjectImages(void * _todo)
 		todo = tmp;
 	}
 	
-	MUTEX_LOCK(DBRefreshMutex);
-	ressourcesDownloadInProgress = false;
 	MUTEX_UNLOCK(DBRefreshMutex);
 }
 
