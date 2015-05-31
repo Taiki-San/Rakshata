@@ -99,6 +99,8 @@
 "PROJ-SEARCH-TYPE" = "Catégories";
 
 "PROJ-EXPAND-FILTER-AREA" = "Afficher les outils de recherche avancée";
+"PROJ-CLOSE-FILTER-ARRAY" = "Refermer ▲";
+"PROJ-FILTER-FREE-ONLY" = "Gratuit";
 
 //Reader utils
 "DELETION-CHAP-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";

@@ -10,6 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
+enum
+{
+	BORDER_X_FREE_BUTTON = 10,
+	BORDER_FREE_BUTTON_TEXT = 5,
+	BORDER_Y_FREE = 8,
+	
+	BORDER_LIST = 3,
+	BORDER_SEARCH_LIST = 4
+};
+
 @implementation RakSRSearchTabGroup
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID
@@ -34,7 +44,7 @@
 		}
 		else
 		{
-			close = [RakButton allocWithText:@"Refermer ▲"];
+			close = [RakButton allocWithText:NSLocalizedString(@"PROJ-CLOSE-FILTER-ARRAY", nil)];
 			if(close != nil)
 			{
 				[close setTarget:self];
@@ -45,6 +55,27 @@
 				[close.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
 				
 				[self addSubview:close];
+			}
+			
+			freeSwitch = [[RakSwitchButton alloc] init];
+			if(freeSwitch != nil)
+			{
+				freeText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FREE-ONLY", nil) :[self textColor]];
+				if(freeText != nil)
+				{
+					freeSwitch.state = NSOffState;
+					freeSwitch.target = self;
+					freeSwitch.action = @selector(triggerFree);
+					
+					[self addSubview:freeSwitch];
+					
+					freeText.clicTarget = self;
+					freeText.clicAction = @selector(switchTriggerFree);
+					
+					[self addSubview:freeText];
+				}
+				else
+					freeSwitch = nil;
 			}
 		}
 		
@@ -77,7 +108,17 @@
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		[close setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height)];
+		NSRect freeSwitchFrame = freeSwitch.frame, freeTextFrame = freeText.frame;
+		
+		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
+		[close setFrameOrigin:newOrigin];
+		
+		const CGFloat cumulatedWidth = freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT + freeTextFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - freeSwitchFrame.size.height);
+		[freeSwitch setFrameOrigin:newOrigin];
+		
+		newOrigin = NSMakePoint(newOrigin.x + freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (freeSwitchFrame.size.height / 2 - freeTextFrame.size.height / 2));
+		[freeText setFrameOrigin:newOrigin];
 	}
 	else
 	{
@@ -92,7 +133,17 @@
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		[close.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height)];
+		NSRect freeSwitchFrame = freeSwitch.frame, freeTextFrame = freeText.frame;
+		
+		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
+		[close.animator setFrameOrigin:newOrigin];
+		
+		const CGFloat cumulatedWidth = freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT + freeTextFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - freeSwitchFrame.size.height);
+		[freeSwitch setFrameOrigin:newOrigin];
+		
+		newOrigin = NSMakePoint(newOrigin.x + freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (freeSwitchFrame.size.height / 2 - freeTextFrame.size.height / 2));
+		[freeText setFrameOrigin:newOrigin];
 	}
 	else
 	{
@@ -101,8 +152,10 @@
 	}
 }
 
-#define BORDER_LIST 3
-#define BORDER_SEARCH_LIST 4
+- (NSColor *) textColor
+{
+	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
+}
 
 - (NSRect) getSearchFrame : (NSRect) frame
 {
@@ -134,6 +187,16 @@
 														object:@(SEARCH_BAR_ID_FORCE_CLOSE) userInfo: @{SR_NOTIF_NEW_STATE:@(NO)}];
 	[self.window makeFirstResponder:nil];
 	close.state = NSOffState;
+}
+
+- (void) triggerFree
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FREE_ONLY object:@(freeSwitch.state == NSOnState)];
+}
+
+- (void) switchTriggerFree
+{
+	[freeSwitch performClick:self];
 }
 
 @end

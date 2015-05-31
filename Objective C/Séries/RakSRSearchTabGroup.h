@@ -19,6 +19,8 @@
 	
 	//Used by extra
 	RakButton * close;
+	RakSwitchButton * freeSwitch;
+	RakText * freeText;
 }
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;

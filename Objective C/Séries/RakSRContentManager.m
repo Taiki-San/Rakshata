@@ -28,6 +28,7 @@
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restrictionsUpdated:) name:NOTIFICATION_SEARCH_UPDATED object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(installedOnlyTriggered:) name:NOTIFICATION_INSTALLED_ONLY_STAB object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(freeOnlyTriggered:) name:NOTIFICATION_FREE_ONLY object:nil];
 		
 		_sharedReference = [NSMutableArray array];
 		
@@ -79,7 +80,7 @@
 	}
 	
 	//We get the filtered list
-	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL, installedOnly);
+	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL, installedOnly, freeOnly);
 	if(filtered == NULL && *_nbElemActivated != 0)
 	{
 		if(includeCacheRefresh)
@@ -378,6 +379,20 @@
 		if(newInstalledOnly != installedOnly)
 		{
 			installedOnly = newInstalledOnly;
+			[self updateContext:NO];
+		}
+	}
+}
+
+- (void) freeOnlyTriggered : (NSNotification *) notification
+{
+	if(notification.object != nil && [notification.object isKindOfClass:[NSNumber class]])
+	{
+		BOOL newFreeOnly = [notification.object boolValue];
+		
+		if(newFreeOnly != freeOnly)
+		{
+			freeOnly = newFreeOnly;
 			[self updateContext:NO];
 		}
 	}

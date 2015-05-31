@@ -138,7 +138,7 @@ uint getIDForTag(byte type, uint code);
 
 uint _getFromSearch(void * _table, byte type, void * data);
 
-uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly);
+uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly);
 char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 
 /**DBRecent.c**/

@@ -763,7 +763,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 
 #pragma mark - Most highlevel API
 
-uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly)
+uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly)
 {
 	if(dataLength == NULL)
 		return NULL;
@@ -798,7 +798,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	uint searchLength = searchQuery == NULL ? 0 : strlen(searchQuery);
 	char requestString[1024 + 2 * searchLength];
 	
-	if(!searchLength && !wantInstalledOnly)
+	if(!searchLength && !wantInstalledOnly && !wantFreeOnly)
 		strncpy(requestString, "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", sizeof(requestString));
 	else
 	{
@@ -807,7 +807,12 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(searchLength)
 			snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
 		
-		if(wantInstalledOnly)
+		if(wantFreeOnly)
+		{
+			uint currentLength = strlen(additionnalRequest);
+			snprintf(&(additionnalRequest[currentLength]), sizeof(additionnalRequest) - currentLength, " AND cache."DBNAMETOID(RDB_isPaid)" = 0");
+		}
+		else if(wantInstalledOnly)
 		{
 			uint currentLength = strlen(additionnalRequest);
 			snprintf(&(additionnalRequest[currentLength]), sizeof(additionnalRequest) - currentLength, " AND cache."DBNAMETOID(RDB_isInstalled)" = 1");
