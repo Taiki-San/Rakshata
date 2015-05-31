@@ -77,6 +77,8 @@ struct icon_update_waitlist
 	char * filename;
 	
 	ICONS_UPDATE * next;
+
+	char crc32[9];
 };
 
 /**DBCache.c**/

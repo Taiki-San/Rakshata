@@ -280,7 +280,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		return NULL;
 	
 	size_t length;
-	char imagePath[1024], crcHash[LENGTH_HASH+1];
+	char imagePath[1024];
 	REPO_DATA *repo = NULL;
 	
 	//Recover URLRepo
@@ -306,9 +306,9 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	else
 		return NULL;
 	
-	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
 	ICONS_UPDATE * workload = NULL, * current = NULL, * previous = NULL;
-	
+	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
+
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
 		if(project[pos].repo == NULL)
@@ -319,54 +319,48 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			if(!project[pos].haveImages[i])
 				continue;
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
-			snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(imagePath));
-			
-			if(strncmp(crcHash, project[pos].hashesImages[i], LENGTH_HASH))
+			if(current == NULL)
 			{
-				if(current == NULL)
+				workload = current = calloc(1, sizeof(ICONS_UPDATE));
+				if(workload == NULL)
 				{
-					workload = current = calloc(1, sizeof(ICONS_UPDATE));
-					if(workload == NULL)
-					{
-						memoryError(sizeof(ICONS_UPDATE));
-						free(project[pos].URLImages[i]);
-						continue;
-					}
-				}
-				else
-				{
-					void * new = calloc(1, sizeof(ICONS_UPDATE));
-					if(new == NULL)
-					{
-						memoryError(sizeof(ICONS_UPDATE));
-						free(project[pos].URLImages[i]);
-						continue;
-					}
-					
-					current->next = new;
-					previous = current;
-					current = new;
-				}
-				
-				current->filename = strdup(imagePath);
-				
-				if(current->filename == NULL)
-				{
+					memoryError(sizeof(ICONS_UPDATE));
 					free(project[pos].URLImages[i]);
-					free(current);
-					current = previous;
-					
-					if(current != NULL)
-						current->next = NULL;
-					
+					continue;
+				}
+			}
+			else
+			{
+				void * new = calloc(1, sizeof(ICONS_UPDATE));
+				if(new == NULL)
+				{
+					memoryError(sizeof(ICONS_UPDATE));
+					free(project[pos].URLImages[i]);
 					continue;
 				}
 				
-				current->URL = project[pos].URLImages[i];
+				current->next = new;
+				previous = current;
+				current = new;
 			}
-			else
+			
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
+			current->filename = strdup(imagePath);
+			
+			if(current->filename == NULL)
+			{
 				free(project[pos].URLImages[i]);
+				free(current);
+				current = previous;
+				
+				if(current != NULL)
+					current->next = NULL;
+				
+				continue;
+			}
+			
+			strncpy(current->crc32, project[pos].hashesImages[i], LENGTH_HASH);
+			current->URL = project[pos].URLImages[i];
 		}
 	}
 	
@@ -397,23 +391,11 @@ void updateProjectImages(void * _todo)
 		quit_thread(0);
 	}
 
-	FILE * newFile;
-	char filename[1024];
-	
-	end = todo;
-	while(end->next != NULL)
-	{
-		snprintf(filename, sizeof(filename), "%s.tmp", end->filename);
-
-		newFile = fopen(filename, "w+");
-		if(newFile != NULL)
-			fclose(newFile);
-		
-		end = end->next;
-	}
+	char filename[1024], crcHash[LENGTH_HASH];
 	
 	while(todo != NULL || _queue != NULL)
 	{
+		//We append the inserted queue
 		if(_queue != NULL)
 		{
 			if(end != NULL)	//If todo == NULL, this mean we already freed the last element, aka end
@@ -422,31 +404,27 @@ void updateProjectImages(void * _todo)
 				todo = end = _queue;
 
 			_queue = NULL;
-
-			while(end->next != NULL)
-			{
-				snprintf(filename, sizeof(filename), "%s.tmp", end->filename);
-				
-				newFile = fopen(filename, "w+");
-				if(newFile != NULL)
-					fclose(newFile);
-				
-				end = end->next;
-			}
 		}
-
-		snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
 		
-		if(download_disk(todo->URL, NULL, filename, !strncmp(todo->URL, "https", 5)) != CODE_RETOUR_OK)
-			remove(filename);
-		else
+		//We check the update is really needed
+		snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(todo->filename));
+		if(strncmp(crcHash, todo->crc32, LENGTH_HASH))
 		{
-			snprintf(filename, sizeof(filename), "%s.old", todo->filename);
-			rename(todo->filename, filename);
-			remove(filename);
-
 			snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
-			rename(filename, todo->filename);
+
+			if(download_disk(todo->URL, NULL, filename, !strncmp(todo->URL, "https", 5)) == CODE_RETOUR_OK)
+			{
+				snprintf(filename, sizeof(filename), "%s.old", todo->filename);
+				rename(todo->filename, filename);
+				remove(filename);
+				
+				snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
+				rename(filename, todo->filename);
+			}
+			else
+			{
+				remove(filename);
+			}
 		}
 		
 		free(todo->filename);
