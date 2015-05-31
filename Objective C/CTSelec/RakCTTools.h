@@ -28,6 +28,9 @@
 @end
 
 @interface RakCTProjectImageView : NSImageView
+{
+	PROJECT_DATA _cachedProject;
+}
 
 - (instancetype) initWithImageName : (PROJECT_DATA) project : (NSRect) superviewFrame;
 - (void) updateProject : (PROJECT_DATA) project;

@@ -31,7 +31,10 @@ enum
 		
 		thumb = [[NSImageView alloc] init];
 		if(thumb != nil)
+		{
+			registerThumbnailUpdate(self, @selector(thumbnailUpdate:), THUMBID_HEAD);
 			[self addSubview:thumb];
+		}
 		else
 			return nil;
 		
@@ -76,6 +79,11 @@ enum
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL) isFlipped	{	return YES;	}
@@ -123,9 +131,22 @@ enum
 	return [output stringByAppendingString:current];
 }
 
+#pragma mark - Update management
+
 - (PROJECT_DATA) project
 {
 	return _project;
+}
+
+- (void) registerProject : (PROJECT_DATA) project
+{
+	if(project.isInitialized)
+	{
+		_project = project;
+		_project.chapitresFull = _project.chapitresInstalled = NULL;
+		_project.tomesFull = _project.tomesInstalled = NULL;
+		_project.chapitresPrix = NULL;
+	}
 }
 
 - (void) setProject:(PROJECT_DATA)project
@@ -135,6 +156,8 @@ enum
 		NSLog(@"Invalid project D:");
 		return;
 	}
+	else
+		[self registerProject:project];
 	
 	NSImage * image = loadImageGrid(project);
 	if(image != nil)
@@ -150,15 +173,37 @@ enum
 		
 		synopsis.stringValue = getStringForWchar(project.description);			[synopsis sizeToFit];
 		
-		_project = project;
-		
 		[self setFrame:_frame];
-		
 		[self setNeedsDisplay:YES];
 	}
 	else
 	{
 		NSLog(@"Invalid image D:");
+	}
+}
+
+- (void) thumbnailUpdate : (NSNotification *) notification
+{
+	NSDictionary * dict = notification.userInfo;
+	if(dict == nil || !_project.isInitialized)
+		return;
+	
+	NSNumber * project = [dict objectForKey:@"project"], * repo = [dict objectForKey:@"source"];
+	
+	if(project == nil || repo == nil)
+		return;
+	
+	if([project unsignedIntValue] == _project.projectID && [repo unsignedLongLongValue] == getRepoID(_project.repo))
+	{
+		NSImage * image = loadImageGrid(_project);
+		if(image != nil)
+		{
+			thumb.image = image;
+			[thumb setFrameSize:image.size];
+			
+			[self setFrame:_frame];
+			[self setNeedsDisplay:YES];
+		}
 	}
 }
 

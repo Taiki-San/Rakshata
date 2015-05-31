@@ -113,17 +113,8 @@ enum
 
 - (void) updateProject : (PROJECT_DATA) project
 {
-	//We really don't care about those data, so we don't want the burden of having to update them
-	project.chapitresFull = project.chapitresInstalled = NULL;
-	project.tomesFull = project.tomesInstalled = NULL;
-	project.chapitresPrix = NULL;
-	
-	_project = project;
-	
-	NSImage * image = loadImageGrid(_project);
-	if(image != nil)
-		thumbnail.image = image;
-	
+	[super updateProject:project];
+
 	projectName.stringValue = getStringForWchar(project.projectName);
 	
 	[self initReason];

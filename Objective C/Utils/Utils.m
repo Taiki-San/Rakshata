@@ -47,3 +47,24 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 	
 	return [stringA localizedCompare:stringB];
 }
+
+//Flush NSBundle cache
+
+// First, we declare the function. Making it weak-linked
+// ensures the preference pane won't crash if the function
+// is removed from in a future version of Mac OS X.
+extern void _CFBundleFlushBundleCaches(CFBundleRef bundle)
+__attribute__((weak_import));
+
+void flushBundleCache(NSBundle *bundle)
+{
+	// Before calling the function, we need to check if it exists
+	// since it was weak-linked.
+	if (_CFBundleFlushBundleCaches != NULL)
+	{
+		CFBundleRef cfBundle = CFBundleCreate(nil, (__bridge CFURLRef)[bundle bundleURL]);
+
+		_CFBundleFlushBundleCaches(cfBundle);
+		CFRelease(cfBundle);
+	}
+}

@@ -31,6 +31,21 @@ NSImage * loadImageForRepo(BOOL isRoot, void* repo)
 
 #pragma mark - Project
 
+void invalidateCacheForRepoID(uint64_t repoID)
+{
+	REPO_DATA fakeRepo = getEmptyRepo();	fakeRepo.parentRepoID = getRootFromRepoID(repoID);	fakeRepo.repoID = getSubrepoFromRepoID(repoID);
+
+	char * repoPath = getPathForRepo(&fakeRepo);
+	if(repoPath != NULL)
+	{
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", repoPath]];
+		if(bundle != nil)
+			flushBundleCache(bundle);
+		
+		free(repoPath);
+	}
+}
+
 NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSString * defaultName)
 {
 	NSImage * image = nil;

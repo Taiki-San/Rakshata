@@ -36,6 +36,8 @@ enum
 		_workingArea.size = [self defaultWorkingSize];
 		
 		[self initContent];
+		
+		registerThumbnailUpdate(self, @selector(thumbnailUpdate:), THUMBID_HEAD);
 	}
 	
 	return self;
@@ -52,6 +54,43 @@ enum
 			thumbnail.image = image;
 			[self addSubview:thumbnail];
 		}
+	}
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) updateProject : (PROJECT_DATA) project
+{
+	//We really don't care about those data, so we don't want the burden of having to update them
+	project.chapitresFull = project.chapitresInstalled = NULL;
+	project.tomesFull = project.tomesInstalled = NULL;
+	project.chapitresPrix = NULL;
+	
+	_project = project;
+	
+	NSImage * image = loadImageGrid(_project);
+	if(image != nil)
+		thumbnail.image = image;
+}
+
+- (void) thumbnailUpdate : (NSNotification *) notification
+{
+	NSDictionary * dict = notification.userInfo;
+	if(dict == nil || !_project.isInitialized)
+		return;
+	
+	NSNumber * project = [dict objectForKey:@"project"], * repo = [dict objectForKey:@"source"];
+	
+	if(project == nil || repo == nil)
+		return;
+	
+	if([project unsignedIntValue] == _project.projectID && [repo unsignedLongLongValue] == getRepoID(_project.repo))
+	{
+		[self updateProject:_project];
+		[self setNeedsDisplay:YES];
 	}
 }
 

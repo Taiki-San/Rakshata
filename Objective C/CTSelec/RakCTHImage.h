@@ -21,6 +21,8 @@
 {
 	RakCTHImageGradient * gradient;
 	NSImage * defaultImage;
+	
+	PROJECT_DATA _cachedProject;
 }
 
 - (instancetype) initWithProject : (NSRect) parentFrame : (PROJECT_DATA) data;

@@ -88,6 +88,23 @@ void notifyFullUpdateRepo()
  **										**
  *****************************************/
 
+NSString * thumbNotificationName(byte updateType)
+{
+	switch (updateType)
+	{
+		case THUMBID_SRGRID:
+			return NOTIFICATION_THUMBNAIL_UPDATE_SRGRID;
+			
+		case THUMBID_HEAD:
+			return NOTIFICATION_THUMBNAIL_UPDATE_HEAD;
+			
+		case THUMBID_CT:
+			return NOTIFICATION_THUMBNAIL_UPDATE_CT;
+	}
+	
+	return nil;
+}
+
 void notifyThumbnailUpdate(ICONS_UPDATE * payload)
 {
 	if(payload == NULL)
@@ -102,9 +119,27 @@ void notifyThumbnailUpdate(ICONS_UPDATE * payload)
 			return;
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_THUMBNAIL_UPDATE object:nil userInfo:@{@"type" : @(payload->updateType),
-																												   @"project" : @(payload->projectID),
-																												   @"source" : @(payload->repoID)}];
+	NSString * notificationName = thumbNotificationName(payload->updateType);
+	
+	if(notificationName != nil)
+	{
+		uint projectID = payload->projectID;
+		uint64_t repoID = payload->repoID;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			invalidateCacheForRepoID(repoID);
+			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil userInfo:@{@"project" : @(projectID), @"source" : @(repoID)}];
+		});
+	}
+}
+
+void registerThumbnailUpdate(id object, SEL selector, byte updateType)
+{
+	NSString * notificationName = thumbNotificationName(updateType);
+	
+	if(notificationName != nil)
+		[[NSNotificationCenter defaultCenter] addObserver:object selector:selector name:notificationName object:nil];
 }
 
 /*****************************************

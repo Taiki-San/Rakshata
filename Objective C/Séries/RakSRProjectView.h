@@ -33,6 +33,7 @@ enum
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 
 - (void) initContent;
+- (void) updateProject : (PROJECT_DATA) project;
 
 - (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize;
 

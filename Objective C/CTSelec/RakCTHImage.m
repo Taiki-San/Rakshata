@@ -23,6 +23,8 @@
 		if(![self loadProject : data])
 			return nil;
 		
+		registerThumbnailUpdate(self, @selector(thumbnailUpdate:), THUMBID_HEAD);
+		
 		[self setImageScaling:NSImageScaleProportionallyUpOrDown];
 	}
 	
@@ -36,7 +38,33 @@
 
 - (BOOL) loadProject : (PROJECT_DATA) data
 {
+	if(data.isInitialized)
+	{
+		_cachedProject = data;
+		_cachedProject.chapitresFull = _cachedProject.chapitresInstalled = NULL;
+		_cachedProject.tomesFull = _cachedProject.tomesInstalled = NULL;
+		_cachedProject.chapitresPrix = NULL;
+	}
+	
 	return (self.image = loadCTHeader(data)) != nil;
+}
+
+- (void) thumbnailUpdate : (NSNotification *) notification
+{
+	NSDictionary * dict = notification.userInfo;
+	if(dict == nil || !_cachedProject.isInitialized)
+		return;
+	
+	NSNumber * project = [dict objectForKey:@"project"], * repo = [dict objectForKey:@"source"];
+	
+	if(project == nil || repo == nil)
+		return;
+	
+	if([project unsignedIntValue] == _cachedProject.projectID && [repo unsignedLongLongValue] == getRepoID(_cachedProject.repo))
+	{
+		[self loadProject:_cachedProject];
+		[self setNeedsDisplay:YES];
+	}
 }
 
 - (RakCTHImageGradient *) gradientView
@@ -57,6 +85,8 @@
 
 - (void) dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	self.image = nil;
 	[gradient removeFromSuperview];
 }

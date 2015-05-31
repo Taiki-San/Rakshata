@@ -50,6 +50,11 @@ NSString * getStringForWchar(const charType * string);
 #define NSCenterSize(base, content) NSMakePoint(base.width / 2 - content.width / 2, base.height / 2 - content.height / 2)
 #define NSCenteredViews(parent, subview) NSCenteredRect(parent.bounds, subview.bounds)
 
+//Thumbnail update management
+void registerThumbnailUpdate(id object, SEL selector, byte updateType);
+void flushBundleCache(NSBundle *bundle);
+void invalidateCacheForRepoID(uint64_t repoID);
+
 //Image loading
 NSImage * loadImageForRepo(BOOL isRoot, void* repo);
 NSImage * loadCTHeader(const PROJECT_DATA project);

@@ -68,7 +68,9 @@ enum RDB_CODES
 #define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
 #define REPO_IMG_NAME			"REPO"
 
-#define NOTIFICATION_THUMBNAIL_UPDATE @"RakNotificationNewThumbnailsYummyYummy"
+#define NOTIFICATION_THUMBNAIL_UPDATE_SRGRID @"RakNotificationNewThumbnailsYummyYummy1"
+#define NOTIFICATION_THUMBNAIL_UPDATE_HEAD @"RakNotificationNewThumbnailsYummyYummy2"
+#define NOTIFICATION_THUMBNAIL_UPDATE_CT @"RakNotificationNewThumbnailsYummyYummy3"
 
 enum
 {

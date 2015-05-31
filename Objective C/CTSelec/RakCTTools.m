@@ -132,6 +132,9 @@
 		
 		if(self != nil)
 		{
+			registerThumbnailUpdate(self, @selector(thumbnailUpdate:), THUMBID_CT);
+			[self registerProject:project];
+
 			[self setWantsLayer:NO];
 			[self setImageAlignment:NSImageAlignCenter];
 			[self setImageFrameStyle:NSImageFrameNone];
@@ -142,6 +145,11 @@
 		self = nil;
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void) updateProject : (PROJECT_DATA) project
@@ -161,8 +169,40 @@
 		}
 		
 		[self setImage:projectImageBase];
+		[self registerProject:project];
 	}
 }
+
+- (void) registerProject : (PROJECT_DATA) project
+{
+	if(project.isInitialized)
+	{
+		_cachedProject = project;
+		_cachedProject.chapitresFull = _cachedProject.chapitresInstalled = NULL;
+		_cachedProject.tomesFull = _cachedProject.tomesInstalled = NULL;
+		_cachedProject.chapitresPrix = NULL;
+	}
+}
+
+- (void) thumbnailUpdate : (NSNotification *) notification
+{
+	NSDictionary * dict = notification.userInfo;
+	if(dict == nil || !_cachedProject.isInitialized)
+		return;
+	
+	NSNumber * project = [dict objectForKey:@"project"], * repo = [dict objectForKey:@"source"];
+	
+	if(project == nil || repo == nil)
+		return;
+	
+	if([project unsignedIntValue] == _cachedProject.projectID && [repo unsignedLongLongValue] == getRepoID(_cachedProject.repo))
+	{
+		[self updateProject:_cachedProject];
+		[self setNeedsDisplay:YES];
+	}
+}
+
+#pragma mark - Sizing
 
 - (NSRect) getProjectImageSize : (NSRect) superviewFrame : (NSSize) imageSize
 {
