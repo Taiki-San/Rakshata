@@ -308,7 +308,8 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	ICONS_UPDATE * workload = NULL, * current = NULL, * previous = NULL;
 	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
-
+	const byte imageID[4] = {THUMBID_SRGRID, THUMBID_HEAD, THUMBID_CT, THUMBID_DD};
+	
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
 		if(project[pos].repo == NULL)
@@ -346,7 +347,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			
 			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
 			current->filename = strdup(imagePath);
-			
+
 			if(current->filename == NULL)
 			{
 				free(project[pos].URLImages[i]);
@@ -361,6 +362,10 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			
 			strncpy(current->crc32, project[pos].hashesImages[i], LENGTH_HASH);
 			current->URL = project[pos].URLImages[i];
+			
+			current->updateType = imageID[i / 2];
+			current->repoID = getRepoID(project[pos].repo);
+			current->projectID = project[pos].projectID;
 		}
 	}
 	
@@ -410,6 +415,7 @@ void updateProjectImages(void * _todo)
 		snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(todo->filename));
 		if(strncmp(crcHash, todo->crc32, LENGTH_HASH))
 		{
+			//We perform the actual update
 			snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
 
 			if(download_disk(todo->URL, NULL, filename, !strncmp(todo->URL, "https", 5)) == CODE_RETOUR_OK)
@@ -420,6 +426,9 @@ void updateProjectImages(void * _todo)
 				
 				snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
 				rename(filename, todo->filename);
+				
+				//Okay, let's check if notification is needed, and do so
+				notifyThumbnailUpdate(todo);
 			}
 			else
 			{

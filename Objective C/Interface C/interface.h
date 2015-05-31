@@ -53,6 +53,14 @@ void notifyFullUpdateRepo();
 
 /*****************************************
  **										**
+ **			  Thumbnail update			**
+ **										**
+ *****************************************/
+
+void notifyThumbnailUpdate(ICONS_UPDATE * payload);
+
+/*****************************************
+ **										**
  **			Restrictions update			**
  **										**
  *****************************************/

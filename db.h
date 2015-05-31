@@ -68,6 +68,16 @@ enum RDB_CODES
 #define PROJ_IMG_SUFFIX_DD		"DD"		//Miniature during D&D
 #define REPO_IMG_NAME			"REPO"
 
+#define NOTIFICATION_THUMBNAIL_UPDATE @"RakNotificationNewThumbnailsYummyYummy"
+
+enum
+{
+	THUMBID_SRGRID,
+	THUMBID_HEAD,
+	THUMBID_CT,
+	THUMBID_DD
+};
+
 //Structure to update icons
 typedef struct icon_update_waitlist ICONS_UPDATE;
 
@@ -75,10 +85,13 @@ struct icon_update_waitlist
 {
 	char * URL;
 	char * filename;
+
+	uint64_t repoID;
+	char crc32[9];
+	byte updateType;
+	uint projectID;
 	
 	ICONS_UPDATE * next;
-
-	char crc32[9];
 };
 
 /**DBCache.c**/

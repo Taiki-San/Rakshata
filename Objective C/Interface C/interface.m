@@ -84,6 +84,31 @@ void notifyFullUpdateRepo()
 
 /*****************************************
  **										**
+ **			  Thumbnail update			**
+ **										**
+ *****************************************/
+
+void notifyThumbnailUpdate(ICONS_UPDATE * payload)
+{
+	if(payload == NULL)
+		return;
+	
+	if(payload->next != NULL)
+	{
+		ICONS_UPDATE * next = payload->next;
+		
+		//The next entry is exactly the @2x version
+		if(next->updateType == payload->updateType && next->projectID == payload->projectID && next->repoID == payload->repoID && strcmp(next->crc32, payload->crc32))
+			return;
+	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_THUMBNAIL_UPDATE object:nil userInfo:@{@"type" : @(payload->updateType),
+																												   @"project" : @(payload->projectID),
+																												   @"source" : @(payload->repoID)}];
+}
+
+/*****************************************
+ **										**
  **			Restrictions update			**
  **										**
  *****************************************/
