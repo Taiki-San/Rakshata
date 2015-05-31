@@ -121,9 +121,14 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-		free((void*) sqlite3_column_int64(request, 0));
-		free((void*) sqlite3_column_int64(request, 1));
-		freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+		if(data.chapitresFull != (void*) sqlite3_column_int64(request, 0))
+			free((void*) sqlite3_column_int64(request, 0));
+
+		if(data.chapitresPrix != (void*) sqlite3_column_int64(request, 1))
+			free((void*) sqlite3_column_int64(request, 1));
+
+		if(data.tomesFull != (void*) sqlite3_column_int64(request, 2))
+			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
 		
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = sqlite3_column_int(request, 4);
