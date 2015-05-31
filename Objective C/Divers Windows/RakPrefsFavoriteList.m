@@ -19,7 +19,7 @@
 	if(self != nil)
 	{
 		lastTransmittedSelectedRowIndex = LIST_INVALID_SELECTION;
-		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
+		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME, &_nbData);
 		IDList = getFavoritesID(&lengthList);
 		
 		if(lengthList != _nbData || IDList == NULL)
@@ -59,7 +59,7 @@
 	{
 		PROJECT_DATA * old = projectDB;
 		
-		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &_nbData);
+		projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME, &_nbData);
 		[_tableView reloadData];
 		
 		free(old);
@@ -68,7 +68,7 @@
 	
 	//We check if stuffs were added/removed
 	uint newNbFavorites, * newIDList = getFavoritesID(&newNbFavorites), checkNbFavorites;
-	PROJECT_DATA * newFavorites = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME | RDB_EXCLUDE_DYNAMIC, &checkNbFavorites);
+	PROJECT_DATA * newFavorites = getCopyCache(RDB_LOAD_FAVORITE | SORT_NAME, &checkNbFavorites);
 	
 	//No more favorites :O
 	if(newNbFavorites == 0 || newIDList == NULL || newFavorites == NULL)
@@ -128,23 +128,6 @@
 				[indexSet removeAllIndexes];
 		}
 	}
-	
-	//We check for updates on what is remaining
-	[_tableView enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
-		
-		for(RakPrefsFavoriteListView * subview in rowView.subviews)
-		{
-			if([subview class] == [RakPrefsFavoriteListView class])
-			{
-				if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :subview.project])
-				{
-					PROJECT_DATA tmp = getProjectByIDHelper(subview.project.cacheDBID, false);
-					if(tmp.isInitialized && !areProjectsIdentical(subview.project, tmp))
-						[subview updateContent:tmp];
-				}
-			}
-		}
-	}];
 	
 	//Now, insertion
 	free(projectDB);	free(IDList);

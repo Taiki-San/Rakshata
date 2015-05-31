@@ -183,7 +183,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	uint posOld = 0, posNew = 0;
 	int outputSort;
 	PROJECT_DATA internalBufferOld, internalBufferNew;
-	sqlite3_stmt * request = getAddToCacheRequest();
+	sqlite3_stmt * request = getAddToCacheRequest(cache);
 	void * searchData = buildSearchJumpTable(NULL);
 	
 	while(posOld < magnitudeOldData && posNew < magnitudeNewData)

@@ -121,11 +121,12 @@ enum
 		download = [RakButton allocImageWithoutBackground:@"p_dl" :RB_STATE_STANDARD :self :@selector(download)];
 		if(download != nil)
 		{
-			[download setHidden:YES];
 			[download.cell setActiveAllowed:NO];
 			[self addSubview:download];
 		}
 	}
+	
+	[self refreshCallback];
 }
 
 #pragma mark - UI management
@@ -190,7 +191,17 @@ enum
 
 - (void) download
 {
+	if(!_project.isInitialized)
+		return;
 	
+	PROJECT_DATA projectPipeline; projectPipeline.isInitialized = false;
+	bool isTome;
+	int element;
+	
+	checkFavoriteUpdate(_project, &projectPipeline, &isTome, &element, false);
+	
+	if(projectPipeline.isInitialized)
+		addElementToMDL(projectPipeline, isTome, element, false);
 }
 
 #pragma mark - Refresh management
@@ -198,7 +209,9 @@ enum
 - (void) DBUpdate : (NSNotification *) notification
 {
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
-		[self refreshCallback];
+	{
+		[self updateContent:getProjectByID(_project.cacheDBID)];
+	}
 }
 
 - (void) refresh
@@ -239,7 +252,18 @@ enum
 {
 	[refresh.cell setState : [_mainList isRepoRefreshing:getRepoID(_project.repo)] ? RB_STATE_HIGHLIGHTED : RB_STATE_STANDARD];
 
-	NSLog(@"Yay");
+	PROJECT_DATA newProject = getProjectByID(_project.cacheDBID);
+
+	if(!newProject.isInitialized)
+		return;
+	
+	releaseCTData(_project);
+	_project = newProject;
+
+	BOOL haveFavoriteUpdate = checkFavoriteUpdate(_project, NULL, NULL, NULL, true);
+	
+	[refresh setHidden:haveFavoriteUpdate];
+	[download setHidden:!haveFavoriteUpdate];
 }
 
 @end

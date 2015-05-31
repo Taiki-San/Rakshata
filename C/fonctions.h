@@ -44,6 +44,7 @@ void memoryError(size_t size);
 bool checkIfFaved(PROJECT_DATA* projectDB, char **favs);
 bool setFavorite(PROJECT_DATA* projectDB);
 void updateFavorites();
+bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, int * elementInPipeline, bool checkOnly);
 void getNewFavs();
 
 /**JSONParser.m**/

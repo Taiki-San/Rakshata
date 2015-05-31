@@ -30,7 +30,7 @@ extern bool mutexInitialized;
 extern MUTEX_VAR cacheMutex, cacheParseMutex;
 
 /**DBCache.c**/
-sqlite3_stmt * getAddToCacheRequest();
+sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled, bool wantID);
 void removeFromCache(PROJECT_DATA data);
 void consolidateCache();
