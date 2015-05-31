@@ -957,9 +957,9 @@
 					
 					rank++;
 				}
-				else if(i / size == 0)	//Always true when a single columns, overwise skip the columns afterward
+				else if(i < size)	//Always true when a single columns, overwise skip the columns afterward
 				{
-					[indexOut addIndex : i / nbColumns];
+					[indexOut addIndex : i];
 					foundOneOut = YES;
 				}
 			}
