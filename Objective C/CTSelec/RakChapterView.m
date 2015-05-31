@@ -282,7 +282,7 @@
 	}
 	
 	if(projectImage != nil)
-		[projectImage updateProject:projectNameString];
+		[projectImage updateProject:data];
 	else
 	{
 		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data : _bounds];
@@ -318,7 +318,7 @@
 		NSString *projectNameString = getStringForWchar(newData.projectName);
 		
 		[projectName setStringValue : projectNameString];
-		[projectImage updateProject:projectNameString];
+		[projectImage updateProject:newData];
 	}
 	
 	[header updateProjectDiff:oldData :newData];

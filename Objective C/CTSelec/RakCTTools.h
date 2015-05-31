@@ -30,7 +30,7 @@
 @interface RakCTProjectImageView : NSImageView
 
 - (instancetype) initWithImageName : (PROJECT_DATA) project : (NSRect) superviewFrame;
-- (void) updateProject : (NSString *) imageName;
+- (void) updateProject : (PROJECT_DATA) project;
 
 - (NSRect) getProjectImageSize : (NSRect) superviewFrame : (NSSize) imageSize;
 

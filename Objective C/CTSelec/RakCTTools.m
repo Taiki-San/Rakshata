@@ -144,9 +144,9 @@
 	return self;
 }
 
-- (void) updateProject : (NSString *) imageName
+- (void) updateProject : (PROJECT_DATA) project
 {
-	NSImage * projectImageBase = [RakResPath craftResNameFromContext:imageName :NO :YES : 1];
+	NSImage * projectImageBase = loadCTThumb(project);
 	if(projectImageBase != nil)
 	{
 		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)

@@ -128,7 +128,7 @@
 
 - (NSRect) frameByParent:(NSRect)parentFrame
 {
-	if(_background != nil && _background.image != nil)		//round(ratio * fullWidth)
+	if(_background != nil && _background.image != nil && _background.image.size.height != 0)		//round(ratio * fullWidth)
 		parentFrame.size.width = round((parentFrame.size.height / _background.image.size.height) * _background.image.size.width);
 	else
 		parentFrame.size.width /= 2;
@@ -147,7 +147,7 @@
 	if(_background != nil && _background.image != nil)
 	{
 		NSSize size = _background.image.size;
-		CGFloat ratio = (output.width / 2) / size.width;
+		CGFloat ratio = (size.width != 0 ? output.width / size.width : 1 ) / 2;
 		
 		//Make the thing bigger is too wide, and no high enough
 		if(size.height * ratio > output.height / 2)
