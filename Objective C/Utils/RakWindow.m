@@ -149,7 +149,7 @@
 - (NSString *) getProjectName
 {
 #ifdef DEV_VERSION
-	return [NSString stringWithFormat:@"[Build #%lX] %s", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue], PROJECT_NAME];
+	return [NSString stringWithFormat:@"[Confidential α (#%lX)] %s", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue], PROJECT_NAME];
 #else
 	return [NSString stringWithUTF8String:PROJECT_NAME];
 #endif

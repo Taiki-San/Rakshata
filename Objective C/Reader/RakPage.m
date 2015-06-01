@@ -956,6 +956,9 @@
 	if(page == nil || scrollView == nil)
 		return;
 	
+	NSBitmapImageRep *rep = [[page representations] objectAtIndex: 0];
+	page.size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
+
 	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
 	
 	//We create the view that si going to be displayed

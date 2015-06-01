@@ -32,7 +32,7 @@
 		return nil;
 	}
 	
-	self = [super initWithFrame : NSMakeRect(0, 0, 170, 170)];
+	self = [super initWithFrame : NSMakeRect([((RakAppDelegate *) [NSApp delegate]) window].isFullscreen ? 85 : 0, 0, 170, 170)];
 	
 	if(self != nil)
 	{
@@ -98,7 +98,7 @@
 
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
 {
-	NSPoint origin = [_anchor convertPoint:NSMakePoint(0, NSMaxY(MDLFrame)) toView:nil];
+	NSPoint origin = [_anchor convertPoint:NSMakePoint([((RakAppDelegate *) [NSApp delegate]) window].isFullscreen ? 85 : 0, NSMaxY(MDLFrame)) toView:nil];
 	origin = [_anchor.window convertRectToScreen: (NSRect) {origin, NSZeroSize}].origin;
 	
 	if(_tabReader != nil)
