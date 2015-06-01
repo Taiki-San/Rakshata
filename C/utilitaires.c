@@ -77,8 +77,11 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 				if(a.tomesFull[i].lengthDetails != b.tomesFull[i].lengthDetails)
 					return false;
 				
-				if(memcmp(a.tomesFull[i].details, b.tomesFull[i].details, a.tomesFull[i].lengthDetails * sizeof(CONTENT_TOME)))
-					return false;
+				for(uint pos = 0, max = a.tomesFull[i].lengthDetails; pos < max; pos++)
+				{
+					if(a.tomesFull[i].details[pos].ID != b.tomesFull[i].details[pos].ID || a.tomesFull[i].details[pos].isPrivate != b.tomesFull[i].details[pos].isPrivate)
+						return false;
+				}
 			}
 		}
 	}

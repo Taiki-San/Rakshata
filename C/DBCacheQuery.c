@@ -118,12 +118,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		}
 		else
 		{
-			output->chapitresFull = NULL;
-			output->chapitresInstalled = NULL;
+			output->chapitresFull = output->chapitresInstalled = NULL;
 			output->nombreChapitreInstalled = 0;
 			
-			free(output->chapitresPrix);
-			output->chapitresPrix = NULL;
+			free(output->chapitresPrix);	output->chapitresPrix = NULL;
 		}
 	}
 	else

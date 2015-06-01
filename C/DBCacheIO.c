@@ -122,7 +122,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 #ifdef DEV_VERSION
-		printf("Flushing before update %ls: [%p ~ %p] - [%p ~ %p] - [%p ~ %p]", data.projectName, (void*) sqlite3_column_int64(request, 0), data.chapitresFull, (void*) sqlite3_column_int64(request, 1), data.chapitresPrix, (void*) sqlite3_column_int64(request, 2), data.tomesFull);
+		printf("Flushing before update %ls: [%p ~ %p] - [%p ~ %p] - [%p ~ %p]\n", data.projectName, (void*) sqlite3_column_int64(request, 0), data.chapitresFull, (void*) sqlite3_column_int64(request, 1), data.chapitresPrix, (void*) sqlite3_column_int64(request, 2), data.tomesFull);
 #endif
 
 		if(data.chapitresFull != (void*) sqlite3_column_int64(request, 0))
