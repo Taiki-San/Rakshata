@@ -378,7 +378,7 @@
 	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
 	_tmpColor = (highlight != nil ? highlight : [self getTextHighlightColor:baseColumn / _nbElemPerCouple :rowIndex]);
 	
-	if(baseColumn != LIST_INVALID_SELECTION)
+	if(baseColumn != LIST_INVALID_SELECTION && rowIndex < [tableView numberOfRows])
 	{
 		RakText * view;
 		for(byte pos = 0; pos < _nbElemPerCouple; pos++)
@@ -506,26 +506,24 @@
 			int current;
 			BOOL tooMuchChanges = NO, singleColumn = _nbCoupleColumn == 1;
 			
-			for(uint posNew = 0, posOld = 0, i; posNew < nbElemNew; posNew++)
+			for(uint posNew = 0, posOld = 0; posNew < nbElemNew; posNew++)
 			{
-				i = posOld;
+				current = newData[posNew].data;
 				
-				for(current = newData[posNew].data; i < nbElemOld && oldData[i].data != current; i++);
-				
-				if(i < nbElemOld)
+				if(posOld < nbElemOld)
 				{
-					if(oldData[i].data != current)
+					if(oldData[posOld].data != current)
 					{
 						if(singleColumn)
 						{
-							for(; posOld < i; oldElem++)
+							for(; posOld < nbElemOld && oldData[posOld].data != current; oldElem++)
 								[old addIndex : posOld++];
 						}
 						else
 							tooMuchChanges = YES;
 						
 					}
-					else if(oldData[i].installed == newData[posNew].installed)
+					else if(oldData[posOld].installed == newData[posNew].installed)
 					{
 						posOld++;
 					}

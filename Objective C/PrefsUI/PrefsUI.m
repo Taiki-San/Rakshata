@@ -23,6 +23,7 @@
 		RakButton * button = [RakButton allocWithText:NSLocalizedString(@"PREFS-UPDATE-UI", nil)];
 		if(button)
 		{
+			[button setHidden:YES];
 			[button setTarget:self];
 			[button setAction:@selector(updateUITheme)];
 			

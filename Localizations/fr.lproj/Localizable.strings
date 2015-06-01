@@ -103,8 +103,8 @@
 "PROJ-FILTER-FREE-ONLY" = "Gratuit";
 
 //Reader utils
-"DELETION-CHAP-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
-"DELETION-VOL-CONFIRM" = "Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+"DELETION-VOL-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+"DELETION-CHAP-CONFIRM" = "Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
 
 "FAVORITE-DESCRIPTION" = "Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie";
 "READER-JUMP-TO" = "Aller à:";

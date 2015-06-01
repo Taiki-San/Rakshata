@@ -48,7 +48,7 @@
 
 - (void) setupView
 {
-	NSString * string = NSLocalizedString(_isTome ? @"DELETION-VOL-CONFIRM" : @"DELETION-CHAP-CONFIRM", <#comment#>);
+	NSString * string = NSLocalizedString(_isTome ? @"DELETION-VOL-CONFIRM" : @"DELETION-CHAP-CONFIRM", nil);
 	
 	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 	if(contentText != nil)

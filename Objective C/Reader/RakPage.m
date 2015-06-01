@@ -923,13 +923,23 @@
 - (void) deleteElement
 {
 	cacheSession++;	//Tell the cache system to stop
-	while (_cacheBeingBuilt);
 	
 	deleteProject(_project, _currentElem, self.isTome);
 	[RakDBUpdate postNotificationProjectUpdate:_project];
 	
 	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
-		[self nextChapter];
+	{
+		if(_posElemInStructure > 0)
+		{
+			_posElemInStructure--;
+			[self nextChapter];
+		}
+		else
+		{
+			_posElemInStructure++;
+			[self prevChapter];
+		}
+	}
 	else if(_posElemInStructure > 0)
 		[self prevChapter];
 	else
@@ -1276,7 +1286,7 @@
 	
 	@autoreleasepool
 	{
-		retValue = [self _loadPageCache: page : &_data : currentSession : page + 1];
+		retValue = [self _loadPageCache: page : &_data : currentSession : position];
 		
 		[CATransaction begin];
 		[CATransaction setDisableActions:YES];
@@ -1304,7 +1314,6 @@
 	__block BOOL retValue = YES;
 	
 	dispatch_sync(dispatch_get_main_queue(), ^{
-		
 		[self updatePCState : position : currentSession : view];
 	});
 	

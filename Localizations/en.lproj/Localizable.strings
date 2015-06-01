@@ -103,16 +103,16 @@
 "PROJ-FILTER-FREE-ONLY" = "Free only";
 
 //Reader utils
-"DELETION-CHAP-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
-"DELETION-VOL-CONFIRM" = "Vous vous apprêtez à\nsupprimer un chapitre.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
+"DELETION-VOL-CONFIRM" = "You're about to\ndelete a volume.\nTo read it again,\nyou will need to\ndownload it.";
+"DELETION-CHAP-CONFIRM" = "You're about to\ndelete a chapter.\nTo read it again,\nyou will need to\ndownload it.";
 
-"FAVORITE-DESCRIPTION" = "Rakshata vérifie\nsi de nouvelles\nsorties existent\npour vos favoris\nà chaque lancement\net vous en notifie";
-"READER-JUMP-TO" = "Aller à:";
+"FAVORITE-DESCRIPTION" = "Rakshata checks\n for new releases\nfor your favorites\nevery time it starts\nto notify you";
+"READER-JUMP-TO" = "Go to:";
 
-"AUTO-DL-ONE-CHAP" = " J'ai remarqué qu'il\n y a un chapitre\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
-"AUTO-DL-SEVERAL-CHAP" = " J'ai remarqué qu'il\n y a des chapitres\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
-"AUTO-DL-ONE-VOL" = "J'ai remarqué\nqu'il y a un tome\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
-"AUTO-DL-SEVERAL-VOL" = "J'ai remarqué\nqu'il y a des tomes\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
+"AUTO-DL-ONE-CHAP" = "I noticed that\nthere is a chapter\nnot downloaded\nafter this one.\nDo you want it?";
+"AUTO-DL-SEVERAL-CHAP" = "I noticed that\nthere are chapters\nnot downloaded\nafter this one.\nDo you want it?";
+"AUTO-DL-ONE-VOL" = "I noticed that\nthere is a volume\nnot downloaded\nafter this one.\nDo you want it?";
+"AUTO-DL-SEVERAL-VOL" = "I noticed that\nthere are volumes\nnot downloaded\nafter this one.\nDo you want it?";
 
 //Prefs
 "PREFS-TITLE-GENERAL" = "General";

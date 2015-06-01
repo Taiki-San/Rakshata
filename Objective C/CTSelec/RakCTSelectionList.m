@@ -949,7 +949,7 @@
 				if(_installedTable[i])
 				{
 					//If the element was on a column > 1, when have to add it to the main column as it's going to be the only one remaining
-					if(nbColumns > 1 && rank >= size)
+					if(nbColumns > 1)
 					{
 						[indexIn addIndex:rank];
 						foundOneIn = YES;
