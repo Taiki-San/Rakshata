@@ -34,6 +34,7 @@ uint32_t getMainThread();
 bool shouldDownloadFavorite();
 void sendToLog(char * string);
 void notifyEmailUpdate();
+void restorePrefsFile();
 
 #ifdef DEV_VERSION
 void logStack(void * address);

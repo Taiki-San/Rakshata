@@ -110,9 +110,9 @@
 "READER-JUMP-TO" = "Go to:";
 
 "AUTO-DL-ONE-CHAP" = "I noticed that\nthere is a chapter\nnot downloaded\nafter this one.\nDo you want it?";
-"AUTO-DL-SEVERAL-CHAP" = "I noticed that\nthere are chapters\nnot downloaded\nafter this one.\nDo you want it?";
+"AUTO-DL-SEVERAL-CHAP" = "I noticed that\nthere are chapters\nnot downloaded\nafter this one.\nDo you want them?";
 "AUTO-DL-ONE-VOL" = "I noticed that\nthere is a volume\nnot downloaded\nafter this one.\nDo you want it?";
-"AUTO-DL-SEVERAL-VOL" = "I noticed that\nthere are volumes\nnot downloaded\nafter this one.\nDo you want it?";
+"AUTO-DL-SEVERAL-VOL" = "I noticed that\nthere are volumes\nnot downloaded\nafter this one.\nDo you want them?";
 
 //Prefs
 "PREFS-TITLE-GENERAL" = "General";

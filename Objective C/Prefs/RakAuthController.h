@@ -38,7 +38,7 @@
 	RakButton * forgottenPass, * _login;
 	
 	//Signup
-	RakAuthText * privacy, * terms;
+	RakClickableText * privacy, * terms;
 	RakAuthTermsButton * accept;
 	RakButton * confirm;
 	

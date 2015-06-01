@@ -44,21 +44,24 @@
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 		[contentText sizeToFit];
 		
-		[contentText setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - contentText.frame.size.width / 2 , _bounds.size.height - 10 - contentText.frame.size.height)];
-		
 		[self addSubview : contentText];
 	}
 	
 	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"OK", nil)];
 	if(button != nil)
 	{
-		[button setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
-		
 		[button setTarget:self];
 		[button setAction:@selector(closePopover)];
 		
 		[self addSubview:button];
 	}
+	
+	CGFloat cumulatedHeight = 10 + contentText.bounds.size.height + 10 + button.bounds.size.height + 10;
+	
+	[self setFrameSize:NSMakeSize(_bounds.size.width, cumulatedHeight)];
+
+	[contentText setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - contentText.frame.size.width / 2 , _bounds.size.height - 10 - contentText.frame.size.height)];
+	[button setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
 }
 
 - (void) configurePopover:(INPopoverController *)internalPopover

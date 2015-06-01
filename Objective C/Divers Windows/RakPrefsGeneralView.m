@@ -74,6 +74,7 @@ enum
 		disconnect = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-LOGOUT", nil)];
 		if(disconnect != nil)
 		{
+			[disconnect.cell setActiveAllowed:NO];
 			[self emailFrameUpdate];
 			
 			disconnect.target = self;
@@ -89,6 +90,7 @@ enum
 		if(resetRemind != nil)
 		{
 			[resetRemind setEnabled:[RakPrefsRemindPopover haveAnyRemindedValue]];
+			[resetRemind.cell setActiveAllowed:NO];
 			
 			resetRemind.target = self;
 			resetRemind.action = @selector(toogleReset);

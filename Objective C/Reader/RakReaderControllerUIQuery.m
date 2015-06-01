@@ -50,16 +50,18 @@
 
 - (void) setupView
 {
+	NSRect frame = _frame;
+	
 	NSString * string = NSLocalizedString(_isTome ? (_sizeArray == 1 ? @"AUTO-DL-ONE-VOL" : @"AUTO-DL-SEVERAL-VOL") : (_sizeArray == 1 ? @"AUTO-DL-ONE-CHAP" : @"AUTO-DL-SEVERAL-CHAP"), nil);
 	
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
+	RakText * contentText = [[RakText alloc] initWithText:frame :string :[Prefs getSystemColor : GET_COLOR_ACTIVE:nil]];
 	if(contentText != nil)
 	{
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 		[contentText setAlignment:NSCenterTextAlignment];
 		[contentText sizeToFit];
 		
-		[contentText setFrameOrigin:NSMakePoint(10 , self.frame.size.height - 10 - contentText.frame.size.height)];
+		[contentText setFrameOrigin:NSMakePoint(frame.size.width / 2 - contentText.bounds.size.width / 2, frame.size.height - 10 - contentText.frame.size.height)];
 		
 		[self addSubview : contentText];
 	}

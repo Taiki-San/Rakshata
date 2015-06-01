@@ -18,10 +18,15 @@ char *loadPrefFile()
 
     if(filesize == 0)
     {
+		restorePrefsFile();
+		
+		if((filesize = getFileSize(SETTINGS_FILE)) == 0)
+		{
 #ifdef DEV_VERSION
-        logR("Empty file");
+			logR("Empty file");
 #endif
-        return NULL;
+			return NULL;
+		}
     }
 	
     char * output = calloc(filesize + 10, sizeof(char));

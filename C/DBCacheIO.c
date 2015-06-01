@@ -122,7 +122,12 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
 #ifdef DEV_VERSION
-		printf("Flushing before update %ls: [%p ~ %p] - [%p ~ %p] - [%p ~ %p]\n", data.projectName, (void*) sqlite3_column_int64(request, 0), data.chapitresFull, (void*) sqlite3_column_int64(request, 1), data.chapitresPrix, (void*) sqlite3_column_int64(request, 2), data.tomesFull);
+		FILE * output = fopen("log/log.txt", "a+");
+		if(output != NULL)
+		{
+			fprintf(output, "Flushing before update %ls: [%p ~ %p] - [%p ~ %p] - [%p ~ %p]\n", data.projectName, (void*) sqlite3_column_int64(request, 0), data.chapitresFull, (void*) sqlite3_column_int64(request, 1), data.chapitresPrix, (void*) sqlite3_column_int64(request, 2), data.tomesFull);
+			fclose(output);
+		}
 #endif
 
 		if(data.chapitresFull != (void*) sqlite3_column_int64(request, 0))
@@ -169,7 +174,12 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 10, data.nombreChapitre);
 
 #ifdef DEV_VERSION
-	printf("Updating cache of %ls: %p - %p - %p\n", data.projectName, data.chapitresFull, data.chapitresPrix, data.tomesFull);
+	FILE * output = fopen("log/log.txt", "a+");
+	if(output != NULL)
+	{
+		fprintf(output, "Updating cache of %ls: %p - %p - %p\n", data.projectName, data.chapitresFull, data.chapitresPrix, data.tomesFull);
+		fclose(output);
+	}
 #endif
 	
 	if(data.chapitresFull != NULL)
@@ -226,7 +236,13 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	{
 		PROJECT_DATA project = getProjectByID(data.cacheDBID);
 		
-		printf("Project %ls [%d vs %d]: %p - %p - %p\n", project.projectName, data.cacheDBID, project.cacheDBID, project.chapitresFull, project.chapitresPrix, project.tomesFull);
+		FILE * outputFile = fopen("log/log.txt", "a+");
+		if(outputFile != NULL)
+		{
+			fprintf(outputFile, "Project %ls [%d vs %d]: %p - %p - %p\n", project.projectName, data.cacheDBID, project.cacheDBID, project.chapitresFull, project.chapitresPrix, project.tomesFull);
+			fclose(outputFile);
+		}
+
 		releaseCTData(project);
 	}
 #endif
@@ -250,7 +266,12 @@ void removeFromCache(PROJECT_DATA data)
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
 #ifdef DEV_VERSION
-			printf("Flushing %ls: %p - %p - %p\n", data.projectName, (void*) sqlite3_column_int64(request, 0), (void*) sqlite3_column_int64(request, 1), (void*) sqlite3_column_int64(request, 2));
+			FILE * outputFile = fopen("log/log.txt", "a+");
+			if(outputFile != NULL)
+			{
+				fprintf(outputFile, "Flushing %ls: %p - %p - %p\n", data.projectName, (void*) sqlite3_column_int64(request, 0), (void*) sqlite3_column_int64(request, 1), (void*) sqlite3_column_int64(request, 2));
+				fclose(outputFile);
+			}
 #endif
 			free((void*) sqlite3_column_int64(request, 0));
 			free((void*) sqlite3_column_int64(request, 1));
@@ -258,12 +279,6 @@ void removeFromCache(PROJECT_DATA data)
 		}
 		destroyRequest(request);
 	}
-#ifdef DEV_VERSION
-	else
-	{
-		printf("Lolnop");
-	}
-#endif
 	
 	if(createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
@@ -271,13 +286,6 @@ void removeFromCache(PROJECT_DATA data)
 		sqlite3_step(request);
 		destroyRequest(request);
 	}
-#ifdef DEV_VERSION
-	else
-	{
-		printf("Lolnop");
-	}
-#endif
-
 	
 	nbElemInCache--;
 }
@@ -356,7 +364,7 @@ void removeRepoFromCache(REPO_DATA repo)
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = NULL, *deleteRequest = NULL;
-	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1", &request);
+	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1", &request);
 	createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &deleteRequest);
 	sqlite3_bind_int64(request, 1, repoID);
 	

@@ -221,7 +221,7 @@
 {
 	if(privacy == nil)
 	{
-		privacy = [[RakAuthText alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		privacy = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] responder:self];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -232,7 +232,7 @@
 	
 	if(terms == nil)
 	{
-		terms = [[RakAuthText alloc] initWithText:container.bounds :NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		terms = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] responder:self];
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";
@@ -257,6 +257,7 @@
 		confirm = [RakButton allocWithText:NSLocalizedString(@"AUTH-CREATE", nil)];
 		if(confirm != nil)
 		{
+			[confirm.cell setActiveAllowed:NO];
 			[confirm setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - confirm.bounds.size.width / 2, 14)];
 			[container addSubview:confirm];
 			[confirm setTarget:self];
@@ -474,6 +475,14 @@
 		[_login performClick:self];
 		[self clickedLogin];
 	}
+}
+
+- (void) respondTo : (RakClickableText *) sender
+{
+	NSString * string = sender.URL;
+	
+	if(string != nil)
+		ouvrirSite([string UTF8String]);
 }
 
 @end

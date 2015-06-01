@@ -51,6 +51,14 @@ void notifyEmailUpdate()
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_MAIL object:nil];
 }
 
+void restorePrefsFile()
+{
+	NSString * settings = [[NSBundle mainBundle] pathForResource:@"settings" ofType:@""];
+	
+	if(settings != nil)
+		[[NSData dataWithContentsOfFile:settings] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
+}
+
 /*****************************************
  **										**
  **				 DB update				**

@@ -312,7 +312,6 @@ int login(const char * adresseEmail, const char * password, bool createAccount)
 
 	//Double SHA-256
     sha256_legacy(password, passHashed);
-    sha256_legacy(passHashed, passHashed);
 
 	snprintf(URL, sizeof(URL), SERVEUR_URL"/login.php?request=%d&mail=%s&pass=%s", createAccount ? 2 : 3, adresseEmail, passHashed);
     download_mem(URL, NULL, &downloadedData, &lengthRemote, SSL_ON);
@@ -479,91 +478,90 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 	char URL[length + 512];
     snprintf(URL, sizeof(URL), SERVEUR_URL"/newMK.php?account=%s&key=%s&ver=1", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
 
-    if(download_mem(URL, NULL, &buffer_dl, &downloadedLength, SSL_ON) != CODE_RETOUR_OK)
+    if(download_mem(URL, NULL, &buffer_dl, &downloadedLength, SSL_ON) == CODE_RETOUR_OK)
 	{
-
-	}
-	else if(downloadedLength >= 7 && !strncmp(buffer_dl, "success", 7) && password != NULL && COMPTE_PRINCIPAL_MAIL == NULL) //Si ça s'est bien passé
-    {
-        uint bufferDL_pos = 7;
-		
-		while(bufferDL_pos < downloadedLength && buffer_dl[bufferDL_pos++] != ' ');
-		
-		if(buffer_dl[bufferDL_pos-1] == ' ')
-        {
-			byte i = 0;
-            unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
-            crashTemp(seed, SHA256_DIGEST_LENGTH);
-
-            for(; i < SHA256_DIGEST_LENGTH && bufferDL_pos < downloadedLength; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
+		if(downloadedLength >= 7 && !strncmp(buffer_dl, "success", 7) && password != NULL && COMPTE_PRINCIPAL_MAIL != NULL) //Si ça s'est bien passé
+		{
+			uint bufferDL_pos = 7;
 			
-			free(buffer_dl);
-			buffer_dl = NULL;
-			outputRAW[i] = 0;
+			while(bufferDL_pos < downloadedLength && buffer_dl[bufferDL_pos++] != ' ');
 			
-			pbkdf2((unsigned char*) randomKeyHex, (unsigned char*) COMPTE_PRINCIPAL_MAIL, passSeed);
-            _AESDecrypt(passSeed, outputRAW, 0, seed, EVERYTHING_IN_MEMORY, 1);
-
-            //On a désormais le seed
-            generateRandomKey(derivation);
-            internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
-            internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, 2 * SHA256_DIGEST_LENGTH + 1, 2048, PBKDF2_OUTPUT_LENGTH, passDer);
-            _AESEncrypt(passDer, derivation, SHA256_DIGEST_LENGTH, passSeed, EVERYTHING_IN_MEMORY, 1);
-
-			decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
-			
-			//Upper case the string
-			for(i = 0; randomKeyHex[i]; i++)
+			if(buffer_dl[bufferDL_pos-1] == ' ')
 			{
-				if(randomKeyHex[i] >= 'a' && randomKeyHex[i] <= 'z')
-					randomKeyHex[i] += 'A' - 'a';
-			}
-
-			//Craft the confirmation URL, release the buffer and initiale the download
-            snprintf(URL, sizeof(URL), SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
-
-			if(download_mem(URL, NULL, &buffer_dl, &downloadedLength, SSL_ON) == CODE_RETOUR_OK && downloadedLength >= 2 && buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
-			{
-				internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key);
-				retValue = true;
-			}
-            else
-            {
-				if(buffer_dl != NULL)
+				byte i = 0;
+				unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
+				crashTemp(seed, SHA256_DIGEST_LENGTH);
+				
+				for(; i < SHA256_DIGEST_LENGTH && bufferDL_pos < downloadedLength; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
+				
+				free(buffer_dl);
+				buffer_dl = NULL;
+				outputRAW[i] = 0;
+				
+				pbkdf2((unsigned char*) randomKeyHex, (unsigned char*) COMPTE_PRINCIPAL_MAIL, passSeed);
+				_AESDecrypt(passSeed, outputRAW, 0, seed, EVERYTHING_IN_MEMORY, 1);
+				
+				//On a désormais le seed
+				generateRandomKey(derivation);
+				internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, (unsigned char*) COMPTE_PRINCIPAL_MAIL, strlen(COMPTE_PRINCIPAL_MAIL), 2048, PBKDF2_OUTPUT_LENGTH, passSeed);
+				internal_pbkdf2(SHA256_DIGEST_LENGTH, passSeed, SHA256_DIGEST_LENGTH, (unsigned char*) password, 2 * SHA256_DIGEST_LENGTH + 1, 2048, PBKDF2_OUTPUT_LENGTH, passDer);
+				_AESEncrypt(passDer, derivation, SHA256_DIGEST_LENGTH, passSeed, EVERYTHING_IN_MEMORY, 1);
+				
+				decToHex(passSeed, SHA256_DIGEST_LENGTH, randomKeyHex);
+				
+				//Upper case the string
+				for(i = 0; randomKeyHex[i]; i++)
 				{
-					char temp[1024];
-					snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s", buffer_dl);
-					logR(temp);
+					if(randomKeyHex[i] >= 'a' && randomKeyHex[i] <= 'z')
+						randomKeyHex[i] += 'A' - 'a';
+				}
+				
+				//Craft the confirmation URL, release the buffer and initiale the download
+				snprintf(URL, sizeof(URL), SERVEUR_URL"/confirmMK.php?account=%s&key=%s", COMPTE_PRINCIPAL_MAIL, randomKeyHex);
+				
+				if(download_mem(URL, NULL, &buffer_dl, &downloadedLength, SSL_ON) == CODE_RETOUR_OK && downloadedLength >= 2 && buffer_dl[0] == 'o' && buffer_dl[1] == 'k')
+				{
+					internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, key);
+					retValue = true;
 				}
 				else
-					logR("Failed at send password to server, no output");
-            }
-        }
-        else
-        {
+				{
+					if(buffer_dl != NULL)
+					{
+						char temp[1024];
+						snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s", buffer_dl);
+						logR(temp);
+					}
+					else
+						logR("Failed at send password to server, no output");
+				}
+			}
+			else
+			{
+				char temp[1024];
+				snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
+				logR(temp);
+			}
+		}
+		else if(length >= strlen("old_key_found") && !strcmp(buffer_dl, "old_key_found"))
+		{
+			recoverPassFromServ(key);
+			retValue = true;
+		}
+		else if(length >= strlen("account_not_found") && !strcmp(buffer_dl, "account_not_found"))
+		{
+			
+		}
+		else if(COMPTE_PRINCIPAL_MAIL != NULL)
+		{
+#ifdef DEV_VERSION
 			char temp[1024];
 			snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
-            logR(temp);
-        }
-    }
-    else if(length >= strlen("old_key_found") && !strcmp(buffer_dl, "old_key_found"))
-    {
-        recoverPassFromServ(key);
-        retValue = true;
-    }
-    else if(length >= strlen("account_not_found") && !strcmp(buffer_dl, "account_not_found"))
-    {
-
-	}
-    else if(COMPTE_PRINCIPAL_MAIL != NULL)
-    {
-		char temp[1024];
-		snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
-        logR(temp);
-#ifdef DEV_VERSION
-        logR(randomKeyHex);
+			logR(temp);
+			logR(randomKeyHex);
 #endif
-    }
+		}
+	}
 
 	free(buffer_dl);
 	
