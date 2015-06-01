@@ -783,6 +783,13 @@
 	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
 	
+	if(queryHidden && projectRequest.cacheDBID != _project.cacheDBID)
+	{
+		free(_queryArrayData);
+		_queryArrayData = NULL;
+		queryHidden = NO;
+	}
+	
 	if(projectRequest.cacheDBID != _project.cacheDBID)
 		_alreadyRefreshed = NO;
 	else if(elemRequest == _currentElem && isTomeRequest == self.isTome)
@@ -805,7 +812,6 @@
 		releaseDataReader(&_nextData);
 		nextDataLoaded = NO;
 	}
-	
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
@@ -1526,7 +1532,14 @@
 		}
 	}
 	
-	newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
+	if(self.mainThread == TAB_READER)
+		newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
+	else
+	{
+		_queryArrayData = selection;
+		_queryArraySize = nbElemValidated;
+		queryHidden = YES;
+	}
 }
 
 #pragma mark - Quit

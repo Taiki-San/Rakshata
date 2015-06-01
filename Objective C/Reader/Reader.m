@@ -240,6 +240,8 @@
 {
 	if(bottomBar != nil)
 		bottomBar.readerMode = NO;
+	
+	[newStuffsQuery closePopover];
 }
 
 - (void) willOpenReader
@@ -249,6 +251,19 @@
 	
 	if(_posElemInStructure != -1)
 		[self updateTitleBar :_project :_isTome :_posElemInStructure];
+	
+	if(queryHidden)
+	{
+		MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate]MDL];
+
+		if(tabMDL != nil)
+			newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData:tabMDL :_project :self.isTome :_queryArrayData :_queryArraySize];
+		else
+			free(_queryArrayData);
+
+		_queryArrayData = NULL;
+		queryHidden = NO;
+	}
 }
 
 - (void) setUpViewForAnimation : (uint) mainThread

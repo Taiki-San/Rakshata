@@ -23,6 +23,10 @@
 	RakReaderBottomBar * bottomBar;
 	RakReaderControllerUIQuery * newStuffsQuery;
 	
+	BOOL queryHidden;
+	int * _queryArrayData;
+	size_t _queryArraySize;
+	
 	//Page management
 	RakPageScrollView * _scrollView;
 	
