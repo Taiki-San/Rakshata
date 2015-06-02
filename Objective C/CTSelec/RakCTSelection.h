@@ -39,7 +39,7 @@
 - (void) gotClickedTransmitData : (NSNotification*) notification;
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController;
-- (void) switchIsTome : (RakCTCoreViewButtons*) sender;
+- (void) switchIsTome;
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
 - (BOOL) updateContext : (PROJECT_DATA) newData;

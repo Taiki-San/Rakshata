@@ -32,10 +32,9 @@
 
 #pragma mark - Context update
 
-- (void) addAction : (id) target : (SEL) action
+- (void) addAction : (id) target
 {
 	postAnimationTarget = target;
-	postAnimationAction = action;
 }
 
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff
@@ -105,10 +104,7 @@
 			_stage = _animationFrame;
 			
 			[self postProcessingBeforeAction];
-			
-			IMP imp = [postAnimationTarget methodForSelector:postAnimationAction];
-			void (*func)(id, SEL, id) = (void *)imp;
-			func(postAnimationTarget, postAnimationAction, nil);
+			[postAnimationTarget performSelector:@selector(animationOver)];
 		}
 		
 		_animation = nil;

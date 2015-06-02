@@ -160,7 +160,7 @@ enum
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
-	[animationController addAction : self : @selector(updateTheme:)];
+	[animationController addAction : self];
 }
 
 - (void) disconnect
@@ -175,12 +175,14 @@ enum
 	[email.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 }
 
-- (void) updateTheme : (RakSegmentedControl*) sender
+- (void) animationOver
 {
-	if(sender == nil)
-		sender = themeSwitch;
-	
-	switch ([sender selectedSegment])
+	[self updateTheme];
+}
+
+- (void) updateTheme
+{
+	switch ([themeSwitch selectedSegment])
 	{
 		case 0:
 		{

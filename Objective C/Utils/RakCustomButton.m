@@ -76,7 +76,7 @@
 			_animation = [[RakButtonAnimationController alloc] initWithCell:self];
 			if(_animation != nil)
 			{
-				[_animation addAction:self :@selector(animationOver)];
+				[_animation addAction:self];
 				_animation.stage = _animation.animationFrame;
 			}
 		}

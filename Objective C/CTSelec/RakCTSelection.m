@@ -370,10 +370,15 @@
 - (void) feedAnimationController : (RakCTAnimationController *) animationController
 {
 	[animationController addCTContent: _chapterView : _volView];
-	[animationController addAction : self : @selector(switchIsTome:)];
+	[animationController addAction : self];
 }
 
-- (void) switchIsTome : (RakCTCoreViewButtons*) sender
+- (void) animationOver
+{
+	[self switchIsTome];
+}
+
+- (void) switchIsTome
 {
 	BOOL isTome = [_buttons selectedSegment] != 0;
 	

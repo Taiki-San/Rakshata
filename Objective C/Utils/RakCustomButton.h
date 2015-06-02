@@ -23,6 +23,7 @@
 }
 
 - (void) initColors;
+- (void) animationOver;
 
 @end
 
