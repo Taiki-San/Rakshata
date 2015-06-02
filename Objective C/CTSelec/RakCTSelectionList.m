@@ -739,7 +739,9 @@
 	if(!_rowNumberUpdateQueued)
 	{
 		_rowNumberUpdateQueued = YES;
-		[self performSelectorOnMainThread:@selector(_updateRowNumber) withObject:nil waitUntilDone:NO];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self _updateRowNumber];
+		});
 	}
 }
 
@@ -956,7 +958,7 @@
 				if(_installedTable[i])
 				{
 					//If the element was on a column > 1, when have to add it to the main column as it's going to be the only one remaining
-					if(nbColumns > 1)
+					if(nbColumns > 1 && i >= size)
 					{
 						[indexIn addIndex:rank];
 						foundOneIn = YES;
