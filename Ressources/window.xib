@@ -83,7 +83,7 @@
                                     <action selector="performZoom:" target="-1" id="93m-iC-7BC"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Enter Full Screen" keyEquivalent="f" id="798-ac-2xV">
+                            <menuItem title="Enter Full Screen" keyEquivalent="F" id="798-ac-2xV">
                                 <connections>
                                     <action selector="toggleFullScreen:" target="-1" id="2rP-6h-Dg5"/>
                                 </connections>

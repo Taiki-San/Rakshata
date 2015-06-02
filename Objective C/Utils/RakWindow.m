@@ -101,7 +101,7 @@
 	
 	if ([event type] == NSKeyDown)
 	{
-		if (([event modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSCommandKeyMask)
+		if(self.shiftPressed && self.commandPressed)
 		{
 			NSString * character = [event charactersIgnoringModifiers];
 			
