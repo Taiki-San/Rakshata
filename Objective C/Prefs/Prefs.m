@@ -38,8 +38,7 @@ enum
 	else if(data != nil)
 		[prefsCache updateContext:data];
 	
-	//We'll have to cache the old encrypted prefs /!\ prefs de crypto à protéger!!!
-	//Also, need to get the open prefs including tabs size, theme and various stuffs
+	((RakAppDelegate *) [NSApp delegate]).haveDistractionFree = mainThread == TAB_READER;
 }
 
 + (NSString *) dumpPrefs
