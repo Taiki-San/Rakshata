@@ -52,6 +52,8 @@
 
 - (void) nbRowRailsChanged;
 
+- (void) focusSearchField;
+
 @end
 
 

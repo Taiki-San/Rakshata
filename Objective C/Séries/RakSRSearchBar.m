@@ -121,15 +121,13 @@
 - (void) initCell
 {
 	NSSearchFieldCell * cell = self.cell;
-	NSButtonCell * _oldButton;
-	
 	RakButtonCell * button = [[RakButtonCell alloc] initWithPage : @"loupe" : RB_STATE_STANDARD];
 	if(button != nil)
 	{
 		[button setBordered:NO];
 		[button setActiveAllowed:NO];
 		
-		_oldButton = cell.searchButtonCell;
+		NSButtonCell * _oldButton = cell.searchButtonCell;
 		button.target = _oldButton.target;
 		button.action = _oldButton.action;
 		
@@ -141,10 +139,6 @@
 	{
 		[button setBordered:NO];
 		[button setActiveAllowed:NO];
-		
-		_oldButton = cell.cancelButtonCell;
-		_cancelTarget = _oldButton.target;
-		_cancelAction = _oldButton.action;
 		
 		button.target = self;
 		button.action = @selector(cancelProxy);
@@ -229,10 +223,9 @@
 
 - (void) cancelProxy
 {
-	void (*func)(id, SEL) = (void *)[_cancelTarget methodForSelector:_cancelAction];
-	func(_cancelTarget, _cancelAction);
-	
-	[self willLooseFocus];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self.window makeFirstResponder:[[NSApp delegate] serie]];
+	});
 }
 
 #pragma mark - View stuffs
@@ -260,6 +253,9 @@
 
 - (void) performSearch
 {
+	if(noRecursive)
+		return;
+	
 	if(normalKeyPressed)
 	{
 		normalKeyPressed = NO;

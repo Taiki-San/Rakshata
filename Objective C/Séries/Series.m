@@ -87,15 +87,46 @@
 	return header.prefUIOpen;
 }
 
+- (void) seriesIsOpening : (byte) context
+{
+	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
+}
+
+#pragma mark - Event
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+	if(self.mainThread != TAB_SERIES)
+		return;
+	
+	const char * string = [[theEvent charactersIgnoringModifiers] cStringUsingEncoding:NSASCIIStringEncoding];
+	char c;
+	
+	if(string == NULL)
+		return;
+	
+	if(string[0] >= 'A' && string[0] <= 'Z')
+		c = string[0] + 'a' - 'A';
+	else
+		c = string[0];
+	
+	switch (c)
+	{
+		case 'f':
+		{
+			if(((RakWindow *) self.window).commandPressed && !((RakWindow *) self.window).shiftPressed)
+			{
+				[header focusSearchField];
+			}
+			break;
+		}
+	}
+}
+
 - (void)mouseExited:(NSEvent *)theEvent
 {
 	if(!header.prefUIOpen)
 		[super mouseExited:theEvent];
-}
-
-- (void) seriesIsOpening : (byte) context
-{
-	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
 }
 
 #pragma mark - Routine to setup and communicate with coreview

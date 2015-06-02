@@ -42,9 +42,6 @@ enum
 	byte _ID;
 	
 	BOOL noRecursive, normalKeyPressed;
-	
-	id _cancelTarget;
-	SEL _cancelAction;
 }
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (byte) ID;

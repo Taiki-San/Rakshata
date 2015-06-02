@@ -343,6 +343,12 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INSTALLED_ONLY_STAB object:@(storeSwitch.state == NSOnState)];
 }
 
+- (void) focusSearchField
+{
+	if(self.window.firstResponder != search)
+		[self.window makeFirstResponder:search];
+}
+
 #ifdef SEVERAL_VIEWS
 - (void) displayTypeSwitch
 {
