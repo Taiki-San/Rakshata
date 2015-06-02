@@ -727,6 +727,8 @@ enum
 			{
 				mainThread = value & TAB_MASK;
 				[prefsCache refreshFirstResponder];
+				
+				[[NSApp delegate] setHaveDistractionFree : mainThread == TAB_READER];
 			}
 			
 			break;

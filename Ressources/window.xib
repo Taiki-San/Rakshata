@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7515.2" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14E26a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7515.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -68,42 +68,58 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Window" id="04p-Ar-WHc">
+                <menuItem title="Window" id="Xoe-AA-ztc">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Window" systemMenu="window" id="iO1-m9-I20">
+                    <menu key="submenu" title="Window" systemMenu="window" id="mjo-Sm-53K">
                         <items>
-                            <menuItem title="Minimize" keyEquivalent="m" id="vWB-a6-P6Y">
+                            <menuItem title="Minimize" keyEquivalent="m" id="Wbr-ZZ-8Sd">
                                 <connections>
-                                    <action selector="performMiniaturize:" target="-1" id="OKY-v0-DgO"/>
+                                    <action selector="performMiniaturize:" target="-1" id="J7t-3B-Hfk"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Zoom" id="619-0e-Kvx">
+                            <menuItem title="Zoom" id="DRS-2d-zDp">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="performZoom:" target="-1" id="Tkb-UO-BMg"/>
+                                    <action selector="performZoom:" target="-1" id="93m-iC-7BC"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="PH4-s9-UiY"/>
-                            <menuItem title="Série" keyEquivalent="1" id="xND-c1-Cwr">
+                            <menuItem title="Enter Full Screen" keyEquivalent="f" id="798-ac-2xV">
                                 <connections>
-                                    <action selector="jumpToSeries:" target="494" id="iwk-wb-Il7"/>
+                                    <action selector="toggleFullScreen:" target="-1" id="2rP-6h-Dg5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Chapitres et tomes" keyEquivalent="2" id="MKm-XU-UsC">
+                            <menuItem title="Enter Distraction Free" keyEquivalent="D" id="zfF-Gi-Fqf">
                                 <connections>
-                                    <action selector="jumpToCT:" target="494" id="lPe-Il-Aue"/>
+                                    <action selector="switchDistractionFree:" target="494" id="B0e-b2-Fk1"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="N5V-HN-lC7"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Lecteur" keyEquivalent="3" id="SEh-wr-8cr">
+                            <menuItem title="Close" keyEquivalent="w" id="jYX-Ga-QWn">
                                 <connections>
-                                    <action selector="jumpToReader:" target="494" id="ugY-6c-7HB"/>
+                                    <action selector="performClose:" target="-1" id="udb-Wc-MoM"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="XXe-1Y-hwU"/>
-                            <menuItem title="Bring All to Front" id="hoH-Ma-NDS">
+                            <menuItem isSeparatorItem="YES" id="5ew-in-gl3"/>
+                            <menuItem title="Série" keyEquivalent="1" id="ZW0-dt-4oT">
+                                <connections>
+                                    <action selector="jumpToSeries:" target="494" id="kAN-Sd-6Qu"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Chapitres et tomes" keyEquivalent="2" id="mMX-yL-t3U">
+                                <connections>
+                                    <action selector="jumpToCT:" target="494" id="3d9-53-7Hr"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Lecteur" keyEquivalent="3" id="mup-3s-3SA">
+                                <connections>
+                                    <action selector="jumpToReader:" target="494" id="QfU-XP-xlt"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="KtN-hX-nl2"/>
+                            <menuItem title="Bring All to Front" id="D4P-Iz-2xk">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="arrangeInFront:" target="-1" id="NEy-2M-PD8"/>
+                                    <action selector="arrangeInFront:" target="-1" id="2hd-5H-jaD"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -141,9 +157,12 @@
         </window>
         <customObject id="494" customClass="RakAppDelegate">
             <connections>
+                <outlet property="distractionFree" destination="zfF-Gi-Fqf" id="hIA-WC-SBB"/>
+                <outlet property="distractionFreeButton" destination="zfF-Gi-Fqf" id="nto-j0-WNO"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
+        <userDefaultsController representsSharedInstance="YES" id="9dd-CP-NtX"/>
     </objects>
 </document>

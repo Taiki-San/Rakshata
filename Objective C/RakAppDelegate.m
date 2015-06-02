@@ -209,6 +209,12 @@
 	[tabReader ownFocus];
 }
 
+- (IBAction)switchDistractionFree:(id)sender
+{
+	if(tabReader.mainThread == TAB_READER)
+		[tabReader switchDistractionFree];
+}
+
 #pragma mark Debug
 
 - (IBAction) reloadFromRemote : (id)sender

@@ -28,6 +28,7 @@
 }
 
 @property (weak) IBOutlet RakWindow *window;
+@property BOOL haveDistractionFree;
 
 - (RakContentView*) getContentView;
 
