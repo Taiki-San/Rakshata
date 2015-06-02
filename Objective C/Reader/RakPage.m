@@ -925,7 +925,6 @@
 	cacheSession++;	//Tell the cache system to stop
 	
 	deleteProject(_project, _currentElem, self.isTome);
-	[RakDBUpdate postNotificationProjectUpdate:_project];
 	
 	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 	{
