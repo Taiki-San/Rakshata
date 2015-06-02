@@ -427,12 +427,12 @@
 					for(; pos < _nbInstalled && _installedJumpTable[pos] != element; pos++);
 					
 					if(pos < _nbInstalled)
-						selectedRowIndex = pos;
+						_indexSelectedBeforeUpdate = pos;
 					else
-						selectedRowIndex = LIST_INVALID_SELECTION;
+						_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 				}
 				else
-					selectedRowIndex = LIST_INVALID_SELECTION;
+					_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 				
 				selectedColumnIndex = 1;
 			}
@@ -441,12 +441,14 @@
 				if(_installedJumpTable != NULL && selectedRowIndex < _nbInstalled)
 				{
 					uint index = _installedJumpTable[selectedRowIndex];
-					selectedRowIndex = [self coordinateForIndex:index :&selectedColumnIndex];
+					_indexSelectedBeforeUpdate = [self coordinateForIndex:index :&selectedColumnIndex];
 				}
+				else
+					_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 			}
 		}
 		else
-			selectedRowIndex = LIST_INVALID_SELECTION;
+			_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 		
 		//Because of how things have to be handled when er get in vs out, the call order change
 		if(compactMode)
@@ -536,7 +538,6 @@
 - (void) updateMultiColumn : (BOOL) isCompact : (NSSize) scrollviewSize
 {
 	NSSize initialSize = _tableView.bounds.size;
-	_indexSelectedBeforeUpdate = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 	
 	if(!isCompact || _nbCoupleColumn > 1)
 	{
@@ -708,7 +709,7 @@
 	
 	if(!_selectionWithoutUI)
 	{
-		dispatch_after(0, dispatch_get_main_queue(), ^{
+		dispatch_async(dispatch_get_main_queue(), ^{
 			[self performSelectorOnMainThread:@selector(postProcessColumnUpdate) withObject:nil waitUntilDone:NO];
 		});
 	}
@@ -728,6 +729,8 @@
 		[self selectIndex:_indexSelectedBeforeUpdate];
 		_UIOnlySelection = NO;
 		[self jumpScrollerToIndex:_indexSelectedBeforeUpdate];
+		
+		_indexSelectedBeforeUpdate = LIST_INVALID_SELECTION;
 	}
 }
 
