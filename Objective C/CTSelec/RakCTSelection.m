@@ -269,11 +269,6 @@
 	}
 }
 
-- (uint) currentContext
-{
-	return _currentContext;
-}
-
 #pragma mark - DB update
 
 - (void) DBUpdated : (NSNotification*) notification

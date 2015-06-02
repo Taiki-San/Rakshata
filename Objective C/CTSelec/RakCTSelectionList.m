@@ -326,7 +326,7 @@
 
 - (uint) nbElem
 {
-	return self.compactMode ? _nbInstalled : _nbElem;
+	return _compactMode ? _nbInstalled : _nbElem;
 }
 
 #pragma mark - Backup routine

@@ -19,7 +19,7 @@
 	if(content == nil)
 		return nil;
 	
-	_isCompact = isCompact;
+	_compactMode = isCompact;
 	_content = content;
 	
 	self = [self initWithFrame : [self frameFromParent:parentFrame]];
@@ -84,14 +84,14 @@
 
 - (void) setCompactMode : (BOOL) compactMode
 {
-	if(compactMode == _isCompact)
+	if(compactMode == _compactMode)
 		return;
 	
 	_content.compactMode = compactMode;
 	
 	if(compactMode)
 	{
-		_isCompact = compactMode;
+		_compactMode = compactMode;
 		[self setHidden:_wasHidden];
 		
 		self.layer.cornerRadius = 0;
@@ -103,7 +103,7 @@
 	{
 		_wasHidden = self.isHidden;
 		[self setHidden:NO];
-		_isCompact = compactMode;
+		_compactMode = compactMode;
 		
 		self.layer.cornerRadius = 4.0f;
 		
@@ -114,14 +114,9 @@
 	self.layer.backgroundColor = [self getBackgroundColor];
 }
 
-- (BOOL) compactMode
-{
-	return _isCompact;
-}
-
 - (void) setHidden : (BOOL) hidden
 {
-	if(!_isCompact)
+	if(!_compactMode)
 		_wasHidden = hidden;
 	
 	else
@@ -183,7 +178,7 @@
 
 - (NSRect) frameForContent : (NSRect) parentFrame
 {
-	if(!self.compactMode)
+	if(!_compactMode)
 	{
 		parentFrame.origin.x = BORDERS_CONTENT;
 		parentFrame.origin.y = _title.bounds.size.height + BORDERS_CONTENT;
@@ -307,7 +302,7 @@
 {
 	BOOL hidden = _content.isTome != isTome;
 	
-	if(_isCompact)
+	if(_compactMode)
 	{
 		self.hidden = hidden;
 		self.alphaValue = !hidden;

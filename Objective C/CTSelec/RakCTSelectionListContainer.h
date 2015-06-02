@@ -17,11 +17,10 @@
 	RakText * _placeholder;
 	
 	BOOL _placeholderActive;
-	BOOL _isCompact;
 	BOOL _wasHidden;
 }
 
-@property BOOL compactMode;
+@property (nonatomic) BOOL compactMode;
 @property (readonly) uint nbElem;
 
 - (instancetype) initWithFrame : (NSRect) parentFrame : (BOOL) isCompact : (RakCTSelectionList*) content;

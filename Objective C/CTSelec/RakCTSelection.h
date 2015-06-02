@@ -19,11 +19,10 @@
 	RakCTSelectionListContainer * _chapterView;
 	RakCTSelectionListContainer * _volView;
 	
-	uint _currentContext;
 	uint _cachedHeaderHeight;
 }
 
-@property uint currentContext;
+@property (nonatomic) uint currentContext;
 
 @property BOOL dontNotify;
 @property (readonly) PROJECT_DATA currentProject;

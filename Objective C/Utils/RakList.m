@@ -320,7 +320,7 @@
 {
 	NSTableRowView * output = [[NSTableRowView alloc] init];
 	
-//	output.autoresizesSubviews = NO;
+	output.autoresizesSubviews = NO;
 	output.wantsLayer = NO;
 	
 	return output;
