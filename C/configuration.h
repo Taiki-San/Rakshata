@@ -26,6 +26,7 @@
 #endif
 
 //UI configuration
+#define SELECT_DOWNLOAD_PROJECT
 #define LARGE_FONT_FOR_PLACEHOLDERS
 //#define SEVERAL_VIEWS	//In series
 //#define CT_LIST_PREFER_LESS_COLUMN

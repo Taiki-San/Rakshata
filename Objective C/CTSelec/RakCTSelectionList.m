@@ -539,6 +539,9 @@
 {
 	NSSize initialSize = _tableView.bounds.size;
 	
+	if(_indexSelectedBeforeUpdate == LIST_INVALID_SELECTION)
+		_indexSelectedBeforeUpdate = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
+
 	if(!isCompact || _nbCoupleColumn > 1)
 	{
 		if(isCompact)	//We clean everything up if required
@@ -1021,12 +1024,16 @@
 		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
 		selectedRowIndex = rowIndex;
 		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
+#ifdef SELECT_DOWNLOAD_PROJECT
 		_selectionWithoutUI = YES;
+#endif
 		
 		self._selectionChangeComeFromClic = YES;
 		[self tableViewSelectionDidChange:nil];
 		
+#ifdef SELECT_DOWNLOAD_PROJECT
 		_selectionWithoutUI = NO;
+#endif
 		selectedRowIndex = oldselectedRowIndex;
 		selectedColumnIndex = oldselectedColumnIndex;
 		

@@ -341,7 +341,7 @@
 		}];
 		
 		if(selected)
-			selected = tableView.lastClickedColumn / _nbElemPerCouple != column / _nbElemPerCouple;
+			selected = tableView.lastClickedColumn / _nbElemPerCouple == column / _nbElemPerCouple;
 	}
 	
 	// Get an existing cell with the identifier if it exists
