@@ -253,11 +253,14 @@ NSString * priceString(uint price)
 	{
 		NSNumberFormatter * formater = [[NSNumberFormatter alloc] init];
 		
-		formater.numberStyle = NSNumberFormatterCurrencyStyle;
-		formater.usesSignificantDigits = YES;
-		formater.minimumSignificantDigits = 2;
-		
-		return [formater stringFromNumber:@(price / 100.0f)];
+		if(formater != nil)
+		{
+			formater.numberStyle = NSNumberFormatterCurrencyStyle;
+			formater.usesSignificantDigits = YES;
+			formater.minimumSignificantDigits = 2;
+			
+			return [formater stringFromNumber:@(price / 100.0f)];
+		}
 	}
 	
 	return NSLocalizedString(@"FREE", nil);
