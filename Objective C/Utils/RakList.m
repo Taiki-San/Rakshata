@@ -503,7 +503,7 @@
 			int current;
 			BOOL tooMuchChanges = NO, singleColumn = _nbCoupleColumn == 1;
 			
-			for(uint posNew = 0, posOld = 0; posNew < nbElemNew; posNew++)
+			for(uint posNew = 0, posOld = 0; posNew < nbElemNew && !tooMuchChanges; posNew++)
 			{
 				current = newData[posNew].data;
 				
@@ -518,6 +518,8 @@
 							
 							if(posOld < nbElemOld && oldData[posOld].data != current)
 								tooMuchChanges = YES;
+							else
+								posOld++;
 						}
 						else
 							tooMuchChanges = YES;
