@@ -272,11 +272,7 @@
 		[scrollView updateScrollerState : scrollView.bounds];
 		
 		if(element != LIST_INVALID_SELECTION)
-		{
-			_UIOnlySelection = YES;
 			[self selectElement : element];
-			_UIOnlySelection = NO;
-		}
 	}
 	
 	if(isTome)
@@ -1021,22 +1017,7 @@
 	//We have one bypass for init, we don't block signal when in compactMode, then sanity checks and check if installed
 	if(!_UIOnlySelection && !self.compactMode && index >= 0 && index < _nbElem && _installedTable != NULL && !_installedTable[index])
 	{
-		CGFloat oldselectedRowIndex = selectedRowIndex, oldselectedColumnIndex = selectedColumnIndex;
-		selectedRowIndex = rowIndex;
-		selectedColumnIndex = tableView.preCommitedLastClickedColumn;
-#ifdef SELECT_DOWNLOAD_PROJECT
-		_selectionWithoutUI = YES;
-#endif
-		
-		self._selectionChangeComeFromClic = YES;
-		[self tableViewSelectionDidChange:nil];
-		
-#ifdef SELECT_DOWNLOAD_PROJECT
-		_selectionWithoutUI = NO;
-#endif
-		selectedRowIndex = oldselectedRowIndex;
-		selectedColumnIndex = oldselectedColumnIndex;
-		
+		[self processElement:[self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn]];
 		return NO;
 	}
 	else
@@ -1053,9 +1034,12 @@
 	else
 		self._selectionChangeComeFromClic = NO;
 	
-	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex];
-	
-	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])
+	[self processElement:[self rowFromCoordinates : selectedRowIndex : selectedColumnIndex]];
+}
+
+- (void) processElement : (uint) index
+{
+	if(index != LIST_INVALID_SELECTION && index < [self nbElem])
 	{
 		BOOL installed = self.compactMode || (_installedTable != NULL && _installedTable[index]);
 		
