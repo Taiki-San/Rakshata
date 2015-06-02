@@ -333,7 +333,7 @@
 
 - (uint) getSelectedElement
 {
-	uint element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex / 2];
+	uint element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 	
 	if(element > _nbElem)
 		return LIST_INVALID_SELECTION;
@@ -407,11 +407,6 @@
 
 #pragma mark - Switch state
 
-- (BOOL) compactMode
-{
-	return _compactMode;
-}
-
 - (void) setCompactMode : (BOOL) compactMode
 {
 	if(compactMode != _compactMode)
@@ -425,7 +420,7 @@
 		{
 			if(compactMode)	//We go from full to installed only
 			{
-				uint pos = 0, element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex / 2];
+				uint pos = 0, element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 				
 				if(element != UINT_MAX)
 				{
@@ -473,16 +468,25 @@
 
 - (uint) rowFromCoordinates : (uint) row : (uint) column
 {
-	if(_nbCoupleColumn > 1 && row != LIST_INVALID_SELECTION && column != LIST_INVALID_SELECTION)
+	if(_nbCoupleColumn > 1 && _nbElemPerCouple != 0 && row != LIST_INVALID_SELECTION && column != LIST_INVALID_SELECTION)
 	{
 		uint modulo = _nbData % _nbCoupleColumn;
+
+		column /= _nbElemPerCouple;
+
 		if(modulo != 0 && column > modulo)
 		{
 			row += modulo * (_numberOfRows + 1);
 			row += (column - modulo) * _numberOfRows;
 		}
 		else if (modulo != 0)
+		{
+			//We have several columns with different height, we have to check we're not exceeding one's height
+			if(column == modulo && row == _numberOfRows)
+				return UINT_MAX;
+
 			row += column * (_numberOfRows + 1);
+		}
 		else
 			row += column * _numberOfRows;
 	}
@@ -815,11 +819,11 @@
 			isDetails = YES;
 	}
 	
-	rowIndex = [self rowFromCoordinates : rowIndex : column];
+	rowIndex = [self rowFromCoordinates : rowIndex : column * _nbElemPerCouple];
 	
 	if(rowIndex >= _nbData)	//Too much entry?
 	{
-		if(rowIndex / _nbCoupleColumn > _nbData / _nbCoupleColumn)	//Inconsistency
+		if(rowIndex != UINT_MAX && rowIndex / _nbCoupleColumn > _nbData / _nbCoupleColumn)	//Inconsistency
 		{
 			[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
 			return @"Error :(";
@@ -1003,7 +1007,7 @@
 
 - (BOOL) tableView : (RakTableView *) tableView shouldSelectRow:(NSInteger)rowIndex
 {
-	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
+	NSInteger index = [self rowFromCoordinates : rowIndex : tableView.preCommitedLastClickedColumn];
 	
 	//If not installed, we don't want to reflect the UI
 	//We have one bypass for init, we don't block signal when in compactMode, then sanity checks and check if installed
@@ -1037,7 +1041,7 @@
 	else
 		self._selectionChangeComeFromClic = NO;
 	
-	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex / _nbElemPerCouple];
+	NSInteger index = [self rowFromCoordinates : selectedRowIndex : selectedColumnIndex];
 	
 	if(selectedRowIndex != LIST_INVALID_SELECTION && selectedColumnIndex != LIST_INVALID_SELECTION && index < [self nbElem])
 	{
@@ -1072,7 +1076,7 @@
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
 	int selection;
-	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
 	
 	if(self.isTome)
 	{
@@ -1092,7 +1096,7 @@
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
-	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn / _nbElemPerCouple];
+	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
 	
 	if(!self.compactMode && _installedTable != NULL && row < _nbElem && !_installedTable[row])
 	{

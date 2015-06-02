@@ -173,18 +173,15 @@
 	scrollviewFrame.origin = NSZeroPoint;
 	
 	CGFloat scrollerWidth = scrollView.hasVerticalScroller ? _scrollerWidth : 0;
-	if(oldTableviewSize.width + scrollerWidth != scrollviewFrame.size.width)
-	{
-		scrollviewFrame.size.width -= scrollerWidth;
-		oldTableviewSize.width = scrollviewFrame.size.width;
-		
-		[_tableView setFrameSize : oldTableviewSize];
-		
-		if(immatureFrame)
-			[self updateMultiColumn : scrollviewFrame.size];
-		else
-			[self additionalResizing : scrollviewFrame.size : animate];
-	}
+	scrollviewFrame.size.width -= scrollerWidth;
+	oldTableviewSize.width = scrollviewFrame.size.width;
+	
+	[_tableView setFrameSize : oldTableviewSize];
+	
+	if(immatureFrame)
+		[self updateMultiColumn : scrollviewFrame.size];
+	else
+		[self additionalResizing : scrollviewFrame.size : animate];
 }
 
 - (void) updateMultiColumn :(NSSize)scrollviewSize
@@ -338,13 +335,13 @@
 		[tableView.tableColumns enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if(obj == tableColumn)
 			{
-				column = idx / _nbElemPerCouple;
+				column = idx;
 				*stop = YES;
 			}
 		}];
 		
 		if(selected)
-			selected = tableView.lastClickedColumn / _nbElemPerCouple != column;
+			selected = tableView.lastClickedColumn / _nbElemPerCouple != column / _nbElemPerCouple;
 	}
 	
 	// Get an existing cell with the identifier if it exists
@@ -450,7 +447,7 @@
 		{
 			if([view isKindOfClass:[self contentClass]])
 			{
-				_tmpColor = normal != nil ? normal : [self getTextColor:column++ / _nbElemPerCouple :selectedRowIndex];
+				_tmpColor = normal != nil ? normal : [self getTextColor:column++ :selectedRowIndex];
 				[self graphicSelection:view :NO];
 			}
 		}

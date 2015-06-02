@@ -14,7 +14,6 @@
 {
 	PROJECT_DATA projectData;
 	
-	BOOL _compactMode;
 	BOOL _rowNumberUpdateQueued;
 	BOOL _resizingQueued;
 	BOOL _UIOnlySelection;
@@ -44,7 +43,7 @@
 
 @property (readonly) uint nbElem;
 
-@property BOOL compactMode;
+@property (nonatomic) BOOL compactMode;
 
 - (instancetype) initWithFrame : (NSRect) frame  isCompact : (BOOL) isCompact projectData : (PROJECT_DATA) project isTome : (BOOL) isTomeRequest selection : (long) elemSelected  scrollerPos : (long) scrollerPosition;
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
