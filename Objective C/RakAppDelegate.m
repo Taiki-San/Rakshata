@@ -186,9 +186,7 @@
 
 - (IBAction) openPreferenceWindow : (id) sender
 {
-	if(prefWindow == nil)
-		prefWindow = [[RakPrefsWindow alloc] init];
-	
+	prefWindow = [[RakPrefsWindow alloc] init];
 	[prefWindow createWindow];
 }
 

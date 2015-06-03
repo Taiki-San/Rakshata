@@ -37,7 +37,7 @@ enum
 
 - (instancetype) initWithFrame : (NSRect) frameRect
 {
-	self = [super initWithFrame:NSMakeRect(0, 0, WIDTH, HEIGHT)];
+	self = [super initWithFrame:NSMakeRect(frameRect.origin.x, frameRect.origin.y, WIDTH, HEIGHT)];
 	
 	if(self != nil)
 	{
