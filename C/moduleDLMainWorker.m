@@ -73,10 +73,24 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 			{
 				if(IDToPosition == NULL)
 					break;
-					
-				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DEFAULT; dataPos++); //Les éléments peuvent être réorganisés
 				
-				if(dataPos < *nbElemTotal)
+				char copiedStatus;
+				
+				//We search from the beginning (as moves are possible) for items available to download
+				for(dataPos = 0; dataPos < *nbElemTotal; dataPos++)
+				{
+					copiedStatus = *((*status)[(*IDToPosition)[dataPos]]);
+					
+					if(copiedStatus == MDL_CODE_DEFAULT || copiedStatus == MDL_CODE_DL)
+						break;
+				}
+				
+				//We check there isn't something already downloading, as I caught a race condition that would duplicated downloader
+				//This doesn't cause any significant problem but I want to keep control on it
+				uint seekDL = dataPos;
+				for(; seekDL < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DL; seekDL++);
+				
+				if(dataPos < *nbElemTotal && seekDL == *nbElemTotal)
 				{
 					MDLStartHandler((*IDToPosition)[dataPos], *nbElemTotal, **todoList, status);
 				}
