@@ -319,7 +319,10 @@ uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToP
         uint i, posDansOut, pos;
         for(i = posDansOut = 0; i < length; i++)
         {
-			pos = IDToPosition[i];
+			if(IDToPosition != NULL)
+				pos = IDToPosition[i];
+			else
+				pos = i;
 			
             if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->repo != NULL && data[pos]->datas->repo->type == TYPE_DEPOT_PAID && *status[pos] == MDL_CODE_DEFAULT)
                 output[posDansOut++] = pos;
