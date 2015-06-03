@@ -31,8 +31,8 @@
 	
 	self.titleTextShadow = self.inactiveTitleTextShadow = [[NSShadow alloc] init];
 	
-	self.titleTextColor = [Prefs getSystemColor:GET_COLOR_SURVOL : self];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:GET_COLOR_ACTIVE : nil];
+	self.titleTextColor = [Prefs getSystemColor:COLOR_SURVOL : self];
+	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
 	
 	self.titleBarDrawingBlock = ^(BOOL drawsAsMainWindow, CGRect drawingRect, CGRectEdge edge, CGPathRef clippingPath)
 	{
@@ -48,19 +48,19 @@
 		{
 			if((NSInteger)NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
 			{
-				NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_START :nil] colorWithAlphaComponent:0.7]
-																	 endingColor:[Prefs getSystemColor:GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_END :nil]];
+				NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_START :nil] colorWithAlphaComponent:0.7]
+																	 endingColor:[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_END :nil]];
 				[gradient drawInRect:drawingRect angle:90];
 			}
 			else
 			{
-				[[Prefs getSystemColor:GET_COLOR_TITLEBAR_BACKGROUND_MAIN :nil] setFill];
+				[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_MAIN :nil] setFill];
 				NSRectFill(drawingRect);
 			}
 		}
 		else
 		{
-			[[Prefs getSystemColor:GET_COLOR_TITLEBAR_BACKGROUND_STANDBY :nil] setFill];
+			[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY :nil] setFill];
 			NSRectFill(drawingRect);
 		}
 	};
@@ -188,8 +188,8 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	self.titleTextColor = [Prefs getSystemColor:GET_COLOR_ACTIVE : nil];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:GET_COLOR_ACTIVE : nil];
+	self.titleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
 }
 
 @end

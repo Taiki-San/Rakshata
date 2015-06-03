@@ -77,12 +77,12 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
 }
 
 - (NSColor *) detailTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL :nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

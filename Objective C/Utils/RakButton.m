@@ -79,7 +79,7 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
 	[self setNeedsDisplay];
 }
 
@@ -151,7 +151,7 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BACK_BUTTONS : self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS : self].CGColor;
 		self.layer.cornerRadius = 4;
 	}
 	haveBackground = !haveBackground;
@@ -338,22 +338,22 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDER_BUTTONS :nil];
+	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS :nil];
 }
 
 - (NSColor*) getBackgroundColor
 {
-	return _customBackgroundColor == nil ? [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED :nil] : _customBackgroundColor;
+	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED :nil] : _customBackgroundColor;
 }
 
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight || (self.state == NSOnState && self.activeAllowed))
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_CLICKED : nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED : nil];
 	else if([self isEnabled])
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_NONCLICKED : nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED : nil];
 	else
-		return [Prefs getSystemColor:GET_COLOR_FONT_BUTTON_UNAVAILABLE :nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE :nil];
 }
 
 - (void) reloadFontColor

@@ -113,7 +113,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
 }
 
 #pragma mark - Logic

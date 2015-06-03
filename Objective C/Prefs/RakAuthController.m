@@ -22,7 +22,7 @@
 	initialAnimation = YES;
 	
 	self.view.wantsLayer = YES;
-	self.view.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS :self].CGColor;
+	self.view.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TABS :self].CGColor;
 	self.view.layer.cornerRadius = 4;
 	
 	baseHeight = self.view.bounds.size.height;
@@ -36,7 +36,7 @@
 	foreground = [[RakForegroundView alloc] init : [(RakAppDelegate*)[NSApp delegate] getContentView] : self.view];
 	foreground.delegate = self;
 	
-	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : GET_COLOR_ACTIVE : nil]];
+	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : COLOR_ACTIVE : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
 	[footerPlaceholder sizeToFit];
 	
@@ -49,12 +49,12 @@
 
 - (void) updateMainView
 {
-	[header setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
+	[header setTextColor:[Prefs getSystemColor:COLOR_SURVOL :nil]];
 	[header sizeToFit];
 	[header setFrameOrigin:NSMakePoint(self.view.frame.size.width / 2 - header.frame.size.width / 2, header.frame.origin.y)];
 	
-	[labelMail setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
-	[labelPass setTextColor:[Prefs getSystemColor:GET_COLOR_SURVOL :nil]];
+	[labelMail setTextColor:[Prefs getSystemColor:COLOR_SURVOL :nil]];
+	[labelPass setTextColor:[Prefs getSystemColor:COLOR_SURVOL :nil]];
 	
 	mailInput = [[RakEmailField alloc] initWithFrame:_containerMail.frame];
 	[self.view addSubview:mailInput];
@@ -221,7 +221,7 @@
 {
 	if(privacy == nil)
 	{
-		privacy = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] responder:self];
+		privacy = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-PRIVACY", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil] responder:self];
 		[privacy setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - privacy.bounds.size.width / 2, 0)];	//y = 17
 		
 		privacy.URL = @"https://www.rakshata.com/privacy";
@@ -232,7 +232,7 @@
 	
 	if(terms == nil)
 	{
-		terms = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil] responder:self];
+		terms = [[RakClickableText alloc] initWithText:NSLocalizedString(@"AUTH-CGU", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil] responder:self];
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, 49)];
 		
 		terms.URL = @"https://www.rakshata.com/terms";

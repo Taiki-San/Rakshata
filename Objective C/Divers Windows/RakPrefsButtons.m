@@ -101,12 +101,12 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_PREFS_HEADER :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_PREFS_HEADER :nil];
 }
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDER_PREFS_HEADER :nil];
+	return [Prefs getSystemColor:COLOR_BORDER_PREFS_HEADER :nil];
 }
 
 #pragma mark - Clic management

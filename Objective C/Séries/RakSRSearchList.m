@@ -114,7 +114,7 @@
 
 - (NSColor *) getTextHighlightColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SURVOL:nil];
+	return [Prefs getSystemColor:COLOR_SURVOL:nil];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView

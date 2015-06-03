@@ -244,12 +244,12 @@
 
 - (NSColor *) startColor
 {
-	return [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_START : NO];
+	return [Prefs getSystemColor : COLOR_CTHEADER_GRADIENT_START : NO];
 }
 
 - (NSColor *) endColor : (const NSColor *) startColor
 {
-	return [Prefs getSystemColor : GET_COLOR_CTHEADER_GRADIENT_END : NO];
+	return [Prefs getSystemColor : COLOR_CTHEADER_GRADIENT_END : NO];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -266,7 +266,7 @@
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CTHEADER_FONT : nil];
+	return [Prefs getSystemColor:COLOR_CTHEADER_FONT : nil];
 }
 
 @end

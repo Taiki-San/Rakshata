@@ -29,8 +29,8 @@
 		[self setBordered:YES];
 		self.wantCustomBorder = YES;
 		
-		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[self setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
 		[self setFormatter:[[RakFormatterLength alloc] init : 100]];
 		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
 		
@@ -194,8 +194,8 @@
 		self.wantCustomBorder = NO;
 		[self setDelegate:self];
 		
-		[self setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[self setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[self setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
 	}
 	
 	return self;
@@ -288,7 +288,7 @@
 - (void) drawRect:(NSRect)dirtyRect
 {
 	if(backgroundColor == nil)
-		backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED : self];
+		backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED : self];
 	
 	[backgroundColor setFill];
 	[[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:RADIUS yRadius:RADIUS] fill];
@@ -298,7 +298,7 @@
 {
 	if([object class] == [Prefs class])
 	{
-		backgroundColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_BUTTON_UNSELECTED : nil];
+		backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED : nil];
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
 }

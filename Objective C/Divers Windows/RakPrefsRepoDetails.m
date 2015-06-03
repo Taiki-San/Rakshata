@@ -231,7 +231,7 @@ enum
 			if(flushButton != nil)
 			{
 				[flushButton.cell setBorderWidth:2];
-				[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil]];
+				[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
 				[flushButton sizeToFit];
 				
 				flushButton.target = self;
@@ -249,7 +249,7 @@ enum
 			if(deleteButton != nil)
 			{
 				[deleteButton.cell setBorderWidth:2];
-				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_REPO_LIST :nil]];
+				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
 				[deleteButton sizeToFit];
 				
 				deleteButton.target = self;
@@ -510,7 +510,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

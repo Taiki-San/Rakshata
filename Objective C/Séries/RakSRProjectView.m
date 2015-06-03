@@ -113,17 +113,17 @@ enum
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
 }
 
 - (NSColor *) getTagTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
+	return [Prefs getSystemColor:COLOR_TAGITEM_FONT :nil];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor : GET_COLOR_BACKGROUND_GRID_FOCUS : nil];
+	return [Prefs getSystemColor : COLOR_BACKGROUND_GRID_FOCUS : nil];
 }
 
 #pragma mark - Property

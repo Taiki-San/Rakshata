@@ -254,12 +254,12 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR : nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR : nil];
 }
 
 - (NSColor*) getColorFront
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR_FRONT : nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT : nil];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

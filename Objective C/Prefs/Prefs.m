@@ -106,308 +106,308 @@ enum
 	NSColor* output = nil;
 	switch (context)
 	{
-		case GET_COLOR_EXTERNALBORDER_FAREST:
+		case COLOR_EXTERNALBORDER_FAREST:
 		{
 			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:1.0];
 			break;
 		}
-		case GET_COLOR_EXTERNALBORDER_MIDDLE:
-		case GET_COLOR_BACKGROUND_REPO_LIST:
+		case COLOR_EXTERNALBORDER_MIDDLE:
+		case COLOR_BACKGROUND_REPO_LIST:
 		{
 			output = [NSColor colorWithDeviceWhite:32/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN:
+		case COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN:
 		{
 			output = [NSColor colorWithDeviceWhite:40/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_EXTERNALBORDER_CLOSEST:
+		case COLOR_EXTERNALBORDER_CLOSEST:
 		{
 			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_INACTIVE:
-		case GET_COLOR_BORDERS_COREVIEWS:
-		case GET_COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
-		case GET_COLOR_FONT_BUTTON_UNAVAILABLE:
-		case GET_COLOR_SEARCHTAB_BORDER_BAR:
-		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_ON:
+		case COLOR_INACTIVE:
+		case COLOR_BORDERS_COREVIEWS:
+		case COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:
+		case COLOR_FONT_BUTTON_UNAVAILABLE:
+		case COLOR_SEARCHTAB_BORDER_BAR:
+		case COLOR_BACKGROUND_SWITCH_BUTTON_ON:
 		{
 			output = [NSColor colorWithSRGBRed:78/255.0f green:118/255.0f blue:143/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SURVOL:
-		case GET_COLOR_TEXT_CT_SELECTOR_NONCLICKED:
-		case GET_COLOR_FONT_BUTTON_NONCLICKED:
-		case GET_COLOR_SEARCHBAR_SELECTION_TEXT:
+		case COLOR_SURVOL:
+		case COLOR_TEXT_CT_SELECTOR_NONCLICKED:
+		case COLOR_FONT_BUTTON_NONCLICKED:
+		case COLOR_SEARCHBAR_SELECTION_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:102/255.0f green:149/255.0f blue:176/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_ACTIVE:
-		case GET_COLOR_TEXT_CT_SELECTOR_CLICKED:
-		case GET_COLOR_FONT_BUTTON_CLICKED:
-		case GET_COLOR_PROGRESSCIRCLE_PROGRESS:
+		case COLOR_ACTIVE:
+		case COLOR_TEXT_CT_SELECTOR_CLICKED:
+		case COLOR_FONT_BUTTON_CLICKED:
+		case COLOR_PROGRESSCIRCLE_PROGRESS:
 		{
 			output = [NSColor colorWithSRGBRed:159/255.0f green:202/255.0f blue:227/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_TAGITEM_FONT:
+		case COLOR_TAGITEM_FONT:
 		{
 			output = [NSColor colorWithSRGBRed:61/255.0f green:119/255.0f blue:152/255.0f alpha:1];
 			break;
 		}
 			
-		case GET_COLOR_CLICKABLE_TEXT:
+		case COLOR_CLICKABLE_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:227/255.0f green:227/255.0f blue:216/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_INSERTION_POINT:
+		case COLOR_INSERTION_POINT:
 		{
 			output = [NSColor colorWithDeviceWhite:200/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND:
+		case COLOR_SEARCHBAR_SELECTION_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:222/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHBAR_BACKGROUND:
+		case COLOR_SEARCHBAR_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHBAR_BORDER:
+		case COLOR_SEARCHBAR_BORDER:
 		{
 			output = [NSColor colorWithSRGBRed:227/255.0f green:227/255.0f blue:216/255.0f alpha:0.2];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHBAR_PLACEHOLDER_TEXT:
+		case COLOR_SEARCHBAR_PLACEHOLDER_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:146/255.0f green:146/255.0f blue:141/255.0f alpha:0.4];
 			break;
 		}
 			
-		case GET_COLOR_READER_BAR:
+		case COLOR_READER_BAR:
 		{
 			output = [NSColor colorWithDeviceWhite:20/255.0f alpha:0.8];
 			break;
 		}
-		case GET_COLOR_READER_BAR_FRONT:
-		case GET_COLOR_TAGITEM_BORDER:
+		case COLOR_READER_BAR_FRONT:
+		case COLOR_TAGITEM_BORDER:
 		{
 			output = [NSColor colorWithDeviceWhite:75/255.0f alpha:0.8];
 			break;
 		}
 			
-		case GET_COLOR_READER_BAR_PAGE_COUNTER:
+		case COLOR_READER_BAR_PAGE_COUNTER:
 		{
 			output = [NSColor colorWithDeviceWhite:25/255.0f alpha:0.3f];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_READER_INTAB:
-		case GET_COLOR_TITLEBAR_BACKGROUND_MAIN:
-		case GET_COLOR_BACKGROUND_DRAG_AND_DROP:
+		case COLOR_BACKGROUND_READER_INTAB:
+		case COLOR_TITLEBAR_BACKGROUND_MAIN:
+		case COLOR_BACKGROUND_DRAG_AND_DROP:
 		{
 			output = [NSColor colorWithDeviceWhite:42/255.0f alpha:1.0];
 			break;
 		}
-		case GET_COLOR_BACKGROUND_TABS:
-		case GET_COLOR_BACKGROUND_REPO_LIST_ITEM:
-		case GET_COLOR_BACKGROUND_PREFS_HEADER:
+		case COLOR_BACKGROUND_TABS:
+		case COLOR_BACKGROUND_REPO_LIST_ITEM:
+		case COLOR_BACKGROUND_PREFS_HEADER:
 		{
 			output = [NSColor colorWithDeviceWhite:47/255.0f alpha:1.0];
 			break;
 		}
-		case GET_COLOR_BORDER_TABS:
-		case GET_COLOR_TITLEBAR_BACKGROUND_STANDBY:
-		case GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_END:
+		case COLOR_BORDER_TABS:
+		case COLOR_TITLEBAR_BACKGROUND_STANDBY:
+		case COLOR_TITLEBAR_BACKGROUND_GRADIENT_END:
 		{
 			output = [NSColor colorWithDeviceWhite:52/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_BACK_BUTTONS:
-		case GET_COLOR_TITLEBAR_BACKGROUND_GRADIENT_START:
+		case COLOR_BACKGROUND_BACK_BUTTONS:
+		case COLOR_TITLEBAR_BACKGROUND_GRADIENT_START:
 		{
 			output = [NSColor colorWithDeviceWhite:39/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_BACK_BUTTONS_ANIMATING:
+		case COLOR_BACKGROUND_BACK_BUTTONS_ANIMATING:
 		{
 			output = [NSColor colorWithSRGBRed:104/255.0f green:150/255.0f blue:176/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_COREVIEW:
-		case GET_COLOR_TAGITEM_BACKGROUND:
-		case GET_COLOR_SEARCHTAB_BACKGROUND:
+		case COLOR_BACKGROUND_COREVIEW:
+		case COLOR_TAGITEM_BACKGROUND:
+		case COLOR_SEARCHTAB_BACKGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:34/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHTAB_BORDER_COLLAPSED:
+		case COLOR_SEARCHTAB_BORDER_COLLAPSED:
 		{
 			output = [NSColor colorWithSRGBRed:52/255.0f green:83/255.0f blue:102/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_SEARCHTAB_BORDER_DEPLOYED:
+		case COLOR_SEARCHTAB_BORDER_DEPLOYED:
 		{
 			output = [NSColor colorWithSRGBRed:44/255.0f green:71/255.0f blue:88/255.0f alpha:1.0];
 			break;
 		}
 			
 			//To improve
-		case GET_COLOR_BACKGROUND_CT_TVCELL:
+		case COLOR_BACKGROUND_CT_TVCELL:
 		{
 			output = [NSColor colorWithDeviceWhite:44/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_PROGRESSCIRCLE_SLOT:
+		case COLOR_PROGRESSCIRCLE_SLOT:
 		{
 			output = [NSColor colorWithDeviceWhite:192/255.0f alpha:0.5];
 			break;
 		}
 			
-		case GET_COLOR_BORDER_BUTTONS:
+		case COLOR_BORDER_BUTTONS:
 		{
 			output = [NSColor colorWithDeviceWhite:32.0f/255.0f alpha:1.0f];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_BUTTON_UNSELECTED:
+		case COLOR_BACKGROUND_BUTTON_UNSELECTED:
 		{
 			output = [NSColor colorWithDeviceWhite:39.0f/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_BUTTON_SELECTED:
+		case COLOR_BACKGROUND_BUTTON_SELECTED:
 		{
 			output = [NSColor colorWithDeviceWhite:44.0f/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_FILTER_FORGROUND:
+		case COLOR_FILTER_FORGROUND:
 		{
 			output = [NSColor colorWithDeviceWhite:15/255.0f alpha:0.7f];
 			break;
 		}
 			
-		case GET_COLOR_DANGER_POPOVER_BORDER:
+		case COLOR_DANGER_POPOVER_BORDER:
 		{
 			output = [NSColor colorWithSRGBRed:255/255.0f green:38/255.0f  blue:0 alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_DANGER_POPOVER_TEXT_COLOR:
+		case COLOR_DANGER_POPOVER_TEXT_COLOR:
 		{
 			output = [NSColor colorWithSRGBRed:224/255.0f green:83/255.0f blue:83/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:
+		case COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:
 		{
 			output = [NSColor colorWithSRGBRed:255/255.0f green:148/255.0f blue:148/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_TEXTFIELD:
+		case COLOR_BACKGROUND_TEXTFIELD:
 		{
 			output = [NSColor blackColor];
 			break;
 		}
 			
-		case GET_COLOR_CTHEADER_GRADIENT_START:
+		case COLOR_CTHEADER_GRADIENT_START:
 		{
 			output = [NSColor colorWithDeviceWhite:0 alpha:0.7f];
 			break;
 		}
 			
-		case GET_COLOR_CTHEADER_GRADIENT_END:
+		case COLOR_CTHEADER_GRADIENT_END:
 		{
 			output = [NSColor colorWithDeviceWhite:0 alpha:0.4f];
 			break;
 		}
 			
-		case GET_COLOR_SRPLACEHOLDER_TEXT:
+		case COLOR_SRPLACEHOLDER_TEXT:
 		{
 			output = [NSColor colorWithSRGBRed:27/255.0f green:162/255.0f blue:249/255.0f alpha:0.65];
 			break;
 		}
 			
-		case GET_COLOR_CTHEADER_FONT:
+		case COLOR_CTHEADER_FONT:
 		{
 			output = [NSColor colorWithDeviceWhite:1 alpha:1];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_GRID_FOCUS:
+		case COLOR_BACKGROUND_GRID_FOCUS:
 		{
 			output = [NSColor colorWithDeviceWhite:50/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_PREFS_BUTTONS_FOCUS:
+		case COLOR_PREFS_BUTTONS_FOCUS:
 		{
 			output = [NSColor colorWithDeviceWhite:65/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BORDER_PREFS_HEADER:
+		case COLOR_BORDER_PREFS_HEADER:
 		{
 			output = [NSColor colorWithDeviceWhite:70/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_PLACEHOLDER_REPO:
+		case COLOR_PLACEHOLDER_REPO:
 		{
 			output = [NSColor colorWithDeviceWhite:200 alpha:0.7];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_ADD_REPO:
+		case COLOR_BACKGROUND_ADD_REPO:
 		{
 			output = [NSColor colorWithDeviceWhite:60/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_OFF:
+		case COLOR_BACKGROUND_SWITCH_BUTTON_OFF:
 		{
 			output = [NSColor colorWithDeviceWhite:58/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_SWITCH_BUTTON_MIXED:
+		case COLOR_BACKGROUND_SWITCH_BUTTON_MIXED:
 		{
 			output = [NSColor colorWithSRGBRed:90/255.0f green:136/255.0f blue:165/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BORDER_SWITCH_BUTTON:
+		case COLOR_BORDER_SWITCH_BUTTON:
 		{
 			output = [NSColor colorWithDeviceWhite:148/255.0f alpha:1.0];
 			break;
 		}
 			
-		case GET_COLOR_BACKGROUND_CT_LIST:
+		case COLOR_BACKGROUND_CT_LIST:
 		{
 			output = [NSColor colorWithDeviceWhite:28/255.0f alpha:1.0];
 			break;

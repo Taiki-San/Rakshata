@@ -205,7 +205,7 @@ enum
 
 - (NSColor *) textColor : (BOOL) title
 {
-	return [Prefs getSystemColor:GET_COLOR_CTHEADER_FONT : nil];
+	return [Prefs getSystemColor:COLOR_CTHEADER_FONT : nil];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

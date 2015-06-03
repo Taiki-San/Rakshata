@@ -60,7 +60,7 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS : nil].CGColor;
+	self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS : nil].CGColor;
 	[self setNeedsDisplay:YES];
 }
 
@@ -169,7 +169,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
 }
 
 - (void) drawContentView: (NSRect) frame

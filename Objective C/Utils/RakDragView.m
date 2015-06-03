@@ -24,14 +24,14 @@
 	if (projectName != nil)
 	{
 		[projectName setStringValue:getStringForWchar(projectData.projectName)];
-		[projectName setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE:nil]];
+		[projectName setTextColor:[Prefs getSystemColor:COLOR_ACTIVE:nil]];
 		[self optimizeWidth : projectName];
 	}
 	
 	if(selectionNameString != nil && selectionName != nil)
 	{
 		[selectionName setStringValue:selectionNameString];
-		[selectionName setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT:nil]];
+		[selectionName setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil]];
 		[self optimizeWidth : selectionName];
 	}
 	else
@@ -40,7 +40,7 @@
 	}
 	
 	if(separationLine != nil)
-		[separationLine setBorderColor:[Prefs getSystemColor:GET_COLOR_SURVOL:nil]];
+		[separationLine setBorderColor:[Prefs getSystemColor:COLOR_SURVOL:nil]];
 }
 
 #define SPACE_AT_THE_RIGHT 5
@@ -137,7 +137,7 @@
 		return nil;
 	
 	[view setWantsLayer:YES];
-	[view.layer setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_DRAG_AND_DROP:nil].CGColor];
+	[view.layer setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_DRAG_AND_DROP:nil].CGColor];
 	[view.layer setCornerRadius:5];
 	
 	[view addSubview:self];

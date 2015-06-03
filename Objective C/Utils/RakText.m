@@ -78,7 +78,7 @@
 
 - (NSColor *) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
 }
 
 - (void) additionalDrawing

@@ -169,20 +169,20 @@
 
 - (NSColor *) firstBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST : nil];
 }
 
 - (NSColor *) middleBorderColor
 {
 	if(self.window.isMainWindow)
-		return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE : nil];
+		return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE : nil];
 	
-	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN :nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN :nil];
 }
 
 - (NSColor *) lastBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_CLOSEST : nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_CLOSEST : nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

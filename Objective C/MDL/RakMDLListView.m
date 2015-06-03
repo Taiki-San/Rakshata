@@ -42,10 +42,10 @@ enum
 		
 		self.autoresizesSubviews = NO;
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:GET_COLOR_INACTIVE : self]];
+		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:COLOR_INACTIVE : self]];
 		if(requestName != nil)		[self addSubview:requestName];
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:GET_COLOR_ACTIVE : nil]];
+		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		[self initIcons];
@@ -151,8 +151,8 @@ enum
 	if([object class] != [Prefs class])
 		return;
 	
-	[requestName setTextColor:[Prefs getSystemColor:GET_COLOR_INACTIVE :nil]];
-	[statusText setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
+	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
 	
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;

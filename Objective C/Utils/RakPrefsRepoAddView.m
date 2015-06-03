@@ -275,7 +275,7 @@ enum
 	[[self listBackgroundColor] setFill];
 	[[NSBezierPath bezierPathWithRoundedRect:scrollview.frame xRadius:SCROLL_VIEW_RADIUS yRadius:SCROLL_VIEW_RADIUS] fill];
 	
-	[[Prefs getSystemColor:GET_COLOR_EXTERNALBORDER_FAREST : nil] setFill];
+	[[Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST : nil] setFill];
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, TOP_DARK_BORDER));
 }
 
@@ -293,17 +293,17 @@ enum
 
 - (NSColor *) getTitleColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL :nil];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_ADD_REPO :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO :nil];
 }
 
 - (NSColor *) listBackgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_CT_TVCELL :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL :nil];
 }
 
 @end

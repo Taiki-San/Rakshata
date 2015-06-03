@@ -121,12 +121,12 @@ enum
 
 - (NSColor *) titleColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
 }
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
 }
 
 #pragma mark - Backend

@@ -113,7 +113,7 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDERS_COREVIEWS:nil];
+	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS:nil];
 }
 
 #pragma mark - Behavior when leaving a focus

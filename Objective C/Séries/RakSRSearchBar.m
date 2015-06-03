@@ -18,9 +18,9 @@
 {
 	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
 	
-	[output setInsertionPointColor:[Prefs getSystemColor:GET_COLOR_INSERTION_POINT :nil]];
-	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SEARCHBAR_SELECTION_BACKGROUND :nil],
-										 NSForegroundColorAttributeName : [Prefs getSystemColor:GET_COLOR_SURVOL :nil]}];
+	[output setInsertionPointColor:[Prefs getSystemColor:COLOR_INSERTION_POINT :nil]];
+	[output setSelectedTextAttributes: @{NSBackgroundColorAttributeName : [Prefs getSystemColor:COLOR_SEARCHBAR_SELECTION_BACKGROUND :nil],
+										 NSForegroundColorAttributeName : [Prefs getSystemColor:COLOR_SURVOL :nil]}];
 	
 	output.drawsBackground = YES;
 	output.backgroundColor = [RakSRSearchBar getBackgroundColor];
@@ -165,22 +165,22 @@
 
 + (NSColor *) getBackgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BACKGROUND :nil];
+	return [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :nil];
 }
 
 - (NSColor *) getBorderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BORDER :nil];
+	return [Prefs getSystemColor:COLOR_SEARCHBAR_BORDER :nil];
 }
 
 - (NSColor *) getPlaceholderTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SEARCHBAR_PLACEHOLDER_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_SEARCHBAR_PLACEHOLDER_TEXT :nil];
 }
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
 }
 
 - (NSString *) placeholderMessage

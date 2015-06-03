@@ -23,8 +23,8 @@
 		if(self != nil)
 		{
 			header = localHeader;
-			_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : self];
-			_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+			_backgroundColor = [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW : self];
+			_synopsisTitleBackground = [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
 			
 			[header setFrame : _bounds];
 			[self addSubview:header];
@@ -159,8 +159,8 @@
 	if([object class] != [Prefs class])
 		return;
 	
-	_backgroundColor = [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : nil];
-	_synopsisTitleBackground = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	_backgroundColor = [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW : nil];
+	_synopsisTitleBackground = [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
 }
 
 @end

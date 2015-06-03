@@ -20,8 +20,8 @@
 	{
 		incompleteDrawing = NO;
 		
-		passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:self];
-		active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
+		passive = [Prefs getSystemColor:COLOR_INACTIVE:self];
+		active = [Prefs getSystemColor:COLOR_ACTIVE:nil];
 		color = passive;
 		[self setKnobStyle:NSScrollerKnobStyleLight];
 		[Prefs getPref : PREFS_GET_SCROLLER_STYLE : &scrollerStyle];
@@ -42,8 +42,8 @@
 	
 	BOOL isActive = color == active;
 	
-	passive = [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
-	active = [Prefs getSystemColor:GET_COLOR_ACTIVE:nil];
+	passive = [Prefs getSystemColor:COLOR_INACTIVE:nil];
+	active = [Prefs getSystemColor:COLOR_ACTIVE:nil];
 	
 	if(isActive)	color = active;
 	else			color = passive;

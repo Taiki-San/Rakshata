@@ -21,7 +21,7 @@
 		
 		[self initView : contentView : state];
 		
-		self.layer.borderColor = [Prefs getSystemColor:GET_COLOR_BORDER_TABS:self].CGColor;
+		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:self].CGColor;
 		self.layer.borderWidth = 2;
 		
 		[self initContent : state];

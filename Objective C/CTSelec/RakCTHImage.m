@@ -109,7 +109,7 @@
 
 - (NSColor *) startColor
 {
-	return [Prefs getSystemColor : GET_COLOR_BACKGROUND_COREVIEW : nil];
+	return [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW : nil];
 }
 
 - (NSColor *) endColor : (NSColor *) startColor
@@ -141,7 +141,7 @@
 
 - (void) updateGradient
 {
-	NSColor * startColor = [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS : nil];
+	NSColor * startColor = [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
 	_titleGradient = [[NSGradient alloc] initWithStartingColor : startColor endingColor : [self endColor: startColor]];
 	
 	[super updateGradient];

@@ -95,7 +95,7 @@
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR_PAGE_COUNTER:nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR_PAGE_COUNTER:nil];
 }
 
 - (NSColor *) getBorderColor
@@ -105,7 +105,7 @@
 
 - (NSColor *) getFontColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE:nil];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -219,7 +219,7 @@
 	{
 		[mainLabel setStringValue:NSLocalizedString(@"READER-JUMP-TO", nil)];
 		[mainLabel sizeToFit];
-		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
 	}
 	
 	if(gotoButtonContainer != nil)
@@ -236,8 +236,8 @@
 	if(textField != nil)
 	{
 		((RakTextCell*)textField.cell).customizedInjectionPoint = YES;
-		[textField setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
 		[textField setBezeled:NO];
 		
 		RakFormatterNumbersOnly * formater = [[RakFormatterNumbersOnly alloc] init];
@@ -280,14 +280,14 @@
 {
 	if(mainLabel != nil)
 	{
-		[mainLabel setTextColor:[Prefs getSystemColor:GET_COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
 		[mainLabel setNeedsDisplay:YES];
 	}
 	
 	if(textField != nil)
 	{
-		[textField setBackgroundColor:[Prefs getSystemColor:GET_COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[textField setTextColor:[Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT :nil]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
+		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
 		[textField setNeedsDisplay:YES];
 	}
 }

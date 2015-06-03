@@ -81,7 +81,7 @@ enum
 		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 3;
-		self.layer.backgroundColor = [Prefs getSystemColor:GET_COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
 	}
 	
 	return self;
@@ -154,7 +154,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:GET_COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL :nil];
 }
 
 - (NSRect) getSearchFrame : (NSRect) frame

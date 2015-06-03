@@ -209,7 +209,7 @@ enum
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
 }
 
 - (void) drawRect : (NSRect) dirtyRect

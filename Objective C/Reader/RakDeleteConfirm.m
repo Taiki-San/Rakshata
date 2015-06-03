@@ -50,7 +50,7 @@
 {
 	NSString * string = NSLocalizedString(_isTome ? @"DELETION-VOL-CONFIRM" : @"DELETION-CHAP-CONFIRM", nil);
 	
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 	if(contentText != nil)
 	{
 		[contentText setAlignment:NSCenterTextAlignment];
@@ -97,7 +97,7 @@
 	{
 		if([view class] == [RakText class])
 		{
-			[view setTextColor:[Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
+			[view setTextColor:[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 			break;
 		}
 	}
@@ -107,22 +107,22 @@
 
 - (NSColor *) popoverBorderColor
 {
-	return [Prefs getSystemColor: GET_COLOR_DANGER_POPOVER_BORDER :nil];
+	return [Prefs getSystemColor: COLOR_DANGER_POPOVER_BORDER :nil];
 }
 
 - (NSColor *) popoverArrowColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS:nil];
 }
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_BORDER_TABS:nil];
+	return [Prefs getSystemColor:COLOR_BORDER_TABS:nil];
 }
 
 - (NSColor *) backgroundColor
 {
-	return 	[Prefs getSystemColor:GET_COLOR_BACKGROUND_TABS:nil];
+	return 	[Prefs getSystemColor:COLOR_BACKGROUND_TABS:nil];
 }
 
 //Toolbox
@@ -170,9 +170,9 @@
 - (NSColor *) getFontColor : (uint) cellID
 {
 	if([self isSelectedForSegment:cellID])
-		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
 	else
-		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
 }
 
 @end
@@ -191,9 +191,9 @@
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
-		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
 	else
-		return [Prefs getSystemColor : GET_COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
 }
 
 @end

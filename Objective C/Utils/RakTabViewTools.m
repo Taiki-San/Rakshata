@@ -20,7 +20,7 @@
 	{
 		tabView = father;
 		
-		NSColor * textColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
+		NSColor * textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT : nil];
 		
 		head = [[RakText alloc] initWithText:frameRect :NSLocalizedString(@"AUTH-REQUIRED", nil) : textColor];
 		[head setFont:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]]];
@@ -66,7 +66,7 @@
 {
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	NSColor * textColor = [Prefs getSystemColor:GET_COLOR_CLICKABLE_TEXT : nil];
+	NSColor * textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT : nil];
 	
 	for(RakText * view in self.subviews)
 	{

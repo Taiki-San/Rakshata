@@ -68,17 +68,17 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:GET_COLOR_TAGITEM_FONT :nil];
+	return [Prefs getSystemColor:COLOR_TAGITEM_FONT :nil];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:GET_COLOR_TAGITEM_BACKGROUND :nil];
+	return [Prefs getSystemColor:COLOR_TAGITEM_BACKGROUND :nil];
 }
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:GET_COLOR_READER_BAR_FRONT : nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT : nil];
 }
 
 #pragma mark - UI Drawing
