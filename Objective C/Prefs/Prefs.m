@@ -16,6 +16,7 @@ Prefs * __strong prefsCache;
 static uint mainThread = TAB_SERIES;
 static uint stateTabsReader = STATE_READER_TAB_DEFAULT;
 static bool favoriteAutoDL = true;
+static byte activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
 
 enum
 {
@@ -703,6 +704,12 @@ enum
 			break;
 		}
 			
+		case PREFS_GET_ACTIVE_PREFS_PANEL:
+		{
+			* (byte *) outputContainer = activePrefsPanel;
+			break;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);
@@ -815,6 +822,13 @@ enum
 				NSLog(@"[%s]: Couldn't identify thread :%llu", __PRETTY_FUNCTION__, value);
 			}
 #endif
+			break;
+		}
+			
+		case PREFS_SET_ACTIVE_PREFS_PANEL:
+		{
+			ret_value = activePrefsPanel != value;
+			activePrefsPanel = value;
 			break;
 		}
 			
@@ -979,6 +993,13 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 				favoriteAutoDL = value;
 				break;
 			}
+			
+			case 3:
+			{
+				if(value >= PREFS_BUTTON_CODE_GENERAL && value <= PREFS_BUTTON_CODE_CUSTOM)
+					activePrefsPanel = value;
+				break;
+			}
 		}
 	}
 }
@@ -1005,7 +1026,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (NSString *) dumpPrefs
 {
-	return [NSString stringWithFormat:@"%d\n%d\n%d", mainThread, _themeCode, favoriteAutoDL];
+	return [NSString stringWithFormat:@"%d\n%d\n%d\n%d", mainThread, _themeCode, favoriteAutoDL, activePrefsPanel];
 }
 
 - (void) refreshFirstResponder

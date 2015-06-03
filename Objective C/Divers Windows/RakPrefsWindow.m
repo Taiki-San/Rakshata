@@ -37,14 +37,17 @@
 	
 	activeView = PREFS_BUTTON_CODE_UNUSED;
 	
+	byte currentFocus = PREFS_BUTTON_CODE_DEFAULT;
+	[Prefs getPref:PREFS_GET_ACTIVE_PREFS_PANEL :&currentFocus];
+	
 	header = [[RakPrefsButtons alloc] initWithFrame : NSMakeRect(0, 0, PREF_WINDOW_WIDTH, PREF_BUTTON_BAR_HEIGHT) :self];
 	if(header != nil)
 	{
-		[header selectElem:PREFS_BUTTON_CODE_DEFAULT];
+		[header selectElem:currentFocus];
 		[contentView addSubview:header];
 	}
 	else
-		[self focusChanged:PREFS_BUTTON_CODE_DEFAULT];
+		[self focusChanged:currentFocus];
 }
 
 - (Class) contentClass
