@@ -499,7 +499,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 	
 	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
-	if(ARE_CLASSES_DIFFERENT(projectName, [NSString class]))
+	if(projectName == nil || ARE_CLASSES_DIFFERENT(projectName, [NSString class]))
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: couldn't find name for ID %@ in %@", ID, bloc);
@@ -515,7 +515,6 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 #endif
 		goto end;
 	}
-
 	
 	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price");
 	if(paidContent != nil && ARE_CLASSES_DIFFERENT(paidContent, [NSNumber class]))
