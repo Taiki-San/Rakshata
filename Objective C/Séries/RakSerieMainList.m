@@ -172,7 +172,11 @@
 					break;
 				
 				_installed[pos] = newIsInstalled;
-				[self updateJumpTable];
+
+				uint mainThread;
+				[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
+				if(self.installOnlyMode || mainThread == TAB_READER)
+					[self updateJumpTable];
 				
 				if(!self.installOnlyMode)
 					break;
