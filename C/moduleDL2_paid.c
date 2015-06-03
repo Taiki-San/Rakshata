@@ -312,12 +312,11 @@ bool MDLPCheckAnythingPayable(DATA_LOADED ** data, int8_t ** status, uint * IDTo
 
 uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length)
 {
-    /*Optimisation possible: réduire la taille du tableau alloué*/
     uint * output = malloc((length +1) * sizeof(uint));
     if(output != NULL)
     {
-        uint i, posDansOut, pos;
-        for(i = posDansOut = 0; i < length; i++)
+        uint outputLength = 0;
+        for(uint i = 0, pos; i < length; i++)
         {
 			if(IDToPosition != NULL)
 				pos = IDToPosition[i];
@@ -325,9 +324,14 @@ uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToP
 				pos = i;
 			
             if(data[pos] != NULL && data[pos]->datas != NULL && data[pos]->datas->repo != NULL && data[pos]->datas->repo->type == TYPE_DEPOT_PAID && *status[pos] == MDL_CODE_DEFAULT)
-                output[posDansOut++] = pos;
+                output[outputLength++] = pos;
         }
-        output[posDansOut] = VALEUR_FIN_STRUCT;
+		
+		void * tmp = realloc(output, (outputLength + 1) * sizeof(uint));
+		if(tmp != NULL)
+			output = tmp;
+		
+        output[outputLength] = VALEUR_FIN_STRUCT;
     }
     return output;
 }
