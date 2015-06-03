@@ -48,10 +48,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[LENGTH_PROJECT_NAME];
+		wchar_t converted[LENGTH_PROJECT_NAME] = {0};
 		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_PROJECT_NAME - 1, 0);	converted[LENGTH_PROJECT_NAME - 1] = 0;
-		wstrncpy(output->projectName, LENGTH_PROJECT_NAME, converted);
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_PROJECT_NAME - 1, 0);
+		memcpy(&(output->projectName), converted, sizeof(converted));
 	}
 	
 	//Description
@@ -61,10 +61,12 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[LENGTH_DESCRIPTION];
+		wchar_t converted[LENGTH_DESCRIPTION] = {0};
 		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_DESCRIPTION - 1, 0);	converted[LENGTH_DESCRIPTION - 1] = 0;
-		wstrncpy(output->description, LENGTH_DESCRIPTION, converted);
+		memset(converted, 0, sizeof(converted));
+		
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_DESCRIPTION - 1, 0);
+		memcpy(&(output->description), converted, sizeof(converted));
 	}
 	
 	//Nom de l'auteur
@@ -74,10 +76,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[LENGTH_AUTHORS];
+		wchar_t converted[LENGTH_AUTHORS] = {0};
 		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_AUTHORS - 1, 0);	converted[LENGTH_AUTHORS - 1] = 0;
-		wstrncpy(output->authorName, LENGTH_AUTHORS, converted);
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_AUTHORS - 1, 0);
+		memcpy(&(output->authorName), converted, sizeof(converted));
 	}
 	
 	//Divers données
