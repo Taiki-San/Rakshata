@@ -808,6 +808,12 @@
 	return output;
 }
 
+#ifdef DEV_VERSION
+#define EMPTY_MESSAGE @"Error :("
+#else
+#define EMPTY_MESSAGE @""
+#endif
+
 - (NSString*) tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
 	NSString * output;
@@ -818,7 +824,7 @@
 	if(column == NSNotFound)
 	{
 		if(_detailColumns == nil || (column = [_detailColumns indexOfObject:tableColumn]) == NSNotFound)
-			return @"Error :(";
+			return EMPTY_MESSAGE;
 		else
 			isDetails = YES;
 	}
@@ -830,7 +836,7 @@
 		if(rowIndex != UINT_MAX && rowIndex / _nbCoupleColumn > _nbData / _nbCoupleColumn)	//Inconsistency
 		{
 			[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
-			return @"Error :(";
+			return EMPTY_MESSAGE;
 		}
 		else	//We're just on the last incomplete row
 		{
