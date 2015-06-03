@@ -48,9 +48,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[length + 1];
+		wchar_t converted[LENGTH_PROJECT_NAME];
 		
-		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_PROJECT_NAME - 1, 0);	converted[LENGTH_PROJECT_NAME - 1] = 0;
 		wstrncpy(output->projectName, LENGTH_PROJECT_NAME, converted);
 	}
 	
@@ -61,9 +61,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[length + 1];
+		wchar_t converted[LENGTH_DESCRIPTION];
 		
-		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_DESCRIPTION - 1, 0);	converted[LENGTH_DESCRIPTION - 1] = 0;
 		wstrncpy(output->description, LENGTH_DESCRIPTION, converted);
 	}
 	
@@ -74,9 +74,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	else
 	{
 		size_t length = strlen(buffer);
-		wchar_t converted[length + 1];
+		wchar_t converted[LENGTH_AUTHORS];
 		
-		length = utf8_to_wchar(buffer, length, converted, length + 1, 0);	converted[length] = 0;
+		length = utf8_to_wchar(buffer, length, converted, LENGTH_AUTHORS - 1, 0);	converted[LENGTH_AUTHORS - 1] = 0;
 		wstrncpy(output->authorName, LENGTH_AUTHORS, converted);
 	}
 	
