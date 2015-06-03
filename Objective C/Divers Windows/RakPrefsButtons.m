@@ -73,6 +73,8 @@ enum
 										 @{NSForegroundColorAttributeName : [delegate textColor],
 										   NSParagraphStyleAttributeName : paragraphStyle}];
 			
+			//The english version is cropped
+			[buttonFav setFrameSize:NSMakeSize(buttonFav.bounds.size.width + 2, buttonFav.bounds.size.height)];
 			[buttonFav setFrameOrigin:NSMakePoint(NSMaxX(buttonRepo.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
 			
 			[self addSubview:buttonFav];

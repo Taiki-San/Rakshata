@@ -32,9 +32,9 @@ enum
 
 @implementation RakPrefsFavoriteView
 
-- (instancetype) init
+- (instancetype) initWithFrame:(NSRect)frameRect
 {
-	self = [self initWithFrame:[self mainFrame]];
+	self = [super initWithFrame:NSMakeRect(frameRect.origin.x, frameRect.origin.y, WIDTH, HEIGHT)];
 	
 	if(self != nil)
 	{
@@ -82,11 +82,6 @@ enum
 }
 
 #pragma mark - Sizing & color
-
-- (NSRect) mainFrame
-{
-	return NSMakeRect(0, 0, WIDTH, HEIGHT);
-}
 
 - (NSPoint) headerOrigin
 {
