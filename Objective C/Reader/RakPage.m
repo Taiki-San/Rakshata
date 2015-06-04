@@ -783,7 +783,17 @@
 		}
 	}
 	else
+	{
 		MUTEX_UNLOCK(cacheMutex);
+
+#ifdef LEAVE_DISTRACTION_FREE_AT_END
+		//Trying to go to the next page from the last available page
+		if(goToNext && byChangingPage && self.distractionFree)
+		{
+			[self switchDistractionFree];
+		}
+#endif
+	}
 }
 
 - (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
@@ -1489,6 +1499,11 @@
 	if(pageController.selectedIndex == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
 	{
 		pageController.selectedIndex = [pageController.arrangedObjects count] - 2;
+		
+#ifdef LEAVE_DISTRACTION_FREE_AT_END
+		if(self.distractionFree)
+			[self switchDistractionFree];
+#endif
 	}
 }
 
