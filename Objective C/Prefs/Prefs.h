@@ -171,5 +171,3 @@ enum FONT_REQUEST {
 #include "prefsMagic.h"
 #import "PrefsUI.h"
 #import "RakPrefsRemindPopover.h"
-
-NSArray * loadCustomColor(const char * file);
