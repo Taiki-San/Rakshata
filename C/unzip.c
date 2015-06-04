@@ -156,7 +156,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
     if(!size)
     {
 		lengthPath = lengthInput + lengthOutput + 505;	//500 for currentWorkingDirectory + 2
-        path = malloc(lengthPath);
+        path = malloc(lengthPath + 1);
 
         uf = unzOpen(zipFileName);
 
@@ -184,7 +184,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
         uf = unzOpen2(NULL, &fileops);
     }
 
-	strncat(path, outputZip, lengthPath);
+	strncat(path, outputZip, lengthPath - strlen(path));
     if(size && !checkDirExist(path)) //On change le dossier courant
     {
         createPath(outputZip); //En cas d'échec, on réessaie de créer le dossier
