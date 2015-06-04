@@ -97,6 +97,9 @@ enum
 			
 		case THEME_CODE_LIGHT:
 			return [self getColorLightTheme : context];
+			
+		case THEME_CODE_CUSTOM:
+			return [self getCustomColorTheme : context];
 	}
 	return nil;
 }
@@ -428,6 +431,19 @@ enum
 	}
 	
 	return output;
+}
+
++ (NSColor *) getCustomColorTheme : (byte) context
+{
+	if(prefsCache == nil)
+		[self initCache];
+
+	NSArray * customColorSet = [prefsCache customColorArray];
+	
+	if(customColorSet || [customColorSet count] >= context)
+		return nil;
+	
+	return [customColorSet objectAtIndex:context];
 }
 
 + (NSString *) getFontName : (byte) context
@@ -958,6 +974,14 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		[self refreshFirstResponder];
 	}
 	return self;
+}
+
+- (NSArray *) customColorArray
+{
+	if(_customColor == nil)
+		_customColor = loadCustomColor(CUSTOM_COLOR_FILE);
+	
+	return _customColor;
 }
 
 - (void) updateContext : (NSString *) data

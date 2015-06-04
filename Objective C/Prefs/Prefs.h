@@ -132,6 +132,7 @@ enum FONT_REQUEST {
 	
 	RakMDLSize * prefsPosMDL;
 	
+	NSArray * _customColor;
 }
 
 @property uint themeCode;
@@ -171,4 +172,4 @@ enum FONT_REQUEST {
 #import "PrefsUI.h"
 #import "RakPrefsRemindPopover.h"
 
-NSColor * getCustomColor(byte context);
+NSArray * loadCustomColor(const char * file);
