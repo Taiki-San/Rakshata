@@ -15,7 +15,8 @@
 - (void) awakeFromNib
 {
 	loginPromptOpen = NO;
-	
+	_hasFocus = YES;
+
 	self.window.isMainWindow = YES;
 	[self.window setDelegate:self];
 	[self.window configure];
@@ -26,6 +27,8 @@
 		NSLog(@"Couldn't build view structure, basically, it's a _very_ early failure, we can't recover from that =/");
 		exit(EXIT_FAILURE);
 	}
+	
+	[[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
 	
 	pthread_cond_init(&loginLock, NULL);
 	pthread_mutex_init(&loginMutex, NULL);
@@ -153,7 +156,7 @@
 	return YES;
 }
 
-#pragma mark - Window delegate
+#pragma mark - Delegate work
 
 - (void) windowWillExitFullScreen:(NSNotification *)notification
 {
@@ -165,6 +168,24 @@
 - (void) windowDidExitFullScreen:(NSNotification *)notification
 {
 	((RakContentViewBack*) self.window.contentView).heightOffset = 0;
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
+{
+	return YES;
+}
+
+#pragma mark Focus management
+
+- (void) applicationDidBecomeActive:(NSNotification *)notification
+{
+	_hasFocus = YES;
+	[[NSUserNotificationCenter defaultUserNotificationCenter] removeAllDeliveredNotifications];
+}
+
+- (void) applicationDidResignActive:(NSNotification *)notification
+{
+	_hasFocus = NO;
 }
 
 #pragma mark - Menu interface

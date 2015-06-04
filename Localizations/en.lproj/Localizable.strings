@@ -29,6 +29,8 @@
 "MDL-DROP-PLACEHOLDER" = "Drop here to download";
 
 "MDL-FLUSH-INSTALLED" = "Remove processed items";
+"MDL-DLOVER-NOTIF-NAME" = "Download completed";
+"MDL-DLOVER-NOTIF-CONTENT" = "The download of your list has finished 😃";
 
 //Authentification controller
 "AUTH-REQUIRED" = "Login required";

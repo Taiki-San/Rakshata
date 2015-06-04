@@ -192,3 +192,18 @@ void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBat
 	if(tabMDL != nil)
 		[tabMDL proxyAddElement:data isTome:isTome element:element partOfBatch:partOfBatch];
 }
+
+void notifyDownloadOver()
+{
+	if(((RakAppDelegate *) [NSApp delegate]).hasFocus)
+		return;
+	
+	NSUserNotification *notification = [[NSUserNotification alloc] init];
+	if(notification != nil)
+	{
+		notification.title = NSLocalizedString(@"MDL-DLOVER-NOTIF-NAME", nil);
+		notification.informativeText = NSLocalizedString(@"MDL-DLOVER-NOTIF-CONTENT", nil);
+		
+		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+	}
+}

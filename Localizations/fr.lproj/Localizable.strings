@@ -29,6 +29,8 @@
 "MDL-DROP-PLACEHOLDER" = "Lâchez ici pour télécharger";
 
 "MDL-FLUSH-INSTALLED" = "Retirer les lignes installées";
+"MDL-DLOVER-NOTIF-NAME" = "Téléchargement terminé";
+"MDL-DLOVER-NOTIF-CONTENT" = "Le téléchargement de votre demande est désormais terminé 😃";
 
 //Authentification controller
 "AUTH-REQUIRED" = "Connexion requise";

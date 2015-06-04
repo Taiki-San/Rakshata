@@ -84,3 +84,4 @@ void updateRecentSeries();
 
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, int element);
 void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBatch);
+void notifyDownloadOver();

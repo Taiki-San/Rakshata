@@ -12,7 +12,7 @@
 
 @class RakAboutWindow;
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
+@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, NSUserNotificationCenterDelegate>
 {
 	Series * tabSerie;
 	CTSelec * tabCT;
@@ -29,6 +29,7 @@
 
 @property (weak) IBOutlet RakWindow *window;
 @property BOOL haveDistractionFree;
+@property BOOL hasFocus;
 
 - (RakContentView*) getContentView;
 

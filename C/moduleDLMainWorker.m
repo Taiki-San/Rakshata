@@ -145,6 +145,8 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 	pthread_cond_broadcast(&condResumeExecution);
 	pthread_mutex_trylock(&mutexLockMainThread);
 	MUTEX_UNLOCK(mutexLockMainThread);
+	
+	notifyDownloadOver();
 
 	quit_thread(0);
 }
