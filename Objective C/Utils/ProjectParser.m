@@ -321,9 +321,9 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 					}
 				}
 				
-				currentBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray array];
+				currentBurst = [NSMutableArray new];
 				if(pricesValid)
-					pricesInBurst = counter > 5 ? [NSMutableArray new] : [NSMutableArray array];
+					pricesInBurst = [NSMutableArray new];
 
 				repeatingDiff = diff[(pos != length - 1) ? pos + 1 : pos];	counter = 0;
 			}
