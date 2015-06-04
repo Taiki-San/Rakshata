@@ -165,7 +165,7 @@ enum
 
 - (NSColor *) headerTextColor
 {
-	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
 }
 
 #pragma mark - React to clicks

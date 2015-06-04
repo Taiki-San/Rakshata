@@ -45,7 +45,7 @@ enum
 		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:COLOR_INACTIVE : self]];
 		if(requestName != nil)		[self addSubview:requestName];
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_HIGHLIGHT : nil]];
+		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		[self initIcons];
@@ -152,7 +152,7 @@ enum
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
-	[statusText setTextColor:[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
+	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
 	
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;
@@ -180,10 +180,10 @@ enum
 
 - (void) setPositionsOfStuffs
 {
-	NSRect frame = _bounds, curFrame;
+	NSRect curFrame;
 	NSPoint newPoint;
 	
-	if(wasMultiLine != (frame.size.height > 30 && frame.size.width < 300))
+	if(wasMultiLine != (cachedSize.height > 30 && cachedSize.width < 300))
 	{
 		wasMultiLine = !wasMultiLine;
 		
@@ -194,19 +194,19 @@ enum
 	if (requestName != nil)
 	{
 		curFrame.size.height = wasMultiLine ? 34 : 17;
-		curFrame.size.width = frame.size.width - REQUEST_OFFSET_WIDTH;
+		curFrame.size.width = cachedSize.width - REQUEST_OFFSET_WIDTH;
 		
 		if(wasMultiLine)
 			curFrame.origin.y = Y_OFFSET_MULTILINE_TEXT;
 		else
-			curFrame.origin.y = frame.size.height / 2 - curFrame.size.height / 2;
+			curFrame.origin.y = cachedSize.height / 2 - curFrame.size.height / 2;
 		
 		curFrame.origin.x = 5;
 		
 		[requestName setFrame:curFrame];
 	}
 	
-	newPoint.x = frame.size.width - 3;
+	newPoint.x = cachedSize.width - 3;
 	
 	//Icon at extreme right
 	if (_remove != nil)
@@ -216,11 +216,11 @@ enum
 		if(wasMultiLine)
 		{
 			newPoint.y = Y_OFFSET_MULTILINE_BUTTON + _remove.frame.size.height;
-			newPoint.x = frame.size.width - curFrame.size.width - 6;
+			newPoint.x = cachedSize.width - curFrame.size.width - 6;
 		}
 		else
 		{
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.y = cachedSize.height / 2 - curFrame.size.height / 2;
 			newPoint.x -= 5 + curFrame.size.width;
 		}
 		
@@ -235,12 +235,12 @@ enum
 		if(wasMultiLine)
 		{
 			newPoint.y = Y_OFFSET_MULTILINE_BUTTON;
-			newPoint.x = frame.size.width - curFrame.size.width - 5;
+			newPoint.x = cachedSize.width - curFrame.size.width - 5;
 		}
 		else
 		{
 			newPoint.x -= 5 + curFrame.size.width;
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.y = cachedSize.height / 2 - curFrame.size.height / 2;
 		}
 		
 		
@@ -255,12 +255,12 @@ enum
 		if(wasMultiLine)
 			newPoint.y = Y_OFFSET_MULTILINE_BUTTON;
 		else
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.y = cachedSize.height / 2 - curFrame.size.height / 2;
 		
 		if(_read == nil)
 		{
 			if(wasMultiLine)
-				newPoint.x = frame.size.width - curFrame.size.width - 5;
+				newPoint.x = cachedSize.width - curFrame.size.width - 5;
 			else
 				newPoint.x -= 5 + curFrame.size.width;
 		}
@@ -270,7 +270,7 @@ enum
 	
 	if(DLprogress != nil)
 	{
-		curFrame = frame;
+		curFrame = (NSRect) {NSZeroPoint, cachedSize};
 		
 		curFrame.origin.x = [RakProgressBar getLeftBorder];
 		curFrame.size.width -= [RakProgressBar getLeftBorder] + [RakProgressBar getRightBorder];
@@ -287,15 +287,20 @@ enum
 		if(wasMultiLine)
 			newPoint.y = Y_OFFSET_MULTILINE_TEXT;
 		else
-			newPoint.y = frame.size.height / 2 - curFrame.size.height / 2;
+			newPoint.y = cachedSize.height / 2 - curFrame.size.height / 2;
 		
-		newPoint.x = (frame.size.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
+		newPoint.x = (cachedSize.width - 3) - (_remove != nil ? (5 + _remove.frame.size.width) : 0) - (5 + curFrame.size.width);
 		
 		if(requestName == nil || requestName.frame.size.width + requestName.frame.origin.x + 25 < newPoint.x)
 			[statusText setFrameOrigin:newPoint];
 		else if([statusText isHidden] == NO)
 			[statusText setHidden:YES];
 	}
+}
+
+- (void) setFrameSize : (NSSize) newSize
+{
+	[super setFrameSize:(cachedSize = newSize)];
 }
 
 - (void) frameChanged

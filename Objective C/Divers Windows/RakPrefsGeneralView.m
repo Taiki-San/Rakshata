@@ -132,7 +132,7 @@ enum
 
 - (NSColor *) titleColor
 {
-	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
 }
 
 - (NSColor *) textColor

@@ -28,6 +28,8 @@
 	uint _row;
 	DATA_LOADED ** todoList;
 	
+	NSSize cachedSize;
+	
 	CGFloat iconWidth;
 	int8_t previousStatus;
 }

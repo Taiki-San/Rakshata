@@ -24,7 +24,7 @@
 	if (projectName != nil)
 	{
 		[projectName setStringValue:getStringForWchar(projectData.projectName)];
-		[projectName setTextColor:[Prefs getSystemColor:COLOR_HIGHLIGHT:nil]];
+		[projectName setTextColor:[Prefs getSystemColor:COLOR_ACTIVE:nil]];
 		[self optimizeWidth : projectName];
 	}
 	
