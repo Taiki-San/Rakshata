@@ -198,7 +198,7 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[content reloadData];
 }

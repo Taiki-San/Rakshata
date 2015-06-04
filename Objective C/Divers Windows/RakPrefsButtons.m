@@ -36,6 +36,8 @@ enum
 	
 	if(self != nil)
 	{
+		[Prefs getCurrentTheme:self];
+		
 		responder = delegate;
 		
 		NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -90,6 +92,11 @@ enum
 	self.window.title = activeButton.attributedTitle.string;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
+}
+
 - (void) drawRect : (NSRect) dirtyRect
 {
 	[[self backgroundColor] setFill];
@@ -107,6 +114,14 @@ enum
 - (NSColor *) borderColor
 {
 	return [Prefs getSystemColor:COLOR_BORDER_PREFS_HEADER :nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Clic management

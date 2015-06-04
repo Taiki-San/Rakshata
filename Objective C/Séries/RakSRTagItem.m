@@ -145,6 +145,8 @@
 	
 	[self updateIcon];
 	[label setTextColor:[self getTextColor]];
+	
+	[self setNeedsDisplay:YES];
 }
 
 @end

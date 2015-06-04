@@ -20,7 +20,7 @@
 #define REPO_REC_NAME "repo"
 #define PROJECT_REC_NAME "projects"
 #define PROJECT_ROOT "project/"
-#define CUSTOM_COLOR_FILE "customTheme"
+#define CUSTOM_COLOR_FILE "theme/customTheme"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"

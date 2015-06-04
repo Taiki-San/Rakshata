@@ -296,11 +296,11 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if([object class] == [Prefs class])
-	{
-		backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED : nil];
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	}
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED : nil];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) mouseUp:(NSEvent *)theEvent

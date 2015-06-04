@@ -20,7 +20,10 @@
 	if (self != nil)
 	{
 		self.autoresizesSubviews = NO;
+
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		[Prefs getCurrentTheme:self];
+		
 		data = getCopyOfProjectData(project);
 		
 		[self setupButtons:&isTome];
@@ -98,8 +101,9 @@
 	
 	releaseCTData(data);
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[Prefs deRegisterForChanges:self];
 	[RakDBUpdate unRegister : self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Size management
@@ -147,6 +151,14 @@
 	[[Prefs getSystemColor:COLOR_BACKGROUND_CT_LIST :nil] setFill];
 	
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, dirtyRect.size.height - CT_READERMODE_HEIGHT_CT_BUTTON - CT_READERMODE_HEIGHT_BORDER_TABLEVIEW + 2));
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Buttons management

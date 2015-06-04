@@ -109,11 +109,10 @@ enum
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
-	
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	[scrollView setNeedsDisplay:YES];
 }
 
 #pragma mark - Switch code
@@ -438,11 +437,10 @@ enum
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	detail.textColor = [self detailTextColor];
-	
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	[self setNeedsDisplay:YES];
 }
 
 @end

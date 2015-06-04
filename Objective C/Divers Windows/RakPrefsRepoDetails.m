@@ -52,9 +52,15 @@ enum
 	{
 		_responder = responder;
 		[self updateContent:isRoot :repo : NO];
+		[Prefs getCurrentTheme:self];
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 - (NSRect) getFrame : (NSRect) parentFrame
@@ -534,6 +540,15 @@ enum
 	}
 	
 	[super mouseUp:theEvent];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
+	[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
 }
 
 @end

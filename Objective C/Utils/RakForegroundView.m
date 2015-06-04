@@ -141,10 +141,10 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-	{
-		[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
-		[self setNeedsDisplay:YES];
-	}
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
+	[self setNeedsDisplay:YES];
 }
 
 - (NSColor *) getBackgroundColor

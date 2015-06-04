@@ -27,12 +27,18 @@ enum
 	{
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
+		[Prefs getCurrentTheme:self];
 		
 		if([self setStringToSynopsis : getStringForWchar(synopsis)])
 			[self updateFrame : frame : NO];
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 - (void) updateSynopsis : (charType *) synopsis
@@ -162,7 +168,7 @@ enum
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(_synopsis != nil)
 		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
@@ -170,6 +176,7 @@ enum
 	if(_placeholder != nil)
 		[_placeholder setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
 	
+	[self setNeedsDisplay:YES];
 }
 
 - (BOOL) isFlipped	{	return YES;	}

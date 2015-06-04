@@ -32,9 +32,16 @@
 		_noAnimation = YES;
 		[self updateFocus:haveFocus ? TAB_SERIES : TAB_CT];
 		_noAnimation = NO;
+		
+		[Prefs getCurrentTheme:self];
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 - (void) initView
@@ -131,6 +138,14 @@
 		[backButton setHidden:_haveFocus];
 		[self addSubview:backButton];
 	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

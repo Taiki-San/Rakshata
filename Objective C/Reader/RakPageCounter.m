@@ -111,10 +111,11 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[self setTextColor:[self getFontColor]];
 	[self setBackgroundColor:[self getColorBackground]];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) drawBorder

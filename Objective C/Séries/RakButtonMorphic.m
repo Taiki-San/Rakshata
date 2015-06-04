@@ -76,7 +76,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	uint currentTheme = [Prefs getCurrentTheme : nil];
 	
@@ -87,6 +87,8 @@
 		self.image = image;
 		[self updateImages:_imageNames :currentTheme];
 	}
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Active Cell property

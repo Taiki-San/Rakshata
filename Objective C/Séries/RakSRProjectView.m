@@ -45,6 +45,8 @@ enum
 
 - (void) initContent
 {
+	[Prefs getCurrentTheme:self];
+	
 	NSImage * image = loadImageGrid(_project);
 	if(image != nil)
 	{
@@ -59,6 +61,7 @@ enum
 
 - (void) dealloc
 {
+	[Prefs deRegisterForChanges:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -124,6 +127,20 @@ enum
 - (NSColor *) backgroundColor
 {
 	return [Prefs getSystemColor : COLOR_BACKGROUND_GRID_FOCUS : nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	[self reloadColors];
+	[self setNeedsDisplay:YES];
+}
+
+- (void) reloadColors
+{
+	
 }
 
 #pragma mark - Property

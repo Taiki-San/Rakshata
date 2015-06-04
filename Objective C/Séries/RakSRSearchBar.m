@@ -247,6 +247,8 @@
 	
 	[self.cell setTextColor:[self getTextColor]];
 	[self updatePlaceholder : _currentPlaceholderState];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Logic behind auto-completion

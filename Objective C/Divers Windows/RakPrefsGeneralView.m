@@ -41,6 +41,8 @@ enum
 	
 	if(self != nil)
 	{
+		uint currentTheme = [Prefs getCurrentTheme:self];
+
 		//Theme change
 		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:_bounds :@[NSLocalizedString(@"PREFS-GENERAL-THEME-DARK", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-LIGHT", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-CUSTOM", nil)]];
 		
@@ -49,7 +51,10 @@ enum
 			[themeSwitch setEnabled:YES forSegment:0];
 			[themeSwitch setEnabled:YES forSegment:1];
 			
-			[themeSwitch setSelected:YES forSegment:[Prefs getCurrentTheme:nil] - 1];
+			if(checkFileExist(CUSTOM_COLOR_FILE))
+				[themeSwitch setEnabled:YES forSegment:2];
+			
+			[themeSwitch setSelected:YES forSegment:currentTheme - 1];
 			
 			[themeSwitch setFrameOrigin:NSMakePoint(BORDER, THEME_BASE_Y - themeSwitch.bounds.size.height / 2)];
 			
@@ -106,6 +111,12 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[Prefs deRegisterForChanges:self];
+}
+
 - (NSString *) emailString
 {
 	if(COMPTE_PRINCIPAL_MAIL != NULL)
@@ -127,6 +138,17 @@ enum
 - (NSColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	textTheme.textColor = [self titleColor];
+	email.textColor = [self textColor];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Backend
@@ -193,6 +215,12 @@ enum
 		case 1:
 		{
 			[Prefs setCurrentTheme:THEME_CODE_LIGHT];
+			break;
+		}
+			
+		case 2:
+		{
+			[Prefs setCurrentTheme:THEME_CODE_CUSTOM];
 			break;
 		}
 	}

@@ -440,7 +440,7 @@ enum
 
 	NSArray * customColorSet = [prefsCache customColorArray];
 	
-	if(customColorSet || [customColorSet count] >= context)
+	if(customColorSet == nil || [customColorSet count] <= context)
 		return nil;
 	
 	return [customColorSet objectAtIndex:context];

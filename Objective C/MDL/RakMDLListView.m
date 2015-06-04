@@ -149,7 +149,7 @@ enum
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
 	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
@@ -163,6 +163,7 @@ enum
 	[self initIcons];
 	[self updateContext];
 	[self setPositionsOfStuffs];
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Data update

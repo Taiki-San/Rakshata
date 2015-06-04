@@ -88,16 +88,12 @@ enum
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	title.textColor = [self textColor];
 	
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	
 	[self setNeedsDisplay:YES];
 }
-
-
 
 - (void) drawRect:(NSRect)dirtyRect
 {

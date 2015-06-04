@@ -81,10 +81,15 @@ enum
 		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 3;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :self].CGColor;
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 - (byte) getRDBSCodeForID
@@ -152,11 +157,6 @@ enum
 	}
 }
 
-- (NSColor *) textColor
-{
-	return [Prefs getSystemColor:COLOR_SURVOL :nil];
-}
-
 - (NSRect) getSearchFrame : (NSRect) frame
 {
 	frame.origin.y = frame.size.height - SR_SEARCH_FIELD_HEIGHT;
@@ -177,6 +177,26 @@ enum
 	frame.origin.y = 0;
 	
 	return frame;
+}
+
+#pragma mark - Color
+
+- (NSColor *) textColor
+{
+	return [Prefs getSystemColor:COLOR_SURVOL :nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
+	
+	if(freeText != nil)
+		freeText.textColor = [self textColor];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Responder

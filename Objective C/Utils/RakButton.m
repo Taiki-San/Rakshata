@@ -77,9 +77,11 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+	if(self.layer.backgroundColor != nil)
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+	
 	[self setNeedsDisplay];
 }
 
@@ -231,12 +233,12 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	if(_imageName == nil)	//text cell
+	if(textCell != nil)	//text cell
 	{
 		[self reloadFontColor];
-		[self.controlView setNeedsDisplay:YES];
+		textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
 	}
 	else					//img cell
 	{
@@ -250,6 +252,8 @@
 		
 		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
 	}
+
+	[_controlView setNeedsDisplay:YES];
 }
 
 #pragma mark - Utils

@@ -161,11 +161,10 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
-	
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	[scrollView setNeedsDisplay:YES];
 }
 
 #pragma mark - Repo update management

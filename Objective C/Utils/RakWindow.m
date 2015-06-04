@@ -186,10 +186,12 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	self.titleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
 	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	
+	[self.contentView setNeedsDisplay:YES];
 }
 
 @end

@@ -226,8 +226,9 @@
 	
 	[self setTextColor:[self getTextColor]];
 	[self defineBackgroundColor];
-	[self setNeedsDisplay:YES];
 	[self generateGradient];
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Background

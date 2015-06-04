@@ -182,6 +182,12 @@ enum	{	BORDER_BOTTOM	= 7	};
 
 #pragma mark - Color & Drawing
 
+- (void) reloadColors
+{
+	projectName.textColor = projectAuthor.textColor = [self getTextColor];
+	mainTag.textColor = [self getTagTextColor];
+}
+
 - (void) drawRect:(NSRect)dirtyRect
 {
 	if(_selected)

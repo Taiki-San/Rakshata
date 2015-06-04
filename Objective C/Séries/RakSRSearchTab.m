@@ -230,7 +230,7 @@ enum
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	placeholder.font = [self placeholderFont];
 	[placeholder sizeToFit];
@@ -239,6 +239,8 @@ enum
 	placeholder.textColor = [self placeholderTextColor];
 	self.layer.borderColor = [self getBorderColor].CGColor;
 	self.layer.backgroundColor = [self getBACKGROUNDColor].CGColor;
+	
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark Interactions

@@ -212,6 +212,22 @@ enum
 	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
 }
 
+- (void) reloadColors
+{
+	projectName.textColor = [self getTextColor];
+
+	NSColor * detailColor = [self getTagTextColor];
+
+	if(projectAuthor != nil)
+		projectAuthor.textColor = detailColor;
+	
+	if(tagProject != nil)
+		tagProject.textColor = detailColor;
+	
+	if(typeProject != nil)
+		typeProject.textColor = detailColor;
+}
+
 - (void) drawRect : (NSRect) dirtyRect
 {
 	if(_reason == SUGGESTION_REASON_TAG)

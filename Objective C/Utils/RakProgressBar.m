@@ -55,7 +55,7 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[_speedText setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
 	slotColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_SLOT : nil];

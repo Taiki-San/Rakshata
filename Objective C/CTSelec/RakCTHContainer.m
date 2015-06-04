@@ -255,13 +255,15 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(projectName != nil)
 		[projectName setTextColor:[self textColor]];
 	
 	if(authorName != nil)
 		[authorName setTextColor:[self textColor]];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (NSColor *) textColor

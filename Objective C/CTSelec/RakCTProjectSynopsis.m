@@ -20,6 +20,7 @@
 	{
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
+		[Prefs getCurrentTheme:self];
 		
 		_title = [[RakMenuText alloc] initWithText : _bounds : NSLocalizedString(@"CT-SYNOPSIS", nil)];
 		if(_title != nil)

@@ -275,12 +275,13 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
-		return;
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	normal		= [self getTextColor];
 	highlight	= [self getTextHighlightColor];
 	
 	[self updateTableElementsColor];
+	[_tableView setNeedsDisplay:YES];
 }
 
 - (void) updateTableElementsColor
@@ -290,7 +291,7 @@
 	NSView * rowView;
 	
 	uint lastClickedColumn = _tableView.lastClickedColumn / _nbElemPerCouple;
-	for(uint rowIndex = 0, column; rowIndex < _nbData; rowIndex++)
+	for(uint rowIndex = 0, column, max = [_tableView numberOfRows]; rowIndex < max; rowIndex++)
 	{
 		rowView = [_tableView rowViewAtRow:rowIndex makeIfNecessary:NO];
 		column = 0;

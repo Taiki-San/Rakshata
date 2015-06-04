@@ -146,7 +146,7 @@
 "PREFS-GENERAL-THEME-DARK" = "Dark theme";
 "PREFS-GENERAL-THEME-LIGHT" = "Light theme";
 "PREFS-GENERAL-THEME-CUSTOM" = "Custom theme";
-"PREFS-GENERAL-CHOOSE-THEME" = "Graphical theme : ";
+"PREFS-GENERAL-CHOOSE-THEME" = "Color theme : ";
 "PREFS-GENERAL-LOGGED-IN-ON-%s" = "You're logged in with the account %1$s";
 "PREFS-GENERAL-NOT-LOGGED-IN" = "You're not logged in";
 "PREFS-GENERAL-LOGOUT" = "Disconnect";
