@@ -11,6 +11,70 @@
  *********************************************************************************************/
 
 /*****************************************
+ **										**
+ **				  GENERAL				**
+ **										**
+ *****************************************/
+
+#define LAUNCH_CRASH_FILE "crashAtLaunch"
+
+void createCrashFile()
+{
+	if(checkFileExist(LAUNCH_CRASH_FILE))
+	{
+		NSAlert * alert = [[NSAlert alloc] init];
+		
+		if(alert != nil)
+		{
+			alert.alertStyle = NSCriticalAlertStyle;
+			alert.messageText = NSLocalizedString(@"CRASH-TITLE", nil);
+			
+			if(checkFileExist(CONTEXT_FILE) || checkFileExist(SETTINGS_FILE))
+			{
+				alert.informativeText = NSLocalizedString(@"CRASH-CONTENT", nil);
+				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-YES", nil)];
+				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-NUKE", nil)];
+				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-NO", nil)];
+				
+				NSModalResponse response = [alert runModal];
+				
+				if(response == -NSModalResponseStop)
+				{
+					remove(CONTEXT_FILE".crashed");
+					rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
+				}
+				else if(response == -NSModalResponseAbort)
+				{
+					remove(CONTEXT_FILE".crashed");
+					remove(SETTINGS_FILE".crashed");
+					rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
+					rename(SETTINGS_FILE, SETTINGS_FILE".crashed");
+					
+					removeFolder(IMAGE_CACHE_DIR);
+				}
+			}
+			else
+			{
+				alert.informativeText = NSLocalizedString(@"CRASH-CONTENT-TOTAL", nil);
+				[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+				
+				[alert runModal];
+			}
+		}
+	}
+	
+	FILE * file = fopen(LAUNCH_CRASH_FILE, "w+");
+	
+	if(file != NULL)
+		fclose(file);
+}
+
+void deleteCrashFile()
+{
+	remove(LAUNCH_CRASH_FILE);
+}
+
+/*****************************************
 **										**
 **				  PREFS					**
 **										**

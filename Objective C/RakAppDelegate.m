@@ -55,6 +55,8 @@
 	[tabMDL resetFrameSize:NO];
 	
 	[self.window makeKeyWindow];
+	
+	deleteCrashFile();
 }
 
 - (RakContentView*) getContentView

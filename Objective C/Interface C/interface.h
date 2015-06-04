@@ -26,6 +26,15 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 
 /*****************************************
  **										**
+ **				  GENERAL				**
+ **										**
+ *****************************************/
+
+void createCrashFile();
+void deleteCrashFile();
+
+/*****************************************
+ **										**
  **				  PREFS					**
  **										**
  *****************************************/

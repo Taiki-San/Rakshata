@@ -34,6 +34,8 @@ void cleanup()
 
 int main(int argc, const char *argv[])
 {
+	createCrashFile();
+	
 	//Initialisation
 	MUTEX_CREATE(DBRefreshMutex);
 	MUTEX_CREATE(networkMutex);

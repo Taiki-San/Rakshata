@@ -166,5 +166,13 @@
 "FOSS-USAGE" = "Rakshata use some open source technologies";
 "COPYRIGHT" = "© 2011-2015 Taiki. All rights reserved";
 
+//Crash Alert
+"CRASH-TITLE" = "Problems at startup";
+"CRASH-CONTENT" = "Rakshata is experiencing issues starting up...\nDo you want it to try disabling settings in order to solve the issue?\nPlease send us an email afterward so we can fix this issue for a future release.";
+"CRASH-CONTENT-TOTAL" = "Rakshata is experiencing issues starting up...\nIf those problems keep happening despite a reboot, you should try to reinstall it... We advise you to send us an email for help fixing the issue.\nPlease excuse the trouble";
+"CRASH-YES" = "Yes";
+"CRASH-NUKE" = "Full deletion";
+"CRASH-NO" = "No";
+
 //DEV COMS, shouldn't really end up in production
 "PREFS-UPDATE-UI" = "Update the UI";
