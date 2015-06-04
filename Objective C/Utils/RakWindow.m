@@ -32,7 +32,7 @@
 	self.titleTextShadow = self.inactiveTitleTextShadow = [[NSShadow alloc] init];
 	
 	self.titleTextColor = [Prefs getSystemColor:COLOR_SURVOL : self];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
 	
 	self.titleBarDrawingBlock = ^(BOOL drawsAsMainWindow, CGRect drawingRect, CGRectEdge edge, CGPathRef clippingPath)
 	{
@@ -188,8 +188,8 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.titleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	self.titleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
+	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
 	
 	[self.contentView setNeedsDisplay:YES];
 }

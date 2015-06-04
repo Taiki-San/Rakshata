@@ -36,7 +36,7 @@
 	foreground = [[RakForegroundView alloc] init : [(RakAppDelegate*)[NSApp delegate] getContentView] : self.view];
 	foreground.delegate = self;
 	
-	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : COLOR_ACTIVE : nil]];
+	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : COLOR_HIGHLIGHT : nil]];
 	[footerPlaceholder setAlignment:NSCenterTextAlignment];
 	[footerPlaceholder sizeToFit];
 	

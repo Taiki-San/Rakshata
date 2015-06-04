@@ -37,7 +37,7 @@ enum
 - (void) initColors
 {
 	colorIdle = [Prefs getSystemColor:COLOR_INACTIVE :nil];
-	colorActive = [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	colorActive = [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
 }
 
 #pragma mark - Drawing

@@ -154,9 +154,16 @@ enum
 		}
 			
 		case COLOR_ACTIVE:
-		case COLOR_TEXT_CT_SELECTOR_CLICKED:
 		case COLOR_FONT_BUTTON_CLICKED:
-		case COLOR_PROGRESSCIRCLE_PROGRESS:
+		case COLOR_PROGRESSLINE_PROGRESS:
+		{
+			output = [NSColor colorWithSRGBRed:136/255.0f green:172/255.0f blue:197/255.0f alpha:1.0];
+			break;
+		}
+			
+		case COLOR_HIGHLIGHT:
+		case COLOR_TEXT_CT_SELECTOR_CLICKED:
+		case COLOR_FONT_BUTTON_HIGHLIGHT:
 		{
 			output = [NSColor colorWithSRGBRed:159/255.0f green:202/255.0f blue:227/255.0f alpha:1.0];
 			break;

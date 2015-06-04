@@ -49,7 +49,7 @@
 			[self addSubview:_title];
 		}
 		
-		_placeholder = [[RakText alloc] initWithText: NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+		_placeholder = [[RakText alloc] initWithText: NSLocalizedString(_content.isTome ? @"CT-NO-VOLUME" : @"CT-NO-CHAPTER", nil) :[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
 		if(_placeholder != nil)
 		{
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS
@@ -234,7 +234,7 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	self.layer.backgroundColor = [self getBackgroundColor];
-	_placeholder.textColor = [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	_placeholder.textColor = [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
 	
 	[self setNeedsDisplay:YES];
 }

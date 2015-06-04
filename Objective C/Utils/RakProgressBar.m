@@ -36,7 +36,7 @@
 		[self addSubview:_speedText];	[self centerText];
 		
 		slotColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_SLOT : nil];
-		progressColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_PROGRESS : nil];
+		progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
 	}
 	
 	return self;
@@ -59,7 +59,7 @@
 	
 	[_speedText setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
 	slotColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_SLOT : nil];
-	progressColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_PROGRESS : nil];
+	progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
 	
 	[self setNeedsDisplay:YES];
 }

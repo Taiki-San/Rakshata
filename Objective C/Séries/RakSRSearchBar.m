@@ -180,7 +180,7 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
 }
 
 - (NSString *) placeholderMessage

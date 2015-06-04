@@ -45,7 +45,7 @@ enum
 		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:COLOR_INACTIVE : self]];
 		if(requestName != nil)		[self addSubview:requestName];
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_HIGHLIGHT : nil]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		[self initIcons];
@@ -152,7 +152,7 @@ enum
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
-	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+	[statusText setTextColor:[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
 	
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;

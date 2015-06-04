@@ -924,7 +924,7 @@
 
 - (NSColor *) getTextHighlightColor:(uint)column :(uint)row
 {
-	return [Prefs getSystemColor : COLOR_ACTIVE : nil];
+	return [Prefs getSystemColor : COLOR_HIGHLIGHT : nil];
 }
 
 #pragma mark - Smart reloading

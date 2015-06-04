@@ -84,7 +84,12 @@ enum
 - (void) wakeUp
 {
 	[coreView wakeUp];
+	
 	_needUpdateMainViews = YES;
+	
+	if(self.mainThread == TAB_SERIES)
+		[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+
 	[self updateDependingViews : YES];
 }
 

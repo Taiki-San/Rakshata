@@ -77,6 +77,7 @@
 		
 		storeSwitch.hasBorder = NO;
 		[storeSwitch setButtonType:NSOnOffButton];
+		[storeSwitch.cell setActiveAllowed:YES];
 		
 		[storeSwitch triggerBackground];
 #ifdef SEVERAL_VIEWS

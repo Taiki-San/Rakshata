@@ -220,7 +220,7 @@
 	{
 		[mainLabel setStringValue:NSLocalizedString(@"READER-JUMP-TO", nil)];
 		[mainLabel sizeToFit];
-		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
 	}
 	
 	if(gotoButtonContainer != nil)
@@ -281,7 +281,7 @@
 {
 	if(mainLabel != nil)
 	{
-		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
 		[mainLabel setNeedsDisplay:YES];
 	}
 	

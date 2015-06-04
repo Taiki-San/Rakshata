@@ -317,7 +317,7 @@ enum
 
 - (NSColor *) getSynopsisColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
 }
 
 - (NSColor *) interTagColor

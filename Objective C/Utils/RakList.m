@@ -259,7 +259,7 @@
 
 - (NSColor *) getTextHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT:nil];
 }
 
 - (NSColor *) getTextHighlightColor : (uint) column : (uint) row
@@ -742,7 +742,7 @@
 
 - (NSColor *) _dropHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT:nil];
 }
 
 - (void)setDropRow:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation

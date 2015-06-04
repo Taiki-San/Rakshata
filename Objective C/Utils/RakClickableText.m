@@ -84,7 +84,7 @@
 
 - (NSColor *) focusTextColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
 }
 
 @end
