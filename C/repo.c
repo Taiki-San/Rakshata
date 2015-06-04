@@ -57,7 +57,7 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 		char * encodedHash = getPathForRepo(data[i].data);
 		if(encodedHash == NULL)
 			continue;
-		snprintf(rootPath, sizeof(rootPath), "imageCache/%s", encodedHash);
+		snprintf(rootPath, sizeof(rootPath), IMAGE_CACHE_DIR"/%s", encodedHash);
 		createPath(rootPath);
 		free(encodedHash);
 

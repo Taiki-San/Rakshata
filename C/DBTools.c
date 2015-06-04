@@ -299,7 +299,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		if(encodedHash == NULL)
 			return NULL;
 		
-		length = MIN(snprintf(imagePath, sizeof(imagePath), "imageCache/%s/", encodedHash), sizeof(imagePath));
+		length = MIN(snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
 		createPath(imagePath);
 		free(encodedHash);
 	}

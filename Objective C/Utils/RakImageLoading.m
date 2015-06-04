@@ -19,7 +19,7 @@ NSImage * loadImageForRepo(BOOL isRoot, void* repo)
 	
 	if(repoPath != NULL)
 	{
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", repoPath]];
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@""IMAGE_CACHE_DIR"/%s/", repoPath]];
 		if(bundle != nil)
 			image = [bundle imageForResource:[NSString stringWithUTF8String:REPO_IMG_NAME]];
 		
@@ -38,7 +38,7 @@ void invalidateCacheForRepoID(uint64_t repoID)
 	char * repoPath = getPathForRepo(&fakeRepo);
 	if(repoPath != NULL)
 	{
-		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", repoPath]];
+		NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@""IMAGE_CACHE_DIR"/%s/", repoPath]];
 		if(bundle != nil)
 			flushBundleCache(bundle);
 		
@@ -56,7 +56,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 		
 		if(repoPath != NULL)
 		{
-			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@"imageCache/%s/", repoPath]];
+			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@""IMAGE_CACHE_DIR"/%s/", repoPath]];
 			if(bundle != nil)
 				image = [bundle imageForResource:[NSString stringWithFormat:@"%d_%s", project.projectID, suffix]];
 			

@@ -62,6 +62,7 @@ enum RDB_CODES
 #define RDBS_TYPE_UNUSED	5
 
 //Image cache suffixes
+#define IMAGE_CACHE_DIR 		"imageCache"
 #define PROJ_IMG_SUFFIX_SRGRID	"GRID"		//Thumbnails in grid mode in SR
 #define PROJ_IMG_SUFFIX_HEAD	"HEAD"		//CT Header when focus
 #define PROJ_IMG_SUFFIX_CT		"CT"		//CT miniature in the reduced CT tab (reader mode)

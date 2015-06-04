@@ -16,7 +16,7 @@
 
 + (void) saveContextPrefs : (NSString *) contextPrefs  series: (NSString *) contextSerie CT: (NSString *) contextCT reader: (NSString *) contextReader MDL: (NSString *) contextMDL
 {
-	FILE * output = fopen("context.dat.new", "w+");
+	FILE * output = fopen(CONTEXT_FILE, "w+");
 	
 	if(output == NULL)
 		return;
@@ -33,7 +33,7 @@
 		{
 			memoryError(2 * length + 1);
 			fclose(output);
-			remove("context.dat.new");
+			remove(CONTEXT_FILE".new");
 			return;
 		}
 		
@@ -48,13 +48,13 @@
 	}
 	
 	fclose(output);
-	remove("context.dat");
-	rename("context.dat.new", "context.dat");
+	remove(CONTEXT_FILE);
+	rename(CONTEXT_FILE".new", CONTEXT_FILE);
 }
 
 + (NSArray *) newContext
 {
-	NSString * fileContent = [NSString stringWithContentsOfFile:@"context.dat" encoding:NSASCIIStringEncoding error:NULL];
+	NSString * fileContent = [NSString stringWithContentsOfFile:@""CONTEXT_FILE"" encoding:NSASCIIStringEncoding error:NULL];
 	
 	if(fileContent == nil)
 		return nil;
