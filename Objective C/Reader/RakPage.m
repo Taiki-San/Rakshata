@@ -253,6 +253,14 @@
 					break;
 				}
 					
+				case 'f':
+				{
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+						[self.window toggleFullScreen:self];
+
+					break;
+				}
+					
 				case 'q':
 				{
 					[self prevChapter];
