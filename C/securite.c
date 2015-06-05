@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto/crypto.h"
+#pragma mark - DRM
 
 void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 {
@@ -412,6 +412,8 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int
     return output;
 }
 
+#pragma mark - Killswitch
+
 void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1])
 {
     if(!checkNetworkState(CONNEXION_OK))
@@ -492,6 +494,8 @@ void KSTriggered(REPO_DATA repo)
 		removeFolder(path);
 	}
 }
+
+#pragma mark - Generic utils
 
 uint getRandom()
 {

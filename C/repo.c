@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto.h"
-
 bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput)
 {
 	if(type == 0 || type > MAX_TYPE_DEPOT || repoURL == NULL || output == NULL || sizeOutput == NULL)

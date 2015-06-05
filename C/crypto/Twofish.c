@@ -34,8 +34,8 @@
 
 #include <stdint.h>
 
-typedef unsigned char u1byte;
 typedef uint32_t u4byte;
+typedef unsigned char u1byte;
 
 #define extract_byte(x,n)   ((u1byte)((x) >> (8 * n)))
 #define rotr(x,n) (((x)>>(n))|((x)<<(32-(n))))
@@ -45,15 +45,6 @@ typedef uint32_t u4byte;
 #define M_TABLE
 #define MK_TABLE
 #define ONE_STEP
-
-typedef struct
-{
-	u4byte l_key[40];
-	u4byte s_key[4];
-	u4byte mk_tab[4 * 256];
-	u4byte k_len;
-	
-} TwofishInstance;
 
 #if BYTE_ORDER == BIG_ENDIAN
 

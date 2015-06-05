@@ -10,7 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto.h"
 #include "unzip/miniunzip.h"
 #include "unzip/unz_memory.c"
 

@@ -46,7 +46,6 @@
 #endif
 
 #include "unzip.h"
-#include "../crypto/crypto.h"
 
 #define CASESENSITIVITY (0)
 #define WRITEBUFFERSIZE (8192)
@@ -190,7 +189,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
             generateRandomKey(passwordPageCrypted);
 			memcpy(key, passwordPageCrypted, sizeof(key));
 
-            TwofishSetKey(&pTwoF, (u4byte*) key, KEYBITS);
+            TwofishSetKey(&pTwoF, (uint32_t*) key, KEYBITS);
             serpent_set_key((uint8_t*) key, KEYLENGTH(KEYBITS), &pSer);
 
             do

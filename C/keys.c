@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto/crypto.h"
-
 #define MK_TOKEN "TyrionGetPoisond"
 #define MK_TOKEN_LENGTH 16
 #define MK_CHUNK (MK_TOKEN_LENGTH+SHA256_DIGEST_LENGTH)

@@ -3,7 +3,6 @@
 /* Adapted for TrueCrypt */
 /* Adapter for Rakshata	 */
 
-#include "crypto.h"
 #include <stdint.h>
 
 #include <memory.h>

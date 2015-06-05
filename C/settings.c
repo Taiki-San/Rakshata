@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "crypto.h"
-
 char *loadPrefFile()
 {
 	size_t filesize = getFileSize(SETTINGS_FILE);

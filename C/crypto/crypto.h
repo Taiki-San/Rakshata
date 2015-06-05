@@ -10,22 +10,19 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#ifndef uint32_t
-	#include <stdint.h>
-#endif
-
 #define KEYLENGTH(keybits) ((keybits)/8)
 #define RKLENGTH(keybits)  ((keybits)/8+28)
 #define NROUNDS(keybits)   ((keybits)/32+6)
 
-#define KEYBITS 256
-#define CRYPTO_BUFFER_SIZE 16
-
-#ifndef _WIN32
-    typedef uint32_t DWORD;
-#endif
-typedef uint32_t u4byte;
-typedef unsigned char BYTE;
+enum
+{
+	KEYBITS = 256,
+	CRYPTO_BUFFER_SIZE = 16,
+	SHA256_BLOCK_LENGTH = 64,
+	SHA256_DIGEST_LENGTH = 32,
+	WP_DIGEST_SIZE = 64,
+	PBKDF2_OUTPUT_LENGTH = 32
+};
 
 /*****************************************************
 **                                                  **
@@ -52,8 +49,9 @@ void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryp
 **                                                  **
 *****************************************************/
 
-typedef struct {
-	uint32_t	key[140];
+typedef struct
+{
+	uint32_t key[140];
 } SerpentInstance;
 
 void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks);
@@ -68,17 +66,17 @@ void serpent_decrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBl
 
 typedef struct
 {
-	u4byte l_key[40];
-	u4byte s_key[4];
-	u4byte mk_tab[4 * 256];
-	u4byte k_len;
+	uint32_t l_key[40];
+	uint32_t s_key[4];
+	uint32_t mk_tab[4 * 256];
+	uint32_t k_len;
 
 } TwofishInstance;
 
 //Truecrypt don't use the return value, so I guess it's fine to discard it
-u4byte * TwofishSetKey(TwofishInstance *instance, const u4byte in_key[], const u4byte key_len);
-void TwofishEncrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[]);
-void TwofishDecrypt(TwofishInstance *instance, const u4byte in_blk[4], u4byte out_blk[4]);
+uint32_t * TwofishSetKey(TwofishInstance *instance, const uint32_t in_key[], const uint32_t key_len);
+void TwofishEncrypt(TwofishInstance *instance, const uint32_t in_blk[4], uint32_t out_blk[]);
+void TwofishDecrypt(TwofishInstance *instance, const uint32_t in_blk[4], uint32_t out_blk[4]);
 
 /*****************************************************
 **                                                  **
@@ -108,7 +106,6 @@ void pbkdf2(uint8_t input[], uint8_t salt[], uint8_t output[]);
 int sha256(unsigned char* input, void* output);
 int sha256_legacy(const char input[], char output[2*SHA256_DIGEST_LENGTH+1]);
 void sha256_salted(const uint8_t *input, size_t inputLen, const uint8_t *salt, size_t saltlen, uint8_t *output);
-
 
 /*****************************************************
 **                                                  **

@@ -23,6 +23,7 @@
 #include "dbProperties.h"
 #include "prototypes.h"
 #include "structures.h"
+#include "crypto.h"
 #include "fonctions.h"
 #include "db.h"
 

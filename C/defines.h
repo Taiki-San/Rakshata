@@ -110,12 +110,6 @@ enum
 };
 #define NOMBRE_CLE_MAX_ACCEPTE 10
 
-/*Hash algorithms*/
-#define SHA256_BLOCK_LENGTH	64
-#define SHA256_DIGEST_LENGTH 32
-#define WP_DIGEST_SIZE	64
-#define PBKDF2_OUTPUT_LENGTH 32
-
 enum
 {
 	GMK_RETVAL_OK,

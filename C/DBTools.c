@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "crypto/crypto.h"
 #include "dbCache.h"
 
 #pragma mark - Refresh repos
