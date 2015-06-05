@@ -288,33 +288,37 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			URLImage = objectForKey(repo, JSON_REPO_SUB_IMAGE, @"image");
 			if(URLImage != nil)
 			{
-				if(ARE_CLASSES_DIFFERENT(URLImage, [NSString class]) || [URLImage length] == 0 || [URLImage length] >= REPO_URL_LENGTH - 1)
+				if(ARE_CLASSES_DIFFERENT(URLImage, [NSString class]) || [URLImage length] >= REPO_URL_LENGTH - 1)
 				{
 					failure++;
 					continue;
 				}
-				
-				hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
-				if(hash == nil || ARE_CLASSES_DIFFERENT(hash, [NSString class]) || [hash length] != LENGTH_HASH - 1)
+				else if([URLImage length] != 0)
 				{
-					failure++;
-					continue;
-				}
-
-				URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
-				if(URLImageRetina != nil && (ARE_CLASSES_DIFFERENT(URLImageRetina, [NSString class]) || [URLImageRetina length] == 0 || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
-				{
-					URLImageRetina = nil;
-				}
-				else
-				{
-					hashRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_HASH, @"hash_image_retina");
-					if(hashRetina == nil || ARE_CLASSES_DIFFERENT(hashRetina, [NSString class]) || [hashRetina length] != LENGTH_HASH - 1)
+					hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
+					if(hash == nil || ARE_CLASSES_DIFFERENT(hash, [NSString class]) || [hash length] != LENGTH_HASH - 1)
 					{
 						failure++;
 						continue;
 					}
+					
+					URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
+					if(URLImageRetina != nil && (ARE_CLASSES_DIFFERENT(URLImageRetina, [NSString class]) || [URLImageRetina length] == 0 || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
+					{
+						URLImageRetina = nil;
+					}
+					else
+					{
+						hashRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_HASH, @"hash_image_retina");
+						if(hashRetina == nil || ARE_CLASSES_DIFFERENT(hashRetina, [NSString class]) || [hashRetina length] != LENGTH_HASH - 1)
+						{
+							failure++;
+							continue;
+						}
+					}
 				}
+				else
+					URLImage = nil;
 			}
 			
 			*(outputExtra[pos].data) = parseSingleSubRepo(repo, parentID, localRepo, &error);
