@@ -166,7 +166,7 @@ typedef signed long long s64;
  * Whirlpool-specific definitions.
  */
 
-#define DIGESTBYTES 64
+#define DIGESTBYTES WP_DIGEST_SIZE
 #define DIGESTBITS  (8*DIGESTBYTES) /* 512 */
 
 #define WBLOCKBYTES 64

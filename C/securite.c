@@ -503,3 +503,30 @@ uint getRandom()
 	return arc4random();
 #endif
 }
+
+bool checkSignature(const char * input, const char * signature)
+{
+	char rsaKey [] = "-----BEGIN PUBLIC KEY-----\
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9myXNDcux7D0VSfKnCqR\
+Bf4HushytsvL8WDjHVP+Gt1OaLWJAQ+Aw4ctMIbx7gb/G2yqWCt+u9oPrTsm+e3P\
+8JRobaCRAnKdiNx8En2QEjXawubl2uH6ddQ4EvmfkanJjwcuRVZXaFwaAYn4n7r3\
+GnGMrW1sdYY299eBLdV2xKRFj1MVDJzIUJVFw0r0bNPtznb2XqZnQI+tjakxkD+t\
+1hkHtlC4u7g/LmNyucdHJjEapAPQNvpS93Qcon63ChTzgSISCiaBFqzyPxfQqB3q\
+2cW2CD6TUhQYx2umDK2YNGnlsnQcFK56hzEDWQSsecdcFABZcpSJriN91vOssE02\
+I+9HcUCbR+hLbU2pryRvzLPF27WQUbrvrrWijXtme742yJJhl4iyqGUpXhKKD+J4\
+B75ZZVfQYgWpcM570l486OjJuS3dDYoq3esymK/gjveFWWtP9fwctxCEimz7gVnm\
+6acVJKjuORuTZizLxARaJoDPOy9oYNzlz+y022fSUYE9nZ3E6WwLDZy7B+MOGe/g\
+c2lWpF/DnVV5toi6Z0+OE1+Yezt0gf1fQ7pB4Lj8Rs9A/SH/JzF6qfDzJuQU9TEF\
+pNUF4/g8WbLj030k6Jbkwg3sdqgRckmqlRIDJMtQQJ0OPFis8YkjGYTB9r2AEz+a\
+v5IeyU3Od1c7t9oUIDgldesCAwEAAQ==\
+-----END PUBLIC KEY-----";
+
+	//We crafted the expected hash
+	char hashedInput[2 * WP_DIGEST_SIZE + 1];
+	whirlpool((const byte *) input, strlen(input), hashedInput, true);
+
+#warning "Need to implement signature verification"
+
+	
+	return rsaKey[0] == 0;
+}

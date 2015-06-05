@@ -82,8 +82,10 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
 #define JSON_REPO_SUB_IMAGE_HASH	@"12"
 #define JSON_REPO_SUB_RETINA_HASH	@"13"
 #define JSON_REPO_SUB_MATURE		@"14"
-#define JSON_REPO_SUB_ACTIVE		@"16"
 #define JSON_REPO_ID				@"15"
+#define JSON_REPO_SUB_ACTIVE		@"16"
+#define JSON_REPO_SIGNATURE			@"17"
+#define JSON_REPO_EXPIRENCY			@"18"
 
 //.Rak file parser
 #define JSON_RAK_MIN_VERSION	@"0"

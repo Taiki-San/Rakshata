@@ -115,16 +115,22 @@ charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	return output;
 }
 
-#warning "Need to implement trust"
-bool validateTrust(NSString * input, bool localSource)
+bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL, bool localSource)
 {
-	if(!localSource)
+	if(localSource)
+		return ARE_CLASSES_DIFFERENT(input, [NSNumber class]) && [(NSNumber*) input boolValue];
+	
+	NSString * signature = objectForKey(input, JSON_REPO_SIGNATURE, nil);
+	if(signature == nil || ARE_CLASSES_DIFFERENT(signature, [NSString class]))
 		return false;
 	
-	if(ARE_CLASSES_DIFFERENT(input, [NSNumber class]))
+	NSString * expirency = objectForKey(input, JSON_REPO_EXPIRENCY, nil);
+	if(expirency == nil || ARE_CLASSES_DIFFERENT(expirency, [NSNumber class]) || [expirency doubleValue] < [[NSDate date] timeIntervalSince1970])
 		return false;
 	
-	return [(NSNumber*) input boolValue];
+	NSString * stringToHash = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
+	
+	return checkSignature([stringToHash cStringUsingEncoding:NSUTF8StringEncoding], [signature cStringUsingEncoding:NSASCIIStringEncoding]);
 }
 
 REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)
@@ -409,7 +415,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 		goto error;
 	
 	descriptions = parseDescriptions(array, &languages, &nbDescriptions);
-	trusted = validateTrust(objectForKey(parseData, JSON_REPO_TRUSTED, @"trusted"), localSource);	//Not required, so if it doesn't work, there is no big deal
+	trusted = validateTrust(objectForKey(parseData, JSON_REPO_TRUSTED, @"trusted"), type, URL, localSource);	//Not required, so if it doesn't work, there is no big deal
 	
 	array = objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository");
 	if(array != nil && ARE_CLASSES_DIFFERENT(array, [NSArray class]))
