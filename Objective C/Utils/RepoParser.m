@@ -53,14 +53,14 @@ charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		}
 		
 		description = objectForKey(line, JSON_REPO_DESCRIPTION, @"description");
-		if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]))
+		if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]) || [description length] == 0)
 		{
 			failure++;
 			continue;
 		}
 		
 		language = objectForKey(line, JSON_REPO_LANGUAGE, @"language");
-		if(language == nil || ARE_CLASSES_DIFFERENT(language, [NSString class]) || [language length] > REPO_LANGUAGE_LENGTH - 1)
+		if(language == nil || ARE_CLASSES_DIFFERENT(language, [NSString class]) || [language length] == 0 || [language length] > REPO_LANGUAGE_LENGTH - 1)
 		{
 			failure++;
 			continue;
@@ -121,7 +121,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 		return ARE_CLASSES_DIFFERENT(input, [NSNumber class]) && [(NSNumber*) input boolValue];
 	
 	NSString * signature = objectForKey(input, JSON_REPO_SIGNATURE, nil);
-	if(signature == nil || ARE_CLASSES_DIFFERENT(signature, [NSString class]))
+	if(signature == nil || ARE_CLASSES_DIFFERENT(signature, [NSString class]) || [signature length] == 0)
 		return false;
 	
 	NSString * expirency = objectForKey(input, JSON_REPO_EXPIRENCY, nil);
@@ -162,11 +162,11 @@ fail:	//We'll jump back here when it's starting to go wrong
 		goto fail;
 	
 	name = objectForKey(dict, JSON_REPO_NAME, @"repo_name");
-	if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] > REPO_NAME_LENGTH - 1)
+	if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0 || [name length] > REPO_NAME_LENGTH - 1)
 		goto fail;
 	
 	language = objectForKey(dict, JSON_REPO_LANGUAGE, @"language");
-	if(language == nil || ARE_CLASSES_DIFFERENT(language, [NSString class]) || [language length] > REPO_LANGUAGE_LENGTH - 1)
+	if(language == nil || ARE_CLASSES_DIFFERENT(language, [NSString class]) || [language length] == 0 || [language length] > REPO_LANGUAGE_LENGTH - 1)
 		goto fail;
 	
 	type = objectForKey(dict, JSON_REPO_TYPE, @"type");
@@ -174,11 +174,11 @@ fail:	//We'll jump back here when it's starting to go wrong
 		goto fail;
 	
 	URL = objectForKey(dict, JSON_REPO_URL, @"URL");
-	if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || [URL length] > REPO_URL_LENGTH - 1)
+	if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || [URL length] == 0 || [URL length] > REPO_URL_LENGTH - 1)
 		goto fail;
 	
 	website = objectForKey(dict, JSON_REPO_SUB_WEBSITE, @"website");
-	if(website == nil || ARE_CLASSES_DIFFERENT(website, [NSString class]) || [website length] > REPO_WEBSITE_LENGTH - 1)
+	if(website == nil || ARE_CLASSES_DIFFERENT(website, [NSString class]) || [website length] == 0 || [website length] > REPO_WEBSITE_LENGTH - 1)
 		goto fail;
 	
 	isMature = objectForKey(dict, JSON_REPO_SUB_MATURE, @"mature_content");
@@ -288,7 +288,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			URLImage = objectForKey(repo, JSON_REPO_SUB_IMAGE, @"image");
 			if(URLImage != nil)
 			{
-				if(ARE_CLASSES_DIFFERENT(URLImage, [NSString class]) || [URLImage length] >= REPO_URL_LENGTH - 1)
+				if(ARE_CLASSES_DIFFERENT(URLImage, [NSString class]) || [URLImage length] == 0 || [URLImage length] >= REPO_URL_LENGTH - 1)
 				{
 					failure++;
 					continue;
@@ -302,7 +302,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 				}
 
 				URLImageRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_IMAGE, @"imageRetina");
-				if(URLImageRetina != nil && (ARE_CLASSES_DIFFERENT(URLImageRetina, [NSString class]) || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
+				if(URLImageRetina != nil && (ARE_CLASSES_DIFFERENT(URLImageRetina, [NSString class]) || [URLImageRetina length] == 0 || [URLImageRetina length] >= REPO_URL_LENGTH - 1))
 				{
 					URLImageRetina = nil;
 				}
@@ -399,7 +399,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	
 	//Parse the shit out of this file
 	name = objectForKey(parseData, JSON_REPO_NAME, @"root_repo_name");
-	if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] >= REPO_NAME_LENGTH - 1)
+	if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0 || [name length] >= REPO_NAME_LENGTH - 1)
 		goto error;
 	
 	type = objectForKey(parseData, JSON_REPO_TYPE, @"type");
@@ -407,18 +407,18 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 		goto error;
 	
 	URL = objectForKey(parseData, JSON_REPO_URL, @"URL");
-	if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || [URL length] >= REPO_URL_LENGTH - 1)
+	if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || [URL length] == 0 || [URL length] >= REPO_URL_LENGTH - 1)
 		goto error;
 	
 	array = objectForKey(parseData, JSON_REPO_DESCRIPTION, @"description");
-	if(array == nil || ARE_CLASSES_DIFFERENT(array, [NSArray class]))
+	if(array == nil || ARE_CLASSES_DIFFERENT(array, [NSArray class]) || [array count] == 0)
 		goto error;
 	
 	descriptions = parseDescriptions(array, &languages, &nbDescriptions);
 	trusted = validateTrust(objectForKey(parseData, JSON_REPO_TRUSTED, @"trusted"), type, URL, localSource);	//Not required, so if it doesn't work, there is no big deal
 	
 	array = objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository");
-	if(array != nil && ARE_CLASSES_DIFFERENT(array, [NSArray class]))
+	if(array != nil && (ARE_CLASSES_DIFFERENT(array, [NSArray class]) || [array count] == 0))
 		goto error;
 	
 	//Okay, the root parsing is over, the sub-repo parsing is performed by an other routine

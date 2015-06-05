@@ -499,7 +499,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 	
 	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
-	if(projectName == nil || ARE_CLASSES_DIFFERENT(projectName, [NSString class]))
+	if(projectName == nil || ARE_CLASSES_DIFFERENT(projectName, [NSString class]) || [projectName length] == 0)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: couldn't find name for ID %@ in %@", ID, bloc);
@@ -545,10 +545,10 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 	
 	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description");
-	if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]))	description = nil;
+	if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]) || [description length] == 0)	description = nil;
 	
 	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author");
-	if(authors == nil || ARE_CLASSES_DIFFERENT(authors, [NSString class]))
+	if(authors == nil || ARE_CLASSES_DIFFERENT(authors, [NSString class]) || [authors length] == 0)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: no author for project of ID %@ (%@) in %@", ID, projectName, bloc);

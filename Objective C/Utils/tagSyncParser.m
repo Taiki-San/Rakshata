@@ -72,7 +72,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 			continue;
 		
 		NSString * name = objectForKey(currentTag, JSON_TAG_NAME, @"name");
-		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]))
+		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0)
 			continue;
 		
 		//Data sanitized, copy them
@@ -113,7 +113,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 			continue;
 		
 		NSString * name = objectForKey(currentCat, JSON_TAG_NAME, @"name");
-		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]))
+		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0)
 			continue;
 		
 		NSArray * tagsOfCat = objectForKey(currentCat, JSON_TAG_TAGS, @"tags");
