@@ -32,23 +32,33 @@ void createCrashFile()
 			if(checkFileExist(CONTEXT_FILE) || checkFileExist(SETTINGS_FILE))
 			{
 				alert.informativeText = NSLocalizedString(@"CRASH-CONTENT", nil);
-				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-YES", nil)];
+				[alert addButtonWithTitle:NSLocalizedString(@"YES", nil)];
 				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-NUKE", nil)];
-				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-NO", nil)];
+				[alert addButtonWithTitle:NSLocalizedString(@"NO", nil)];
 				
 				NSModalResponse response = [alert runModal];
 				
-				if(response == -NSModalResponseStop)
+				//Only remove context file
+				if(response == -NSModalResponseStop && checkFileExist(CONTEXT_FILE))
 				{
 					remove(CONTEXT_FILE".crashed");
 					rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
 				}
+				
+				//Deeper flush, remove context but also settings
 				else if(response == -NSModalResponseAbort)
 				{
-					remove(CONTEXT_FILE".crashed");
-					remove(SETTINGS_FILE".crashed");
-					rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
-					rename(SETTINGS_FILE, SETTINGS_FILE".crashed");
+					if(checkFileExist(CONTEXT_FILE))
+					{
+						remove(CONTEXT_FILE".crashed");
+						rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
+					}
+					
+					if(checkFileExist(SETTINGS_FILE))
+					{
+						remove(SETTINGS_FILE".crashed");
+						rename(SETTINGS_FILE, SETTINGS_FILE".crashed");
+					}
 					
 					removeFolder(IMAGE_CACHE_DIR);
 				}
@@ -72,6 +82,26 @@ void createCrashFile()
 void deleteCrashFile()
 {
 	remove(LAUNCH_CRASH_FILE);
+	
+	if(checkFileExist(CONTEXT_FILE".crashed") || checkFileExist(SETTINGS_FILE".crashed"))
+	{
+		NSAlert * alert = [[NSAlert alloc] init];
+		
+		if(alert != nil)
+		{
+			alert.alertStyle = NSInformationalAlertStyle;
+			alert.messageText = NSLocalizedString(@"CRASH-RECOVERED-TITLE", nil);
+			
+			alert.informativeText = NSLocalizedString(@"CRASH-RECOVERED-CONTENT", nil);
+			[alert addButtonWithTitle:NSLocalizedString(@"YES", nil)];
+			[alert addButtonWithTitle:NSLocalizedString(@"NO", nil)];
+			
+			if([alert runModal] == -NSModalResponseStop)
+			{
+#warning "Report the .crashed"
+			}
+		}
+	}
 }
 
 /*****************************************

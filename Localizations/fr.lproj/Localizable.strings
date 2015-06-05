@@ -168,11 +168,13 @@
 
 //Crash Alert
 "CRASH-TITLE" = "Problèmes de démarrage";
-"CRASH-CONTENT" = "Rakshata semble avoir des difficultés de démarrage, souhaitez vous que Rakshata désactive des préférences afin de résoudre le problème?\nMerci de transmettre context.dat.crashed à contact@rakshata.com";
+"CRASH-CONTENT" = "Rakshata semble recontrer des difficultés à démarrer, souhaitez vous que Rakshata désactive des préférences afin de résoudre le problème?\nMerci de transmettre context.dat.crashed à contact@rakshata.com";
 "CRASH-CONTENT-TOTAL" = "Rakshata rencontre des problèmes de démarrage. Si cela continu de ce produire après un redémarrage, nous vous conseillons de nous envoyer un mail et de réinstaller Rakshata.\nVeuillez nous excuser de la gêne occasionnée";
-"CRASH-YES" = "Oui";
 "CRASH-NUKE" = "Nettoyage complet";
-"CRASH-NO" = "Non";
+
+"CRASH-RECOVERED-TITLE" = "Correction du problème";
+"CRASH-RECOVERED-CONTENT" = "Rakshata semble avoir récupéré d'un problème, peut-il nous envoyer le cadre dans lequel l'erreur se produisait afin de la corriger? (c'est rapide et anonymisé)\nMerci!";
+
 
 //DEV COMS, shouldn't really end up in production
 "PREFS-UPDATE-UI" = "MàJ de l'UI";

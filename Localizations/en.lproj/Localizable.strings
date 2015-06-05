@@ -170,9 +170,10 @@
 "CRASH-TITLE" = "Problems at startup";
 "CRASH-CONTENT" = "Rakshata is experiencing issues starting up...\nDo you want it to try disabling settings in order to solve the issue?\nPlease send us an email afterward so we can fix this issue for a future release.";
 "CRASH-CONTENT-TOTAL" = "Rakshata is experiencing issues starting up...\nIf those problems keep happening despite a reboot, you should try to reinstall it... We advise you to send us an email for help fixing the issue.\nPlease excuse the trouble";
-"CRASH-YES" = "Yes";
 "CRASH-NUKE" = "Full deletion";
-"CRASH-NO" = "No";
+
+"CRASH-RECOVERED-TITLE" = "Crash recovery";
+"CRASH-RECOVERED-CONTENT" = "Rakshata recovered from a crash, do you allow it to send us the context so we can work on fixing the issue?\nThanks!";
 
 //DEV COMS, shouldn't really end up in production
 "PREFS-UPDATE-UI" = "Update the UI";
