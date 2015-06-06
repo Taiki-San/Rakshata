@@ -168,12 +168,12 @@
 
 //Crash Alert
 "CRASH-TITLE" = "Problèmes de démarrage";
-"CRASH-CONTENT" = "Rakshata semble recontrer des difficultés à démarrer, souhaitez vous que Rakshata désactive des préférences afin de résoudre le problème?\nMerci de transmettre context.dat.crashed à contact@rakshata.com";
-"CRASH-CONTENT-TOTAL" = "Rakshata rencontre des problèmes de démarrage. Si cela continu de ce produire après un redémarrage, nous vous conseillons de nous envoyer un mail et de réinstaller Rakshata.\nVeuillez nous excuser de la gêne occasionnée";
+"CRASH-CONTENT" = "Rakshata semble recontrer des difficultés à démarrer, souhaitez vous que Rakshata désactive des préférences afin de résoudre le problème?";
+"CRASH-CONTENT-TOTAL" = "Rakshata rencontre des problèmes de démarrage.\nSi cela continue de se produire après un redémarrage, nous vous conseillons de nous envoyer un mail à contact@rakshata.com et de réinstaller Rakshata.\nVeuillez nous excuser de la gêne occasionnée";
 "CRASH-NUKE" = "Nettoyage complet";
 
 "CRASH-RECOVERED-TITLE" = "Correction du problème";
-"CRASH-RECOVERED-CONTENT" = "Rakshata semble avoir récupéré d'un problème, peut-il nous envoyer le cadre dans lequel l'erreur se produisait afin de la corriger? (c'est rapide et anonymisé)\nMerci!";
+"CRASH-RECOVERED-CONTENT" = "Rakshata semble avoir récupéré d'un problème, peut-il nous envoyer le cadre dans lequel l'erreur se produisait afin de la corriger?\nC'est rapide, anonymisé et vous n'avez rien à faire, merci!";
 
 
 //DEV COMS, shouldn't really end up in production

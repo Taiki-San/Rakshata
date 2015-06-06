@@ -79,6 +79,60 @@ void createCrashFile()
 		fclose(file);
 }
 
+void sendCrashedFilesHome()
+{
+	const byte nbEntries = 2;
+	char * filename[] = {CONTEXT_FILE".crashed", SETTINGS_FILE".crashed"};
+	char * argumentName[] = {"context", "settings"};
+	
+	char * output = NULL;
+	size_t outputLength = 150, currentPos = 0;
+	
+	for(uint i = 0; i < nbEntries; i++)
+	{
+		if(checkFileExist(filename[i]))
+		{
+			size_t fileSize = getFileSize(filename[i]);
+			byte dataField[fileSize];
+			
+			FILE * file = fopen(filename[i], "rb");
+			if(file != NULL)
+			{
+				fileSize = fread(dataField, 1, fileSize, file);
+				fclose(file);
+				
+				char encodedData[2 * fileSize + 1];
+				decToHex(dataField, fileSize, encodedData);
+				
+				outputLength += 2 * fileSize + strlen(argumentName[i]) + 2;
+				void * tmp = realloc(output, outputLength * sizeof(char));
+				if(tmp != NULL)
+				{
+					output = tmp;
+					currentPos += snprintf(&(output[currentPos]), 2 * fileSize + 150, "%s%s=%s", currentPos != 0 ? "&" : "", argumentName[i], encodedData);
+				}
+				
+				fclose(file);
+			}
+		}
+	}
+	
+	if(output != NULL)
+	{
+		char * bufferOut = NULL;
+		size_t bufferLengthOut;
+		
+		download_mem(SERVEUR_URL"/crashRecovery.php", output, &bufferOut, &bufferLengthOut, true);
+		
+		if(bufferOut != NULL)
+			free(bufferOut);
+		
+		free(output);
+		
+		for(uint i = 0; i < nbEntries; remove(filename[i++]));
+	}
+}
+
 void deleteCrashFile()
 {
 	remove(LAUNCH_CRASH_FILE);
@@ -99,60 +153,7 @@ void deleteCrashFile()
 			if([alert runModal] == -NSModalResponseStop)
 			{
 				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-					const byte nbEntries = 2;
-					char * filename[] = {CONTEXT_FILE".crashed", SETTINGS_FILE".crashed"};
-					char * argumentName[] = {"context", "settings"};
-					
-					char * output = NULL;
-					size_t outputLength = 150;
-					
-					for(uint i = 0; i < nbEntries; i++)
-					{
-						if(checkFileExist(filename[i]))
-						{
-							size_t fileSize = getFileSize(filename[i]);
-							byte dataField[fileSize];
-							
-							FILE * file = fopen(filename[i], "rb");
-							if(file != NULL)
-							{
-								fileSize = fread(dataField, 1, fileSize, file);
-								fclose(file);
-								
-								size_t encodedLength;
-								char * encodedData = base64_encode(dataField, fileSize, &encodedLength);
-								
-								if(encodedData != NULL)
-								{
-									outputLength += encodedLength + strlen(argumentName[i]) + 2;
-									
-									void * tmp = realloc(output, outputLength * sizeof(char));
-									if(tmp != NULL)
-									{
-										output = tmp;
-										snprintf(output, encodedLength + 150, "%s=%s%c", argumentName[i], encodedData, i != nbEntries - 1 ? '&' : '\0');
-									}
-									
-									free(encodedData);
-								}
-								
-								fclose(file);
-							}
-						}
-					}
-
-					if(output != NULL)
-					{
-						char * bufferOut = NULL;
-						size_t bufferLengthOut;
-						
-						download_mem(SERVEUR_URL"/crashRecovery.php", output, &bufferOut, &bufferLengthOut, true);
-						
-						if(bufferOut != NULL)
-							free(bufferOut);
-						
-						free(output);
-					}
+					sendCrashedFilesHome();
 				});
 			}
 		}

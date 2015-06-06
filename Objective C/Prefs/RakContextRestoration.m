@@ -16,7 +16,7 @@
 
 + (void) saveContextPrefs : (NSString *) contextPrefs  series: (NSString *) contextSerie CT: (NSString *) contextCT reader: (NSString *) contextReader MDL: (NSString *) contextMDL
 {
-	FILE * output = fopen(CONTEXT_FILE, "w+");
+	FILE * output = fopen(CONTEXT_FILE".new", "w+");
 	
 	if(output == NULL)
 		return;
