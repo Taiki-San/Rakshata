@@ -322,14 +322,11 @@ void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 		if(repo != NULL)
 		{
 			//We update the project cache with the new data
-			PROJECT_DATA empty = getEmptyProject();
 			ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 
 			for(uint posList = oldEnd; posList < localLength; posList++)
 			{
-				empty.repo = repo[posList];
-				
-				newIcon = updateProjectsFromRepo(&empty, 0, 0, false);
+				newIcon = refreshRepoHelper(repo[posList], false);
 				
 				if(newIcon != NULL)
 				{

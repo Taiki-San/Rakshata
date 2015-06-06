@@ -144,7 +144,7 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 	}
 	
 	//We set the repoID of our new roots
-	if(baseNewRoot > 0)
+	if(baseNewRoot > 0 && baseNewRoot != newLengthRepo)
 	{
 		//We get our used ID
 		uint usedID[baseNewRoot];
