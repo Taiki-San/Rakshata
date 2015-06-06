@@ -531,7 +531,7 @@
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
-		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			[self checkIfNewElements];
 		});
 	}
@@ -856,7 +856,7 @@
 	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
-		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			[self checkIfNewElements];
 		});
 	}
@@ -906,7 +906,7 @@
 	}
 	
 	uint cacheCode = ++cacheSession;
-	dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[self buildCache:@(cacheCode)];
 	});
 }
@@ -1289,7 +1289,7 @@
 	if(validFound != NB_ELEM_MAX_IN_CACHE && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 	{
 		uint cacheCode = ++cacheSession;
-		dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			[self buildCache:@(cacheCode)];
 		});
 	}
@@ -1397,7 +1397,7 @@
 		if(!self.initWithNoContent && !_flushingCache && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 		{
 			uint cacheCode = ++cacheSession;
-			dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 				[self buildCache:@(cacheCode)];
 			});
 		}
