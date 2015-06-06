@@ -296,7 +296,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 				else if([URLImage length] != 0)
 				{
 					hash = objectForKey(repo, JSON_REPO_SUB_IMAGE_HASH, @"hash_image");
-					if(hash == nil || ARE_CLASSES_DIFFERENT(hash, [NSString class]) || [hash length] != LENGTH_HASH - 1)
+					if(hash == nil || ARE_CLASSES_DIFFERENT(hash, [NSString class]) || [hash length] != LENGTH_CRC - 1)
 					{
 						failure++;
 						continue;
@@ -310,7 +310,7 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 					else
 					{
 						hashRetina = objectForKey(repo, JSON_REPO_SUB_RETINA_HASH, @"hash_image_retina");
-						if(hashRetina == nil || ARE_CLASSES_DIFFERENT(hashRetina, [NSString class]) || [hashRetina length] != LENGTH_HASH - 1)
+						if(hashRetina == nil || ARE_CLASSES_DIFFERENT(hashRetina, [NSString class]) || [hashRetina length] != LENGTH_CRC - 1)
 						{
 							failure++;
 							continue;
@@ -335,12 +335,12 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			if(URLImage != nil)
 			{
 				strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
+				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
 				
 				if(URLImageRetina != nil)
 				{
 					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-					strncpy(outputExtra[pos].hashImageRetina, [hashRetina cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
+					strncpy(outputExtra[pos].hashImageRetina, [hashRetina cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
 					outputExtra[pos].haveRetina = true;
 				}
 				else

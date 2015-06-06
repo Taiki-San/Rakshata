@@ -41,14 +41,15 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 	ICONS_UPDATE * begin = NULL, * current, * new;
 	REPO_DATA_EXTRA * data = (void *) root->subRepo;
 	uint nbSubRepo = root->nombreSubrepo;
-	char rootPath[64], imagePath[256], crcHash[LENGTH_HASH+1];
+	char rootPath[64], imagePath[256], crcHash[LENGTH_CRC];
 	
 	if(nbSubRepo == 0)
 		return NULL;
 	
 	for(uint i = 0; i < nbSubRepo; i++)
 	{
-		if(!data[i].data->active)
+		//Check if there is any data
+		if(!data[i].data->active || !data[i].URLImage[0])
 			continue;
 		
 		//We create the file path
@@ -59,14 +60,10 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 		createPath(rootPath);
 		free(encodedHash);
 
-		//Check if there is any data
-		if(!data[i].URLImage[0])
-			continue;
-
 		snprintf(imagePath, sizeof(imagePath), "%s/"REPO_IMG_NAME".png", rootPath);
-		snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
+		snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(imagePath));
 		
-		if(strncmp(crcHash, data[i].hashImage, LENGTH_HASH))
+		if(!checkFileExist(imagePath) || strncmp(crcHash, data[i].hashImage, LENGTH_CRC))
 		{
 			new = calloc(1, sizeof(ICONS_UPDATE));
 			if(new == NULL)
@@ -95,15 +92,15 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 		{
 			//We check for update
 			snprintf(imagePath, sizeof(imagePath), "%s/"REPO_IMG_NAME"@2x.png", rootPath);
-			snprintf(crcHash, sizeof(crcHash), "%x", crc32File(imagePath));
+			snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(imagePath));
 			
-			if(strncmp(crcHash, data[i].hashImageRetina, LENGTH_HASH))
+			if(!checkFileExist(imagePath) || strncmp(crcHash, data[i].hashImageRetina, LENGTH_CRC))
 			{
 				ICONS_UPDATE * retina = calloc(1, sizeof(ICONS_UPDATE));
 				if(retina != NULL)
 				{
 					//Copy the data
-					retina->URL = strdup(data[i].URLImage);
+					retina->URL = strdup(data[i].URLImageRetina);
 					retina->filename = strdup(imagePath);
 					
 					if(retina->URL == NULL || retina->filename == NULL)

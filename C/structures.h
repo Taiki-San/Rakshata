@@ -149,8 +149,8 @@ typedef struct repository_data_extra
 	char URLImage[REPO_URL_LENGTH];
 	char URLImageRetina[REPO_URL_LENGTH];
 	
-	char hashImage[LENGTH_HASH];
-	char hashImageRetina[LENGTH_HASH];
+	char hashImage[LENGTH_CRC];
+	char hashImageRetina[LENGTH_CRC];
 	
 	bool haveRetina;
 	
@@ -312,7 +312,7 @@ typedef struct dataProjectWithExtra
 	
 	//2 x 64b
 	bool haveImages[NB_IMAGES];
-	char hashesImages[NB_IMAGES][LENGTH_HASH];
+	char hashesImages[NB_IMAGES][LENGTH_CRC];
 	char * URLImages[NB_IMAGES];
 	
 } PROJECT_DATA_EXTRA;

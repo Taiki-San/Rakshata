@@ -35,7 +35,7 @@ enum
 #define LENGTH_AUTHORS		51
 #define LENGTH_URL			256
 #define NB_IMAGES			8
-#define	LENGTH_HASH			9
+#define	LENGTH_CRC			9
 
 #define LONGUEUR_COURT 10
 #define LONGUEUR_SITE 100

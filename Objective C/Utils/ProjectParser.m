@@ -679,7 +679,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 				
 				if(URLCopy != NULL)
 				{
-					strncpy((void*) &(output.hashesImages[i]), [CRC cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_HASH);
+					strncpy((void*) &(output.hashesImages[i]), [CRC cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
 					output.URLImages[i] = URLCopy;
 					output.haveImages[i] = true;
 				}

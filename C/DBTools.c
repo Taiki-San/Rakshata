@@ -359,7 +359,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 				continue;
 			}
 			
-			strncpy(current->crc32, project[pos].hashesImages[i], LENGTH_HASH);
+			strncpy(current->crc32, project[pos].hashesImages[i], LENGTH_CRC);
 			current->URL = project[pos].URLImages[i];
 			
 			current->updateType = imageID[i / 2];
@@ -395,7 +395,7 @@ void updateProjectImages(void * _todo)
 		quit_thread(0);
 	}
 
-	char filename[1024], crcHash[LENGTH_HASH];
+	char filename[1024], crcHash[LENGTH_CRC];
 	
 	while(todo != NULL || _queue != NULL)
 	{
@@ -412,7 +412,7 @@ void updateProjectImages(void * _todo)
 		
 		//We check the update is really needed
 		snprintf(crcHash, sizeof(crcHash), "%08x", crc32File(todo->filename));
-		if(strncmp(crcHash, todo->crc32, LENGTH_HASH))
+		if(!checkFileExist(todo->filename) || strncmp(crcHash, todo->crc32, LENGTH_CRC))
 		{
 			//We perform the actual update
 			snprintf(filename, sizeof(filename), "%s.tmp", todo->filename);
