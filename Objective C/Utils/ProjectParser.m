@@ -773,14 +773,7 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 			NSLog(@"Parse error when analysing remote project file for %@", getStringForWchar(repo->name));
 		return NULL;
 	}
-	
-	id repoID = objectForKey(remoteData, JSON_PROJ_AUTHOR_ID, @"authorID");
-	if(repoID == nil || ARE_CLASSES_DIFFERENT(repoID, [NSNumber class]) || [(NSNumber*) repoID unsignedLongLongValue] != repo->repoID)
-	{
-		NSLog(@"Invalid remote project file for %@: incorrect repo ID", getStringForWchar(repo->name));
-		return NULL;
-	}
-	
+		
 	return parseProjectJSON(repo, remoteData, nbElem, true);
 }
 
