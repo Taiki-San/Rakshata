@@ -163,7 +163,7 @@
 "PREFS-FAVORITE-AUTODL" = "Enable the automatic download of new releases when Rakshata is launched";
 
 //Others
-"FOSS-USAGE" = "Rakshata use some open source technologies";
+"FOSS-USAGE" = "Rakshata use open source technologies";
 "COPYRIGHT" = "© 2011-2015 Taiki. All rights reserved";
 
 //Crash Alert
