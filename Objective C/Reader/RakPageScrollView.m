@@ -10,6 +10,12 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@interface RakClipView : NSClipView
+
+- (void) centerDocument;
+
+@end
+
 @implementation RakPageScrollView
 
 - (instancetype) init
@@ -18,10 +24,13 @@
 	
 	if(self != nil)
 	{
+		self.contentView = [[RakClipView alloc] init];
 		self.borderType =		NSNoBorder;
 		self.scrollerStyle =	NSScrollerStyleOverlay;
 		self.drawsBackground =	NO;
-		self.needsDisplay =		YES;
+		self.allowsMagnification = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMagnify) name:NSScrollViewDidEndLiveMagnifyNotification object:self];
 	}
 	
 	return self;
@@ -30,6 +39,12 @@
 - (void) dealloc
 {
 	self.documentView = nil;
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) didMagnify
+{
+	[(RakClipView *) self.contentView centerDocument];
 }
 
 #pragma mark - Size and position manipulation
@@ -37,13 +52,13 @@
 - (void) scrollToBeginningOfDocument
 {
 	NSPoint sliderStart = NSMakePoint(0, READER_PAGE_TOP_BORDER);
-	NSSize documentViewSize = ((NSView*)self.documentView).frame.size;
+	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
 	
 	if(_pageTooHigh)
-		sliderStart.y = documentViewSize.height - self.scrollViewFrame.size.height;
+		sliderStart.y = documentViewSize.height - scrollviewSize.height;
 	
 	if(_pageTooLarge)
-		sliderStart.x = documentViewSize.width - self.scrollViewFrame.size.width;
+		sliderStart.x = documentViewSize.width - scrollviewSize.width;
 	
 	[self scrollToPoint:sliderStart];
 }
@@ -56,6 +71,16 @@
 - (void) scrollToPoint : (NSPoint) origin
 {
 	[self.contentView scrollToPoint:origin];
+}
+
+- (NSRect) documentViewFrame
+{
+	NSRect frame = [self.documentView frame];
+	
+	frame.size.height *= self.magnification;
+	frame.size.width *= self.magnification;
+	
+	return frame;
 }
 
 #pragma mark - Mouse events
@@ -77,26 +102,61 @@
 
 #pragma mark - Properties
 
-- (BOOL) pageTooHigh
-{
-	return _pageTooHigh;
-}
-
 - (void) setPageTooHigh : (BOOL) pageTooHigh
 {
 	self.hasVerticalScroller = _pageTooHigh = pageTooHigh;
 	self.verticalScroller.alphaValue =	0;
 }
 
-- (BOOL) pageTooLarge
-{
-	return _pageTooLarge;
-}
-
 - (void) setPageTooLarge : (BOOL) pageTooLarge
 {
 	self.hasHorizontalScroller = _pageTooLarge = pageTooLarge;
 	self.horizontalScroller.alphaValue = 0;
+}
+
+@end
+
+@implementation RakClipView
+
+- (void) centerDocument
+{
+	NSRect docRect = [self.documentView frame], clipRect = _bounds;
+
+	if(docRect.size.width < clipRect.size.width)
+		clipRect.origin.x = (docRect.size.width - clipRect.size.width) / 2.0;
+	
+	if(docRect.size.height < clipRect.size.height)
+		clipRect.origin.y = (docRect.size.height - clipRect.size.height) / 2.0;
+	
+	[self scrollToPoint : [self constrainScrollPoint : clipRect.origin]];
+}
+
+- (NSPoint) constrainScrollPoint : (NSPoint) proposedNewOrigin
+{
+	NSRect docRect = [[self documentView] frame], clipRect = _bounds;
+	const CGFloat maxX = docRect.size.width - clipRect.size.width, maxY = docRect.size.height - clipRect.size.height;
+	
+	clipRect.origin = proposedNewOrigin;
+	
+	// If the clip view is wider than the doc, we can't scroll horizontally
+	if(docRect.size.width < clipRect.size.width)
+		clipRect.origin.x = round(maxX / 2.0);
+	else
+		clipRect.origin.x = round(MAX(0, MIN(clipRect.origin.x, maxX)));
+	
+	// If the clip view is taller than the doc, we can't scroll vertically
+	if(docRect.size.height < clipRect.size.height)
+		clipRect.origin.y = round(maxY / 2.0);
+	else
+		clipRect.origin.y = round(MAX(0, MIN(clipRect.origin.y, maxY)));
+	
+	return clipRect.origin;
+}
+
+- (void) setFrameSize : (NSSize) newSize
+{
+	[super setFrameSize:newSize];
+	[self centerDocument];
 }
 
 @end

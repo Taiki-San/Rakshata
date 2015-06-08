@@ -49,6 +49,7 @@
 	BOOL _flushingCache;
 	
 	BOOL _cacheBeingBuilt;
+	BOOL _endingTransition;
 	
 	PROJECT_DATA _project;
 	BOOL dataLoaded;

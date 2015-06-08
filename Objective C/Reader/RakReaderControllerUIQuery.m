@@ -66,7 +66,7 @@
 		[self addSubview : contentText];
 	}
 	
-	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 15) : NSLocalizedString(@"YES", nil) : NSLocalizedString(@"NO", nil)];
+	RakQuerySegmentedControl * button = [[RakQuerySegmentedControl alloc] initWithData : NSMakeRect(0, 0, self.frame.size.width, contentText.frame.origin.y - 10) : NSLocalizedString(@"YES", nil) : NSLocalizedString(@"NO", nil)];
 	if(button != nil)
 	{
 		[button setTarget:self];

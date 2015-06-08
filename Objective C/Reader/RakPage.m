@@ -51,8 +51,6 @@
 {
 	NSRect tabFrame = [self lastFrame], scrollViewFrame = scrollView.scrollViewFrame;
 	
-	scrollView.scrollViewFrame = NSZeroRect;
-	
 	//Hauteur
 	if (tabFrame.size.height < scrollView.contentFrame.size.height)
 	{
@@ -66,24 +64,21 @@
 		scrollViewFrame.size.height = scrollView.contentFrame.size.height;
 	}
 	
-	if(self.mainThread != TAB_READER)	//Dans ce contexte, les calculs de largeur n'ont aucune importance
+	if(self.mainThread == TAB_READER)	//Le seul contexte où les calculs de largeur ont une importance
 	{
-		scrollView.scrollViewFrame = scrollViewFrame;
-		return;
-	}
-	
-	//Largeur
-	if(tabFrame.size.width < scrollView.contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
-	{
-		scrollView.pageTooLarge = YES;
-		scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
-		scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
-	}
-	else
-	{
-		scrollView.pageTooLarge = NO;
-		scrollViewFrame.origin.x = tabFrame.size.width / 2 - scrollView.contentFrame.size.width / 2;
-		scrollViewFrame.size.width = scrollView.contentFrame.size.width;
+		//Largeur
+		if(tabFrame.size.width < scrollView.contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
+		{
+			scrollView.pageTooLarge = YES;
+			scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
+			scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
+		}
+		else
+		{
+			scrollView.pageTooLarge = NO;
+			scrollViewFrame.origin.x = tabFrame.size.width / 2 - scrollView.contentFrame.size.width / 2;
+			scrollViewFrame.size.width = scrollView.contentFrame.size.width;
+		}
 	}
 	
 	scrollView.scrollViewFrame = scrollViewFrame;
@@ -132,9 +127,9 @@
 	[self updateScrollerAfterResize : _scrollView : oldSize];
 	
 	if(isAnimated)
-		[_scrollView.animator setFrame:_scrollView.scrollViewFrame];
+		[_scrollView.animator setFrame:container.frame];
 	else
-		[_scrollView setFrame:_scrollView.scrollViewFrame];
+		[_scrollView setFrame:container.frame];
 }
 
 /*Event handling*/
@@ -154,14 +149,14 @@
 		if(_scrollView.pageTooHigh)
 		{
 			mouseLoc.y += [_scrollView.contentView documentRect].size.height - [_scrollView frame].size.height - [_scrollView.contentView documentVisibleRect].origin.y;
-			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [(NSView*) _scrollView.documentView frame].size.height - READER_PAGE_BOTTOM_BORDER)
+			if(mouseLoc.y < READER_PAGE_TOP_BORDER || mouseLoc.y > [_scrollView documentViewFrame].size.height - READER_PAGE_BOTTOM_BORDER)
 				fail = YES;
 		}
 		
 		if(_scrollView.pageTooLarge)
 		{
 			mouseLoc.x += [_scrollView.contentView documentRect].size.width - [_scrollView frame].size.width - [_scrollView.contentView documentVisibleRect].origin.x;
-			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [(NSView*) _scrollView.documentView frame].size.width - READER_BORDURE_VERT_PAGE)
+			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [_scrollView documentViewFrame].size.width - READER_BORDURE_VERT_PAGE)
 				fail = YES;
 		}
 	}
@@ -291,6 +286,13 @@
 					break;
 				}
 					
+				case '0':
+				{
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+						_scrollView.animator.magnification = 1;
+					break;
+				}
+					
 				default:
 					break;
 			}
@@ -402,7 +404,7 @@
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = [_scrollView.documentView frame].size.width - _scrollView.frame.size.width;
+		CGFloat basePos = [_scrollView documentViewFrame].size.width - _scrollView.frame.size.width;
 		if(point.x == basePos)
 			return NO;
 		else if(point.x > basePos - move)
@@ -450,7 +452,7 @@
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = round([_scrollView.documentView frame].size.height - _scrollView.bounds.size.height);
+		CGFloat basePos = round([_scrollView documentViewFrame].size.height - _scrollView.bounds.size.height);
 		if(point.y == basePos)
 			return NO;
 		else if(point.y > basePos - move)
@@ -927,8 +929,8 @@
 	
 	if(image == nil)
 		return nil;
-	
-	[image setCacheMode:NSImageCacheNever];
+
+	image.cacheMode = NSImageCacheNever;
 	
 	RakPageScrollView * output = [[RakPageScrollView alloc] init];
 	
@@ -980,18 +982,21 @@
 	
 	//We create the view that si going to be displayed
 	NSImageView * pageView = [[NSImageView alloc] initWithFrame: scrollView.contentFrame];
-	[pageView setImageAlignment:NSImageAlignCenter];
-	[pageView setImageFrameStyle:NSImageFrameNone];
-	[pageView setImage:page];
+
+	//	pageView.imageAlignment = NSImageAlignCenter
+	pageView.imageFrameStyle = NSImageFrameNone;
+	pageView.allowsCutCopyPaste = NO;
 	
+	pageView.image = page;
 	scrollView.documentView = pageView;
 	
 	[CATransaction begin];
 	[CATransaction setDisableActions:YES];
 	
 	[self initialPositionning : scrollView];
+	scrollView.magnification = 1;
 	
-	[scrollView setFrame : scrollView.scrollViewFrame];
+	[scrollView setFrame : container.bounds];
 	[scrollView scrollToBeginningOfDocument];
 	
 	[CATransaction commit];
@@ -999,8 +1004,8 @@
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
 {
-	NSPoint sliderStart = [[_scrollView contentView] bounds].origin;
-	
+	NSPoint sliderStart = [_scrollView.contentView bounds].origin;
+
 	if(scrollView.pageTooHigh)
 		sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
 	
@@ -1045,7 +1050,7 @@
 		}
 		else
 		{
-			height = [_scrollView.documentView frame].size.height;
+			height = [_scrollView documentViewFrame].size.height;
 			if(withShift)	height *= -1;
 			
 			[self moveSliderY : height];
@@ -1421,10 +1426,13 @@
 	{
 		[self initialPositionning : object];
 		
+		[object setFrame:container.bounds];
+		
+		if(!_endingTransition)
+			object.magnification = 1;
+		
 		if(object.page != _data.pageCourante)
 			[object scrollToBeginningOfDocument];
-		
-		[object setFrame:object.scrollViewFrame];
 		
 		[viewController.view addSubview: object];
 		viewController.representedObject = object;
@@ -1434,6 +1442,8 @@
 		[viewController.view addSubview : object];
 	}
 }
+
+#if 0
 
 - (NSRect) pageController : (NSPageController *) pageController frameForObject : (RakPageScrollView*) object
 {
@@ -1454,6 +1464,8 @@
 	
 	return container.frame;
 }
+
+#endif
 
 - (void) pageController : (NSPageController *) pageController didTransitionToObject : (RakPageScrollView *) object
 {
@@ -1489,7 +1501,11 @@
 
 - (void)pageControllerDidEndLiveTransition : (NSPageController *) pageController
 {
+	_endingTransition = YES;
+	
 	[pageController completeTransition];
+	
+	_endingTransition = NO;
 	
 	//Before the first page
 	if(pageController.selectedIndex == 0 && _posElemInStructure == 0)
