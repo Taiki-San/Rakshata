@@ -42,18 +42,18 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	lengthD = wchar_to_utf8(data.description, lengthD, utf8Descriptions, sizeof(utf8Descriptions), 0);	utf8Descriptions[lengthD] = 0;
 	lengthA = wchar_to_utf8(data.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
 	
-	sqlite3_bind_int64(internalRequest, 1, repoID);
-	sqlite3_bind_int(internalRequest, 2, data.projectID);
+	sqlite3_bind_int64(internalRequest, 1, (int64_t) repoID);
+	sqlite3_bind_int(internalRequest, 2, (int32_t) data.projectID);
 	sqlite3_bind_int(internalRequest, 3, isInstalled);
 	sqlite3_bind_text(internalRequest, 4, utf8Project, lengthP, SQLITE_STATIC);
 	sqlite3_bind_text(internalRequest, 5, utf8Descriptions, lengthD, SQLITE_STATIC);
 	sqlite3_bind_text(internalRequest, 6, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(internalRequest, 7, data.status);
-	sqlite3_bind_int(internalRequest, 8, data.category);
+	sqlite3_bind_int(internalRequest, 8, (int32_t) data.category);
 	sqlite3_bind_int(internalRequest, 9, data.japaneseOrder);
 	sqlite3_bind_int(internalRequest, 10, data.isPaid);
-	sqlite3_bind_int(internalRequest, 11, data.mainTag);
-	sqlite3_bind_int64(internalRequest, 12, data.tagMask);
+	sqlite3_bind_int(internalRequest, 11, (int32_t) data.mainTag);
+	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.tagMask);
 	sqlite3_bind_int(internalRequest, 13, data.nombreChapitre);
 	sqlite3_bind_int64(internalRequest, 14, (int64_t) data.chapitresFull);
 	sqlite3_bind_int64(internalRequest, 15, (int64_t) data.chapitresPrix);
@@ -81,13 +81,13 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	
 	createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)"FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &internalRequest);
 	
-	sqlite3_bind_int64(internalRequest, 1, repoID);
-	sqlite3_bind_int(internalRequest, 2, data.projectID);
+	sqlite3_bind_int64(internalRequest, 1, (int64_t) repoID);
+	sqlite3_bind_int(internalRequest, 2, (int32_t) data.projectID);
 
 	if(sqlite3_step(internalRequest) != SQLITE_ROW)
 		return false;
 
-	uint cacheID = sqlite3_column_int(internalRequest, 0);
+	uint cacheID = (uint) sqlite3_column_int(internalRequest, 0);
 	
 	destroyRequest(internalRequest);
 	
@@ -107,14 +107,14 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	if(whatCanIUse == RDB_UPDATE_ID)
 	{
 		createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
-		sqlite3_bind_int(request, 1, data.cacheDBID);
+		sqlite3_bind_int(request, 1, (int32_t) data.cacheDBID);
 		DBID = data.cacheDBID;
 	}
 	else
 	{
 		createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
-		sqlite3_bind_int64(request, 1, getRepoID(data.repo));
-		sqlite3_bind_int(request, 2, projectID);
+		sqlite3_bind_int64(request, 1, (int64_t) getRepoID(data.repo));
+		sqlite3_bind_int(request, 2, (int32_t) projectID);
 	}
 	
 	MUTEX_LOCK(cacheParseMutex);
@@ -137,10 +137,10 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 			free((void*) sqlite3_column_int64(request, 1));
 
 		if(data.tomesFull != (void*) sqlite3_column_int64(request, 2))
-			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+			freeTomeList((void*) sqlite3_column_int64(request, 2), (uint32_t) sqlite3_column_int(request, 3), true);
 		
 		if(whatCanIUse != RDB_UPDATE_ID)
-			DBID = sqlite3_column_int(request, 4);
+			DBID = (uint32_t) sqlite3_column_int(request, 4);
 	}
 	else
 	{
@@ -166,11 +166,11 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);
 	sqlite3_bind_text(request, 3, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(request, 4, data.status);
-	sqlite3_bind_int(request, 5, data.category);
+	sqlite3_bind_int(request, 5, (int32_t) data.category);
 	sqlite3_bind_int(request, 6, data.japaneseOrder);
 	sqlite3_bind_int(request, 7, data.isPaid);
-	sqlite3_bind_int(request, 8, data.mainTag);
-	sqlite3_bind_int64(request, 9, data.tagMask);
+	sqlite3_bind_int(request, 8, (int32_t) data.mainTag);
+	sqlite3_bind_int64(request, 9, (int64_t) data.tagMask);
 	sqlite3_bind_int(request, 10, data.nombreChapitre);
 
 #ifdef DEV_VERSION
@@ -221,7 +221,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	sqlite3_bind_int(request, 16, data.favoris);
 	
-	sqlite3_bind_int(request, 17, DBID);	//WHERE
+	sqlite3_bind_int(request, 17, (int32_t) DBID);	//WHERE
 	
 	if(sqlite3_step(request) != SQLITE_DONE || sqlite3_changes(cache) == 0)
 	{
@@ -261,7 +261,7 @@ void removeFromCache(PROJECT_DATA data)
 	
 	if(	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
-		sqlite3_bind_int(request, 1, data.cacheDBID);
+		sqlite3_bind_int(request, 1, (int32_t) data.cacheDBID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -275,14 +275,14 @@ void removeFromCache(PROJECT_DATA data)
 #endif
 			free((void*) sqlite3_column_int64(request, 0));
 			free((void*) sqlite3_column_int64(request, 1));
-			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+			freeTomeList((void*) sqlite3_column_int64(request, 2), (uint32_t) sqlite3_column_int(request, 3), true);
 		}
 		destroyRequest(request);
 	}
 	
 	if(createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
-		sqlite3_bind_int(request, 1, data.cacheDBID);
+		sqlite3_bind_int(request, 1, (int32_t) data.cacheDBID);
 		sqlite3_step(request);
 		destroyRequest(request);
 	}
@@ -363,13 +363,13 @@ void removeRepoFromCache(REPO_DATA repo)
 	sqlite3_stmt* request = NULL, *deleteRequest = NULL;
 	createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1", &request);
 	createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &deleteRequest);
-	sqlite3_bind_int64(request, 1, repoID);
+	sqlite3_bind_int64(request, 1, (int64_t) repoID);
 	
 	while(sqlite3_step(request) == SQLITE_ROW)
 	{
 		free((void*) sqlite3_column_int64(request, 0));
 		free((void*) sqlite3_column_int64(request, 1));
-		freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3), true);
+		freeTomeList((void*) sqlite3_column_int64(request, 2), (uint32_t) sqlite3_column_int(request, 3), true);
 		
 		sqlite3_bind_int64(deleteRequest, 1, sqlite3_column_int64(request, 4));
 		sqlite3_step(deleteRequest);

@@ -438,6 +438,9 @@ d ^= k[4 * r + 3];}
 	#define LE32(x) (x)
 #endif
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wcomparaison"
 
 void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks)
 {
@@ -446,7 +449,7 @@ void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks)
 	uint32_t t;
 	int i;
 	
-	for (i = 0; i < keylen / sizeof(int32_t); i++)
+	for (i = 0; (uint) i < keylen / sizeof(int32_t); i++)
 		k[i] = LE32(((uint32_t*)userKey)[i]);
 	
 	if (keylen < 32)
@@ -484,6 +487,8 @@ k[(8-r)*4 + 7] = d;}	\
 	}
 	afterS2(LK); afterS2(S3); afterS3(SK);
 }
+
+#pragma clang diagnostic pop
 
 void serpent_encrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBlock)
 {

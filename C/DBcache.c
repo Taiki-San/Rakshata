@@ -299,7 +299,7 @@ void flushDB()
 		{
 			free((void*) sqlite3_column_int64(request, 0));
 			free((void*) sqlite3_column_int64(request, 1));
-			freeTomeList((void*) sqlite3_column_int64(request, 2), sqlite3_column_int(request, 3) ,true);
+			freeTomeList((void*) sqlite3_column_int64(request, 2), (uint32_t) sqlite3_column_int(request, 3) ,true);
 		}
 		
 		destroyRequest(request);
@@ -361,8 +361,8 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 	else
 		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
 	
-	sqlite3_bind_int64(request, 1, IDRepo);
-	sqlite3_bind_int(request, 2, projectID);
+	sqlite3_bind_int64(request, 1, (int64_t) IDRepo);
+	sqlite3_bind_int(request, 2, (int32_t) projectID);
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
@@ -402,12 +402,12 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 	else
 		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 	
-	sqlite3_bind_int(request, 1, cacheID);
+	sqlite3_bind_int(request, 1, (int32_t) cacheID);
 
 	if(sqlite3_step(request) != SQLITE_ROW)
 		return NULL;
 	
-	uint nbElemOut = sqlite3_column_int(request, 0);
+	uint nbElemOut = (uint32_t) sqlite3_column_int(request, 0);
 	void * output = NULL;
 	
 	if(nbElemOut != 0)
@@ -418,7 +418,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 			
 			if(output != NULL)
 			{
-				((META_TOME*)output)[nbElemOut].ID = VALEUR_FIN_STRUCT;		//Whatever copyTomeList may do, the array is valid by now
+				((META_TOME*)output)[nbElemOut].ID = INVALID_SIGNED_VALUE;		//Whatever copyTomeList may do, the array is valid by now
 				copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
 			}
 		}
@@ -428,7 +428,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 			if(output != NULL)
 			{
 				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
-				((int*) output)[nbElemOut] = VALEUR_FIN_STRUCT;				//In the case it was missing (kinda like a canary)
+				((int*) output)[nbElemOut] = INVALID_SIGNED_VALUE;				//In the case it was missing (kinda like a canary)
 			}
 			
 			if(price != NULL)
@@ -491,10 +491,10 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 		{
 			if(canUseOptimization)
 			{
-				while(pos < nbElemInCache && data[pos].cacheDBID < sqlite3_column_int(request, RDB_ID-1))
+				while(pos < nbElemInCache && data[pos].cacheDBID < (uint32_t) sqlite3_column_int(request, RDB_ID-1))
 					pos++;
 				
-				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
+				if(data[pos].cacheDBID == (uint32_t) sqlite3_column_int(request, RDB_ID-1))
 					output[pos++] = true;
 				
 				else if(pos < nbElemInCache)		//Élément supprimé
@@ -505,9 +505,9 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 			}
 			else
 			{
-				for(pos = 0; pos < nbElemInCache && data[pos].cacheDBID != sqlite3_column_int(request, RDB_ID-1); pos++);
+				for(pos = 0; pos < nbElemInCache && data[pos].cacheDBID != (uint32_t) sqlite3_column_int(request, RDB_ID-1); pos++);
 				
-				if(data[pos].cacheDBID == sqlite3_column_int(request, RDB_ID-1))
+				if(data[pos].cacheDBID == (uint32_t) sqlite3_column_int(request, RDB_ID-1))
 					output[pos] = true;
 			}
 		}
@@ -527,7 +527,7 @@ bool isProjectInstalledInCache (uint ID)
 
 	if(cache != NULL)
 	{
-		sqlite3_bind_int(request, 1, ID);
+		sqlite3_bind_int(request, 1, (int32_t) ID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -549,7 +549,7 @@ PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
 	if(cache != NULL && cacheID != UINT_MAX)
 	{
 		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
-		sqlite3_bind_int(request, 1, cacheID);
+		sqlite3_bind_int(request, 1, (int32_t) cacheID);
 		
 		MUTEX_LOCK(cacheParseMutex);
 
@@ -587,7 +587,7 @@ uint * getFavoritesID(uint * nbFavorites)
 	
 	*nbFavorites = 0;
 	while(sqlite3_step(request) == SQLITE_ROW && *nbFavorites < nbElemInCache)
-		output[(*nbFavorites)++] = sqlite3_column_int(request, 0);
+		output[(*nbFavorites)++] = (uint32_t) sqlite3_column_int(request, 0);
 	
 	destroyRequest(request);
 	
@@ -614,7 +614,7 @@ void setInstalled(uint cacheID)
 
 	if(cache != NULL && createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_isInstalled)" = 1 WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
 	{
-		sqlite3_bind_int(request, 1, cacheID);
+		sqlite3_bind_int(request, 1, (int32_t) cacheID);
 		sqlite3_step(request);
 		destroyRequest(request);
 	}
@@ -641,7 +641,7 @@ void setUninstalled(bool isRoot, uint64_t repoID)
 					
 					if(repo.active)
 					{
-						sqlite3_bind_int64(request, 1, getRepoID(&repo));
+						sqlite3_bind_int64(request, 1, (int64_t) getRepoID(&repo));
 						sqlite3_step(request);
 						sqlite3_reset(request);
 						
@@ -656,7 +656,7 @@ void setUninstalled(bool isRoot, uint64_t repoID)
 	}
 	else
 	{
-		sqlite3_bind_int64(request, 1, repoID);
+		sqlite3_bind_int64(request, 1, (int64_t) repoID);
 		sqlite3_step(request);
 		
 		REPO_DATA emptyRepo = getEmptyRepo();	emptyRepo.repoID = getSubrepoFromRepoID(repoID);	emptyRepo.parentRepoID = getRootFromRepoID(repoID);

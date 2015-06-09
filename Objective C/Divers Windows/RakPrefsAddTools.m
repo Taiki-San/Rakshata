@@ -41,7 +41,7 @@
 	return _data;
 }
 
-- (instancetype) getChildAtIndex:(NSInteger)index
+- (instancetype) getChildAtIndex:(NSUInteger)index
 {
 	id output = nil;
 	if(_isRootItem && index < _nbChildren && ([children count] >= index || (output = [children objectAtIndex:index]) == nil))

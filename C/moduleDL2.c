@@ -144,7 +144,7 @@ bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t ***
 	return false;
 }
 
-void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem)
+void MDLCleanup(uint nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem)
 {
     /*On libère la mémoire*/
     for(uint i = 0; i < nbElemTotal; i++)
@@ -178,7 +178,7 @@ void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PRO
 /*Final processing*/
 char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal)
 {
-	if(IDToPosition == NULL)
+	if(IDToPosition == NULL || nombreTotal == 0)
 		return NULL;
 	
 	uint sizePerElem = LONGUEUR_URL + LONGUEUR_COURT + 20;

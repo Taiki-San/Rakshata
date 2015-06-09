@@ -40,7 +40,6 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
 uint getFreeRootRepoID();
-void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo);
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo);
 void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries);
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData);

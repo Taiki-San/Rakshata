@@ -279,11 +279,6 @@
 	return considerDiscarded ? discardedCount : nbElem;
 }
 
-- (uint) convertRowToPos : (uint) row
-{
-	return (row >= discardedCount) ? -1 : IDToPosition[row];
-}
-
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded
 {
 	if(row >= (considerDiscarded ? discardedCount : nbElem))
@@ -312,7 +307,7 @@
 
 - (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
 {
-	if(!data.isInitialized || element == VALEUR_FIN_STRUCT)
+	if(!data.isInitialized || element == INVALID_SIGNED_VALUE)
 		return;
 	
 	uint pos;
@@ -365,7 +360,7 @@
 		}
 		else
 		{
-			int curPos = nbElem - 1;
+			uint curPos = nbElem - 1;
 			*todoList = MDLInjectElementIntoMainList(newTodoList, &nbElem, &curPos, &newElement);
 		}
 	}
@@ -386,7 +381,7 @@
 - (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
 {
 	//We assume our data are up-to-date
-	int previousElem = VALEUR_FIN_STRUCT;
+	int previousElem = INVALID_SIGNED_VALUE;
 	uint posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
 	
 	if (isTome)
@@ -413,7 +408,7 @@
 			posInst++;
 		else
 		{
-			if(previousElem != VALEUR_FIN_STRUCT)
+			if(previousElem != INVALID_SIGNED_VALUE)
 			{
 				[self addElement:data :isTome :previousElem :YES];
 				countInjected++;
@@ -426,7 +421,7 @@
 	//Le burst de fin
 	while (posFull < nbFull)
 	{
-		if(previousElem != VALEUR_FIN_STRUCT)
+		if(previousElem != INVALID_SIGNED_VALUE)
 		{
 			[self addElement:data :isTome :previousElem :YES];
 			countInjected++;
@@ -435,7 +430,7 @@
 		previousElem = MDLCTRL_getDataFull(data, posFull++, isTome);
 	}
 	
-	if(previousElem != VALEUR_FIN_STRUCT)
+	if(previousElem != INVALID_SIGNED_VALUE)
 	{
 		[self addElement:data :isTome :previousElem :!launchAtTheEnd];
 		countInjected++;

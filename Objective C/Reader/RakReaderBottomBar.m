@@ -226,12 +226,12 @@
 	CGFloat midleHeightBar = self.frame.size.height / 2, lastElemHeight = 0;
 	NSPoint origin = NSZeroPoint;
 	
-	for(char pos = 0; pos < nbElem; pos++)
+	for(byte pos = 0; pos < nbElem; pos++)
 	{
 		if (icons[pos] == nil)
 			continue;
 		
-		origin.x = [self getPosXElement : pos+1 : newWidth];
+		origin.x = [self getPosXElement : pos + 1 : newWidth];
 		
 		if(icons[pos].frame.size.height != lastElemHeight)
 		{

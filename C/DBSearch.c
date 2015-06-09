@@ -14,7 +14,7 @@
 
 static bool initialized = false;
 
-static uint nbAuthor = 0, nbTag = 0, nbType = 0;
+static int64_t nbAuthor = 0, nbTag = 0, nbType = 0;
 
 typedef struct buildTablePointer
 {
@@ -273,8 +273,8 @@ uint _getFromSearch(void * _table, byte type, void * data)
 	
 	uint output = UINT_MAX;
 	
-	if((output = sqlite3_step(request)) == SQLITE_ROW)
-		output = sqlite3_column_int(request, 0);
+	if((output = (uint) sqlite3_step(request)) == SQLITE_ROW)
+		output = (uint32_t) sqlite3_column_int(request, 0);
 	else
 		output = UINT_MAX;
 	
@@ -374,7 +374,7 @@ bool removeFromSearch(void * _table, uint cacheID)
 	}
 
 	sqlite3_stmt * request = table->removeProject;
-	sqlite3_bind_int(request, 1, cacheID);
+	sqlite3_bind_int(request, 1, (int32_t) cacheID);
 
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -427,8 +427,8 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 
 	if(authorID != oldAuthor)
 	{
-		sqlite3_bind_int(request, 1, project.cacheDBID);
-		sqlite3_bind_int(request, 2, authorID);
+		sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
+		sqlite3_bind_int(request, 2, (int32_t) authorID);
 		sqlite3_bind_int(request, 3, RDBS_TYPE_AUTHOR);
 		
 		fail = sqlite3_step(request) != SQLITE_DONE;
@@ -445,7 +445,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		if(!wantInsert)
 		{
 			//We have to flush the previous category (as all parents are there)
-			sqlite3_bind_int(table->flushCategories, 1, project.cacheDBID);
+			sqlite3_bind_int(table->flushCategories, 1, (int32_t) project.cacheDBID);
 			sqlite3_step(table->flushCategories);
 			sqlite3_reset(table->flushCategories);
 		}
@@ -453,8 +453,8 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		//Insert the catID and its parents
 		while (!fail && catID != TAG_NO_VALUE)
 		{
-			sqlite3_bind_int(request, 1, project.cacheDBID);
-			sqlite3_bind_int(request, 2, catID);
+			sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
+			sqlite3_bind_int(request, 2, (int32_t) catID);
 			sqlite3_bind_int(request, 3, RDBS_TYPE_CAT);
 			
 			fail = sqlite3_step(request) != SQLITE_DONE;
@@ -472,8 +472,8 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	
 	if(tagID != oldTag)
 	{
-		sqlite3_bind_int(request, 1, project.cacheDBID);
-		sqlite3_bind_int(request, 2, tagID);
+		sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
+		sqlite3_bind_int(request, 2, (int32_t) tagID);
 		sqlite3_bind_int(request, 3, RDBS_TYPE_TAG);
 		
 		fail = sqlite3_step(request) != SQLITE_DONE;
@@ -484,8 +484,8 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 	
 	if(wantInsert && !fail)
 	{
-		sqlite3_bind_int(request, 1, project.cacheDBID);
-		sqlite3_bind_int64(request, 2, getRepoID(project.repo));
+		sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
+		sqlite3_bind_int64(request, 2, (int64_t) getRepoID(project.repo));
 		sqlite3_bind_int(request, 3, RDBS_TYPE_SOURCE);
 		
 		fail = sqlite3_step(request) != SQLITE_DONE;
@@ -508,7 +508,7 @@ bool insertRestriction(uint64_t code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int64(request, 2, code);
+	sqlite3_bind_int64(request, 2, (int64_t) code);
 	
 	if(sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 0)
 	{
@@ -522,7 +522,7 @@ bool insertRestriction(uint64_t code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int64(request, 2, code);
+	sqlite3_bind_int64(request, 2, (int64_t) code);
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -544,7 +544,7 @@ bool removeRestriction(uint64_t code, byte type)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
-	sqlite3_bind_int64(request, 2, code);
+	sqlite3_bind_int64(request, 2, (int64_t) code);
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -629,7 +629,7 @@ void checkIfRemainingAndDelete(uint data, byte type)
 		else
 			return;
 		
-		sqlite3_bind_int(request, 1, data);
+		sqlite3_bind_int(request, 1, (int32_t) data);
 		
 		if(sqlite3_step(request) == SQLITE_DONE)
 			updateElementCount(type, -1);
@@ -657,11 +657,11 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 			return false;
 	}
 
-	sqlite3_bind_int(request, 1, cacheID);
+	sqlite3_bind_int(request, 1, (int32_t) cacheID);
 
 	while(sqlite3_step(request) == SQLITE_ROW)
 	{
-		uint type = sqlite3_column_int(request, 1), data = sqlite3_column_int(request, 0);
+		uint type = (uint32_t) sqlite3_column_int(request, 1), data = (uint32_t) sqlite3_column_int(request, 0);
 		
 		if(type == RDBS_TYPE_AUTHOR)
 			*authorID = data;
@@ -742,18 +742,18 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 		}
 		else if(type == RDBS_TYPE_CAT)
 		{
-			(*dataName)[pos] = wstrdup(getCatNameForCode(sqlite3_column_int(request, 0)));
+			(*dataName)[pos] = wstrdup(getCatNameForCode((uint32_t) sqlite3_column_int(request, 0)));
 			if((*dataName)[pos] == NULL)
 				continue;
 		}
 		else
 		{
-			(*dataName)[pos] = wstrdup(getTagNameForCode(sqlite3_column_int(request, 0)));
+			(*dataName)[pos] = wstrdup(getTagNameForCode((uint32_t) sqlite3_column_int(request, 0)));
 			if((*dataName)[pos] == NULL)
 				continue;
 		}
 		
-		codes[pos++] = sqlite3_column_int64(request, 1);
+		codes[pos++] = (uint64_t) sqlite3_column_int64(request, 1);
 	}
 	
 	destroyRequest(request);
@@ -834,7 +834,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	size_t realLength = 0;
 	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 	{
-		output[realLength++] = sqlite3_column_int(request, 0);
+		output[realLength++] = (uint32_t) sqlite3_column_int(request, 0);
 	}
 	
 	destroyRequest(request);

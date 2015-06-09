@@ -30,8 +30,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     PROXY_DATA_LOADED todoListTmp;
     DATA_MOD_DL argument;
     bool isTome = input.todoList->listChapitreOfTome != NULL, DLAborted;
-    int i, nombreElement = isTome ? input.todoList->nbElemList : 1;
-	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0;
+	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0, nombreElement = isTome ? input.todoList->nbElemList : 1;
 	bool didElemGotDownloaded[nombreElement];
 	
     argument.todoList = &todoListTmp;
@@ -43,7 +42,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	{
 		posTomeInStruct = getPosForID(*todoListTmp.datas, false, input.todoList->identifier);
 	
-		if(posTomeInStruct == -1)
+		if(posTomeInStruct == UINT_MAX)
 			posTomeInStruct = ERROR_CHECK;
 	}
 	
@@ -59,7 +58,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     *(input.currentState) = MDL_CODE_DL;
 	MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
 	
-    for(i = 0; i < nombreElement; i++)
+    for(uint i = 0; i < nombreElement; i++)
     {
 		didElemGotDownloaded[i] = false;
         todoListTmp.listChapitreOfTome = NULL;
@@ -69,7 +68,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		{
             todoListTmp.chapitre = input.todoList->identifier;
             todoListTmp.subFolder = false;
-            todoListTmp.partOfTome = VALEUR_FIN_STRUCT;
+            todoListTmp.partOfTome = INVALID_SIGNED_VALUE;
         }
         else
 		{
@@ -179,11 +178,11 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		while(*(input.currentState) != MDL_CODE_INSTALL)
 			usleep(250);
 		
-        for(i = 0; i < nombreElement; i++)
+        for(uint i = 0; i < nombreElement; i++)
         {
             if(didElemGotDownloaded[i] && (listDL[i] == NULL || !MDLInstallation(listDL[i], listSizeDL[i], input.todoList->datas,
 																	isTome ? input.todoList->listChapitreOfTome[i].ID : input.todoList->identifier,
-																	isTome ? input.todoList->identifier : VALEUR_FIN_STRUCT,
+																	isTome ? input.todoList->identifier : INVALID_SIGNED_VALUE,
 																	isTome ? input.todoList->listChapitreOfTome[i].isPrivate : false,
 																	(input.todoList->listChapitreOfTome != NULL && i == nombreElement-1)) ) )
 			{
@@ -209,7 +208,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     }
     else
 	{
-		for(i = 0; i < nombreElement; free(listDL[i++]));
+		for(uint i = 0; i < nombreElement; free(listDL[i++]));
 		
 		if (!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
 		{
@@ -258,7 +257,8 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 {
     bool output = false;
-    int ret_value = CODE_RETOUR_OK, i;
+	int ret_value = CODE_RETOUR_OK;
+	uint i;
 	char firstTwentyBytesOfArchive[20];
 	
     /**Téléchargement**/
@@ -381,7 +381,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 	
     /*Récupération des valeurs envoyés*/
 	
-    if(tome != VALEUR_FIN_STRUCT)
+    if(tome != INVALID_SIGNED_VALUE)
     {
 		if(subFolder)
 		{

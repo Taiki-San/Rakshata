@@ -15,8 +15,8 @@
 @interface RakPrefsDeepData : NSObject
 {
 	Prefs* mammouth;
-	int8_t numberElem;
-	int sizeInputBuffer;
+	uint numberElem;
+	uint sizeInputBuffer;
 }
 
 - (instancetype) init : (Prefs*) creator : (char *) inputData;
@@ -29,8 +29,7 @@
 
 - (CGFloat) triggerJumpTable : (SEL) selector;
 
-- (int) getNbElem;
-- (void) performSelfCheck;
+- (uint) getNbElem;
 
 @end
 

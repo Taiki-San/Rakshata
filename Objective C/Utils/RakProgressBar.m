@@ -89,9 +89,9 @@
 	if(percentage < 0 || percentage > 100 || _percentage == percentage)
 		return;
 	
-	if(_speed != downloadSpeed)
+	if(_speed != (int64_t) downloadSpeed)
 	{
-		_speed = downloadSpeed;
+		_speed = downloadSpeed > INT_FAST64_MAX ? INT_FAST64_MAX : (int64_t) downloadSpeed;
 		if(_speed != 0)
 			[_speedText setStringValue:[NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]]];
 		else
@@ -108,7 +108,7 @@
 	if([data count] != 2 || [[data objectAtIndex:0] superclass] != [NSNumber class] || [[data objectAtIndex:1] superclass] != [NSNumber class])
 		return;
 	
-	[self updatePercentage:[[data objectAtIndex:0] doubleValue] :[[data objectAtIndex:1] longLongValue]];
+	[self updatePercentage:[[data objectAtIndex:0] doubleValue] :[[data objectAtIndex:1] unsignedLongLongValue]];
 	[self notifyNeedDisplay];
 }
 

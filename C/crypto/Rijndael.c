@@ -1244,7 +1244,8 @@ void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_pa
     unsigned char key[KEYLENGTH(KEYBITS)];
 	
 	bool inputMemory = true, outputMemory = true, CBC_started = false;
-	int i, j, positionDansInput = 0, positionDansOutput = 0, nrounds;
+	uint i, j, positionDansInput = 0, positionDansOutput = 0;
+	int nrounds;
 
 	FILE *input = NULL, *output = NULL;
 
@@ -1332,7 +1333,8 @@ void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_pa
 	unsigned char key[KEYLENGTH(KEYBITS)];
 	
 	bool inputMemory = true, outputMemory = true, CBC_started = false;
-	int i, j, positionDansInput = 0, positionDansOutput = 0, nrounds;
+	uint i, j, positionDansInput = 0, positionDansOutput = 0;
+	int nrounds;
 	
 	FILE *input = NULL, *output = NULL;
 

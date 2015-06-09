@@ -135,7 +135,7 @@
 		if (tmp != nil)
 			element = [tmp intValue];
 		else
-			element = VALEUR_FIN_STRUCT;
+			element = INVALID_SIGNED_VALUE;
 		
 		[self updateContextNotification : project : isTome : element];
 	}

@@ -121,8 +121,8 @@
 	}
 	else
 	{
-		memset(*_cacheList, UINT_MAX, *_nbElemFull * sizeof(uint));
-		memset(*_orderedToSorted, invalidValue, *_nbElemFull * sizeof(uint));
+		memset(*_cacheList, (int) UINT_MAX, *_nbElemFull * sizeof(uint));
+		memset(*_orderedToSorted, (int) invalidValue, *_nbElemFull * sizeof(uint));
 	}
 	
 	//We look for the highest value
@@ -164,7 +164,7 @@
 		free(*_orderedToSorted);	*_orderedToSorted = NULL;
 		return NO;
 	}
-	memset(collector, invalidValue, highestValue * sizeof(uint));
+	memset(collector, (int) invalidValue, highestValue * sizeof(uint));
 	
 	//We store the item position
 	for(uint i = 0; i < *_nbElemFull; i++)

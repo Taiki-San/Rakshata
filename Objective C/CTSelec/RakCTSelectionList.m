@@ -288,7 +288,7 @@
 - (void) flushContext : (BOOL) animated
 {
 	if(animated)
-		[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _tableView.numberOfRows)] withAnimation:NSTableViewAnimationSlideLeft];
+		[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, (NSUInteger) _tableView.numberOfRows)] withAnimation:NSTableViewAnimationSlideLeft];
 	
 	if(self.isTome)
 		freeTomeList(_data, _nbElem, true);
@@ -335,9 +335,9 @@
 		return LIST_INVALID_SELECTION;
 	
 	if(self.isTome)
-		return ((META_TOME *) _data)[element].ID;
+		return (uint) ((META_TOME *) _data)[element].ID;
 	else
-		return ((int *) _data)[element];
+		return (uint) ((int *) _data)[element];
 }
 
 - (void) jumpScrollerToIndex : (uint) index
@@ -354,7 +354,7 @@
 	}
 }
 
-- (uint) getIndexOfElement : (uint) element
+- (uint) getIndexOfElement : (int) element
 {
 	if (_data == NULL || (self.compactMode && _installedJumpTable == NULL))
 		return LIST_INVALID_SELECTION;
@@ -642,14 +642,14 @@
 			_nbCoupleColumn = nbColumn;
 			_numberOfRows = _nbData / nbColumn;
 			
-			newColumns = nbColumn - oldNbColumn;
+			newColumns = (((int64_t) nbColumn) - oldNbColumn);
 			
 			if(newColumns > 0)		//We need to add columns
 			{
 				NSMutableArray *newMainColumns = [NSMutableArray arrayWithArray:_mainColumns], *newDetailColumns = [NSMutableArray arrayWithArray:_detailColumns];
 				NSTableColumn * column;
 				
-				for(uint pos = 0; pos < newColumns; pos++)
+				for(int pos = 0; pos < newColumns; pos++)
 				{
 					column = [[NSTableColumn alloc] initWithIdentifier:RAKLIST_MAIN_COLUMN_ID];
 					[_tableView addTableColumn:column];
@@ -699,7 +699,7 @@
 			
 			if(newColumns != 0)
 			{
-				[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfColumns])]];
+				[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, (NSUInteger) [_tableView numberOfRows])] columnIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, (NSUInteger) [_tableView numberOfColumns])]];
 				[self updateRowNumber];
 			}
 			[_tableView endUpdates];
@@ -855,7 +855,7 @@
 	if(self.isTome)
 	{
 		META_TOME element = ((META_TOME *) _data)[rowIndex];
-		if(element.ID != VALEUR_FIN_STRUCT)
+		if(element.ID != INVALID_SIGNED_VALUE)
 		{
 			if(_detailColumns == nil || !isDetails)
 			{
@@ -878,7 +878,7 @@
 		if(_detailColumns == nil || !isDetails)
 		{
 			int ID = ((int *) _data)[rowIndex];
-			if(ID != VALEUR_FIN_STRUCT)
+			if(ID != INVALID_SIGNED_VALUE)
 			{
 				if(ID % 10)
 					output = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), ID / 10, ID % 10];
@@ -940,7 +940,7 @@
 	{
 		for(uint i = 0; i < nbElem; i++)
 		{
-			output[i].data = isTome ? ((META_TOME*)data)[i].ID : ((int*)data)[i];
+			output[i].data = (uint) (isTome ? ((META_TOME*)data)[i].ID : ((int*)data)[i]);
 			output[i].installed = installed == NULL ? NO : installed[i];
 		}
 	}

@@ -36,7 +36,7 @@
 	return 0;
 }
 
-- (void) setChild : (id) child atIndex : (NSInteger) index
+- (void) setChild : (id) child atIndex : (NSUInteger) index
 {
 	if(children != nil)
 	{
@@ -44,7 +44,7 @@
 	}
 }
 
-- (id) getChildAtIndex : (NSInteger) index
+- (id) getChildAtIndex : (NSUInteger) index
 {
 	if(children != nil && [children count] > index)
 		return [children objectAtIndex:index];

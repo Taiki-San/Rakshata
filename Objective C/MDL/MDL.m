@@ -445,7 +445,7 @@ enum
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (int) element
 {
-	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : VALEUR_FIN_STRUCT];
+	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : INVALID_SIGNED_VALUE];
 	[[(RakAppDelegate*) [NSApp delegate] reader]	updateContextNotification : data : isTome : element];
 }
 

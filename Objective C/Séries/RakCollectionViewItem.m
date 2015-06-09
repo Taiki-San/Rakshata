@@ -127,7 +127,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 			PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
 			
 			if(dataToSend.isInitialized)
-				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : VALEUR_FIN_STRUCT];
+				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_SIGNED_VALUE];
 		}
 	}
 }

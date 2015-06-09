@@ -58,8 +58,9 @@ enum
 #define SETTINGS_PROJECTDB_FLAG "M"
 #define SETTINGS_REPODB_FLAG "R"
 
-/*Chapitre*/
-#define VALEUR_FIN_STRUCT INT_MIN
+/*Constants*/
+#define INVALID_VALUE UINT_MAX
+#define INVALID_SIGNED_VALUE INT_MIN
 
 /*Tome*/
 #define MAX_TOME_NAME_LENGTH 31

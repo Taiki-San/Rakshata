@@ -32,7 +32,7 @@
 	return self;
 }
 
-- (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition
+- (void) applyContext : (NSRect) frame : (uint) activeRow : (long) scrollerPosition
 {
 	//Let the fun begin
 	scrollView = [[RakListScrollView alloc] initWithFrame:[self getFrameFromParent:frame]];
@@ -225,7 +225,7 @@
 	return LIST_INVALID_SELECTION;
 }
 
-- (uint) getIndexOfElement : (uint) element
+- (uint) getIndexOfElement : (int) element
 {
 	return LIST_INVALID_SELECTION;
 }
@@ -373,7 +373,7 @@
 	
 	selectedRowIndex = LIST_INVALID_SELECTION;
 	
-	int baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
+	uint baseColumn = tableView.lastClickedColumn, initialColumn = baseColumn / _nbElemPerCouple * _nbElemPerCouple;
 	_tmpColor = (highlight != nil ? highlight : [self getTextHighlightColor:baseColumn / _nbElemPerCouple :rowIndex]);
 	
 	if(baseColumn != LIST_INVALID_SELECTION && rowIndex < [tableView numberOfRows] && initialColumn < [tableView numberOfColumns])
@@ -406,7 +406,7 @@
 	selectedColumnIndex = _tableView.lastClickedColumn;
 }
 
-- (void) selectElement:(uint)element
+- (void) selectElement:(int)element
 {
 	[self selectIndex : [self getIndexOfElement:element]];
 }
@@ -501,7 +501,7 @@
 		{
 			NSMutableIndexSet * new = [NSMutableIndexSet new], * old = [NSMutableIndexSet new];
 			uint newElem = 0, oldElem = 0;
-			int current;
+			uint current;
 			BOOL tooMuchChanges = NO, singleColumn = _nbCoupleColumn == 1;
 			
 			for(uint posNew = 0, posOld = 0; posNew < nbElemNew && !tooMuchChanges; posNew++)
@@ -605,7 +605,7 @@
 		[context setDuration:CT_TRANSITION_ANIMATION];
 		
 		if(oldElem != 0)
-			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])] withAnimation:revertedOrder ? NSTableViewAnimationSlideRight : NSTableViewAnimationSlideLeft];
+			[_tableView removeRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, (NSUInteger)[_tableView numberOfRows])] withAnimation:revertedOrder ? NSTableViewAnimationSlideRight : NSTableViewAnimationSlideLeft];
 		
 		if(newElem != 0)
 			[_tableView insertRowsAtIndexes:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newElem / _nbCoupleColumn + (newElem % _nbCoupleColumn != 0))] withAnimation: revertedOrder ? NSTableViewAnimationSlideLeft : NSTableViewAnimationSlideRight];

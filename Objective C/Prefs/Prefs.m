@@ -488,12 +488,12 @@ enum
 	return output;
 }
 
-+ (void) getPref : (int) requestID : (void*) outputContainer
++ (void) getPref : (uint) requestID : (void*) outputContainer
 {
 	[self getPref : requestID : outputContainer : NULL];
 }
 
-+ (void) getPref : (int) requestID : (void*) outputContainer : (void*) additionalData
++ (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData
 {
 	if(prefsCache == NULL)
 		[self initCache];
@@ -501,7 +501,7 @@ enum
 	[prefsCache getPrefInternal : requestID : outputContainer : additionalData];
 }
 
-- (void) getPrefInternal : (int) requestID : (void*) outputContainer : (void*) additionalData
+- (void) getPrefInternal : (uint) requestID : (void*) outputContainer : (void*) additionalData
 {
 	if (outputContainer == NULL)
 		return;
@@ -510,7 +510,7 @@ enum
 	{
 		case PREFS_GET_MAIN_THREAD:
 		{
-			int* output = outputContainer;
+			uint* output = outputContainer;
 			*output = mainThread;
 			break;
 		}
@@ -801,7 +801,7 @@ enum
 			if(mainThread != TAB_READER)
 				break;
 			
-			int newValue = -1;
+			uint newValue = INVALID_VALUE;
 			switch(value)
 			{
 				case TAB_SERIES:
@@ -831,11 +831,11 @@ enum
 					break;
 				}
 			}
-			if(newValue != -1)
+			if(newValue != INVALID_VALUE)
 			{
 				if(stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
 				{
-					ret_value = stateTabsReader != (uint) newValue;
+					ret_value = stateTabsReader != newValue;
 					stateTabsReader = newValue;
 				}
 			}
@@ -875,10 +875,10 @@ enum
 	if(output == NULL)
 		return;
 	
-	if(mainThreadLocal == -1)
+	if(mainThreadLocal == INVALID_VALUE)
 		mainThreadLocal = mainThread;
 	
-	if(stateTabsReaderLocal == -1)
+	if(stateTabsReaderLocal == INVALID_VALUE)
 		stateTabsReaderLocal = stateTabsReader;
 	
 	NSRect frame;
@@ -948,7 +948,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(input == NULL)
 		{
 			input = recoveryBuffer;
-			for(int i = 0; i < bufferSize; input[i++] = 'f');
+			for(uint i = 0; i < bufferSize; input[i++] = 'f');
 		}
 		
 		tabSerieSize = [RakSizeSeries alloc];
@@ -961,8 +961,6 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		tabSerieSize = [tabSerieSize init: prefsCache: input];
 		tabCTSize = [tabCTSize init: prefsCache: &input[expectedSize[0]]];
 		tabReaderSize = [tabReaderSize init: prefsCache: &input[expectedSize[0] + expectedSize[1]]];
-		
-		[checkConsistencyWidthPosXRakPrefsTabDeepData performTest:prefsCache :1 :YES];
 		
 		//Must come after tabs prefs initialization
 		prefsPosMDL = [RakMDLSize alloc];
@@ -1000,7 +998,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	
 	for(NSString * element in dataState)
 	{
-		int value = [element intValue];
+		int64_t value = [element longLongValue];
 
 		switch (pos++)
 		{

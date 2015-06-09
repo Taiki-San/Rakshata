@@ -87,7 +87,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 	
     if(dernierLu != NULL)
     {
-		*dernierLu = VALEUR_FIN_STRUCT;
+		*dernierLu = INVALID_SIGNED_VALUE;
 
 		strlcat(configFilePath, CONFIGFILE, sizeof(configFilePath));
 		FILE* file = fopen(configFilePath, "r");
@@ -123,7 +123,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 	
 	free(temporaryInstalledList);
 
-    if(dernierLu != NULL && *dernierLu != VALEUR_FIN_STRUCT)
+    if(dernierLu != NULL && *dernierLu != INVALID_SIGNED_VALUE)
     {
 		if(projectDB->chapitresInstalled != NULL)
 		{
@@ -136,7 +136,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 				*dernierLu = end;
 		}
 		else
-			*dernierLu = VALEUR_FIN_STRUCT;
+			*dernierLu = INVALID_SIGNED_VALUE;
 	}
 }
 
@@ -167,11 +167,11 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool car
 		FILE * sharedData = fopen(dirCheck, "r");
 		if(sharedData != NULL)	//On arrive à ouvrir le fichier
 		{
-			uint IDTomeLinked = VALEUR_FIN_STRUCT;
+			uint IDTomeLinked = INVALID_VALUE;
 			fscanf(sharedData, "%d", &IDTomeLinked);
 			fclose(sharedData);
 
-			if(IDTomeLinked != VALEUR_FIN_STRUCT)	//On en extrait des données valables
+			if(IDTomeLinked != INVALID_VALUE)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
 				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, IDTomeLinked);
@@ -209,7 +209,7 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID)
 		snprintf(newPath, sizeof(newPath), "%s/shared", path);
 		return checkFileExist(newPath);
 	}
-	else if(ID != VALEUR_FIN_STRUCT)
+	else if(ID != INVALID_SIGNED_VALUE)
 	{
 		char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForRepo(data.repo);
 		

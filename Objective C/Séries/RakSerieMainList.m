@@ -236,7 +236,7 @@
 		free(oldInstalled);
 		
 		if(element != LIST_INVALID_SELECTION)
-			[self selectElement : element];
+			[self selectElement : (int) element];
 		
 		if(needSwapInstalled)
 			self.installOnlyMode = newState;
@@ -326,14 +326,14 @@
 	return project.cacheDBID;
 }
 
-- (uint) getIndexOfElement : (uint) element
+- (uint) getIndexOfElement : (int) element
 {
 	if(_jumpToInstalled == NULL)
 		return LIST_INVALID_SELECTION;
 	
 	for (uint pos = 0; pos < _nbElemInstalled; pos++)
 	{
-		if(((PROJECT_DATA*) _data)[_jumpToInstalled[pos]].cacheDBID == element)
+		if(((PROJECT_DATA*) _data)[_jumpToInstalled[pos]].cacheDBID == (uint) element)
 			return pos;
 	}
 	
@@ -344,7 +344,7 @@
 
 - (void) resetHeight
 {
-	NSRange range = NSMakeRange(0, [_tableView numberOfRows]);
+	NSRange range = NSMakeRange(0, (NSUInteger) [_tableView numberOfRows]);
 	
 	[_tableView noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:range]];
 }
@@ -430,7 +430,7 @@
 	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedRowIndex];
 	
 	if(dataToSend.isInitialized)
-		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : VALEUR_FIN_STRUCT];
+		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : INVALID_SIGNED_VALUE];
 }
 
 #pragma mark - Drag and drop support
@@ -469,7 +469,7 @@
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, NO);
 	
-	[item setDataProject:project isTome:isTome element:VALEUR_FIN_STRUCT];
+	[item setDataProject:project isTome:isTome element:INVALID_SIGNED_VALUE];
 }
 
 @end

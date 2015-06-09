@@ -56,7 +56,7 @@
 	DATA_LECTURE _data;
 	
 	int _currentElem;
-	int _posElemInStructure;
+	uint _posElemInStructure;
 	
 	//Cache data
 	BOOL previousDataLoaded;

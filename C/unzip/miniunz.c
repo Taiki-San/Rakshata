@@ -179,7 +179,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
 
         if (fout != NULL && passwordPageCrypted != NULL && strcmp(filename_withoutpath, CONFIGFILE)) //Installation d'un chapitre: chiffrement a la volée
         {
-            uint posIV = -1, i, j, posDebChunk;
+            uint posIV = UINT_MAX, i, j, posDebChunk;
             unsigned char key[KEYLENGTH(KEYBITS)], ciphertext_iv[2][CRYPTO_BUFFER_SIZE];
 			unsigned char plaintext[CRYPTO_BUFFER_SIZE], ciphertext[CRYPTO_BUFFER_SIZE];
 			
@@ -207,22 +207,22 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                 }
 				
 				i = posDebChunk = 0;
-				while(i < err)
+				while(i < (uint) err)
 				{
-					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < (uint) err; plaintext[j++] = buf_char[i++]);
 					for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
 					
-					if(posIV != -1) //Pas premier passage, IV existante
+					if(posIV != UINT_MAX) //Pas premier passage, IV existante
 						for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[0][posIV++]);
 					
 					serpent_encrypt(&pSer, (uint8_t*) plaintext, (uint8_t*) ciphertext);
 					memcpy(&buf_enc[posDebChunk], ciphertext, CRYPTO_BUFFER_SIZE);
 					memcpy(ciphertext_iv, ciphertext, CRYPTO_BUFFER_SIZE);
 					
-					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < err; plaintext[j++] = buf_char[i++]);
+					for (j = 0; j < CRYPTO_BUFFER_SIZE && i < (uint) err; plaintext[j++] = buf_char[i++]);
 					for (; j < CRYPTO_BUFFER_SIZE; plaintext[j++] = 0);
 					
-					if(posIV != -1) //Pas premier passage, IV existante
+					if(posIV != UINT_MAX) //Pas premier passage, IV existante
 						for (posIV = j = 0; j < CRYPTO_BUFFER_SIZE; plaintext[j++] ^= ciphertext_iv[1][posIV++]);
 					else
 						posIV = 0;
@@ -254,7 +254,7 @@ int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, 
                     break;
                 }
 
-                if (fwrite(buf_char, 1, err, fout) != err)
+                if (fwrite(buf_char, 1, (size_t) err, fout) != (uint) err)
                 {
 #ifdef DEV_VERSION
                     logR("error in writing extracted file\n");

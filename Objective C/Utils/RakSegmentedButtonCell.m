@@ -75,7 +75,7 @@
 	frame.origin.x++;
 	frame.origin.y++;
 	
-	for(int i = 0; i < [self segmentCount]; i++)
+	for(uint i = 0; i < [self segmentCount]; i++)
 	{
 		//Draw the cell
 		frame.size.width = [self widthForSegment:i] - 1;

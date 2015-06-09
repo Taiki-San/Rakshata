@@ -88,7 +88,7 @@
 				
 				elemToRead = [[dataState objectAtIndex:2] intValue];
 				isTome = [[dataState objectAtIndex:3] boolValue];
-				page = [[dataState objectAtIndex:4] intValue];
+				page = [[dataState objectAtIndex:4] unsignedIntValue];
 				
 				if(((RakAppDelegate*)[NSApp delegate]).CT.initWithNoContent)
 				{
@@ -249,7 +249,7 @@
 	if(bottomBar != nil)
 		bottomBar.readerMode = YES;
 	
-	if(_posElemInStructure != -1)
+	if(_posElemInStructure != INVALID_VALUE)
 		[self updateTitleBar :_project :_isTome :_posElemInStructure];
 	
 	if(queryHidden)
@@ -483,9 +483,9 @@
 
 - (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
 {
-	if(element != VALEUR_FIN_STRUCT)
+	if(element != INVALID_SIGNED_VALUE)
 	{
-		[self startReading : project : element : isTome : -1];
+		[self startReading : project : element : isTome : UINT_MAX];
 		[self ownFocus];
 	}
 }
@@ -552,7 +552,7 @@
 
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
 {
-	if(element != VALEUR_FIN_STRUCT && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
+	if(element != INVALID_SIGNED_VALUE && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
 	{
 		[self updateContextNotification:data :isTome :element];
 		return YES;

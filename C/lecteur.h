@@ -20,7 +20,7 @@ typedef struct data_lecture_tome
     uint pageCourante;
     uint *pageCouranteDuChapitre;
 
-    int *pathNumber; //Correspondance entre nomPage et path
+    uint *pathNumber; //Correspondance entre nomPage et path
     char **nomPages;
     char **path;
 
@@ -39,10 +39,10 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int chapitre_tome, DA
 void releaseDataReader(DATA_LECTURE *data);
 
 bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
-bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, int posIntoStruc);
+bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, uint posIntoStruc);
 
 /**	lecteur_tool.c	**/
-int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome);
+uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome);
 bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, int currentSelection);
 
 

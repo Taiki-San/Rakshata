@@ -56,7 +56,7 @@ void updateTagDBVersion(uint newDBVersion)
 	if(createRequest(cache != NULL ? cache : immatureCache, "INSERT OR REPLACE INTO "TABLE_TAG_VERSION" (`"VERSION_COLUMN_NAME"`) VALUES(?1);", &request) != SQLITE_OK)
 		return;
 	
-	sqlite3_bind_int(request, 1, newDBVersion);
+	sqlite3_bind_int(request, 1, (int32_t) newDBVersion);
 	sqlite3_step(request);
 	destroyRequest(request);
 }
@@ -73,7 +73,7 @@ uint getTagDBVersion()
 		output = DEFAULT_TAG_VERSION;
 	}
 	else
-		output = sqlite3_column_int(request, 0);
+		output = (uint32_t) sqlite3_column_int(request, 0);
 	
 	destroyRequest(request);
 	return output;
@@ -137,7 +137,7 @@ void tagUpdateCachedEntryWithRequest(sqlite3_stmt * request, TAG_VERBOSE * newDa
 		length = wchar_to_utf8((charType *) newData[i].name, length, utf8, 4 * length + 1, 0);
 
 		//We submit the data to the request, then run and clean it
-		sqlite3_bind_int(request, 1, newData[i].ID);
+		sqlite3_bind_int(request, 1, (int32_t) newData[i].ID);
 		sqlite3_bind_text(request, 2, utf8, length, SQLITE_STATIC);
 		
 		sqlite3_step(request);
@@ -157,13 +157,13 @@ void catUpdateCachedEntryWithRequest(sqlite3_stmt * request, CATEGORY_VERBOSE * 
 		length = wchar_to_utf8((charType *) newData[i].name, length, utf8, 4 * length + 1, 0);
 		
 		//We submit the data to the request, then run and clean it
-		sqlite3_bind_int(request, 1, newData[i].ID);
-		sqlite3_bind_int(request, 2, newData[i].rootID);
+		sqlite3_bind_int(request, 1, (int32_t) newData[i].ID);
+		sqlite3_bind_int(request, 2, (int32_t) newData[i].rootID);
 		sqlite3_bind_text(request, 3, utf8, length, SQLITE_STATIC);
 		
 		for(byte tagCode = 0; tagCode < 32; tagCode++)
 		{
-			sqlite3_bind_int(request, tagCode + 4, newData[i].tags[tagCode].ID);
+			sqlite3_bind_int(request, tagCode + 4, (int32_t) newData[i].tags[tagCode].ID);
 		}
 
 		sqlite3_step(request);
@@ -261,7 +261,7 @@ void initializeTags(void * mainCache)
 				if(sqlite3_step(requestWrite) != SQLITE_DONE)
 				{
 #ifdef DEV_VERSION
-					uint ID = sqlite3_column_int(requestRead, 0);
+					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 1);
 					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];
 					
@@ -302,7 +302,7 @@ void initializeTags(void * mainCache)
 				if(sqlite3_step(requestWrite) != SQLITE_DONE)
 				{
 #ifdef DEV_VERSION
-					uint ID = sqlite3_column_int(requestRead, 0);
+					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 2);
 					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];
 					
@@ -337,14 +337,14 @@ CATEGORY getCategoryForID(uint32_t categoryID)
 		retValue.haveData = false;
 	}
 	
-	else if(createRequest(cache == NULL ? immatureCache : cache, "SELECT "DBNAMETOID(RDB_CAT_tag1)", "DBNAMETOID(RDB_CAT_tag2)", "DBNAMETOID(RDB_CAT_tag3)", "DBNAMETOID(RDB_CAT_tag4)", "DBNAMETOID(RDB_CAT_tag5)", "DBNAMETOID(RDB_CAT_tag6)", "DBNAMETOID(RDB_CAT_tag7)", "DBNAMETOID(RDB_CAT_tag8)", "DBNAMETOID(RDB_CAT_tag9)", "DBNAMETOID(RDB_CAT_tag10)", "DBNAMETOID(RDB_CAT_tag11)", "DBNAMETOID(RDB_CAT_tag12)", "DBNAMETOID(RDB_CAT_tag13)", "DBNAMETOID(RDB_CAT_tag14)", "DBNAMETOID(RDB_CAT_tag15)", "DBNAMETOID(RDB_CAT_tag16)", "DBNAMETOID(RDB_CAT_tag17)", "DBNAMETOID(RDB_CAT_tag18)", "DBNAMETOID(RDB_CAT_tag19)", "DBNAMETOID(RDB_CAT_tag20)", "DBNAMETOID(RDB_CAT_tag21)", "DBNAMETOID(RDB_CAT_tag22)", "DBNAMETOID(RDB_CAT_tag23)", "DBNAMETOID(RDB_CAT_tag24)", "DBNAMETOID(RDB_CAT_tag25)", "DBNAMETOID(RDB_CAT_tag26)", "DBNAMETOID(RDB_CAT_tag27)", "DBNAMETOID(RDB_CAT_tag28)", "DBNAMETOID(RDB_CAT_tag29)", "DBNAMETOID(RDB_CAT_tag30)", "DBNAMETOID(RDB_CAT_tag31)", "DBNAMETOID(RDB_CAT_tag32)" FROM "TABLE_CATEGORY" WHERE "DBNAMETOID(RDB_CAT_ID)" = ?1", &request) == SQLITE_OK && sqlite3_bind_int(request, 1, categoryID) == SQLITE_OK && sqlite3_step(request) == SQLITE_ROW)
+	else if(createRequest(cache == NULL ? immatureCache : cache, "SELECT "DBNAMETOID(RDB_CAT_tag1)", "DBNAMETOID(RDB_CAT_tag2)", "DBNAMETOID(RDB_CAT_tag3)", "DBNAMETOID(RDB_CAT_tag4)", "DBNAMETOID(RDB_CAT_tag5)", "DBNAMETOID(RDB_CAT_tag6)", "DBNAMETOID(RDB_CAT_tag7)", "DBNAMETOID(RDB_CAT_tag8)", "DBNAMETOID(RDB_CAT_tag9)", "DBNAMETOID(RDB_CAT_tag10)", "DBNAMETOID(RDB_CAT_tag11)", "DBNAMETOID(RDB_CAT_tag12)", "DBNAMETOID(RDB_CAT_tag13)", "DBNAMETOID(RDB_CAT_tag14)", "DBNAMETOID(RDB_CAT_tag15)", "DBNAMETOID(RDB_CAT_tag16)", "DBNAMETOID(RDB_CAT_tag17)", "DBNAMETOID(RDB_CAT_tag18)", "DBNAMETOID(RDB_CAT_tag19)", "DBNAMETOID(RDB_CAT_tag20)", "DBNAMETOID(RDB_CAT_tag21)", "DBNAMETOID(RDB_CAT_tag22)", "DBNAMETOID(RDB_CAT_tag23)", "DBNAMETOID(RDB_CAT_tag24)", "DBNAMETOID(RDB_CAT_tag25)", "DBNAMETOID(RDB_CAT_tag26)", "DBNAMETOID(RDB_CAT_tag27)", "DBNAMETOID(RDB_CAT_tag28)", "DBNAMETOID(RDB_CAT_tag29)", "DBNAMETOID(RDB_CAT_tag30)", "DBNAMETOID(RDB_CAT_tag31)", "DBNAMETOID(RDB_CAT_tag32)" FROM "TABLE_CATEGORY" WHERE "DBNAMETOID(RDB_CAT_ID)" = ?1", &request) == SQLITE_OK && sqlite3_bind_int(request, 1, (int32_t) categoryID) == SQLITE_OK && sqlite3_step(request) == SQLITE_ROW)
 	{
 		
 		retValue.haveData = true;
 		retValue.ID = categoryID;
 		
 		for(byte i = 0; i < 32; i++)
-			retValue.tags[i].ID = sqlite3_column_int(request, i);
+			retValue.tags[i].ID = (uint32_t) sqlite3_column_int(request, i);
 		
 		destroyRequest(request);
 	}
@@ -369,7 +369,7 @@ uint getRootCategoryIDForID(uint32_t categoryID)
 		return TAG_NO_VALUE;
 
 	else if(createRequest(cache != NULL ? cache : immatureCache, "SELECT "DBNAMETOID(RDB_CAT_rootID)" FROM "TABLE_CATEGORY" WHERE "DBNAMETOID(RDB_CAT_ID)" = ?1;", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_ROW)
-		output = sqlite3_column_int(request, 0);
+		output = (uint32_t) sqlite3_column_int(request, 0);
 	
 	else
 		output = TAG_NO_VALUE;
@@ -381,7 +381,7 @@ uint getRootCategoryIDForID(uint32_t categoryID)
 
 charType * getNameForRequestAndCode(sqlite3_stmt * request, uint32_t code)
 {
-	sqlite3_bind_int(request, 1, code);
+	sqlite3_bind_int(request, 1, (int32_t) code);
 	
 	if(sqlite3_step(request) != SQLITE_ROW)
 		return L"Unknown category";

@@ -190,7 +190,7 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 		//Find the last volume installed
 		if(project.tomesInstalled != NULL && project.nombreTomesInstalled > 0)
 		{
-			uint lastVol = project.tomesInstalled[project.nombreTomesInstalled-1].ID;
+			int lastVol = project.tomesInstalled[project.nombreTomesInstalled-1].ID;
 			
 			for(basePos = 0; basePos < project.nombreTomes && project.tomesFull[basePos].ID != lastVol; basePos++);
 		}
@@ -224,7 +224,7 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 		//Find the last volume installed
 		if(project.chapitresInstalled != NULL && project.nombreChapitreInstalled > 0)
 		{
-			uint lastChap = project.chapitresInstalled[project.nombreChapitreInstalled-1];
+			int lastChap = project.chapitresInstalled[project.nombreChapitreInstalled-1];
 			
 			for(basePos = 0; basePos < project.nombreChapitre && project.chapitresFull[basePos] != lastChap; basePos++);
 		}
@@ -255,7 +255,7 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 void getNewFavs()
 {
 	bool prevIsTome;
-	int lastInstalled, prevElem = VALEUR_FIN_STRUCT;
+	int lastInstalled, prevElem = INVALID_SIGNED_VALUE;
 	uint nbProject, prevProjectIndex;
     PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO, &nbProject), *current;
 
@@ -280,7 +280,7 @@ void getNewFavs()
 			{
 				if (!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
 				{
-					if(prevElem != VALEUR_FIN_STRUCT)
+					if(prevElem != INVALID_SIGNED_VALUE)
 					{
 						addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
 					}
@@ -303,7 +303,7 @@ void getNewFavs()
 			{
 				if (!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
 				{
-					if(prevElem != VALEUR_FIN_STRUCT)
+					if(prevElem != INVALID_SIGNED_VALUE)
 					{
 						addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, true);
 					}
@@ -316,7 +316,7 @@ void getNewFavs()
 		}
     }
 	
-	if(prevElem != VALEUR_FIN_STRUCT)
+	if(prevElem != INVALID_SIGNED_VALUE)
 		addElementToMDL(projectDB[prevProjectIndex], prevIsTome, prevElem, false);
 
 	freeProjectData(projectDB);

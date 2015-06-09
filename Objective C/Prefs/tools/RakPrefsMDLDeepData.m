@@ -36,7 +36,7 @@
 	sizeInputBuffer = 4 + 4;
 }
 
-- (int) getExpectedBufferSize
+- (uint) getExpectedBufferSize
 {
 	return sizeInputBuffer;
 }
@@ -73,7 +73,7 @@
 	return STATE_READER_TAB_MDL_FOCUS;
 }
 
-- (NSRect) getData:(int) mainThread : (int) stateTabsReader
+- (NSRect) getData:(uint) mainThread : (uint) stateTabsReader
 {
 	switch (mainThread)
 	{
@@ -104,7 +104,7 @@
 	
 	[Prefs getPref:PREFS_GET_TAB_CT_POSX: &output.origin.x];
 	[Prefs getPref:PREFS_GET_CT_FOOTER_HEIGHT: &output.size.height];
-	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :TAB_CT :-1 :&output.size.width];
+	[Prefs directQuery:QUERY_CT :QUERY_GET_WIDTH :TAB_CT :INVALID_VALUE :&output.size.width];
 	output.origin.y = 0;
 	
 	output.origin.x += floor(output.size.width / 2);
@@ -113,7 +113,7 @@
 	return output;
 }
 
-- (NSRect) getFocusReader : (int) stateTabsReader
+- (NSRect) getFocusReader : (uint) stateTabsReader
 {
 	NSRect output = NSZeroRect;
 	

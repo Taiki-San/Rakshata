@@ -242,7 +242,7 @@
 	}
 	else					//img cell
 	{
-		uint state = RB_STATE_UNAVAILABLE;
+		int state = RB_STATE_UNAVAILABLE;
 		
 		//We get the previous state to restore it
 		if(self.image == clicked)

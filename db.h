@@ -12,7 +12,7 @@
 
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
-unsigned long alreadyRefreshed;
+int64_t alreadyRefreshed;
 
 enum getCopyDBCodes
 {

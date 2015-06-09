@@ -154,8 +154,8 @@ enum FONT_REQUEST {
 
 + (NSString *) getFontName : (byte) context;
 
-+ (void) getPref : (int) requestID : (void*) outputContainer;
-+ (void) getPref : (int) requestID : (void*) outputContainer : (void*) additionalData;
++ (void) getPref : (uint) requestID : (void*) outputContainer;
++ (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;
 + (BOOL) setPref : (uint) requestID : (uint64) value;
 
 //Semi-public, use of this method should be avoided when possible

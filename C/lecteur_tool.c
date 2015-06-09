@@ -12,7 +12,7 @@
 
 #include "lecteur.h"
 
-int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome)
+uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome)
 {
 	uint curPosIntoStruct;
 		
@@ -21,24 +21,24 @@ int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, 
         if(projectDB.chapitresInstalled == NULL)
         {
 			logR("Error: failed at loading available content for the project");
-			return -1;
+			return INVALID_VALUE;
         }
         for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreChapitreInstalled && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
 
 		if(curPosIntoStruct == projectDB.nombreChapitreInstalled)
-			return -1;
+			return INVALID_VALUE;
 	}
     else
     {
         if(projectDB.tomesInstalled == NULL)
         {
 			logR("Error: failed at loading available content for the project");
-			return -1;
+			return INVALID_VALUE;
 		}
         for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
 		
 		if(curPosIntoStruct == projectDB.nombreTomesInstalled)
-			return -1;
+			return INVALID_VALUE;
     }
 	
 	//On vérifie que l'entrée est valide
@@ -47,7 +47,7 @@ int reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, 
 		if(!reader_getNextReadableElement(projectDB, isTome, &curPosIntoStruct))
 		{
 			logR("Error: failed at finding an acceptable project");
-			return -1;
+			return INVALID_VALUE;
 		}
 	}
 	

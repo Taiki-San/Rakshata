@@ -30,7 +30,7 @@ enum {
 {
 	BOOL noDrag;
 	BOOL canDeploy;
-	int flag;
+	uint flag;
 	NSTrackingRectTag trackingArea;
 	
 	NSRect _lastFrame;

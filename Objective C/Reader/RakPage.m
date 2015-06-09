@@ -12,7 +12,7 @@
 
 @implementation Reader (PageManagement)
 
-- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
@@ -507,7 +507,7 @@
 
 #pragma mark    -   Active routines
 
-- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	_project = getCopyOfProjectData(dataRequest);
 	_currentElem = elemRequest;
@@ -516,7 +516,7 @@
 	_cacheBeingBuilt = NO;
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
-	if(_posElemInStructure == -1)
+	if(_posElemInStructure == UINT_MAX)
 	{
 		[self failure];
 		return NO;
@@ -544,7 +544,7 @@
 		return NO;
 	}
 	
-	if(startPage < 0 || _data.nombrePage == 0)
+	if(startPage == INVALID_VALUE || _data.nombrePage == 0)
 		_data.pageCourante = 0;
 	else if(startPage < _data.nombrePage)
 		_data.pageCourante = startPage;
@@ -668,7 +668,7 @@
 	if (newPage == _data.pageCourante || newPage >= _data.nombrePage)
 		return;
 	
-	int pageCourante = _data.pageCourante;
+	uint pageCourante = _data.pageCourante;
 	
 	if(newPage == pageCourante - 1)
 		[self changePage:READER_ETAT_PREVPAGE];
@@ -798,7 +798,7 @@
 	}
 }
 
-- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (int) startPage
+- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
@@ -1104,15 +1104,16 @@
 		//Encore de la place dans le cache
 		else if([self nbEntryRemaining : *data])
 		{
-			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1;	//Next page by default
-			uint i, max = _data.nombrePage;
+			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1, i;	//Next page by default
+			uint max = _data.nombrePage;
+			int64_t basePage = _data.pageCourante;
 			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
-			for(i = 0; i < 5 && _data.pageCourante + i * move < max; i++)
+			for(i = 0; i < 5 && basePage >= i * move && basePage + i * move < max; i++)
 			{
-				if(![self entryValid : *data : _data.pageCourante + 1 + i * move])
+				if(![self entryValid : *data : basePage + 1 + i * move])
 				{
-					[self loadPageCache:_data.pageCourante + i * move :session];
+					[self loadPageCache:basePage + i * move :session];
 					move = 0;
 					break;
 				}
@@ -1129,11 +1130,11 @@
 			
 			//We cache the previous page, in the case the user want to go back
 			//First, we check if we are in the general case
-			if(_data.pageCourante - move < max)
+			if(basePage - move < max)
 			{
-				if(![self entryValid : *data :_data.pageCourante + 1 - move])
+				if(![self entryValid : *data :basePage + 1 - move])
 				{
-					[self loadPageCache:_data.pageCourante - move : session];
+					[self loadPageCache:basePage - move : session];
 					continue;
 				}
 			}
@@ -1144,16 +1145,16 @@
 			}
 			
 			//Ok then, we cache everythin after
-			for (i = _data.pageCourante + 1; i < max; i++)
+			for (basePage++; basePage < max; basePage++)
 			{
-				if(![self entryValid : *data : i + 1])
+				if(![self entryValid : *data : basePage + 1])
 				{
-					[self loadPageCache : i :session];
+					[self loadPageCache : basePage :session];
 					break;
 				}
 			}
 			
-			if(i == max)	//Nothing else to load
+			if(basePage == max)	//Nothing else to load
 				break;
 		}
 		else
@@ -1488,7 +1489,7 @@
 		uint requestedPage;
 		
 		if([object superclass] == [NSNumber class])
-			requestedPage = [(NSNumber*) object intValue];
+			requestedPage = [(NSNumber*) object longLongValue];
 		else
 			requestedPage = object.page;
 		
@@ -1512,9 +1513,9 @@
 		pageController.selectedIndex = 1;
 
 	//After the last page
-	if(pageController.selectedIndex == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
+	if(((NSUInteger) pageController.selectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
 	{
-		pageController.selectedIndex = [pageController.arrangedObjects count] - 2;
+		pageController.selectedIndex = (int64_t) [pageController.arrangedObjects count] - 2;
 		
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 		if(self.distractionFree)

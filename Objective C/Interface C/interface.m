@@ -81,14 +81,14 @@ void createCrashFile()
 
 void sendCrashedFilesHome()
 {
-	const byte nbEntries = 2;
-	char * filename[] = {CONTEXT_FILE".crashed", SETTINGS_FILE".crashed"};
-	char * argumentName[] = {"context", "settings"};
+	const byte nbEntries = 3, minValid = 2;
+	char * filename[] = {CONTEXT_FILE".crashed", SETTINGS_FILE".crashed", SETTINGS_FILE};
+	char * argumentName[] = {"context", "settings", "settings"};
 	
 	char * output = NULL;
 	size_t outputLength = 150, currentPos = 0;
 	
-	for(uint i = 0; i < nbEntries; i++)
+	for(uint i = 0, validCount = 0; i < nbEntries && validCount < minValid; i++)
 	{
 		if(checkFileExist(filename[i]))
 		{
@@ -109,10 +109,14 @@ void sendCrashedFilesHome()
 				if(tmp != NULL)
 				{
 					output = tmp;
-					currentPos += snprintf(&(output[currentPos]), 2 * fileSize + 150, "%s%s=%s", currentPos != 0 ? "&" : "", argumentName[i], encodedData);
+					
+					int length = snprintf(&(output[currentPos]), 2 * fileSize + 150, "%s%s=%s", currentPos != 0 ? "&" : "", argumentName[i], encodedData);
+					if(length >= 0)
+						currentPos += (uint) length;
 				}
 				
 				fclose(file);
+				validCount++;
 			}
 		}
 	}

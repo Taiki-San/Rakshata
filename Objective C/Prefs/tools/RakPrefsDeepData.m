@@ -44,8 +44,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 
 - (void) initJumpTable : (SEL *) jumpTable
 {
-	int i;
-	for(i = 0; i < numberElem; jumpTable[i] = NULL);
+	for(uint i = 0; i < numberElem; jumpTable[i] = NULL);
 }
 
 - (void) setNumberElem
@@ -113,12 +112,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 #endif
 }
 
-- (void) performSelfCheck
-{
-	
-}
-
-- (int) getNbElem
+- (uint) getNbElem
 {
 	return numberElem;
 }

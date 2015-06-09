@@ -25,12 +25,12 @@ enum
 	{
 		__block uint oldWidthButton = 0;
 		
-		[self setSegmentCount:[buttonMessages count]];
+		[self setSegmentCount:(NSInteger)[buttonMessages count]];
 		
 		[buttonMessages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			
-			[self setLabel:obj forSegment:idx];
-			[self setEnabled:NO forSegment:idx];
+			[self setLabel:obj forSegment:(NSInteger)idx];
+			[self setEnabled:NO forSegment:(NSInteger)idx];
 			[self sizeToFit];
 			
 			CGFloat widthButton;
@@ -40,7 +40,7 @@ enum
 			else
 				widthButton = self.frame.size.width - oldWidthButton - 1;	//Hack to properly draw the buttons below
 			
-			[self setWidth:widthButton forSegment:idx];
+			[self setWidth:widthButton forSegment:(NSInteger)idx];
 			
 			oldWidthButton += widthButton;
 			

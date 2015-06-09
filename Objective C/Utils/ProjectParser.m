@@ -101,7 +101,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 						int value = [entry3 integerValue];
 						
 #ifdef DEV_VERSION
-						if(value == 0xdeadbead)
+						if(value == (int) 0xdeadbead)
 						{
 							//This value is used to signal a deallocated memory area, it'd crash if ran in debugger
 							logR("Error: this value (-559038803) is forbiden, moved by one");
@@ -129,8 +129,11 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_LAST, @"last");
 				if(entry1 != nil && !ARE_CLASSES_DIFFERENT(entry1, [NSNumber class]))	last = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
+				if(jump == 0 || (last < first && jump > 0) || (last > first && jump < 0))
+					continue;
+				
 				sum = (last - first) / jump + 1;
-				if(sum > 0)	*counter += sum;
+				if(sum > 0)	*counter += (uint) sum;
 				else		continue;
 				
 				if((tmp = realloc(output, (*counter + 1) * typeSize)) != NULL)
@@ -233,7 +236,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 	else
 	{
 		//We create a diff table
-		uint diff[length - 1];
+		int diff[length - 1];
 		
 		if(isChapter)
 		{
@@ -408,7 +411,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 				continue;
 			
 			output[cache].ID = [internalID intValue];
-			output[cache].readingID = readingID == nil ? VALEUR_FIN_STRUCT : [readingID intValue];
+			output[cache].readingID = readingID == nil ? INVALID_SIGNED_VALUE : [readingID intValue];
 			
 			if(readingName == nil)			output[cache].readingName[0] = 0;
 			else							wcsncpy(output[cache].readingName, (charType*) [readingName cStringUsingEncoding:NSUTF32StringEncoding], MAX_TOME_NAME_LENGTH);
@@ -444,9 +447,9 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 	
 	for(uint pos = 0; pos < length; pos++)
 	{
-		if(volume[pos].ID == VALEUR_FIN_STRUCT)
+		if(volume[pos].ID == INVALID_SIGNED_VALUE)
 			break;
-		else if(volume[pos].readingID == VALEUR_FIN_STRUCT && volume[pos].readingName[0] == 0)
+		else if(volume[pos].readingID == INVALID_SIGNED_VALUE && volume[pos].readingName[0] == 0)
 			continue;
 		
 		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_PROJ_VOL_INTERNAL_ID];
@@ -457,7 +460,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		if(volume[pos].readingName[0])
 			[dict setObject:getStringForWchar(volume[pos].readingName) forKey:JSON_PROJ_VOL_READING_NAME];
 		
-		if(volume[pos].readingID != VALEUR_FIN_STRUCT)
+		if(volume[pos].readingID != INVALID_SIGNED_VALUE)
 			[dict setObject:@(volume[pos].readingID) forKey:JSON_PROJ_VOL_READING_ID];
 		
 		if(paidContent && volume[pos].price != UINT_MAX)

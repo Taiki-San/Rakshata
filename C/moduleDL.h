@@ -38,7 +38,7 @@ enum
 /*Divers*/
 
 enum isInstalledRC {
-	ERROR_CHECK				= -1,
+	ERROR_CHECK				= UINT_MAX,
 	NOT_INSTALLED			= 0,
 	ALTERNATIVE_INSTALLED	= 1,
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
@@ -97,7 +97,7 @@ typedef struct intermediary_from_data_loaded_to_DL_thread
 	unsigned char *tomeName;
 	
 	int chapitre;
-    int partOfTome; //Si VALEUR_FIN_STRUCTURE, alors chapitre indé, sinon, tome dont c'est l'ID
+    int partOfTome; //Si INVALID_VALUEURE, alors chapitre indé, sinon, tome dont c'est l'ID
 	
 	bool subFolder;
 	
@@ -107,7 +107,7 @@ typedef struct data_sent_to_pay_thread
 {
     int8_t ** statusLocal;
     int prix;
-    int sizeStatusLocal;
+    uint sizeStatusLocal;
     unsigned int factureID;
     bool somethingToPay;
 } DATA_PAY;
@@ -159,7 +159,7 @@ typedef struct argument_to_main_worker
 
 typedef struct argument_to_MDL_handler
 {
-	int selfCode;
+	uint selfCode;
     int8_t *currentState;
     
 	DATA_LOADED* todoList;
@@ -175,17 +175,17 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 /**ModuleDL2.c**/
 bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
 bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab, bool threaded);
-void MDLCleanup(int nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem);
+void MDLCleanup(uint nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem);
 char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(REPO_DATA repoData, uint* length);
 DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state);
-DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk);
+DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, uint * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
 void MDLFlushElement(DATA_LOADED * element);
-char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
+uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
 void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 int sortProjectsToDownload(const void *a, const void *b);

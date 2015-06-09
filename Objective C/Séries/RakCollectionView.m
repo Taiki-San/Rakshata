@@ -200,7 +200,7 @@
 	//Every cell touch each other, so we must be over a cell
 	while (rowMin <= rowMax)
 	{
-		item = (id) [self itemAtIndex:currentRow * nbColumn].view;
+		item = (id) [self itemAtIndex: ((uint64_t) currentRow) * nbColumn].view;
 		if(item.frame.origin.y > pointInDocument.y)		//The goal is higher than this cell
 		{
 			rowMax = currentRow - 1;

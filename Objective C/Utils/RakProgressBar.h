@@ -17,7 +17,7 @@
 	
 	CGFloat _percentage;
 
-	size_t _speed;
+	int64_t _speed;
 	RakText * _speedText;
 	
 	NSColor * slotColor;

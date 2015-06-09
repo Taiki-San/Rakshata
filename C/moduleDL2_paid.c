@@ -36,8 +36,7 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
     index = MDLPGeneratePaidIndex(data, *status, IDToPosition, length);
     if(index != NULL)
     {
-        int sizeIndex;
-        unsigned int factureID = -1;
+        uint factureID = INVALID_VALUE, sizeIndex;
         char * POSTRequest = MDLPCraftPOSTRequest(data, index);
 
         if(POSTRequest != NULL)
@@ -45,7 +44,7 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
             char *bufferOut = NULL, *bufferOutBak;
 			size_t downloadLength;
 			
-            for(sizeIndex = 0; index[sizeIndex] != VALEUR_FIN_STRUCT; sizeIndex++);
+            for(sizeIndex = 0; index[sizeIndex] != INVALID_VALUE; sizeIndex++);
 
 			/*Interrogration du serveur*/
 			if(download_mem(SERVEUR_URL"/checkPaid.php", POSTRequest, &bufferOut, &downloadLength, SSL_ON) == CODE_RETOUR_OK && bufferOut != NULL && downloadLength != 0 && isNbr(bufferOut[0]))
@@ -56,9 +55,9 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
 				bufferOutBak = bufferOut;
 				
 				bufferOut += sscanfs(bufferOut, "%d\n%d", &prix, &factureID);
-				if(prix != -1 && factureID != -1)
+				if(prix != -1 && factureID != INVALID_VALUE)
 				{
-					int posStatusLocal = 0;
+					uint posStatusLocal = 0;
 					int8_t ** statusLocal = calloc(sizeIndex+1, sizeof(int8_t*));
 					if(statusLocal != NULL)
 					{
@@ -150,7 +149,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
 	if(COMPTE_PRINCIPAL_MAIL == NULL)
 		return NULL;
 	
-    int emailLength = strlen(COMPTE_PRINCIPAL_MAIL), length = 3 * emailLength + 50, compteur;
+	uint emailLength = strlen(COMPTE_PRINCIPAL_MAIL), length = 3 * emailLength + 50, compteur;
     char *output = NULL, *bufferEmail, buffer[500];
     void *buf;
 
@@ -163,7 +162,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
 		checkIfCharToEscapeFromPOST(COMPTE_PRINCIPAL_MAIL, emailLength, bufferEmail);
         snprintf(output, length - 1, "ver="CURRENTVERSIONSTRING"&mail=%s", bufferEmail);
 
-        for(compteur = 0; index[compteur] != VALEUR_FIN_STRUCT; compteur++)
+        for(compteur = 0; index[compteur] != INVALID_VALUE; compteur++)
         {
 			checkIfCharToEscapeFromPOST(data[index[compteur]]->datas->repo->URL, LONGUEUR_URL, bufferURLDepot);
 			
@@ -190,7 +189,7 @@ char *MDLPCraftPOSTRequest(DATA_LOADED ** data, uint *index)
 void MDLPHandlePayProcedure(DATA_PAY * arg)
 {
     bool toPay = arg->somethingToPay, cancel = false;
-    int sizeStatusLocal = arg->sizeStatusLocal;
+    uint sizeStatusLocal = arg->sizeStatusLocal;
 	int8_t **statusLocal = arg->statusLocal;
     unsigned int factureID = arg->factureID;
     free(arg);
@@ -199,8 +198,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
 	
     if(COMPTE_PRINCIPAL_MAIL != NULL)
     {
-        int i = 0;
-        for(; i < sizeStatusLocal; i++)
+        for(uint i = 0; i < sizeStatusLocal; i++)
         {
             if(*statusLocal[i] == MDL_CODE_WAITING_LOGIN)
 			{
@@ -214,7 +212,7 @@ void MDLPHandlePayProcedure(DATA_PAY * arg)
             int out = 0;
             if(out == 1)   //Nop
             {
-                for(i = 0; i < sizeStatusLocal; i++)
+                for(uint i = 0; i < sizeStatusLocal; i++)
                 {
                     if(*statusLocal[i] == MDL_CODE_WAITING_PAY)
                         *statusLocal[i] = MDL_CODE_UNPAID;
@@ -331,7 +329,7 @@ uint * MDLPGeneratePaidIndex(DATA_LOADED ** data, int8_t ** status, uint * IDToP
 		if(tmp != NULL)
 			output = tmp;
 		
-        output[outputLength] = VALEUR_FIN_STRUCT;
+        output[outputLength] = INVALID_VALUE;
     }
     return output;
 }

@@ -131,8 +131,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 		
 		length = MIN(length, 5000);
 #elif defined(__APPLE__)
-		unsigned char buffer_fingerprint[5000];
-		char command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
+		char buffer_fingerprint[5000], command_line[4][64] = {"system_profiler SPHardwareDataType | grep 'Serial Number'", "system_profiler SPHardwareDataType | grep 'Hardware UUID'", "system_profiler SPHardwareDataType | grep 'Boot ROM Version'", "system_profiler SPHardwareDataType | grep 'SMC Version'"};
 		
 		FILE *system_output;
 		for(byte j = 0; j < 4; j++)
@@ -142,7 +141,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 			system_output = popen(command_line[j], "r");
 			if(system_output != NULL && fread(currentSection, sizeof(char), sizeof(currentSection), system_output) > 0)
 			{
-				short pos = 0;
+				uint pos = 0;
 				
 				while(pos < sizeof(currentSection) && currentSection[pos] && currentSection[pos++] != ':');
 				for(; pos < sizeof(currentSection) && currentSection[pos] && currentSection[pos] == ' '; pos++);
@@ -167,7 +166,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 		 En faisant à nouveau le coup de popen ou de fopen, on en récupère quelques un, on les hash et basta**/
 		
 #endif
-		whirlpool(buffer_fingerprint, length, (char*) _fingerprint, false);
+		whirlpool((byte *) buffer_fingerprint, length, (char*) _fingerprint, false);
 		craftedOnce = true;
 	}
 	
@@ -207,7 +206,7 @@ void getFileDate(const char *filename, char *date, void* internalData)
 #endif
 }
 
-IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page)
+IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uint page)
 {
 	if(pathRoot == NULL || pathPage == NULL)
 		return IMGLOAD_NODATA;
@@ -427,7 +426,8 @@ void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     if(download_mem(SERVEUR_URL"/damocles", NULL, &bufferDL, &lengthBuffer, SSL_ON) != CODE_RETOUR_OK || lengthBuffer == 0) //Rien n'a été téléchargé
         return;
 
-	int posBuffer = 0, posBufferOut = 0, nbElemInKS, posBufferOutInLine;
+	uint posBuffer = 0, posBufferOut = 0, posBufferOutInLine;
+	int nbElemInKS;
 
 	for(; posBuffer < lengthBuffer && !isNbr(bufferDL[posBuffer]); posBuffer++);
 	
@@ -448,10 +448,16 @@ void loadKS(char outputKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]
     temp[posBufferOut] = 0;
 	nbElemInKS = atoi(temp);
 	
+	if(nbElemInKS <= 0)
+	{
+		free(bufferDL);
+		return;
+	}
+	
 	if(nbElemInKS >= NUMBER_MAX_REPO_KILLSWITCHE)
 		nbElemInKS = NUMBER_MAX_REPO_KILLSWITCHE -1;
 	
-    for(posBufferOut = 0; posBuffer < lengthBuffer && posBufferOut < nbElemInKS; posBufferOut++)
+    for(posBufferOut = 0; posBuffer < lengthBuffer && posBufferOut < (uint) nbElemInKS; posBufferOut++)
     {
         for(; posBuffer < lengthBuffer && bufferDL[posBuffer] && bufferDL[posBuffer] != '\n'; posBuffer++);
         for(posBufferOutInLine = 0; posBuffer < lengthBuffer && posBufferOutInLine < 2*SHA256_DIGEST_LENGTH && isHexa(bufferDL[posBuffer]); outputKS[posBufferOut][posBufferOutInLine++] = bufferDL[posBuffer++]);

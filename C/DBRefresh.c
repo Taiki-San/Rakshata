@@ -372,7 +372,7 @@ void updateProjects()
 
 void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
-	if(elemToDel == VALEUR_FIN_STRUCT)	//On supprime tout
+	if(elemToDel == INVALID_SIGNED_VALUE)	//On supprime tout
 	{
 		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForRepo(project.repo);
 		

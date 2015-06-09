@@ -123,11 +123,11 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	if(createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", &request) == SQLITE_OK)
 	{
 		sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
-		sqlite3_bind_int(request, 2, data.projectID);
+		sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
 			//We'll inject the data now
-			uint nbOccurence = sqlite3_column_int(request, 0);
+			uint nbOccurence = (uint) sqlite3_column_int(request, 0);
 			char requestString[200];
 			time_t recentRead = wasItADL ? 0 : timestamp, recentDL = wasItADL ? timestamp : 0;
 
@@ -143,7 +143,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				if(createRequest(database, requestString, &request) == SQLITE_OK)
 				{
 					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
-					sqlite3_bind_int(request, 2, data.projectID);
+					sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 					
 					if(sqlite3_step(request) == SQLITE_ROW)
 					{
@@ -158,7 +158,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 							if(createRequest(database, requestString, &request) == SQLITE_OK)
 							{
 								sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
-								sqlite3_bind_int(request, 2, data.projectID);
+								sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 								
 								if(sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) == 0)
 								{
@@ -188,7 +188,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 					sqlite3_bind_int64(request, 2, recentDL);
 
 				sqlite3_bind_text(request, 3, data.repo->URL, -1, SQLITE_STATIC);
-				sqlite3_bind_int(request, 4, data.projectID);
+				sqlite3_bind_int(request, 4, (int32_t) data.projectID);
 
 				output = sqlite3_step(request) == SQLITE_DONE;
 			}
@@ -225,7 +225,7 @@ void removeRecentEntryInternal(char * URLRepo, uint projectID)
 	if(createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2", &request) == SQLITE_OK)
 	{
 		sqlite3_bind_text(request, 1, URLRepo, -1, SQLITE_STATIC);
-		sqlite3_bind_int(request, 2, projectID);
+		sqlite3_bind_int(request, 2, (int32_t) projectID);
 		
 		sqlite3_step(request);
 	}
@@ -271,7 +271,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	while (*nbElem < 3 && sqlite3_step(request) == SQLITE_ROW)
 	{
 		team =	(char *) sqlite3_column_text(request, 2);
-		projectID = sqlite3_column_int(request, 3);
+		projectID = (uint) sqlite3_column_int(request, 3);
 		
 		if(team != NULL)
 		{

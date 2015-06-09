@@ -391,13 +391,13 @@
 	}
 	else if(![item isMainList])
 	{
-		output = [item getChildAtIndex:index];
+		output = [item getChildAtIndex: (NSUInteger) index];
 		if(output == nil)
 		{
 			uint8_t recentIndex =  (index + ([item isDLList] ? 3 : 0));
 			
 			output = [[RakSerieListItem alloc] init : [_data pointerAtIndex:recentIndex] : NO : initializationStage : 0];
-			[item setChild:output atIndex:index];
+			[item setChild:output atIndex: (NSUInteger) index];
 			
 			[_data removePointerAtIndex:recentIndex];
 			[_data insertPointer:NULL atIndex:recentIndex];
@@ -405,11 +405,11 @@
 	}
 	else
 	{
-		output = [item getChildAtIndex:index];
+		output = [item getChildAtIndex: (NSUInteger) index];
 		if(output == nil)
 		{
 			output = [[RakSerieListItem alloc] init : nil : NO : initializationStage : 0];
-			[item setChild:output atIndex:index];
+			[item setChild:output atIndex: (NSUInteger) index];
 		}
 	}
 	
@@ -449,7 +449,7 @@
 	if(tmp.nombreTomes != 0)
 		getUpdatedCTList(&tmp, true);
 	
-	[RakTabView broadcastUpdateContext: content : tmp : NO : VALEUR_FIN_STRUCT];
+	[RakTabView broadcastUpdateContext: content : tmp : NO : INVALID_SIGNED_VALUE];
 	
 	releaseCTData(tmp);
 	
@@ -616,11 +616,11 @@
 		}
 	}
 	
-	if(mainList != nil)
+	if(mainList != nil && positionMainList >= 0)
 	{
 		height = content.frame.size.height - height - padding;		//We got last row height
 		[mainList setMainListHeight:height];
-		[content noteHeightOfRowsWithIndexesChanged:[NSMutableIndexSet indexSetWithIndex:positionMainList]];
+		[content noteHeightOfRowsWithIndexesChanged:[NSMutableIndexSet indexSetWithIndex: (NSUInteger) positionMainList]];
 	}
 }
 
@@ -709,7 +709,7 @@
 	getUpdatedChapterList(&project, true);
 	getUpdatedTomeList(&project, true);
 	
-	[pbData setDataProject : project isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: VALEUR_FIN_STRUCT];
+	[pbData setDataProject : project isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

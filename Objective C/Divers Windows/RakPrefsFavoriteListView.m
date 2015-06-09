@@ -179,7 +179,7 @@ enum
 
 + (void) readProject : (PROJECT_DATA) project
 {
-	[RakTabView broadcastUpdateContext:nil :project :NO :VALEUR_FIN_STRUCT];
+	[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_SIGNED_VALUE];
 	[RakTabView broadcastUpdateFocus:TAB_CT];
 	[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
 }

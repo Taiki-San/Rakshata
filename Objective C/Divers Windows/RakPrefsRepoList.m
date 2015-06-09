@@ -96,7 +96,7 @@ enum
 
 - (void) resetSelection:(NSTableView *)tableView
 {
-	lastTransmittedSelectedRowIndex = VALEUR_FIN_STRUCT;
+	lastTransmittedSelectedRowIndex = INVALID_VALUE;
 	
 	[super resetSelection:tableView];
 }

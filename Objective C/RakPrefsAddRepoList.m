@@ -67,6 +67,9 @@ enum
 
 - (id) outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
+	if(index < 0)
+		return nil;
+	
 	id output;
 	
 	if(item == nil)
@@ -74,18 +77,18 @@ enum
 		if(index >= _nbRoot)
 			return nil;
 		
-		if([rootItems count] >= index  || (output = [rootItems objectAtIndex:index]) == nil)
+		if([rootItems count] >= (NSUInteger) index  || (output = [rootItems objectAtIndex: (NSUInteger) index]) == nil)
 		{
 			output = [[RakAddRepoItem alloc] initWithRepo:_rootCache[index] :YES];
 			
 			if(output != nil)
-				[rootItems insertObject:output atIndex:index];
+				[rootItems insertObject:output atIndex:(NSUInteger) index];
 		}
 		else
-			output = [rootItems objectAtIndex:index];
+			output = [rootItems objectAtIndex:(NSUInteger) index];
 	}
 	else
-		output = [item getChildAtIndex:index];
+		output = [item getChildAtIndex:(NSUInteger) index];
 	
 	return output;
 }

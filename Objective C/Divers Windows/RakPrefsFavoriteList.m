@@ -186,7 +186,7 @@
 
 - (void) removeRepo : (uint64_t) repoID
 {
-	NSInteger index = [repoRefresh indexOfObject:@(repoID)];
+	NSUInteger index = [repoRefresh indexOfObject:@(repoID)];
 	
 	if(index == NSNotFound)
 		return;

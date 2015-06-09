@@ -10,18 +10,17 @@
 **                                                                                          **
 *********************************************************************************************/
 
-int getPosForID(PROJECT_DATA data, bool installed, int ID)
+uint getPosForID(PROJECT_DATA data, bool installed, int ID)
 {
 	if((installed && data.tomesInstalled == NULL) || (!installed && data.tomesFull == NULL))
-		return -1;
+		return INVALID_VALUE;
 	
-	int pos;
-	uint nbElem = installed ? data.nombreTomesInstalled : data.nombreTomes;
+	uint pos, nbElem = installed ? data.nombreTomesInstalled : data.nombreTomes;
 	META_TOME * list = installed ? data.tomesInstalled : data.tomesFull;
 
 	for(pos = 0; pos < nbElem && list[pos].ID != ID; pos++);
 	
-	return pos == nbElem ? -1 : pos;
+	return pos == nbElem ? INVALID_VALUE : pos;
 }
 
 void refreshTomeList(PROJECT_DATA *projectDB)
@@ -63,7 +62,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	
 	uint pos = getPosForID(projectDB, false, ID), posDetails;
 	
-	if(pos == -1 || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
+	if(pos == INVALID_VALUE || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
 		return false;
 	
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
@@ -146,7 +145,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 		free(encodedRepo);
 		if((config = fopen(temp, "r")) != NULL)
 		{
-			*dernierLu = VALEUR_FIN_STRUCT;
+			*dernierLu = INVALID_SIGNED_VALUE;
 			fscanf(config, "%d", dernierLu);
 			fclose(config);
 		}
@@ -191,7 +190,7 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 		return;
 	
 	memcpy(output, input, nombreTomes * sizeof(META_TOME));
-	for(uint pos = 0; pos < nombreTomes && input[pos].ID != VALEUR_FIN_STRUCT; pos++)
+	for(uint pos = 0; pos < nombreTomes && input[pos].ID != INVALID_SIGNED_VALUE; pos++)
 	{
 		if(input[pos].details == NULL)
 			continue;
@@ -219,37 +218,6 @@ void freeTomeList(META_TOME * data, uint length, bool includeDetails)
 	free(data);
 }
 
-int extractNumFromConfigTome(char *input, int ID)
-{
-    int output = VALEUR_FIN_STRUCT, posDebut = 0;
-    char basePath[100];
-
-    if(!strncmp(input, "Chapitre_", 9))
-        posDebut = 9;
-    else
-	{
-		snprintf(basePath, 100, "Tome_%d/Chapitre_", ID);
-		if(!strncmp(input, basePath, strlen(basePath)))
-			posDebut = strlen(basePath);
-		else
-		{
-			snprintf(basePath, 100, "Tome_%d/native/Chapitre_", ID);
-			if(!strncmp(input, basePath, strlen(basePath)))
-				posDebut = strlen(basePath);
-		}
-	}
-
-    if(posDebut)
-    {
-        int i = sscanfs(&input[posDebut], "%d", &output);
-        output *= 10;
-
-        if(input[posDebut+i] == '.' && isNbr(input[posDebut+i+1]))
-            output += (int) input[posDebut+i+1] - '0';
-    }
-    return output;
-}
-
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters)
 {
 	uint length = strlen(projectDB.repo->URL) * 4 / 3 + 60, position;
@@ -269,7 +237,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 	
 	position = getPosForID(projectDB, true, tomeDelete);
 	
-	if(position != -1 && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
+	if(position != INVALID_VALUE && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
 	{
 		int curID;
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];

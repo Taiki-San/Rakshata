@@ -50,7 +50,7 @@ char *loadPrefFile()
 
 void addToPref(char* flag, char *stringToAdd)
 {
-    int i, j, length;
+    uint i, j, length;
     char setFlag[10], *prefs = NULL, *newPrefs = NULL;
     snprintf(setFlag, 10, "<%s>", flag);
 
@@ -89,7 +89,7 @@ void addToPref(char* flag, char *stringToAdd)
 
 void removeFromPref(char* flag)
 {
-    int i = 0, length = 0;
+    uint i = 0, length = 0;
     char *newPrefs = NULL;
 	char *prefs = NULL, *prefsBak;
 

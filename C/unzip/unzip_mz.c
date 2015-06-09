@@ -108,7 +108,7 @@
 # define ALLOC(size) (malloc(size))
 #endif
 #ifndef TRYFREE
-# define TRYFREE(p) {if (p) free(p);}
+# define TRYFREE(p) free(p)
 #endif
 
 #define SIZECENTRALDIRITEM (0x2e)
@@ -439,15 +439,17 @@ local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_f
         if (ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize)!=uReadSize)
             break;
 
-        for (i=(int)uReadSize-3; (i--)>0;)
-            if (((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) &&
-                ((*(buf+i+2))==0x05) && ((*(buf+i+3))==0x06))
-            {
-                uPosFound = uReadPos+i;
-                break;
-            }
+        for (i = (int) uReadSize - 3; i-- > 0; )
+		{
+			if (((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) &&
+				((*(buf+i+2))==0x05) && ((*(buf+i+3))==0x06))
+			{
+				uPosFound = uReadPos + (uint) i;
+				break;
+			}
+		}
 
-        if (uPosFound!=0)
+        if (uPosFound != 0)
             break;
     }
     TRYFREE(buf);
@@ -510,7 +512,7 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
             if (((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) &&
                 ((*(buf+i+2))==0x06) && ((*(buf+i+3))==0x07))
             {
-                uPosFound = uReadPos+i;
+                uPosFound = uReadPos + (uint) i;
                 break;
             }
 
@@ -977,10 +979,10 @@ local int unz64local_GetCurrentFileInfoInternal (unzFile file,
 
         if (lSeek!=0)
         {
-            if (ZSEEK64(s->z_filefunc, s->filestream,lSeek,ZLIB_FILEFUNC_SEEK_CUR)==0)
-                lSeek=0;
+            if(ZSEEK64(s->z_filefunc, s->filestream, (uint64_t) lSeek, ZLIB_FILEFUNC_SEEK_CUR) == 0)
+				lSeek = 0;
             else
-                err=UNZ_ERRNO;
+                err = UNZ_ERRNO;
         }
 
         if ((file_info.size_file_extra>0) && (extraFieldBufferSize>0))
@@ -1002,7 +1004,7 @@ local int unz64local_GetCurrentFileInfoInternal (unzFile file,
 
         if (lSeek!=0)
         {
-            if (ZSEEK64(s->z_filefunc, s->filestream,lSeek,ZLIB_FILEFUNC_SEEK_CUR)==0)
+            if (ZSEEK64(s->z_filefunc, s->filestream, (uint64_t) lSeek,ZLIB_FILEFUNC_SEEK_CUR)==0)
                 lSeek=0;
             else
                 err=UNZ_ERRNO;
@@ -1074,7 +1076,7 @@ local int unz64local_GetCurrentFileInfoInternal (unzFile file,
 
         if (lSeek!=0)
         {
-            if (ZSEEK64(s->z_filefunc, s->filestream,lSeek,ZLIB_FILEFUNC_SEEK_CUR) != 0)
+            if (ZSEEK64(s->z_filefunc, s->filestream, (uint64_t) lSeek,ZLIB_FILEFUNC_SEEK_CUR) != 0)
                 err=UNZ_ERRNO;
         }
 
@@ -1628,8 +1630,7 @@ extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64( unzFile file)
 */
 extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
 {
-    int err=UNZ_OK;
-    uInt iRead = 0;
+    int err=UNZ_OK, iRead = 0;
     unz64_s* s;
     file_in_zip64_read_info_s* pfile_in_zip_read_info;
     if (file==NULL)
@@ -1697,9 +1698,8 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
         {
             uInt uDoCopy,i ;
 
-            if ((pfile_in_zip_read_info->stream.avail_in == 0) &&
-                (pfile_in_zip_read_info->rest_read_compressed == 0))
-                return (iRead==0) ? UNZ_EOF : iRead;
+            if ((pfile_in_zip_read_info->stream.avail_in == 0) && (pfile_in_zip_read_info->rest_read_compressed == 0))
+                return (iRead==0) ? UNZ_EOF : (int) iRead;
 
             if (pfile_in_zip_read_info->stream.avail_out <
                             pfile_in_zip_read_info->stream.avail_in)
@@ -1800,18 +1800,16 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
             pfile_in_zip_read_info->rest_read_uncompressed -=
                 uOutThis;
 
-            iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
+            iRead += (uTotalOutAfter - uTotalOutBefore);
 
             if (err==Z_STREAM_END)
-                return (iRead==0) ? UNZ_EOF : iRead;
+				return iRead ? iRead : UNZ_EOF;
             if (err!=Z_OK)
                 break;
         }
     }
 
-    if (err==Z_OK)
-        return iRead;
-    return err;
+	return err == Z_OK ? iRead : err;
 }
 
 

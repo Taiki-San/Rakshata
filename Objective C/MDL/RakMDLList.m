@@ -31,7 +31,7 @@ enum
 		dragInProgress = NO;
 		wasSerie = controller.isSerieMainThread;
 		
-		[self applyContext:frame : -1 : -1];
+		[self applyContext:frame : LIST_INVALID_SELECTION : -1];
 		[scrollView setHasHorizontalScroller:NO];
 		[self enableDrop];
 		
@@ -72,7 +72,7 @@ enum
 	{
 		wasSerie = !wasSerie;
 		
-		[_tableView noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tableView numberOfRows])]];
+		[_tableView noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, (NSUInteger) [_tableView numberOfRows])]];
 	}
 }
 
@@ -191,7 +191,7 @@ enum
 	
 	if(dataProject != NULL && (*dataProject)->datas != NULL)
 	{
-		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :VALEUR_FIN_STRUCT];
+		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :INVALID_SIGNED_VALUE];
 	}
 	
 	return NO;
@@ -290,7 +290,7 @@ enum
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{
-		if(project.repo == NULL || element == VALEUR_FIN_STRUCT || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+		if(project.repo == NULL || element == INVALID_SIGNED_VALUE || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
 		if(!dragInProgress)
@@ -308,7 +308,7 @@ enum
 		getUpdatedCTList(&project, isTome);
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
-		if(element != VALEUR_FIN_STRUCT)
+		if(element != INVALID_SIGNED_VALUE)
 			[controller addElement:project :isTome :element:NO];
 		else
 			nbElemInjected = [controller addBatch:project :isTome :YES];

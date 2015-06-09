@@ -216,7 +216,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 				newData[posNew].cacheDBID = oldData[posOld].cacheDBID;
 				newData[posNew].favoris = oldData[posOld].favoris;
 				
-				updateCache(newData[posNew], RDB_UPDATE_ID, VALEUR_FIN_STRUCT);
+				updateCache(newData[posNew], RDB_UPDATE_ID, INVALID_VALUE);
 				updateProjectSearch(searchData, newData[posNew]);
 			}
 
@@ -298,7 +298,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 		if(encodedHash == NULL)
 			return NULL;
 		
-		length = MIN(snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
+		length = MIN((uint) snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
 		createPath(imagePath);
 		free(encodedHash);
 	}
@@ -574,7 +574,7 @@ REPO_DATA getEmptyRepo()
 
 //Declared in 
 
-int compareProjects(void * null, int lengthA, const char * a, int lengthB, const char * b)
+int compareProjects(void * null, uint lengthA, const char * a, uint lengthB, const char * b)
 {
 	return compareStrings(a, lengthA, b, lengthB, COMPARE_UTF8);
 }

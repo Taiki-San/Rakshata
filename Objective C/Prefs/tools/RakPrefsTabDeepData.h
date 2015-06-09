@@ -29,7 +29,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;
-- (int) getExpectedBufferSize;
+- (uint) getExpectedBufferSize;
 + (uint) getExpectedBufferSizeVirtual;
 
 - (NSRect) getDefaultFocusSerie;
@@ -45,18 +45,12 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 
 - (NSRect) getAtIndex: (uint8_t) index;
 - (void) setAtIndex: (uint8_t) index : (NSRect) data;
-- (NSRect) getDataTab: (int) mainThread : (int) stateTabsReader;
+- (NSRect) getDataTab: (uint) mainThread : (uint) stateTabsReader;
 
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) stateTabsReader;
+- (uint8_t) getIndexFromInput: (uint) mainThread : (uint) stateTabsReader;
 - (CGFloat) getFooterHeight;
 - (void) setFooterHeight : (CGFloat) data;
 
-
-@end
-
-@interface checkConsistencyWidthPosXRakPrefsTabDeepData : NSObject
-
-+ (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError;
 
 @end
 
@@ -78,7 +72,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 @interface RakMDLSize : NSObject
 {
 	Prefs* mammouth;
-	int sizeInputBuffer;
+	uint sizeInputBuffer;
 	
 	//Prefs propres au MDL
 	CGFloat widthMDLSerie;
@@ -89,14 +83,14 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;
-- (int) getExpectedBufferSize;
+- (uint) getExpectedBufferSize;
 + (uint) getExpectedBufferSizeVirtual;
 
 - (uint8_t) getFlagFocus;
-- (NSRect) getData:(int) mainThread : (int) stateTabsReader;
+- (NSRect) getData:(uint) mainThread : (uint) stateTabsReader;
 - (NSRect) getFocusSerie;
 - (NSRect) getFocusCT;
-- (NSRect) getFocusReader : (int) stateTabsReader;
+- (NSRect) getFocusReader : (uint) stateTabsReader;
 - (NSRect) getDefaultFocusMDL;
 - (CGFloat) getDefaultSerieWidth;
 - (CGFloat) getDefaultFocusReaderHeight;

@@ -74,7 +74,7 @@ typedef struct smartReload_data
 @property (weak, getter=superview, setter=setSuperview:)	NSView * superview;
 @property BOOL _selectionChangeComeFromClic;
 
-- (void) applyContext : (NSRect) frame : (int) activeRow : (long) scrollerPosition;
+- (void) applyContext : (NSRect) frame : (uint) activeRow : (long) scrollerPosition;
 - (void) failure;
 
 - (void) setFrameOrigin : (NSPoint) origin;
@@ -94,7 +94,7 @@ typedef struct smartReload_data
 - (void) enableDrop;
 
 - (uint) getSelectedElement;
-- (uint) getIndexOfElement : (uint) element;
+- (uint) getIndexOfElement : (int) element;
 - (float) getSliderPos;
 - (NSInteger) selectedRow;
 
@@ -107,7 +107,7 @@ typedef struct smartReload_data
 - (void) graphicSelection : (NSView *) view : (BOOL) select;
 - (void) postProcessingSelection : (uint) row;
 
-- (void) selectElement : (uint) element;
+- (void) selectElement : (int) element;
 - (void) selectIndex : (uint) index;
 - (void) resetSelection : (NSTableView *) tableView;
 

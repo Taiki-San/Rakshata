@@ -1633,6 +1633,10 @@ void NESSIEinit(struct NESSIEstruct * const structpointer) {
  *
  * This method maintains the invariant: bufferBits < DIGESTBITS
  */
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+
 void NESSIEadd(const unsigned char * const source,
                unsigned long sourceBits,
                struct NESSIEstruct * const structpointer) {
@@ -1810,6 +1814,8 @@ void NESSIEfinalize(struct NESSIEstruct * const structpointer,
     structpointer->bufferBits   = bufferBits;
     structpointer->bufferPos    = bufferPos;
 }
+
+#pragma clang diagnostic pop
 
 void whirlpool(const unsigned char *input, size_t inputLength, char *output, bool outHex)
 {

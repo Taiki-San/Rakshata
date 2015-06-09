@@ -25,7 +25,7 @@ int sortProjects(const void *a, const void *b)
     else if(struc2->repo == NULL || struc2->projectName[0] == 0)
         return -1;
 	else if(!strcmp(struc1->repo->URL, struc2->repo->URL))
-		return struc1->projectID - struc2->projectID;
+		return sortNumbers(&(struc1->projectID), &(struc2->projectID));
     return wcscmp(struc1->projectName, struc2->projectName);
 }
 
@@ -133,7 +133,7 @@ uint positionnementApresChar(char* input, char *stringToFind)
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
 {
 	//Only forbiden caracter so far
-	int posInput, posOutput;
+	uint posInput, posOutput;
 	
 	for(posInput = posOutput = 0; posInput < length; posInput++)
 	{
@@ -150,7 +150,7 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
 
 void createPath(char *output)
 {
-    int longueur_output = 0, i = 0;
+    uint longueur_output = 0, i = 0;
     char folder[512];
     while(output[longueur_output])
     {
@@ -316,8 +316,8 @@ uint64_t getFileSize64(const char * filename)
 #else
 	struct stat st;
 	
-    if (stat(filename, &st) == 0)
-        return st.st_size;
+    if (stat(filename, &st) == 0 && st.st_size > 0)
+        return (uint64_t) st.st_size;
 	
     return 0;
 #endif

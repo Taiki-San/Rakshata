@@ -26,8 +26,8 @@
 
 - (uint) getNbChildren;
 
-- (void) setChild : (id) child atIndex : (NSInteger) index;
-- (id) getChildAtIndex : (NSInteger) index;
+- (void) setChild : (id) child atIndex : (NSUInteger) index;
+- (id) getChildAtIndex : (NSUInteger) index;
 
 - (id) getData;
 

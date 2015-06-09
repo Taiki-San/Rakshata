@@ -48,14 +48,14 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 			for(uint i = 0; i < nbInstalled; i++)
 				((META_TOME*)output)[i].ID = ((META_TOME*)fullData)[installed[i]].ID;
 			
-			((META_TOME*)output)[nbInstalled].ID = VALEUR_FIN_STRUCT;
+			((META_TOME*)output)[nbInstalled].ID = INVALID_SIGNED_VALUE;
 		}
 		else
 		{
 			for(uint i = 0; i < nbInstalled; i++)
 				((int*)output)[i] = ((int*)fullData)[installed[i]];
 
-			((int*)output)[nbInstalled] = VALEUR_FIN_STRUCT;
+			((int*)output)[nbInstalled] = INVALID_SIGNED_VALUE;
 		}
 
 	}

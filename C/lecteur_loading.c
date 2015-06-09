@@ -27,15 +27,16 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 
 bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
 {
-    int i, prevPos = 0, posID = 0, lengthBasePath, lengthFullPath, tmp;
-	uint nombreToursRequis = 1, nombrePageInChunck = 0;
+	uint nombreToursRequis = 1, nombrePageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
+	int chapterRequestedForVolume = INVALID_SIGNED_VALUE;
 	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
     dataReader->nombrePage = 0;
     dataReader->nomPages = dataReader->path = NULL;
-    dataReader->pathNumber = dataReader->chapitreTomeCPT = NULL;
+	dataReader->pathNumber = NULL;
+	dataReader->chapitreTomeCPT = NULL;
 	dataReader->pageCouranteDuChapitre = NULL;
 	
 	if(encodedRepo == NULL)
@@ -61,39 +62,39 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
     {
 		if(isTome)
 		{
-			tmp = localBuffer[nombreTours].ID;
+			chapterRequestedForVolume = localBuffer[nombreTours].ID;
 			if(localBuffer[nombreTours].isPrivate)
 			{
-				if(tmp % 10)
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
+				if(chapterRequestedForVolume % 10)
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 				else
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, tmp / 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, chapterRequestedForVolume / 10);
 			}
 			else
 			{
-				if(isChapterShared(NULL, projectDB, tmp))
+				if(isChapterShared(NULL, projectDB, chapterRequestedForVolume))
 				{
-					if(tmp % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", tmp/10, tmp%10);
+					if(chapterRequestedForVolume % 10)
+						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", tmp/10);
+						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", chapterRequestedForVolume / 10);
 				}
 				else
 				{
-					if(tmp % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d.%d", IDRequested, tmp / 10, tmp % 10);
+					if(chapterRequestedForVolume % 10)
+						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d", IDRequested, tmp / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d", IDRequested, chapterRequestedForVolume / 10);
 				}
 				
 			}
 		}
 		else
 		{
-			if(IDRequested%10)
-				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", IDRequested/10, IDRequested%10);
+			if(IDRequested % 10)
+				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", IDRequested / 10, IDRequested % 10);
 			else
-				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested/10);
+				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested / 10);
 		}
 		
         snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedRepo, projectDB.projectID, name, CONFIGFILE);
@@ -158,7 +159,7 @@ memoryFail:
 					free(dataReader->chapitreTomeCPT);			dataReader->chapitreTomeCPT = NULL;
 
 					if(dataReader->path != NULL)
-						for (int loop = 0; loop <= nombreTours; free(dataReader->path[loop++]));
+						for(uint loop = 0; loop <= nombreTours; free(dataReader->path[loop++]));
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}
@@ -169,13 +170,13 @@ memoryFail:
             {
                 snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedRepo, projectDB.projectID, name);
                 if(isTome)
-                    dataReader->chapitreTomeCPT[posID] = extractNumFromConfigTome(name, IDRequested);
+                    dataReader->chapitreTomeCPT[posID] = chapterRequestedForVolume;
                 else
                     dataReader->chapitreTomeCPT[posID] = IDRequested;
 				
                 lengthBasePath = strlen(dataReader->path[posID]);
 				
-                for(i = 0; prevPos < dataReader->nombrePage; prevPos++) //Réinintialisation
+                for(uint i = 0; prevPos < dataReader->nombrePage; prevPos++) //Réinintialisation
                 {
 					if(nomPagesTmp[i] == NULL)
 					{
@@ -198,7 +199,7 @@ memoryFail:
 
 				posID++;
 
-				for(i = 0; i < nombrePageInChunck; free(nomPagesTmp[i++]));
+				for(uint i = 0; i < nombrePageInChunck; free(nomPagesTmp[i++]));
             }
 			
 			free(nomPagesTmp);
@@ -368,7 +369,7 @@ void releaseDataReader(DATA_LECTURE *data)
 	
 	if (data->nomPages != NULL)
 	{
-		for (int i = data->nombrePage - 1; i >= 0; free(data->nomPages[i--]));
+		for (uint i = data->nombrePage; i-- > 0; free(data->nomPages[i]));
 		free(data->nomPages);					data->nomPages = NULL;
 	}
 	
@@ -381,7 +382,10 @@ void releaseDataReader(DATA_LECTURE *data)
 
 bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
-	*posIntoStruc += (goToNextChap ? 1 : -1);
+	if(goToNextChap)
+		(*posIntoStruc)++;
+	else
+		(*posIntoStruc)--;
 	
 	if(!changeChapterAllowed(projectDB, isTome, *posIntoStruc))
 	{
@@ -397,7 +401,7 @@ bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, u
 	return true;
 }
 
-bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, int posIntoStruc)
+bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, uint posIntoStruc)
 {
 	return (isTome && posIntoStruc < projectDB->nombreTomesInstalled) || (!isTome && posIntoStruc < projectDB->nombreChapitreInstalled);
 }

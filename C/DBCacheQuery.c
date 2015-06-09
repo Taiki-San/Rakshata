@@ -17,7 +17,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	void* buffer;
 
 	//Repo
-	buffer = getRepoForID(sqlite3_column_int64(state, RDB_repo-1));
+	buffer = getRepoForID((uint64_t) sqlite3_column_int64(state, RDB_repo-1));
 	if(buffer != NULL)				//Si la team est pas valable, on drop complètement le projet
 		output->repo = buffer;
 	else
@@ -29,10 +29,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	}
 	
 	//ID d'accès rapide
-	output->cacheDBID = sqlite3_column_int(state, RDB_ID-1);
+	output->cacheDBID = (uint32_t) sqlite3_column_int(state, RDB_ID-1);
 	
 	//Project ID
-	output->projectID = sqlite3_column_int(state, RDB_projectID-1);
+	output->projectID = (uint32_t) sqlite3_column_int(state, RDB_projectID-1);
 	
 	//isInstalled est ici, on saute donc son index
 	
@@ -77,12 +77,12 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	
 	//Divers données
 	output->status = sqlite3_column_int(state, RDB_status-1);	//On pourrait vérifier que c'est une valeur tolérable mais je ne vois pas de raison pour laquelle quelqu'un irait patcher la BDD
-	output->category = sqlite3_column_int(state, RDB_category-1);
+	output->category = (uint32_t) sqlite3_column_int(state, RDB_category-1);
 	output->japaneseOrder = sqlite3_column_int(state, RDB_asianOrder-1);
 	output->isPaid = sqlite3_column_int(state, RDB_isPaid-1);
-	output->mainTag = sqlite3_column_int(state, RDB_mainTagID-1);
-	output->tagMask = sqlite3_column_int64(state, RDB_tagMask-1);
-	output->nombreChapitre = sqlite3_column_int(state, RDB_nombreChapitre-1);
+	output->mainTag = (uint32_t) sqlite3_column_int(state, RDB_mainTagID-1);
+	output->tagMask = (uint64_t) sqlite3_column_int64(state, RDB_tagMask-1);
+	output->nombreChapitre = (uint32_t) sqlite3_column_int(state, RDB_nombreChapitre-1);
 	
 	if(copyDynamic)
 	{
@@ -126,7 +126,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		output->chapitresPrix = NULL;
 	}
 	
-	output->nombreTomes = sqlite3_column_int(state, RDB_nombreTomes-1);
+	output->nombreTomes = (uint32_t) sqlite3_column_int(state, RDB_nombreTomes-1);
 	output->haveDRM = sqlite3_column_int(state, RDB_DRM-1);
 	
 	if(copyDynamic)

@@ -12,50 +12,6 @@
 
 #include "dbCache.h"
 
-void updateRepoCache(REPO_DATA ** repoData, uint newAmountOfRepo)
-{
-	uint lengthRepoCopy = lengthRepo;
-	
-	REPO_DATA ** newReceiver;
-	
-	if(newAmountOfRepo == -1 || newAmountOfRepo == lengthRepoCopy)
-	{
-		newReceiver = repoList;
-	}
-	else	//Resize repoList
-	{
-		newReceiver = calloc(lengthRepoCopy + 1, sizeof(REPO_DATA*));	//calloc important, otherwise, we have to set last entries to NULL
-		if(newReceiver == NULL)
-			return;
-		
-		memcpy(newReceiver, repoList, lengthRepoCopy);
-		lengthRepoCopy = newAmountOfRepo;
-	}
-	
-	for(int pos = 0; pos < lengthRepoCopy; pos++)
-	{
-		if(newReceiver[pos] != NULL && repoData[pos] != NULL)
-		{
-			memcpy(newReceiver[pos], repoData[pos], sizeof(REPO_DATA));
-			free(repoData[pos]);
-			repoData[pos] = NULL;
-		}
-		else if(repoData[pos] != NULL)
-		{
-			newReceiver[pos] = repoData[pos];
-		}
-	}
-	
-	getRidOfDuplicateInRepo(repoData, lengthRepoCopy);
-	if(repoList != newReceiver)
-	{
-		void * buf = repoList;
-		repoList = newReceiver;
-		free(buf);
-		lengthRepo = lengthRepoCopy;
-	}
-}
-
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 {
 	//On va chercher des collisions
@@ -523,10 +479,10 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 					if(!root->subRepo[i].active)
 						continue;
 					
-					sqlite3_bind_int64(request, 1, getRepoID(&(root->subRepo[i])));
+					sqlite3_bind_int64(request, 1, (int64_t) getRepoID(&(root->subRepo[i])));
 					if (sqlite3_step(request) == SQLITE_ROW)
 					{
-						uint newValue = sqlite3_column_int(request, 0);
+						uint newValue = (uint32_t) sqlite3_column_int(request, 0);
 						if(newValue + output < newValue)
 						{
 							output = UINT_MAX;
@@ -542,10 +498,10 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 		}
 		else
 		{
-			sqlite3_bind_int64(request, 1, getRepoID(repo));
+			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(repo));
 			if (sqlite3_step(request) == SQLITE_ROW)
 			{
-				output = sqlite3_column_int(request, 0);
+				output = (uint32_t) sqlite3_column_int(request, 0);
 			}
 		}
 		

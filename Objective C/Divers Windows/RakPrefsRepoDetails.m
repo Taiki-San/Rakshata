@@ -167,7 +167,7 @@ enum
 		subrepoList.hidden = YES;
 		
 		//URL field
-		if(((REPO_DATA *) repo)->website)
+		if(((REPO_DATA *) repo)->website[0])
 		{
 			if(URL == nil)
 			{

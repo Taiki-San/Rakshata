@@ -22,7 +22,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         output = internalCraftBaseURL(*data.datas->repo, &length);
         if(output != NULL)
         {
-            if(data.partOfTome == VALEUR_FIN_STRUCT || data.subFolder == false)
+            if(data.partOfTome == INVALID_SIGNED_VALUE || data.subFolder == false)
             {
                 if(data.chapitre % 10)
                     snprintf(output, length, "%s/%d/Chapitre_%d.%d.zip", output, data.datas->projectID, data.chapitre / 10, data.chapitre % 10);
@@ -51,7 +51,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         output = malloc(length);
         if(output != NULL)
 		{
-            snprintf(output, length, SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->repo->URL, data.datas->projectID, data.chapitre, (data.partOfTome != VALEUR_FIN_STRUCT && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
+            snprintf(output, length, SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->repo->URL, data.datas->projectID, data.chapitre, (data.partOfTome != INVALID_SIGNED_VALUE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
         }
     }
 
@@ -128,8 +128,8 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 
     if(*nombreProjectTotal)
     {
-		uint posLine, projectID;
-		int posPtr = 0, chapitreTmp, posCatalogue = 0;
+		uint posLine, projectID, posPtr = 0;
+		int chapitreTmp, posCatalogue = 0;
 		char ligne[2*LONGUEUR_COURT + 20], URL[LONGUEUR_URL], type[2];
 
 		//Create the new structure, initialized at NULL
@@ -210,7 +210,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
     return NULL;
 }
 
-DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, int * currentPosition, DATA_LOADED ** newChunk)
+DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, uint * currentPosition, DATA_LOADED ** newChunk)
 {
 	if(mainList == NULL || newChunk == NULL)
 	{
@@ -272,7 +272,7 @@ void MDLFlushElement(DATA_LOADED * element)
 	free(element);
 }
 
-char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)
+uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)
 {
 	if(IDChap == -1)
 		return ERROR_CHECK;
@@ -292,7 +292,7 @@ char MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 			return ERROR_CHECK;
 		
 		int IDTome = projectData.tomesFull[*posIndexTome].ID;
-		if (IDTome == VALEUR_FIN_STRUCT)
+		if (IDTome == INVALID_SIGNED_VALUE)
 			return ERROR_CHECK;
 		
 		if(IDChap % 10)
@@ -508,7 +508,7 @@ bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, D
 {
 	if(list == NULL || status == NULL || !nbElem)
 		return false;
-	else if(element == VALEUR_FIN_STRUCT)
+	else if(element == INVALID_SIGNED_VALUE)
 		return true;
 	
 	for(uint i = 0; i < nbElem; i++)

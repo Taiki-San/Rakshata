@@ -25,7 +25,7 @@ void strend(char *recepter, size_t length, const char *sender)
 {
     if(recepter && sender)
     {
-        int i = 0;
+        uint i = 0;
         for(; *recepter; i++, recepter++);
         for(; *sender && length > i; i++, recepter++, sender++)
             *recepter = *sender;
@@ -229,9 +229,9 @@ size_t ustrlen(const void *input)
 {
 	if(input == NULL)	return 0;
 	
-    const unsigned char *copy = input;
+    const byte *copy = input;
     while(*(copy++));
-    return (copy-1) - (unsigned char *)input;	//copy -1 pour la dernière itération
+    return (size_t) ((copy - 1) - (byte *) input);	//copy -1 pour la dernière itération
 }
 
 size_t wstrlen(const charType * input)

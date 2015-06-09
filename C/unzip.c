@@ -92,7 +92,7 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
     return true;
 }
 
-bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, size_t type) //Type définit si l'extraction est standard ou pas
+bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, int preferenceSetting)
 {
 	bool extractWithoutPath = false, ret_value = true;
 	char *zipInput = NULL, *zipFileName = NULL, *zipOutput = NULL;
@@ -327,7 +327,8 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
             quit_thread(0); //Libérer la mémoire serait pas mal
         }
 		
-        uint posBlob = sprintf((char *) hugeBuffer, "%d", nombreFichiers);
+        int sizeWritten = sprintf((char *) hugeBuffer, "%d", nombreFichiers);
+		uint posBlob = sizeWritten > 0 ? (uint) sizeWritten : 0;
 
 		for(uint i = 0; i < nombreFichiers; i++) //Write config.enc
         {
@@ -355,7 +356,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 					fputc('\n', output);
 					
 					uint8_t hash[SHA256_DIGEST_LENGTH], chapter[10];
-					snprintf((char *)chapter, sizeof(chapter), "%zu", type);
+					snprintf((char *)chapter, sizeof(chapter), "%d", preferenceSetting);
 					
 					internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
 					

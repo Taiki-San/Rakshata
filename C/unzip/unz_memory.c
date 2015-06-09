@@ -12,8 +12,8 @@
 
 struct zmem_data
 {
-    char *buf;
-	char *mask;
+    byte *buf;
+	byte *mask;
     size_t length;
 };
 
@@ -43,7 +43,7 @@ static uLong zmemread(voidpf opaque, voidpf stream, void* buf, uLong size)
 
 	for(i = 0; i < size; i++)
 	{
-		((unsigned char*) buf)[i] = ~(data->buf[*pos + i] ^ (~data->mask[*pos + i]));
+		((byte*) buf)[i] = ~(data->buf[*pos + i] ^ (~data->mask[*pos + i]));
 	}
 
 	*pos += i;
@@ -65,7 +65,7 @@ static int zmemerror(voidpf opaque, voidpf stream)
 
 static long zmemtell(voidpf opaque, voidpf stream)
 {
-    return *(uLong*)stream;
+    return * (long *) stream;
 }
 
 static long zmemseek(voidpf opaque, voidpf stream, uLong offset, int origin)
@@ -97,8 +97,8 @@ static void init_zmemfile(zlib_filefunc_def *inst, char *bufZip, char* mask, siz
 {
     struct zmem_data *data = malloc(sizeof(struct zmem_data));
 	
-    data->buf = bufZip;
-	data->mask = mask;
+    data->buf = (byte *) bufZip;
+	data->mask = (byte *) mask;
     data->length = length;
 	
     inst->opaque = data;

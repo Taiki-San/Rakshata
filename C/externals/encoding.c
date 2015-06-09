@@ -15,12 +15,12 @@
 void hexToDec(const char *input, unsigned char *output)
 {
 	int i = 0, j = 0;
-	char c = 0, temp = 0;
+	byte c = 0, temp = 0;
 	for(; *input; i++)
 	{
 		for(j = 0; j < 2; j++)
 		{
-			c = *input++;
+			c = (byte) *input++;
 			if(c >= '0' && c <= '9')
 				temp = c - '0';
 			
@@ -33,7 +33,7 @@ void hexToDec(const char *input, unsigned char *output)
 			else
 				return;
 			
-			output[i] = output[i]*16 + temp;
+			output[i] = output[i] * 16 + temp;
 		}
 	}
 }
@@ -89,7 +89,7 @@ const static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 	'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
 	'w', 'x', 'y', 'z', '0', '1', '2', '3',
 	'4', '5', '6', '7', '8', '9', '+', '-'};
-static char decoding_table[256] = {-1};
+static byte decoding_table[256] = {255};
 const static int mod_table[] = {0, 2, 1};
 
 char * base64_encode_charType(const charType *data, size_t input_length, size_t *output_length)
@@ -106,7 +106,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 	char *encoded_data = malloc(local_output_length + 1);
 	if (encoded_data == NULL) return NULL;
 	
-	for (int i = 0, j = 0; i < input_length;)
+	for (size_t i = 0, j = 0; i < input_length;)
 	{
 		uint32_t byteA = i < input_length ? (unsigned char)data[i++] : 0;
 		uint32_t byteB = i < input_length ? (unsigned char)data[i++] : 0;
@@ -133,7 +133,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 
 unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length)
 {
-	if (decoding_table[0] == -1)	//build table
+	if (decoding_table[0] == 255)	//build table
 	{
 		decoding_table[0] = 0;
 		
@@ -150,7 +150,7 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 	unsigned char *decoded_data = malloc(*output_length+1);
 	if (decoded_data == NULL) return NULL;
 	
-	for (int i = 0, j = 0; i < input_length;) {
+	for (size_t i = 0, j = 0; i < input_length;) {
 		
 		uint32_t sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
 		uint32_t sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
@@ -302,7 +302,8 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 		}
 
 		/* does the sequence header tell us truth about length? */
-		if (lim - p <= n - 1) {
+		if ((size_t) (lim - p) <= n - 1)
+		{
 			if ((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);
 			n = 1;
@@ -427,11 +428,11 @@ size_t wchar_to_utf8(const wchar_t *in, size_t insize, char *out, size_t outsize
 		if (out == NULL)
 			continue;
 
-		if (lim - p <= n - 1)
-			return (0);		/* no space left */
+		if ((size_t) (lim - p) <= n - 1)
+			return 0;		/* no space left */
 
 		/* make it work under different endians */
-		ch = htonl(*w);
+		ch = (wchar_t) htonl(*w);
 		oc = (u_char *)&ch;
 		switch (n) {
 		case 1:

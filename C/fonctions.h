@@ -104,7 +104,7 @@ byte defineTypeRepo(char *URL);
 void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void getFileDate(const char *filename, char *date, void* internalData);
-IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, int page);
+IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uint page);
 void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 void KSTriggered(REPO_DATA team);
@@ -125,7 +125,7 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
 bool isThreadStillRunning(THREAD_TYPE hThread);
 
 /**Tome.c**/
-int getPosForID(PROJECT_DATA data, bool installed, int ID);
+uint getPosForID(PROJECT_DATA data, bool installed, int ID);
 void refreshTomeList(PROJECT_DATA *projectDB);
 void setTomeReadable(PROJECT_DATA projectDB, int ID);
 bool checkTomeReadable(PROJECT_DATA projectDB, int ID);
@@ -133,11 +133,10 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);
-int extractNumFromConfigTome(char *input, int ID);
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Unzip.c**/
-bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, size_t type);
+bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, int preferenceSetting);
 
 /**Utilitaires.c**/
 #define crashTemp(string, length) memset(string, 0, length)

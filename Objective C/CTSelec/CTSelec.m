@@ -325,7 +325,7 @@
 
 - (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (int) element
 {
-	if(element == VALEUR_FIN_STRUCT && project.isInitialized)
+	if(element == INVALID_SIGNED_VALUE && project.isInitialized)
 	{
 		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
 		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];
@@ -409,7 +409,7 @@
 {
 	BOOL ret_value = NO;
 	
-	if(element == VALEUR_FIN_STRUCT || sender == TAB_MDL)
+	if(element == INVALID_SIGNED_VALUE || sender == TAB_MDL)
 	{
 		[coreView updateContext:data];
 		ret_value = YES;

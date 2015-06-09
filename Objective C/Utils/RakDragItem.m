@@ -103,12 +103,12 @@ typedef struct project_data_for_drag_drop
 
 + (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element
 {
-	if(element == VALEUR_FIN_STRUCT)
+	if(element == INVALID_SIGNED_VALUE)
 	{
 		if(isTome)
-			return (project.nombreTomes != VALEUR_FIN_STRUCT && project.nombreTomes != project.nombreTomesInstalled);
+			return (project.nombreTomes != INVALID_VALUE && project.nombreTomes != project.nombreTomesInstalled);
 		
-		return (project.nombreChapitre != VALEUR_FIN_STRUCT && project.nombreChapitre != project.nombreChapitreInstalled);
+		return (project.nombreChapitre != INVALID_VALUE && project.nombreChapitre != project.nombreChapitreInstalled);
 	}
 	
 	return !checkReadable(project, isTome, element);

@@ -148,7 +148,9 @@ static void downloadChapterCore(DL_DATA *data)
     FILE *proxyFile = fopen("proxy", "r"); //Check proxy
     if(proxyFile != NULL)
     {
-        char lengthProxy = 0, c = 0, pos;
+        byte lengthProxy = 0, pos;
+		char c;
+		
 		while(lengthProxy < sizeof(IPProxy) && (c = fgetc(proxyFile)) != EOF)
 		{
 			if(c == '.' || c == ':' || isHexa(c))
@@ -260,29 +262,30 @@ static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double n
 
 static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData)
 {
+	const size_t invalidCode = size * nmemb + 1;
+	
 	if(quit)						//Global message to quit
-        return -1;
+        return invalidCode;
 	
 	else if(downloadData == NULL)
-		return -1;
+		return invalidCode;
 	
 	else if(downloadData->aborted != NULL && *downloadData->aborted & DLSTATUS_ABORT)
-		return -1;
+		return invalidCode;
 	
 	else if(!size || !nmemb)		//Rien à écrire
         return 0;
 	
-	int i;
 	TMP_DL *data = downloadData->outputContainer;
 	
 	if(data == NULL)
-		return -1;
+		return invalidCode;
 	
     DATA_DL_OBFS *output = data->buf;
     char *input = ptr;
 	
 	if(output == NULL)
-		return -1;
+		return invalidCode;
 	
     if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos || MIN(data->length, data->current_pos) == data->length)
     {
@@ -296,11 +299,11 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
 			
 			output->data = calloc(1, data->length);
             if(output->data == NULL)
-                return -1;
+                return invalidCode;
 			
 			output->mask = malloc(data->length);
             if(output->mask == NULL)
-                return -1;
+				return invalidCode;
         }
         else //Buffer trop petit, on l'agrandit
         {
@@ -312,19 +315,19 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
 			
             void *internalBufferTmp = realloc(output->data, data->length);
             if(internalBufferTmp == NULL)
-                return -1;
+				return invalidCode;
             output->data = internalBufferTmp;
 			
 			internalBufferTmp = realloc(output->mask, data->length);
             if(internalBufferTmp == NULL)
-                return -1;
+				return invalidCode;
             output->mask = internalBufferTmp;
         }
     }
 	
     //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
 	
-	for(i = 0; i < size * nmemb; data->current_pos++)
+	for(uint i = 0; i < size * nmemb; data->current_pos++)
 	{
 		output->data[data->current_pos] = (~input[i++]) ^ (~output->mask[data->current_pos]);
 	}

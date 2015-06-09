@@ -87,7 +87,7 @@
 	sizeInputBuffer = (numberElem-1) * 16 + 4;
 }
 
-- (int) getExpectedBufferSize
+- (uint) getExpectedBufferSize
 {
 	return sizeInputBuffer;
 }
@@ -146,7 +146,7 @@
 	}
 	
 	NSRect frame;
-	for(int i = 0; i < numberElem - 1; i++)
+	for(uint i = 0; i < numberElem - 1; i++)
 	{
 		frame = [self getAtIndex:i];
 		
@@ -177,7 +177,7 @@
 	return STATE_READER_TAB_MASK;
 }
 
-- (NSRect) getDataTab: (int) mainThread : (int) stateTabsReader
+- (NSRect) getDataTab: (uint) mainThread : (uint) stateTabsReader
 {
 	return [self getAtIndex: [self getIndexFromInput:mainThread :stateTabsReader]];
 }
@@ -323,7 +323,7 @@
 	}
 }
 
-- (uint8_t) getIndexFromInput: (int) mainThread : (int) stateTabsReader
+- (uint8_t) getIndexFromInput: (uint) mainThread : (uint) stateTabsReader
 {
 	uint8_t ret_value = 0xff;
 	
@@ -355,48 +355,6 @@
 - (void) setFooterHeight : (CGFloat) data
 {
 	footerHeight = data;
-}
-
-@end
-
-@implementation checkConsistencyWidthPosXRakPrefsTabDeepData
-
-//Renvois si le check s'est bien passé, TRUE = OK | FALSE = KO
-+ (BOOL) performTest: (Prefs*) mainInstance : (uint8_t) ID : (BOOL) reinitIfError
-{
-	BOOL ret_value = YES;
-	NSArray * array = [mainInstance setupExecuteConsistencyChecks: 1];
-	
-	if(array == nil)
-		return NO;
-	
-	uint i, nbElem = [[array objectAtIndex: 0] getNbElem] - 1, otherPan;
-	//nbElem est décrémenté car on ne test pas la hauteur du footer
-	
-	for(i = 0; i < nbElem * 2; i++)
-	{
-		if(i % nbElem == 3)			//Le cas particulier où on a un panneau ouvert et un autre replié
-			otherPan = 4;
-		else if(i % nbElem == 4)	//Same
-			otherPan = 3;
-		else
-			otherPan = i % nbElem;
-		
-		//On vérifie que la pos X du panneau A + la largeur est supérieure ou égale à la pos X du panneau 2
-		if([[array objectAtIndex:(i / nbElem)] getAtIndex: (i % nbElem) ].origin.x + [[array objectAtIndex: (i / nbElem)] getAtIndex: (i % nbElem) ].size.width < [[array objectAtIndex:(i / nbElem) + 1] getAtIndex: (otherPan) ].origin.x)
-		{
-			ret_value = NO;
-#ifdef DEV_VERSION
-			NSLog(@"[%s] : Incoherency found at index %d", __PRETTY_FUNCTION__, i);
-#endif
-			if(reinitIfError)
-			{
-				[[array objectAtIndex: (i / nbElem)] reinitAtIndex: ( i % nbElem)];
-				[[array objectAtIndex: (i / nbElem) + 4] reinitAtIndex: ( i % nbElem)];
-			}
-		}
-	}
-	return ret_value;
 }
 
 @end

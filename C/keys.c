@@ -71,7 +71,7 @@ byte getMasterKey(unsigned char *input)
     for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (c = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
-        for(uint j = 0; j < MK_CHUNK && (c = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = c);
+        for(uint j = 0; j < MK_CHUNK && (c = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = (byte) c);
     }
     fclose(bdd);
 
@@ -487,10 +487,10 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 			if(buffer_dl[bufferDL_pos-1] == ' ')
 			{
 				byte i = 0;
-				unsigned char derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
+				byte derivation[SHA256_DIGEST_LENGTH], seed[SHA256_DIGEST_LENGTH], passSeed[SHA256_DIGEST_LENGTH], passDer[SHA256_DIGEST_LENGTH];
 				crashTemp(seed, SHA256_DIGEST_LENGTH);
 				
-				for(; i < SHA256_DIGEST_LENGTH && bufferDL_pos < downloadedLength; outputRAW[i++] = buffer_dl[bufferDL_pos++]);
+				for(; i < SHA256_DIGEST_LENGTH && bufferDL_pos < downloadedLength; outputRAW[i++] = (byte) buffer_dl[bufferDL_pos++]);
 				
 				free(buffer_dl);
 				buffer_dl = NULL;
@@ -573,12 +573,12 @@ bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 
 	size_t bufferLength;
 	uint length = strlen(COMPTE_PRINCIPAL_MAIL) + 256, j;
-    char *buffer_dl = NULL;
+    byte *buffer_dl = NULL;
 	char URL[length];
 	
     snprintf(URL, length, SERVEUR_URL"/recoverMK.php?account=%s&ver=1", COMPTE_PRINCIPAL_MAIL);
 
-    if(download_mem(URL, NULL, &buffer_dl, &bufferLength, SSL_ON) != CODE_RETOUR_OK || bufferLength < 2 * SHA256_DIGEST_LENGTH || !strcmp(buffer_dl, "fail"))
+    if(download_mem(URL, NULL, (char **) &buffer_dl, &bufferLength, SSL_ON) != CODE_RETOUR_OK || bufferLength < 2 * SHA256_DIGEST_LENGTH || !strcmp((const char*) buffer_dl, "fail"))
     {
 #ifdef DEV_VERSION
         logR("Failed at get MK from server");
@@ -587,7 +587,7 @@ bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 		return false;
     }
 
-    unsigned char derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
+    byte derivation[SHA256_DIGEST_LENGTH+1], seed[SHA256_DIGEST_LENGTH+1], tmp[SHA256_DIGEST_LENGTH+1];
     for(uint i = j = 0; i < SHA256_DIGEST_LENGTH; derivation[i++] = buffer_dl[j++]);
     for(uint i = 0; i < SHA256_DIGEST_LENGTH; seed[i++] = buffer_dl[j++]);
     internal_pbkdf2(SHA256_DIGEST_LENGTH, seed, SHA256_DIGEST_LENGTH, derivation, SHA256_DIGEST_LENGTH, 2048, PBKDF2_OUTPUT_LENGTH, tmp);
