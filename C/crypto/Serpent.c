@@ -440,7 +440,6 @@ d ^= k[4 * r + 3];}
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wconversion"
-#pragma clang diagnostic ignored "-Wcomparaison"
 
 void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks)
 {

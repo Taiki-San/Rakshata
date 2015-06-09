@@ -84,7 +84,7 @@
 	return self.isEmpty;
 }
 
-#pragma - mark NSDraggingSource support
+#pragma mark - NSDraggingSource support
 
 - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 {

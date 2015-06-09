@@ -88,7 +88,7 @@
 				
 				elemToRead = [[dataState objectAtIndex:2] intValue];
 				isTome = [[dataState objectAtIndex:3] boolValue];
-				page = [[dataState objectAtIndex:4] unsignedIntValue];
+				page = [[dataState objectAtIndex:4] longLongValue];
 				
 				if(((RakAppDelegate*)[NSApp delegate]).CT.initWithNoContent)
 				{
