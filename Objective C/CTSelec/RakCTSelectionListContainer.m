@@ -141,11 +141,11 @@
 	}
 	else
 	{
-		parentFrame.origin.y = 10;
-		parentFrame.size.height -= 10 + 2;
+		parentFrame.origin.y = BORDER_CT_FOCUS;
+		parentFrame.size.height -= BORDER_CT_FOCUS + 2;
 		
 		parentFrame.size.width /= 2;
-		parentFrame.size.width -= 20;
+		parentFrame.size.width -= 2 * BORDER_CT_FOCUS;
 		
 		if(_content.isTome)
 		{

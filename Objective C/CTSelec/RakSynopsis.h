@@ -12,7 +12,7 @@
 
 #define SYNOPSIS_TOP_BORDER_WIDTH 	5
 #define SYNOPSIS_SPACING			5
-#define SYNOPSIS_BORDER 			20
+#define SYNOPSIS_BORDER 			BORDER_CT_FOCUS
 #define SYNOPSIS_MAIN_TEXT_BORDER 	10
 
 @interface RakSynopsis : NSView

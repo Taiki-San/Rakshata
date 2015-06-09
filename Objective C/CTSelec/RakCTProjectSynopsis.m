@@ -131,7 +131,7 @@
 	parentFrame = [self frameFromParent:parentFrame];
 	
 	parentFrame.origin.y = 0;
-	parentFrame.origin.x += image.width;
+	parentFrame.origin.x = image.width;
 	parentFrame.size.width -= image.width + SYNOPSIS_BORDER;
 	
 	return parentFrame;

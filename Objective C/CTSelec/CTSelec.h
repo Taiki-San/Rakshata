@@ -28,6 +28,8 @@
 #define CT_TRANSITION_ANIMATION 0.3f
 #define CT_HALF_TRANSITION_ANIMATION 0.15f
 
+#define BORDER_CT_FOCUS 10
+
 @interface CTSelec : RakTabView
 {
 	//SR mode only
