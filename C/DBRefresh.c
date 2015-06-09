@@ -107,7 +107,7 @@ void updateRepo()
 					endIcons = endIcons->next;
 			}
 			
-			memcpy(oldRootData[posRepo], &newData, sizeof(ROOT_REPO_DATA));
+			memcpy(oldRootData[posRepo], newData, sizeof(ROOT_REPO_DATA));
 		}
 		
 		free(bufferDL);
