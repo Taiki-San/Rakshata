@@ -16,8 +16,6 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 {
 	void* buffer;
 
-	MUTEX_LOCK(cacheParseMutex);
-
 	//Repo
 	buffer = getRepoForID(sqlite3_column_int64(state, RDB_repo-1));
 	if(buffer != NULL)				//Si la team est pas valable, on drop complètement le projet
@@ -165,8 +163,6 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
 	output->isInitialized = true;
 	
-	MUTEX_UNLOCK(cacheParseMutex);
-	
 	return true;
 }
 
@@ -204,15 +200,19 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		sqlite3_stmt* request = NULL;
 		createRequest(cache, requestString, &request);
 		
+		MUTEX_LOCK(cacheParseMutex);
+		
 		while(pos < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
 		{
 			if(!copyOutputDBToStruct(request, &output[pos], (maskRequest & RDB_COPY_MASK) != RDB_EXCLUDE_DYNAMIC))
 				continue;
-			
+
 			if(output[pos].isInitialized)
 				pos++;
 		}
-		
+
+		MUTEX_UNLOCK(cacheParseMutex);
+
 		output[pos] = getEmptyProject();
 		destroyRequest(request);
 		

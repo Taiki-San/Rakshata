@@ -581,7 +581,6 @@
 		B6FCB423196C1F8E0026C64C /* RakForegroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakForegroundView.h; path = Utils/RakForegroundView.h; sourceTree = "<group>"; };
 		B6FCB424196C1F8E0026C64C /* RakForegroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakForegroundView.m; path = Utils/RakForegroundView.m; sourceTree = "<group>"; };
 		B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Rakshata.entitlements; sourceTree = "<group>"; };
-		B6FD250718B1245C0025FE74 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = Ressources/sqlite3.h; sourceTree = "<group>"; };
 		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
 		B6FE79E018B903B4004BE38D /* DBcache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBcache.c; path = C/DBcache.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1423,7 +1422,6 @@
 				B6F6ECC318A3001400E3B55B /* lecteur.h */,
 				B6F6ECC418A3001400E3B55B /* main.h */,
 				B6F6ECD018A3001400E3B55B /* prototypes.h */,
-				B6FD250718B1245C0025FE74 /* sqlite3.h */,
 				B6F6ECD618A3001400E3B55B /* structures.h */,
 			);
 			name = Headers;

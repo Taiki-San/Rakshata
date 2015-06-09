@@ -551,8 +551,12 @@ PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
 		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
 		sqlite3_bind_int(request, 1, cacheID);
 		
+		MUTEX_LOCK(cacheParseMutex);
+
 		if(sqlite3_step(request) == SQLITE_ROW)
 			copyOutputDBToStruct(request, &output, copyDynamic);
+		
+		MUTEX_UNLOCK(cacheParseMutex);
 		
 		destroyRequest(request);
 	}
