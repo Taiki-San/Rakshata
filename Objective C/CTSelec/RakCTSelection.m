@@ -150,6 +150,8 @@
 	
 	[[Prefs getSystemColor:COLOR_BACKGROUND_CT_LIST :nil] setFill];
 	
+	dirtyRect.size = _bounds.size;
+	
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, dirtyRect.size.height - CT_READERMODE_HEIGHT_CT_BUTTON - CT_READERMODE_HEIGHT_BORDER_TABLEVIEW + 2));
 }
 

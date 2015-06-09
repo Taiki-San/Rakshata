@@ -713,6 +713,8 @@
 		});
 	}
 	
+	initialSize.height = MIN(initialSize.height, [_tableView numberOfRows] * [_tableView rowHeight]);
+	
 	//Adding or removing columns will impact tableview size
 	if(!NSEqualSizes(initialSize, _tableView.bounds.size))
 		[_tableView setFrameSize:initialSize];
@@ -1007,7 +1009,14 @@
 				[_tableView insertRowsAtIndexes:indexIn withAnimation:NSTableViewAnimationSlideLeft];
 			
 		} completionHandler:^{
-			[_tableView tile];
+			
+			NSSize tableSize = _tableView.bounds.size;
+			tableSize.height = MIN(tableSize.height, [_tableView numberOfRows] * [_tableView rowHeight]);
+			
+			//Adding or removing columns will impact tableview size
+			if(!NSEqualSizes(tableSize, _tableView.bounds.size))
+				[_tableView setFrameSize:tableSize];
+
 			[scrollView updateScrollerState:scrollView.bounds];
 		}];
 	}
