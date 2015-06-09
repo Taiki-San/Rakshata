@@ -134,7 +134,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	if(project->tomesFull == NULL)
 		return;
 	
-    if(dernierLu != NULL)
+	if(dernierLu != NULL)
     {
 		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo);
 		FILE* config;
@@ -152,7 +152,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 		}
     }
 	
-	project->tomesInstalled = malloc((project->nombreTomes + 1) * sizeof(META_TOME));
+	project->tomesInstalled = malloc(project->nombreTomes * sizeof(META_TOME));
 	if(project->tomesInstalled == NULL)
 		return;
 
@@ -160,7 +160,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	project->nombreTomesInstalled = project->nombreTomes;
 	
 	size_t deletedItems = 0;
-    for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
+	for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*project, project->tomesFull[nbElem].ID))
@@ -168,7 +168,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
             if(project->tomesInstalled[nbElem-deletedItems].details != NULL)
 				free(project->tomesInstalled[nbElem-deletedItems].details);
 			
-			memcpy(&(project->tomesInstalled[nbElem-deletedItems]), &(project->tomesInstalled[nbElem-deletedItems+1]), (project->nombreTomes - nbElem) * sizeof(META_TOME));
+			memcpy(&(project->tomesInstalled[nbElem-deletedItems]), &(project->tomesInstalled[nbElem-deletedItems+1]), (project->nombreTomes - nbElem - 1) * sizeof(META_TOME));
 			project->nombreTomesInstalled--;
 			deletedItems++;
         }
