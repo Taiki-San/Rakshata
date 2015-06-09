@@ -134,7 +134,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	if(project->tomesFull == NULL)
 		return;
 	
-	if(dernierLu != NULL)
+    if(dernierLu != NULL)
     {
 		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo);
 		FILE* config;
@@ -160,7 +160,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	project->nombreTomesInstalled = project->nombreTomes;
 	
 	size_t deletedItems = 0;
-	for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
+    for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
         if(!checkTomeReadable(*project, project->tomesFull[nbElem].ID))
