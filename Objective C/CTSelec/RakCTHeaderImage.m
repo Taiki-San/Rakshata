@@ -129,9 +129,17 @@
 - (NSRect) frameByParent:(NSRect)parentFrame
 {
 	if(_background != nil && _background.image != nil && _background.image.size.height != 0)		//round(ratio * fullWidth)
+	{
 		parentFrame.size.width = round((parentFrame.size.height / _background.image.size.height) * _background.image.size.width);
-	else
-		parentFrame.size.width /= 2;
+//
+//		if(parentFrame.size.width < CT_HEADER_LEFT_MIN_WIDTH)
+//		{
+//			parentFrame.size.width = CT_HEADER_LEFT_MIN_WIDTH;
+//			parentFrame.size.height = (CT_HEADER_LEFT_MIN_WIDTH / _background.image.size.width) * _background.image.size.height;
+//		}
+	}
+//	else
+//		parentFrame.size.width = MAX(CT_HEADER_LEFT_MIN_WIDTH, parentFrame.size.width / 2);
 	
 	parentFrame.origin.x = 1;
 	parentFrame.origin.y = 0;
@@ -147,7 +155,15 @@
 	if(_background != nil && _background.image != nil)
 	{
 		NSSize size = _background.image.size;
+		if(NSEqualSizes(size, NSZeroSize))
+			size = output;
+		
 		CGFloat ratio = (size.width != 0 ? output.width / size.width : 1 ) / 2;
+		
+		if(size.width * ratio < CT_HEADER_LEFT_MIN_WIDTH)
+		{
+			ratio = CT_HEADER_LEFT_MIN_WIDTH / size.width;
+		}
 		
 		//Make the thing bigger is too wide, and no high enough
 		if(size.height * ratio > output.height / 2)
@@ -160,7 +176,7 @@
 	else
 	{
 		//If we can't, we take half of the width, and the top 40% of the view
-		output.width /= 2;
+		output.width = MAX(CT_HEADER_LEFT_MIN_WIDTH, output.width / 2);
 		output.height = output.height * 2 / 5;
 	}
 	

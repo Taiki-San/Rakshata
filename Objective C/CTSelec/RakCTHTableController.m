@@ -128,7 +128,7 @@ enum
 		[_tableView scrollRowToVisible:0];
 		self.scrollView.scrollingDisabled = NO;
 	}
-	
+		
 	if(animated)
 		[self.scrollView.animator setFrame : newFrame];
 	else

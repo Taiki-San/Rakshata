@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define CT_HEADER_LEFT_MIN_WIDTH 410
+
 @interface RakCTHContainer : RakGradientView
 {
 	PROJECT_DATA _data;
