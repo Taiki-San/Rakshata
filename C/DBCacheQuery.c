@@ -47,10 +47,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	}
 	else
 	{
-		size_t length = strlen(buffer);
 		wchar_t converted[LENGTH_PROJECT_NAME] = {0};
 		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_PROJECT_NAME - 1, 0);
+		utf8_to_wchar(buffer, strlen(buffer), converted, LENGTH_PROJECT_NAME - 1, 0);
 		memcpy(&(output->projectName), converted, sizeof(converted));
 	}
 	
@@ -60,12 +59,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		memset(output->description, 0, sizeof(output->description));
 	else
 	{
-		size_t length = strlen(buffer);
 		wchar_t converted[LENGTH_DESCRIPTION] = {0};
 		
-		memset(converted, 0, sizeof(converted));
-		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_DESCRIPTION - 1, 0);
+		utf8_to_wchar(buffer, strlen(buffer), converted, LENGTH_DESCRIPTION - 1, 0);
 		memcpy(&(output->description), converted, sizeof(converted));
 	}
 	
@@ -75,10 +71,9 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		memset(output->authorName, 0, sizeof(output->authorName));
 	else
 	{
-		size_t length = strlen(buffer);
 		wchar_t converted[LENGTH_AUTHORS] = {0};
 		
-		length = utf8_to_wchar(buffer, length, converted, LENGTH_AUTHORS - 1, 0);
+		utf8_to_wchar(buffer, strlen(buffer), converted, LENGTH_AUTHORS - 1, 0);
 		memcpy(&(output->authorName), converted, sizeof(converted));
 	}
 	
