@@ -64,7 +64,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 		}
 	}
 	
-	return image == nil ? [NSImage imageNamed:defaultName] : image;
+	return image != nil ? image : (defaultName != nil ? [NSImage imageNamed:defaultName] : nil);
 }
 
 NSImage * loadCTHeader(const PROJECT_DATA project)
@@ -74,7 +74,9 @@ NSImage * loadCTHeader(const PROJECT_DATA project)
 
 NSImage * loadCTThumb(const PROJECT_DATA project)
 {
-	return loadProjectImage(project, PROJ_IMG_SUFFIX_CT, @"defaultCTImage");
+	NSImage * image = loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil);
+	
+	return image != nil ? image : loadImageGrid(project);
 }
 
 NSImage * loadDDThumbnail(const PROJECT_DATA project)
