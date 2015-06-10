@@ -501,7 +501,9 @@
 		}
 		else
 		{
-			memcpy(&(IDToPosition[element]), &(IDToPosition[element + 1]), (--discardedCount - element) * sizeof(*IDToPosition));
+			for(uint base = element, max = --discardedCount - element; base < max; base++)
+				IDToPosition[base] = IDToPosition[base + 1];
+
 			[_list deleteElements : &element : 1];
 		}
 	}
