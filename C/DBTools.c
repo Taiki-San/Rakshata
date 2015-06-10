@@ -373,7 +373,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 
 void updateProjectImages(void * _todo)
 {
-	ICONS_UPDATE * todo = _todo, * end, *tmp;
+	ICONS_UPDATE * todo = _todo, * end = NULL, *tmp = NULL;
 	
 	if(todo == NULL)
 		return;
