@@ -49,6 +49,8 @@
 	#import "Prefs.h"
 	#import "RakResPath.h"
 
+	#pragma clang diagnostic ignored "-Wnonnull"
+
 #endif
 
 #include "interface.h"

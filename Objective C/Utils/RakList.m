@@ -769,7 +769,7 @@
 			if([self.delegate isKindOfClass:[RakList class]])
 				((RakList*) self.delegate)._selectionChangeComeFromClic = YES;
 			
-			[self.delegate tableViewSelectionDidChange:[NSNotification new]];
+			[self.delegate tableViewSelectionDidChange:nil];
 		}
 	}
 	

@@ -74,7 +74,12 @@
 	couldDL = self.isTome ? (projectData.nombreTomesInstalled < projectData.nombreTomes) : (projectData.nombreChapitreInstalled < projectData.nombreChapitre);
 	[RakList propagateDragAndDropChangeState : YES : couldDL];
 	
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+	
 	[self dragImage:image at:NSMakePoint(mousePosition.x - image.size.width / 3, mousePosition.y + 3) offset:NSZeroSize event:theEvent pasteboard:pBoard source:self slideBack:YES];
+	
+#pragma clang diagnostic pop
 	
 	[RakList propagateDragAndDropChangeState : NO : couldDL];
 }

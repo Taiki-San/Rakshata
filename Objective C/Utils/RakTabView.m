@@ -716,7 +716,7 @@
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
 	if([self shouldDeployWhenDragComeIn])
-		[self mouseEntered:[NSEvent new]];
+		[self mouseEntered:nil];
 	
 	return [self dropOperationForSender: [RakDragResponder getOwnerOfTV:[sender draggingSource]] : [RakDragItem canDL:[sender draggingPasteboard]]];
 }

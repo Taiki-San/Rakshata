@@ -46,10 +46,10 @@
 	tracking = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:mouseInside];
 	
 	if(mouseInside)
-		[self mouseEntered:[NSEvent new]];
+		[self mouseEntered:nil];
 	
 	else if(self.textColor != classicalTextColor)
-		[self mouseExited:[NSEvent new]];
+		[self mouseExited:nil];
 }
 
 - (void) mouseEntered : (NSEvent *) theEvent
