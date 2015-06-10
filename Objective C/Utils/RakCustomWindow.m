@@ -20,11 +20,15 @@
 		
 		window = [[RakWindow alloc] initWithContentRect:NSMakeRect(200, 200, size.width, size.height) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:YES];
 		
-		window.delegate = [NSApp delegate];
-		window.contentView = [[RakContentViewBack alloc] initWithFrame:NSMakeRect(0, 0, size.width, size.height)];;
-		
-		[window configure];
-		[self fillWindow];
+		if(window != nil)
+		{
+			window.styleMask |= NSTexturedBackgroundWindowMask;
+			window.delegate = [NSApp delegate];
+			window.contentView = [[RakContentViewBack alloc] initWithFrame:NSMakeRect(0, 0, size.width, size.height)];;
+			
+			[window configure];
+			[self fillWindow];
+		}
 	}
 	else
 	{

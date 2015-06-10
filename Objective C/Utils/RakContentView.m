@@ -44,6 +44,13 @@
 		[self setAutoresizesSubviews:NO];
 		[self setNeedsDisplay:YES];
 		[self setWantsLayer:YES];
+
+		titleView = [[RakText alloc] initWithText:@"" :[self textColor]];
+		if(titleView != nil)
+		{
+			[titleView setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
+			[self addSubview:titleView];
+		}
 	}
 	
 	return self;

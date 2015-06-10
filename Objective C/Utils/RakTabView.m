@@ -443,7 +443,7 @@
 -(BOOL) mouseOutOfWindow
 {
 	NSPoint mouseLoc = [self getCursorPosInWindow];
-	NSSize windowSize = self.window.frame.size;
+	NSSize windowSize = [((RakContentViewBack *) self.window.contentView) internalFrame].size;
 	
 	return (mouseLoc.x < 0 || mouseLoc.x > windowSize.width || mouseLoc.y < 0 || mouseLoc.y > windowSize.height);
 }

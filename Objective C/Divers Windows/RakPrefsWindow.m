@@ -84,7 +84,7 @@
 		NSSize oldSize = [self mainFrame].size;
 		
 		CGFloat diff = oldSize.height + 4 - new.bounds.size.height;
-		newWindowFrame.size.height -= diff;
+		newWindowFrame.size.height -= diff - TITLE_BAR_HEIGHT;
 		newWindowFrame.origin.y = MAX(0, newWindowFrame.origin.y + diff / 2);
 		
 		diff = oldSize.width - new.bounds.size.width;

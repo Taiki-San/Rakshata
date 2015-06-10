@@ -89,7 +89,7 @@ enum
 
 - (void) viewDidMoveToWindow
 {
-	self.window.title = activeButton.attributedTitle.string;
+	((RakContentViewBack *) self.window.contentView).title = activeButton.attributedTitle.string;
 }
 
 - (void) dealloc
@@ -185,7 +185,7 @@ enum
 	
 	activeButton = sender;
 	
-	self.window.title = activeButton.attributedTitle.string;
+	((RakContentViewBack *) self.window.contentView).title = activeButton.attributedTitle.string;
 	
 	[Prefs setPref:PREFS_SET_ACTIVE_PREFS_PANEL :code];
 	[responder focusChanged:code];

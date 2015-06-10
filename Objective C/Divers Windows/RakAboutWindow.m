@@ -64,6 +64,8 @@ enum
 
 - (void) fillWindow
 {
+	((RakContentViewBack *) window.contentView).title = @"À propos de Rakshata";
+	
 	[super fillWindow];
 	
 	icon = [[RakAboutIcon alloc] initWithFrame:NSMakeRect(0, 0, BORDER_ICON, BORDER_ICON)];

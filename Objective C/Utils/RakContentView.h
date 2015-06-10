@@ -51,5 +51,7 @@
 - (void) updateUI;
 - (RakContentView *) getFirstResponder;
 
+- (NSRect) internalFrame;
+
 @end
 
