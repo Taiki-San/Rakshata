@@ -30,7 +30,6 @@
 	#import <Cocoa/Cocoa.h>
 	#import <QuartzCore/QuartzCore.h>
 	#import <INPopoverController/INPopoverController.h>
-	#import "INAppStoreWindow.framework/Headers/INAppStoreWindow.h"
 
 	#import "utils.h"
 

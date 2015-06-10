@@ -35,14 +35,17 @@
 {
 	NSColor * backgroundColor;
 	
-	RakBorder* internalRows1;
-	RakBorder* internalRows2;
+	RakBorder* internalRows1, * internalRows2;
 	
 	RakContentView * firstResponder;
+
+	RakText * titleView;
 }
 
 //Used when leaving fullscreen mode
-@property CGFloat heightOffset;
+@property (nonatomic) CGFloat heightOffset;
+@property (nonatomic) NSString * title;
+@property (nonatomic) BOOL isMainWindow;
 
 - (void) setupBorders;
 - (void) updateUI;

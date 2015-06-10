@@ -10,7 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakWindow : INAppStoreWindow
+#define TITLE_BAR_HEIGHT 22
+
+@interface RakWindow : NSWindow
 
 @property (getter=isMainWindow) BOOL isMainWindow;
 

@@ -22,6 +22,13 @@
 		[self setAutoresizesSubviews:NO];
 		[self setNeedsDisplay:YES];
 		[self setWantsLayer:YES];
+		
+		titleView = [[RakText alloc] initWithText:@"" :[self textColor]];
+		if(titleView != nil)
+		{
+			[titleView setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
+			[self addSubview:titleView];
+		}
 	}
 	
 	return self;
@@ -42,45 +49,12 @@
 	return self;
 }
 
-- (void) setFrame : (NSRect) frameRect
-{
-	if(_heightOffset)
-		frameRect.size.height -= _heightOffset;
-	
-	[super setFrame:frameRect];
-	
-	if(![self.subviews count])
-		return;
-	
-	frameRect.size.width -= 2 * WIDTH_BORDER_FAREST;
-	frameRect.size.height -= 2 * WIDTH_BORDER_FAREST;
-	frameRect.origin.x += WIDTH_BORDER_FAREST;
-	frameRect.origin.y += WIDTH_BORDER_FAREST;
-	
-	[self.subviews[0] setFrame:frameRect];
-	
-	frameRect.size.width -= 2 * WIDTH_BORDER_MIDDLE;
-	frameRect.size.height -= 2 * WIDTH_BORDER_MIDDLE;
-	frameRect.origin.x += WIDTH_BORDER_MIDDLE;
-	frameRect.origin.y += WIDTH_BORDER_MIDDLE;
-	
-	[self.subviews[1] setFrame:frameRect];
-	
-	frameRect.size.width -= 2 * WIDTH_BORDER_INTERNAL;
-	frameRect.size.height -= 2 * WIDTH_BORDER_INTERNAL;
-	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
-	frameRect.origin.y += WIDTH_BORDER_INTERNAL;
-	
-	for(uint i = 2, count = [self.subviews count]; i < count; i++)
-		[self.subviews[i] setFrame:frameRect];
-}
-
 - (void) setupBorders
 {
 	[Prefs getCurrentTheme:self];
 	
 	backgroundColor = [self firstBorderColor];
-	NSRect frame = self.frame;
+	NSRect frame = [self internalFrame];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
 	frame.size.height -= 2 * WIDTH_BORDER_FAREST;
@@ -152,12 +126,6 @@
 	[firstResponder keyDown:theEvent];
 }
 
-- (void) drawRect:(NSRect)dirtyRect
-{
-	[backgroundColor setFill];
-	NSRectFill(dirtyRect);
-}
-
 - (void) dealloc
 {
 	[internalRows1 removeFromSuperview];
@@ -165,7 +133,146 @@
 	[firstResponder removeFromSuperview];
 }
 
+#pragma mark - Positioning
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	if(_heightOffset + TITLE_BAR_HEIGHT)
+	{
+		NSSize windowSize = self.window.frame.size;
+		
+		if(windowSize.height > 0)
+			newSize.height = MIN(newSize.height + _heightOffset + TITLE_BAR_HEIGHT, self.window.frame.size.height);
+		else
+			newSize.height += _heightOffset + TITLE_BAR_HEIGHT;
+	}
+
+	[super setFrameSize:newSize];
+}
+
+- (void) setFrame : (NSRect) frameRect
+{
+	[super setFrame:frameRect];
+	
+	if(![self.subviews count])
+		return;
+	
+	[self centerTitle];
+	
+	frameRect = [self internalFrame];
+	
+	frameRect.size.width -= 2 * WIDTH_BORDER_FAREST;
+	frameRect.size.height -= 2 * WIDTH_BORDER_FAREST;
+	frameRect.origin.x += WIDTH_BORDER_FAREST;
+	frameRect.origin.y += WIDTH_BORDER_FAREST;
+	
+	[internalRows1 setFrame:frameRect];
+	
+	frameRect.size.width -= 2 * WIDTH_BORDER_MIDDLE;
+	frameRect.size.height -= 2 * WIDTH_BORDER_MIDDLE;
+	frameRect.origin.x += WIDTH_BORDER_MIDDLE;
+	frameRect.origin.y += WIDTH_BORDER_MIDDLE;
+	
+	[internalRows2 setFrame:frameRect];
+	
+	frameRect.size.width -= 2 * WIDTH_BORDER_INTERNAL;
+	frameRect.size.height -= 2 * WIDTH_BORDER_INTERNAL;
+	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
+	frameRect.origin.y += WIDTH_BORDER_INTERNAL;
+	
+	for(NSView * view in self.subviews)
+	{
+		if(view != titleView && [view class] != [RakBorder class])
+			[view setFrame:frameRect];
+	}
+}
+
+- (NSRect) internalFrame
+{
+	NSRect output = _bounds;
+	
+	output.size.height -= _heightOffset + TITLE_BAR_HEIGHT;
+	
+	return output;
+}
+
+- (void) centerTitle
+{
+	NSRect bounds = titleView.bounds, internalFrame = [self internalFrame];
+	
+	[titleView setFrameOrigin:NSMakePoint(internalFrame.size.width / 2 - bounds.size.width / 2, internalFrame.size.height + TITLE_BAR_HEIGHT / 2 - bounds.size.height / 2)];
+}
+
+#pragma mark - Properties update
+
+- (void) setHeightOffset:(CGFloat)heightOffset
+{
+	if(heightOffset == -TITLE_BAR_HEIGHT)
+		titleView.hidden = YES;
+	else
+		titleView.hidden = NO;
+	
+	_heightOffset = heightOffset;
+}
+
+- (void) setTitle:(NSString *)title
+{
+	titleView.stringValue = _title = title;
+	[titleView sizeToFit];
+	[self centerTitle];
+}
+
+- (void) setIsMainWindow:(BOOL)isMainWindow
+{
+	isMainWindow &= _window.isMainWindow;
+	
+	if(_isMainWindow != isMainWindow)
+	{
+		_isMainWindow = isMainWindow;
+		titleView.textColor = [self textColor];
+
+		[self setNeedsDisplay:YES];
+	}
+}
+
+#pragma mark - Drawing
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	NSRect internalFrame = [self internalFrame];
+	dirtyRect = NSMakeRect(0, NSMaxY(internalFrame), internalFrame.size.width, TITLE_BAR_HEIGHT);
+	
+	if(_isMainWindow)
+	{
+		if((NSInteger)NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
+		{
+			NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_START :nil] colorWithAlphaComponent:0.7]
+																 endingColor:[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_END :nil]];
+			[gradient drawInRect:dirtyRect angle:90];
+		}
+		else
+		{
+			[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_MAIN :nil] setFill];
+			NSRectFill(dirtyRect);
+		}
+	}
+	else
+	{
+		[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY :nil] setFill];
+		NSRectFill(dirtyRect);
+	}
+
+	
+	[backgroundColor setFill];
+	NSRectFill(internalFrame);
+}
+
 #pragma mark - Color
+
+- (NSColor *) textColor
+{
+	return _isMainWindow ? [Prefs getSystemColor:COLOR_SURVOL: nil] : [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
+}
 
 - (NSColor *) firstBorderColor
 {
@@ -194,7 +301,11 @@
 	[internalRows1 setColor: [self middleBorderColor]];
 	
 	if(self.window.isMainWindow)
+	{
 		[internalRows2 setColor: [self lastBorderColor]];
+		
+		[titleView setTextColor:[self textColor]];
+	}
 	
 	[self setNeedsDisplay:YES];
 }

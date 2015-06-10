@@ -10,60 +10,18 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#ifndef NSAppKitVersionNumber10_10
-#define NSAppKitVersionNumber10_10 1343
-#endif
-
 @implementation RakWindow
 
 - (void) configure
 {
+	((RakContentViewBack *) self.contentView).isMainWindow = YES;
+	((RakContentViewBack *) self.contentView).title = [self getProjectName];
+
 	[self.contentView setupBorders];
-	[self setMovable:YES];
+
+	self.movable = YES;
 	self.movableByWindowBackground = YES;
-	
-	self.title = [self getProjectName];
-	self.showsTitle = YES;
-	self.verticallyCenterTitle = YES;
-	self.centerTrafficLightButtons = YES;
-	self.showsBaselineSeparator = NO;
-	self.hideTitleBarInFullScreen = YES;
-	
-	self.titleTextShadow = self.inactiveTitleTextShadow = [[NSShadow alloc] init];
-	
-	self.titleTextColor = [Prefs getSystemColor:COLOR_SURVOL : self];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
-	
-	self.titleBarDrawingBlock = ^(BOOL drawsAsMainWindow, CGRect drawingRect, CGRectEdge edge, CGPathRef clippingPath)
-	{
-		CGContextRef ctx = [[NSGraphicsContext currentContext] graphicsPort];
-		CGContextSaveGState(ctx);
-		if (clippingPath)
-		{
-			CGContextAddPath(ctx, clippingPath);
-			CGContextClip(ctx);
-		}
-		
-		if (drawsAsMainWindow || !self.isMainWindow)
-		{
-			if((NSInteger)NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
-			{
-				NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_START :nil] colorWithAlphaComponent:0.7]
-																	 endingColor:[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_END :nil]];
-				[gradient drawInRect:drawingRect angle:90];
-			}
-			else
-			{
-				[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_MAIN :nil] setFill];
-				NSRectFill(drawingRect);
-			}
-		}
-		else
-		{
-			[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY :nil] setFill];
-			NSRectFill(drawingRect);
-		}
-	};
+	self.titlebarAppearsTransparent = YES;
 }
 
 - (BOOL) canBecomeKeyWindow		{ return YES; }
@@ -157,17 +115,17 @@
 
 - (void) resetTitle
 {
-	self.title = [self getProjectName];
+	((RakContentViewBack *) self.contentView).title = [self getProjectName];
 }
 
 - (void) setProjectTitle : (PROJECT_DATA) project
 {
-	self.title = [NSString stringWithFormat:@"%@ - %@", [self getProjectName], getStringForWchar(project.projectName)];
+	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ - %@", [self getProjectName], getStringForWchar(project.projectName)];
 }
 
 - (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element
 {
-	self.title = [NSString stringWithFormat:@"%@ - %@ - %@", [self getProjectName], getStringForWchar(project.projectName), element];
+	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ - %@ - %@", [self getProjectName], getStringForWchar(project.projectName), element];
 }
 
 #pragma mark - Delegate
@@ -181,17 +139,6 @@
 	_imatureFirstResponder = old;
 	
 	return retValue;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	
-	self.titleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
-	self.inactiveTitleTextColor = [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
-	
-	[self.contentView setNeedsDisplay:YES];
 }
 
 @end

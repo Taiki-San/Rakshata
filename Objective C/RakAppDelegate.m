@@ -158,17 +158,26 @@
 	return YES;
 }
 
+- (void) applicationWillBecomeActive:(nonnull NSNotification *)notification
+{
+	((RakContentViewBack*) self.window.contentView).isMainWindow = YES;
+}
+
+- (void) applicationWillResignActive:(nonnull NSNotification *)notification
+{
+	((RakContentViewBack*) self.window.contentView).isMainWindow = NO;
+}
+
 #pragma mark - Delegate work
+
+- (void) windowWillEnterFullScreen:(nonnull NSNotification *)notification
+{
+	((RakContentViewBack*) self.window.contentView).heightOffset = -TITLE_BAR_HEIGHT;
+}
 
 - (void) windowWillExitFullScreen:(NSNotification *)notification
 {
 	[tabReader shouldLeaveDistractionFreeMode];
-	
-	((RakContentViewBack*) self.window.contentView).heightOffset = self.window.titleBarHeight;
-}
-
-- (void) windowDidExitFullScreen:(NSNotification *)notification
-{
 	((RakContentViewBack*) self.window.contentView).heightOffset = 0;
 }
 

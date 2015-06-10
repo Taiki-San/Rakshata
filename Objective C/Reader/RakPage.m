@@ -554,7 +554,7 @@
 	return YES;
 }
 
-- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
+- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data : (BOOL) recursion
 {
 	if(_data.path == NULL || posData >= data->nombrePage)
 		return nil;
@@ -582,7 +582,7 @@
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
 		
-		return [self getPage : posData : data];
+		return [self getPage : posData : data : YES];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 		return nil;
@@ -915,7 +915,7 @@
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
 {
-	NSData * imageData = [self getPage : page : data];
+	NSData * imageData = [self getPage : page : data : NO];
 	
 	if(imageData == nil || imageData.length == 0)
 		return nil;
@@ -1180,7 +1180,7 @@
 		{
 			if(loadNext && ![self entryValid : data : _data.nombrePage + 1])
 			{
-				[self loadPageCache : 0 : &newData : currentSession : newData.nombrePage + 1];
+				[self loadPageCache : 0 : &newData : currentSession : _data.nombrePage + 1];
 
 				if(!nextDataLoaded && currentSession == cacheSession)
 				{
@@ -1312,7 +1312,7 @@
 	
 	@autoreleasepool
 	{
-		retValue = [self _loadPageCache: page : &_data : currentSession : position];
+		retValue = [self _loadPageCache: page : dataLecture : currentSession : position];
 		
 		[CATransaction begin];
 		[CATransaction setDisableActions:YES];

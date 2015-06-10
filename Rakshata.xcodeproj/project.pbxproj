@@ -85,8 +85,6 @@
 		B694B8641A732F1B00391B62 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B694B8631A732F1B00391B62 /* Cocoa.framework */; };
 		B694B8661A732F2800391B62 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B694B8651A732F2800391B62 /* AppKit.framework */; };
 		B694B8681A732F3500391B62 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B694B8671A732F3500391B62 /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		B694B86B1A73316600391B62 /* INAppStoreWindow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B694B86A1A73316600391B62 /* INAppStoreWindow.framework */; };
-		B694B86C1A73317600391B62 /* INAppStoreWindow.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B694B86A1A73316600391B62 /* INAppStoreWindow.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = B696DDED194A7D430018CDF9 /* RakDragResponder.m */; };
 		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
 		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
@@ -224,7 +222,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B694B86C1A73317600391B62 /* INAppStoreWindow.framework in Embed Frameworks */,
 				B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -369,7 +366,6 @@
 		B694B8631A732F1B00391B62 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		B694B8651A732F2800391B62 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
 		B694B8671A732F3500391B62 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		B694B86A1A73316600391B62 /* INAppStoreWindow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INAppStoreWindow.framework; path = Framework/INAppStoreWindow.framework; sourceTree = "<group>"; };
 		B696DDEC194A7D430018CDF9 /* RakDragResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragResponder.h; path = Utils/RakDragResponder.h; sourceTree = "<group>"; };
 		B696DDED194A7D430018CDF9 /* RakDragResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragResponder.m; path = Utils/RakDragResponder.m; sourceTree = "<group>"; };
 		B6976681190D9B7D00B0A266 /* RakMDLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakMDLView.h; path = MDL/RakMDLView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -586,7 +582,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B694B86B1A73316600391B62 /* INAppStoreWindow.framework in Frameworks */,
 				B694B8681A732F3500391B62 /* Foundation.framework in Frameworks */,
 				B694B8661A732F2800391B62 /* AppKit.framework in Frameworks */,
 				B694B8641A732F1B00391B62 /* Cocoa.framework in Frameworks */,
@@ -1200,7 +1195,6 @@
 				B6033BCD18E4617000750226 /* libssl.a */,
 				B6033BCE18E4617000750226 /* libz.a */,
 				B6EBD8091953934600642EB8 /* INPopoverController.framework */,
-				B694B86A1A73316600391B62 /* INAppStoreWindow.framework */,
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
 				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
 			);
@@ -1880,7 +1874,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Rakshata;
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Framework/";
@@ -1965,7 +1959,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Rakshata;
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				STRIPFLAGS = "-S -x";
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = all;
