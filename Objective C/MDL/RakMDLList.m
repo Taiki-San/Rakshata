@@ -290,7 +290,7 @@ enum
 {
 	if (sender == [self getSelfCode])	//Reorder
 	{
-		if(project.repo == NULL || element == INVALID_SIGNED_VALUE || row > [self numberOfRowsInTableView:nil] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+		if(project.repo == NULL || element == INVALID_SIGNED_VALUE || row > [self numberOfRowsInTableView:_tableView] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
 		if(!dragInProgress)

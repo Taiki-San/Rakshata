@@ -36,7 +36,7 @@ enum
 	SEARCH_BAR_ID_FORCE_CLOSE
 };
 
-@interface RakSRSearchBar : NSSearchField <NSTextFieldDelegate>
+@interface RakSRSearchBar : NSSearchField <NSSearchFieldDelegate>
 {
 	BOOL _currentPlaceholderState;
 	byte _ID;

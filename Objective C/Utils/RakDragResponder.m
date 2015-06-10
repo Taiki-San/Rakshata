@@ -109,7 +109,7 @@
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
 									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
-								 searchOptions:nil
+								 searchOptions:@{}
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
 		 NSImage * image = [self initializeImageForItem : [self getProjectDataForDrag : row] : [self contentNameForDrag : row] : row];

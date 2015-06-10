@@ -73,7 +73,6 @@
 
 - (void) clearMemory
 {
-	_popover.contentViewController.view = nil;
 	_popover.contentViewController = nil;
 }
 

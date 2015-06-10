@@ -180,7 +180,7 @@
 
 - (void) startAnimation
 {
-	data = [[self.image representations] objectAtIndex:0];
+	data = (NSBitmapImageRep *) [[self.image representations] objectAtIndex:0];
 	currentFrame = 0;
 	
 	frameCount = [[data valueForProperty:NSImageFrameCount] intValue];

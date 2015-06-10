@@ -89,7 +89,7 @@ enum
 		}
 		else
 		{
-			[scrollView.nextResponder mouseUp:nil];
+			[scrollView.nextResponder mouseUp:[NSEvent new]];
 		}
 	}
 }
