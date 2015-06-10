@@ -20,7 +20,7 @@
 	{
 		_resized = YES;
 		_manager = manager;
-		activeProject = UINT_MAX;
+		activeProject = INVALID_VALUE;
 		
 		self.selectable = YES;
 		self.allowsMultipleSelection = NO;
@@ -50,13 +50,17 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	[super setFrame:[self frameFromParent : frameRect]];
+}
+
+- (void) setFrameSize:(NSSize)newSize
+{
+	[super setFrameSize:newSize];
 	_resized = YES;
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[super.animator setFrame:[self frameFromParent : frameRect]];
-	_resized = YES;
+	[self.animator setFrame:[self frameFromParent : frameRect]];
 }
 
 - (NSRect) frameFromParent : (NSRect) frame
@@ -109,7 +113,7 @@
 	PROJECT_DATA * project = [_manager getDataAtIndex:index];
 	
 	if(project == NULL)
-		return UINT_MAX;
+		return INVALID_VALUE;
 	
 	return project->cacheDBID;
 }
@@ -303,13 +307,13 @@
 		scrollview = scrollview.superview;
 	
 	if(scrollview == nil)
-		return UINT_MAX;
+		return INVALID_VALUE;
 	
 	const NSSize minimumSize = self.minItemSize;
 	const NSRect documentFrame = ((NSScrollView *) scrollview).visibleRect;
 	uint nbCol = MIN(floor(documentFrame.size.width / minimumSize.width), [_manager nbActivatedElement]);
 	
-	if(nbCol == UINT_MAX || nbCol < 3)	//nbElement = 0, ou une seule ligne
+	if(nbCol == INVALID_VALUE || nbCol == [_manager nbActivatedElement])	//nbElement = 0, ou une seule ligne
 		return nbCol;
 	
 	//We validate the number of columns
