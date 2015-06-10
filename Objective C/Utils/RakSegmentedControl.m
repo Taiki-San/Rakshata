@@ -93,6 +93,11 @@ enum
 
 #pragma mark - Animation
 
+- (void) updateSelectionWithoutAnimation : (NSInteger) newState
+{
+	[_cell setSelectedSegmentWithoutAnimation:newState];
+}
+
 - (BOOL) setupTransitionAnimation : (NSNumber *) oldValue : (NSNumber *) newValue
 {
 	NSInteger initialPos = [oldValue integerValue];

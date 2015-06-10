@@ -352,12 +352,12 @@
 	{
 		if(isTome)
 		{
-			_buttons.selectedSegment = 1;
+			[_buttons updateSelectionWithoutAnimation:1];
 			[_chapterView resetSelection];
 		}
 		else
 		{
-			_buttons.selectedSegment = 0;
+			[_buttons updateSelectionWithoutAnimation:0];
 			[_volView resetSelection];
 		}
 	}

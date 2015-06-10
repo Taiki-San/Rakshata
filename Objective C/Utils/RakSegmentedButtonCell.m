@@ -34,6 +34,11 @@
 	[_controlView setNeedsDisplay:YES];
 }
 
+- (void) setSelectedSegmentWithoutAnimation:(NSInteger)selectedSegment
+{
+	[super setSelectedSegment:selectedSegment];
+}
+
 - (void)setSelectedSegment:(NSInteger)selectedSegment
 {
 	NSInteger oldSelectedSegment = [self selectedSegment];

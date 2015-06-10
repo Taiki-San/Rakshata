@@ -23,6 +23,7 @@
 - (NSRect) getButtonFrame : (NSRect) superviewFrame;
 
 - (void) resizeAnimation : (NSRect) frameRect;
+- (void) updateSelectionWithoutAnimation : (NSInteger) newState;
 - (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 
 @end

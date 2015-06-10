@@ -24,6 +24,7 @@
 	BOOL animationToTheLeft;
 }
 
+- (void) setSelectedSegmentWithoutAnimation:(NSInteger)selectedSegment;
 - (void) updateAnimationStatus : (BOOL) stillRunning : (CGFloat) status;
 
 - (void) createCellWithText : (NSString*) string forElem : (uint) cellID;
