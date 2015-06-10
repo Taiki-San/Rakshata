@@ -1420,6 +1420,8 @@
 		
 		[viewController.view addSubview : placeholder];
 		
+		[placeholder setFrameOrigin: NSCenterPoint(viewController.view.bounds, placeholder.bounds)];
+		
 		if(object != nil)
 			[placeholder startAnimation];
 	}
