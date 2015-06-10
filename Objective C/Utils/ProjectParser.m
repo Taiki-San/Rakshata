@@ -397,7 +397,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID");
 			if(internalID == nil || ARE_CLASSES_DIFFERENT(internalID, [NSNumber class]))	continue;
 
-			description = objectForKey(dict, JSON_PROJ_VOL_DESCRIPTION, @"Description");
+			description = objectForKey(dict, JSON_PROJ_DESCRIPTION, @"Description");
 			
 			content = objectForKey(dict, JSON_PROJ_CHAPTERS, @"chapters");
 			if(content == nil || ARE_CLASSES_DIFFERENT(content, [NSArray class]))			continue;
@@ -455,7 +455,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_PROJ_VOL_INTERNAL_ID];
 		
 		if(volume[pos].description[0])
-			[dict setObject:getStringForWchar(volume[pos].description) forKey:JSON_PROJ_VOL_DESCRIPTION];
+			[dict setObject:getStringForWchar(volume[pos].description) forKey:JSON_PROJ_DESCRIPTION];
 		
 		if(volume[pos].readingName[0])
 			[dict setObject:getStringForWchar(volume[pos].readingName) forKey:JSON_PROJ_VOL_READING_NAME];
