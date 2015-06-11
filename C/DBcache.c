@@ -144,6 +144,29 @@ uint setupBDDCache()
 		if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
 		
 		unsigned char * decodedProject = base64_decode(projectDB, decodedLength, &decodedLength);
+		
+		if(decodedProject == NULL)
+		{
+			free(projectDB);
+			
+			removeFromPref(SETTINGS_PROJECTDB_FLAG);
+			projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
+			if(projectDB != NULL)
+			{
+				decodedLength = strlen(projectDB);
+
+				if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
+
+				decodedProject = base64_decode(projectDB, decodedLength, &decodedLength);
+			}
+			
+			if(decodedProject == NULL)
+			{
+				logR("Couldn't gather valid catalog :|");
+				goto fail;
+			}
+		}
+		
 		PROJECT_DATA * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
 		
 		free(decodedProject);
