@@ -10,23 +10,27 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakTabView;
+#import "RakForegroundBackgroundView.h"
 
-@interface RakTabForegroundView : RakForegroundBackgroundView
+@interface RakForegroundViewContentView : NSView
+
+@end
+
+@interface RakAuthForegroundView : NSObject
 {
-	RakText * head;
-	RakText * main;
-	
-	RakTabView * tabView;
+	RakForegroundBackgroundView * background;
+	RakForegroundViewContentView * _coreView;
 }
 
-- (instancetype) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail;
-- (void) resizeAnimation : (NSRect) frameRect;
+@property (unsafe_unretained) id delegate;
+
+- (instancetype) init : (NSView *) coreView;
+- (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame;
+
+- (void) switchState;
+- (BOOL) isVisible;
+
+- (void) switchOver : (BOOL) isDisplayed;
 
 @end
 
-@interface RakTabAnimationResize : NSObject
-
-+ (void) animateTabs : (NSArray *) views : (BOOL) fastAnimation;
-
-@end

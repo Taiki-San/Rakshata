@@ -14,7 +14,7 @@
 
 - (instancetype) initWithFrame: (NSRect) frameRect : (RakTabView *) father : (NSString *) detail
 {
-	self = [super initWithFrame:frameRect :nil];
+	self = [super initWithFrame:frameRect];
 	
 	if(self != nil)
 	{

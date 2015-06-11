@@ -33,7 +33,7 @@
 	
 	[self updateMainView];
 	
-	foreground = [[RakForegroundView alloc] init : [(RakAppDelegate*)[NSApp delegate] getContentView] : self.view];
+	foreground = [[RakAuthForegroundView alloc] init : self.view];
 	foreground.delegate = self;
 	
 	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : COLOR_ACTIVE : nil]];

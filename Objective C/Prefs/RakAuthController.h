@@ -20,7 +20,7 @@
 	IBOutlet NSView * _containerMail;
 	IBOutlet NSView * _containerPass;
 	
-	RakForegroundView * foreground;
+	RakAuthForegroundView * foreground;
 	
 	//Main view elements
 	IBOutlet RakText * header;

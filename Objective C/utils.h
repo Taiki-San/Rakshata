@@ -29,7 +29,7 @@ NSString * getStringForWchar(const charType * string);
 #import "RakBackButton.h"
 #import "RakPopover.h"
 
-#import "RakForegroundView.h"
+#import "RakAuthForegroundView.h"
 #import "RakTabView.h"
 #import "RakTabContentTemplate.h"
 #import "RakDragView.h"

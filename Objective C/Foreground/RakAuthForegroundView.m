@@ -10,20 +10,23 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation RakForegroundView
+@implementation RakAuthForegroundView
 
-- (instancetype) init : (NSView *) container : (RakForegroundViewContentView *) coreView
+- (instancetype) init : (RakForegroundViewContentView *) coreView
 {
 	self = [super init];
 	
 	if(self != nil)
 	{
-		background = [[RakForegroundViewBackgroundView alloc] initWithFrame:container.bounds : self];
+		background = [[RakForegroundBackgroundView alloc] init];
 		if(background != nil)
 		{
 			background.animationInProgress = NO;
-			[container addSubview:background];
+			background.father = self;
+			[background attachToView];
 		}
+		
+		NSView * container = background.superview;
 		
 		if(coreView == nil)
 			coreView = [self craftCoreView : container.bounds];
@@ -116,60 +119,6 @@
 	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(switchOver:)])
 		[self.delegate performSelectorOnMainThread:@selector(switchOver:) withObject:@(isDisplayed) waitUntilDone:NO];
 }
-
-@end
-
-@implementation RakForegroundViewBackgroundView
-
-- (instancetype) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father
-{
-	self = [super initWithFrame:frameRect];
-	
-	if(self != nil)
-	{
-		_father = father;
-		[self setWantsLayer:YES];
-		[self setAutoresizesSubviews:NO];
-		[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
-		[self setAlphaValue:0];
-		[Prefs getCurrentTheme:self];
-	}
-	
-	return self;
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] != [Prefs class])
-		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-
-	[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
-	[self setNeedsDisplay:YES];
-}
-
-- (NSColor *) getBackgroundColor
-{
-	return [Prefs getSystemColor:COLOR_FILTER_FORGROUND :nil];
-}
-
-- (void) mouseDown:(NSEvent *)theEvent
-{
-	if([_father isVisible])
-	{
-		[_father switchState];
-	}
-}
-
-- (void) mouseUp:(NSEvent *)theEvent		{	}
-- (void) mouseEntered:(NSEvent *)theEvent	{	}
-- (void) mouseEnteredForced : (NSEvent *) theEvent	{	[super mouseEntered: theEvent];	}
-
-- (void) mouseExited:(NSEvent *)theEvent	{	}
-- (void) mouseExitedForced:(NSEvent *)theEvent		{	[super mouseExited: theEvent];	}
-
-- (void) mouseMoved:(NSEvent *)theEvent		{	}
-- (void) swipeWithEvent:(NSEvent *)event	{	}
-- (void) scrollWheel:(NSEvent *)theEvent	{	}
 
 @end
 

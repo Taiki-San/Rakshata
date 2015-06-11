@@ -10,42 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class RakForegroundView;
+@interface RakForegroundBackgroundView : NSView
 
-@interface RakForegroundViewBackgroundView : NSView
-{
-	RakForegroundView * _father;
-}
-
+@property (weak) id father;
 @property (atomic) BOOL animationInProgress;
 
-- (instancetype) initWithFrame: (NSRect) frameRect : (RakForegroundView *) father;
+- (void) attachToView;
+
 - (NSColor *) getBackgroundColor;
 
 - (void) mouseEnteredForced : (NSEvent *) theEvent;
 - (void) mouseExitedForced:(NSEvent *)theEvent;
 
 @end
-
-@interface RakForegroundViewContentView : NSView
-
-@end
-
-@interface RakForegroundView : NSObject
-{
-	RakForegroundViewBackgroundView * background;
-	RakForegroundViewContentView * _coreView;
-}
-
-@property (unsafe_unretained) id delegate;
-
-- (instancetype) init : (NSView *) contentView : (NSView *) coreView;
-- (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame;
-
-- (void) switchState;
-- (BOOL) isVisible;
-
-- (void) switchOver : (BOOL) isDisplayed;
-
-@end
-
