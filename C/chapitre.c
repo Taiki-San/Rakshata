@@ -14,7 +14,7 @@ void refreshChaptersList(PROJECT_DATA *projectDB)
 {
     if(projectDB->chapitresFull != NULL || projectDB->chapitresPrix != NULL || projectDB->chapitresInstalled != NULL)
 	{
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 		FILE * output = fopen("log/log.txt", "a+");
 		if(output != NULL)
 		{

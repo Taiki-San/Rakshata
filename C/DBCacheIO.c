@@ -121,7 +121,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 		FILE * output = fopen("log/log.txt", "a+");
 		if(output != NULL)
 		{
@@ -173,7 +173,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int64(request, 9, (int64_t) data.tagMask);
 	sqlite3_bind_int(request, 10, data.nombreChapitre);
 
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 	FILE * output = fopen("log/log.txt", "a+");
 	if(output != NULL)
 	{
@@ -231,7 +231,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 
 	MUTEX_UNLOCK(cacheParseMutex);
 	
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 	if(data.chapitresPrix)
 	{
 		PROJECT_DATA project = getProjectByID(data.cacheDBID);
@@ -265,7 +265,7 @@ void removeFromCache(PROJECT_DATA data)
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 			FILE * outputFile = fopen("log/log.txt", "a+");
 			if(outputFile != NULL)
 			{

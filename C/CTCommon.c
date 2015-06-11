@@ -67,16 +67,7 @@ void releaseCTData(PROJECT_DATA data)
 {
 	if(data.isInitialized)
 	{
-#ifdef DEBUG_CT_DEALLOC
-		if(data.chapitresFull != NULL)
-		{
-			if(data.chapitresFull[0] == 13371337)
-				logR("WTF");
-			else
-				data.chapitresFull[0] = 13371337;
-		}
-#else
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 		FILE * output = fopen("log/log.txt", "a+");
 		if(output != NULL)
 		{
@@ -91,6 +82,5 @@ void releaseCTData(PROJECT_DATA data)
 		free(data.chapitresPrix);
 		freeTomeList(data.tomesFull, data.nombreTomes, true);
 		freeTomeList(data.tomesInstalled, data.nombreTomesInstalled, true);
-#endif
 	}
 }

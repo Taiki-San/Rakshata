@@ -44,7 +44,7 @@ int main(int argc, const char *argv[])
 	resetUpdateDBCache();
 	initializeDNSCache();
 	
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 	removeFolder("log");
 	mkdirR("log");
 #endif

@@ -21,8 +21,8 @@
 #ifndef DEV_VERSION
 	#define PAID_CONTENT_ONLY_FOR_PAID_REPO
 #else
+//	#define VERBOSE_DB_MANAGEMENT
 //	#define VERBOSE_REQUEST
-//	#define DEBUG_CT_DEALLOC	//LEAK A LOT OF MEMORY!!!
 #endif
 
 //UI configuration

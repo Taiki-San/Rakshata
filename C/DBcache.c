@@ -162,7 +162,7 @@ uint setupBDDCache()
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].repo), isInstalled(pathInstall), false))
 					{
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 						FILE * output = fopen("log/log.txt", "a+");
 						if(output != NULL)
 						{

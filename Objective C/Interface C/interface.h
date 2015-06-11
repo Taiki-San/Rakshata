@@ -45,7 +45,7 @@ void sendToLog(char * string);
 void notifyEmailUpdate();
 void restorePrefsFile();
 
-#ifdef DEV_VERSION
+#ifdef VERBOSE_DB_MANAGEMENT
 void logStack(void * address);
 #endif
 
