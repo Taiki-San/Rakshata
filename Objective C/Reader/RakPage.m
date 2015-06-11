@@ -554,7 +554,7 @@
 	return YES;
 }
 
-- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data : (BOOL) recursion
+- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
 {
 	if(_data.path == NULL || posData >= data->nombrePage)
 		return nil;
@@ -566,6 +566,10 @@
 	
 	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 	{
+		//Incorrect account :X
+		if(COMPTE_PRINCIPAL_MAIL != NULL && (!_needPassword || getPassFromCache(NULL)))
+			return nil;
+		
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 			_needPassword = YES;
 		
@@ -582,7 +586,7 @@
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
 		
-		return recursion ? nil : [self getPage : posData : data : YES];
+		return [self getPage : posData : data];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 		return nil;
@@ -915,7 +919,7 @@
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
 {
-	NSData * imageData = [self getPage : page : data : NO];
+	NSData * imageData = [self getPage : page : data];
 	
 	if(imageData == nil || imageData.length == 0)
 		return nil;
