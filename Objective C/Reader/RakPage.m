@@ -582,7 +582,7 @@
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
 		
-		return [self getPage : posData : data : YES];
+		return recursion ? nil : [self getPage : posData : data : YES];
 	}
 	else if(dataPage == IMGLOAD_NODATA)
 		return nil;
