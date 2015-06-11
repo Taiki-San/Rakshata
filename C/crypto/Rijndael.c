@@ -1236,182 +1236,134 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
   PUTU32(plaintext + 12, s3);
 }
 
-void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB)
+void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput, int cryptIntoMemory, bool encrypt, bool ECB)
 {
-	unsigned char *password = _password;
-    char *path_input = _path_input, *path_output = _path_output;
-    RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
-    unsigned char key[KEYLENGTH(KEYBITS)];
-	
 	bool inputMemory = true, outputMemory = true, CBC_started = false;
-	uint i, j, positionDansInput = 0, positionDansOutput = 0;
-	int nrounds;
-
-	FILE *input = NULL, *output = NULL;
-
-    if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
-    {
-        if(cryptIntoMemory != INPUT_IN_MEMORY)
-        {
-            input = fopen(path_input, "rb");
-            inputMemory = false;
-            if (input == NULL)
-                return;
-        }
-        if(cryptIntoMemory != OUTPUT_IN_MEMORY)
-        {
-            output = fopen((char *) path_output, "wb");
-            outputMemory = false;
-            if (output == NULL)
-                return;
-        }
-    }
-
-    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
-
-	nrounds = rijndaelSetupEncrypt(rijndaelKey, key, KEYBITS);
+	uint posInput = 0, posOutput = 0;
+	int aesData;
 	
-	for(i = 0; i < KEYLENGTH(KEYBITS); key[i++] = 0);
-
-    unsigned char plaintext[CRYPTO_BUFFER_SIZE];
-    unsigned char ciphertext[CRYPTO_BUFFER_SIZE];
-
-	
-	while ((!inputMemory && fgetc(input) != EOF) ||
-		   (inputMemory &&
-			((lengthInput != 0 && positionDansInput < lengthInput)
-			 || (lengthInput == 0 && path_input[positionDansInput]))))
-    {
-		if(!inputMemory)
-        {
-            fseek(input, -1, SEEK_CUR);
-            j = fread(plaintext, 1, CRYPTO_BUFFER_SIZE, input);
-            while(j < CRYPTO_BUFFER_SIZE)
-                plaintext[j++] = 0;
-        }
-        else
-        {
-			memcpy(plaintext, &(path_input[positionDansInput]), CRYPTO_BUFFER_SIZE);
-			positionDansInput += CRYPTO_BUFFER_SIZE;
-        }
-        if(!ECB)
-        {
-            if(CBC_started) //Si ce n'est pas le premier passage
-				for (j = 0; j < CRYPTO_BUFFER_SIZE; j++) { plaintext[j] ^= ciphertext[j]; } //CBC
-            else
-                CBC_started = true;
-        }
-		
-        rijndaelEncrypt(rijndaelKey, nrounds, plaintext, ciphertext);
-		
-		if(!outputMemory)
-        {
-            if (fwrite(ciphertext, CRYPTO_BUFFER_SIZE, 1, output) != 1)
-            {
-                fclose(output);
-                return;
-            }
-        }
-        else
-        {
-            memcpy(&(path_output[positionDansOutput]), ciphertext, sizeof(ciphertext));
-            positionDansOutput += sizeof(ciphertext);
-        }
-    }
-    if(!outputMemory)
-        fclose(output);
-
-	if(!inputMemory)
-        fclose(input);
-}
-
-void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB)
-{
-	unsigned char *password = _password;
-	char *path_input = _path_input, *path_output = _path_output;
 	RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
-	unsigned char key[KEYLENGTH(KEYBITS)];
+	byte *password = _password, *input = _pathInput, *output = _pathOutput, key[KEYLENGTH(KEYBITS)];
+	FILE *inputFile = NULL, *outputFile = NULL;
 	
-	bool inputMemory = true, outputMemory = true, CBC_started = false;
-	uint i, j, positionDansInput = 0, positionDansOutput = 0;
-	int nrounds;
+	if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
+	{
+		if(cryptIntoMemory != INPUT_IN_MEMORY)
+		{
+			inputFile = fopen((char *) input, "rb");
+			inputMemory = false;
+			if (inputFile == NULL)
+				return;
+		}
+		if(cryptIntoMemory != OUTPUT_IN_MEMORY)
+		{
+			outputFile = fopen((char *) output, "wb");
+			outputMemory = false;
+			if (outputFile == NULL)
+				return;
+		}
+	}
 	
-	FILE *input = NULL, *output = NULL;
+	if(inputMemory && lengthInput == 0)
+		return;
+	
+	//Key generation
+	for(byte i = 0; i < KEYLENGTH(KEYBITS); key[i++] = (*password != 0 ? *password++ : 0));
+	
+	if(encrypt)
+		aesData = rijndaelSetupEncrypt(rijndaelKey, key, KEYBITS);
+	else
+		aesData = rijndaelSetupDecrypt(rijndaelKey, key, KEYBITS);
+	
+	for(byte i = 0; i < KEYLENGTH(KEYBITS); key[i++] = 0);
+	
+	//Encryption loop
+	byte inputBuf[CRYPTO_BUFFER_SIZE], outputBuf[CRYPTO_BUFFER_SIZE], previousCipher[CRYPTO_BUFFER_SIZE];
 
-    for (i = 0; i < KEYLENGTH(KEYBITS); key[i++] = *password != 0 ? *password++ : 0);
+	while ((!inputMemory && fgetc(inputFile) != EOF) || (inputMemory && posInput < lengthInput))
+	{
+		//Read data
+		if(!inputMemory)
+		{
+			fseek(inputFile, -1, SEEK_CUR);
+			
+			byte j = fread(inputBuf, 1, CRYPTO_BUFFER_SIZE, inputFile);
+			while(j < CRYPTO_BUFFER_SIZE)
+				inputBuf[j++] = 0;
+		}
+		else
+		{
+			if(posInput + CRYPTO_BUFFER_SIZE >= lengthInput)
+			{
+				byte posIn = 0;
+				while(posInput < lengthInput)
+					inputBuf[posIn++] = input[posInput++];
+				
+				while(posIn < CRYPTO_BUFFER_SIZE)
+					inputBuf[posIn++] = 0;
+			}
+			else
+			{
+				memcpy(inputBuf, &(input[posInput]), CRYPTO_BUFFER_SIZE);
+				posInput += CRYPTO_BUFFER_SIZE;
+			}
+		}
+		
+		//Perform the encryption/decryption with CBC
+		if(encrypt)
+		{
+			if(!ECB)
+			{
+				if(CBC_started) //Si ce n'est pas le premier passage
+					for (byte j = 0; j < CRYPTO_BUFFER_SIZE; j++) { inputBuf[j] ^= outputBuf[j]; }
+				else
+					CBC_started = true;
+			}
+			
+			rijndaelEncrypt(rijndaelKey, aesData, inputBuf, outputBuf);
+		}
+		else
+		{
+			rijndaelDecrypt(rijndaelKey, aesData, inputBuf, outputBuf);
+			
+			if(!ECB)
+			{
+				if(CBC_started)
+					for (byte i = 0; i < CRYPTO_BUFFER_SIZE; i++) { outputBuf[i] ^= previousCipher[i]; }
+				else
+					CBC_started = true;
 
-    if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
-    {
-        if(cryptIntoMemory != INPUT_IN_MEMORY)
-        {
-            input = fopen(path_input, "rb");
-            if (input == NULL)
-                return;
-            inputMemory = false;
-        }
-        if(cryptIntoMemory != OUTPUT_IN_MEMORY)
-        {
-            output = fopen(path_output, "wb");
-            if (output == NULL)
-                return;
-            outputMemory = false;
-        }
-    }
-    nrounds = rijndaelSetupDecrypt(rijndaelKey, key, KEYBITS);
-
-    unsigned char previous_cipher[CRYPTO_BUFFER_SIZE];
-    while ((!inputMemory && fgetc(input) != EOF) ||
-		   (inputMemory &&
-			((lengthInput != 0 && positionDansInput < lengthInput)
-			 || (lengthInput == 0 && path_input[positionDansInput]))))
-    {
-        unsigned char plaintext[CRYPTO_BUFFER_SIZE];
-        unsigned char ciphertext[CRYPTO_BUFFER_SIZE];
-
-        if(!inputMemory)
-        {
-            fseek(input, -1, SEEK_CUR);
-            j = fread(ciphertext, 1, CRYPTO_BUFFER_SIZE, input);
-            while(j < CRYPTO_BUFFER_SIZE)
-                ciphertext[j++] = 0;
-        }
-        else
-        {
-			memcpy(ciphertext, &(path_input[positionDansInput]), CRYPTO_BUFFER_SIZE);
-			positionDansInput += CRYPTO_BUFFER_SIZE;
-        }
-        rijndaelDecrypt(rijndaelKey, nrounds, ciphertext, plaintext);
-
-        if(!ECB)
-        {
-            if(CBC_started)
-                for (i = 0; i < CRYPTO_BUFFER_SIZE; i++) { plaintext[i] ^= previous_cipher[i]; } //On xor avec le dernier bloc, afin d'empecher la mise en corélation entre deux plaintext identiques/proches
-            else
-                CBC_started = true;
-            memcpy(previous_cipher, ciphertext, CRYPTO_BUFFER_SIZE); //On copie dans le buffer pour le XOR
-        }
-
-        if(!outputMemory && output != NULL)
-            fwrite(plaintext, sizeof(plaintext), 1, output);
-        else
-        {
-            memcpy(&path_output[positionDansOutput], plaintext, sizeof(plaintext));
-            positionDansOutput += sizeof(plaintext);
-        }
-    }
-
+				//On copie dans le buffer pour le XOR
+				memcpy(previousCipher, inputBuf, CRYPTO_BUFFER_SIZE);
+			}
+		}
+		
+		//Write to the output
+		if(!outputMemory)
+		{
+			if(fwrite(outputBuf, CRYPTO_BUFFER_SIZE, 1, outputFile) != 1)
+				break;
+		}
+		else
+		{
+			memcpy(&(output[posOutput]), outputBuf, sizeof(outputBuf));
+			posOutput += sizeof(outputBuf);
+		}
+	}
+	
+	if(!outputMemory)
+		fclose(outputFile);
+	
 	if(!inputMemory)
-        fclose(input);
-    if(!outputMemory)
-        fclose(output);
+		fclose(inputFile);
 }
 
 void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	_AESEncrypt(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, 0);
+	_AES(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, AES_ENCRYPT, AES_CBC);
 }
 
 void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
 {
-	_AESDecrypt(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, 0);
+	_AES(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, AES_DECRYPT, AES_CBC);
 }

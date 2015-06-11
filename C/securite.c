@@ -335,7 +335,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uin
 		return IMGLOAD_NODATA;
 	}
 	
-    _AESDecrypt(encryptionKey, &(configEncRaw[endEmailLine + 1]), sizeDBPass, decryptedPass, EVERYTHING_IN_MEMORY, 1); //On déchiffre config.enc
+    _AES(encryptionKey, &(configEncRaw[endEmailLine + 1]), sizeDBPass, decryptedPass, EVERYTHING_IN_MEMORY, AES_DECRYPT, AES_ECB); //On déchiffre config.enc
 	free(configEncRaw);
 	
 #ifndef DEV_VERSION

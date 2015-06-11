@@ -21,7 +21,13 @@ enum
 	SHA256_BLOCK_LENGTH = 64,
 	SHA256_DIGEST_LENGTH = 32,
 	WP_DIGEST_SIZE = 64,
-	PBKDF2_OUTPUT_LENGTH = 32
+	PBKDF2_OUTPUT_LENGTH = 32,
+	
+	AES_DECRYPT = false,
+	AES_ENCRYPT = true,
+	
+	AES_CBC = false,
+	AES_ECB = true
 };
 
 /*****************************************************
@@ -38,8 +44,7 @@ void rijndaelEncrypt(const RK_KEY *rk, int nrounds, const rawData plaintext[16],
 void rijndaelDecrypt(const RK_KEY *rk, int nrounds, const rawData ciphertext[16], rawData plaintext[16]);
 
 //Helpers
-void _AESEncrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB); //Cachés dans crypto/rijndael.c
-void _AESDecrypt(void *_password, void *_path_input, uint lengthInput, void *_path_output, int cryptIntoMemory, bool ECB);
+void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput, int cryptIntoMemory, bool encrypt, bool ECB);
 void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory);
 

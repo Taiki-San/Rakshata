@@ -362,7 +362,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
 					
 					crashTemp(temp, sizeof(temp));
 					
-					_AESEncrypt(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, 1);
+					_AES(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, AES_ENCRYPT, AES_ECB);
 					crashTemp(hash, SHA256_DIGEST_LENGTH);
 					
 					fwrite(hugeBuffer, posBlob, 1, output);
