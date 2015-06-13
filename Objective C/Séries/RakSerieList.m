@@ -538,7 +538,7 @@
 			{
 				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:14]];
 				[(RakText*) rowView setTextColor:[self getFontTopColor]];
-				((RakText*) rowView).forcedOffsetY = 7;
+				((RakText*) rowView).forcedOffsetY = 2;
 			}
 			else
 			{
