@@ -315,8 +315,9 @@
 	
 	if(page != UINT32_MAX)
 	{
-		NSRect frame = NSZeroRect;
+		NSRect frame;
 		frame.size = loadingFailedPlaceholder.size;
+		frame.origin = NSCenterPoint(_bounds, frame);
 		
 		RakImageView * image = [[RakImageView alloc] initWithFrame : frame];
 		[image setImage : loadingFailedPlaceholder];
