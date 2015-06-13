@@ -74,6 +74,11 @@
 	return output;
 }
 
+- (void) viewDidChangeBackingProperties
+{
+	[self setFrameOrigin:self.frame.origin];
+}
+
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])
@@ -99,6 +104,30 @@
 	}
 	else
 		[super sizeToFit];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin
+{
+	//On non-retina display, the text will be blurry if not on a round origin relative to the window, yeah, awesome...
+	if(self.window == nil)
+	{
+		if(self.superview != nil && [[(RakAppDelegate *) [NSApp delegate] window] backingScaleFactor] == 1)
+		{
+			NSRect rectOnScreen = [[(RakAppDelegate *) [NSApp delegate] window] convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+			
+			newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
+			newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
+		}
+	}
+	else if([self.window backingScaleFactor] == 1)
+	{
+		NSRect rectOnScreen = [self.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+		
+		newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
+		newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
+	}
+	
+	[super setFrameOrigin:newOrigin];
 }
 
 + (Class) cellClass
