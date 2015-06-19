@@ -32,26 +32,26 @@ static void defineUserAgent(CURL *curl);
 void initializeDNSCache()
 {
 	curl_global_init(CURL_GLOBAL_ALL);
-	
-    cacheDNS = curl_share_init();
-    if(cacheDNS != NULL)
-        curl_share_setopt(cacheDNS, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
+
+	cacheDNS = curl_share_init();
+	if(cacheDNS != NULL)
+		curl_share_setopt(cacheDNS, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
 }
 
 void useDNSCache(CURL* curl)
 {
 	if(cacheDNS != NULL)
-	    curl_easy_setopt(curl, CURLOPT_SHARE, cacheDNS);
+		curl_easy_setopt(curl, CURLOPT_SHARE, cacheDNS);
 }
 
 void releaseDNSCache()
 {
-    if(cacheDNS != NULL)
+	if(cacheDNS != NULL)
 	{
 		curl_share_cleanup(cacheDNS);
 		cacheDNS = NULL;
 	}
-	
+
 	curl_global_cleanup();
 }
 
@@ -59,98 +59,98 @@ void releaseDNSCache()
 
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler)
 {
-    THREAD_TYPE threadData;
+	THREAD_TYPE threadData;
 	DL_DATA downloadData;
 	double percentage;
 	uint64_t prevDLBytes = 0, downloadSpeed = 0, delay;
 	struct timeval anchor1, anchor2;
-	
+
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
 	downloadData.curlHandler = curlHandler;
 	downloadData.aborted = abortTransmiter;
 	downloadData.retryAttempt = 0;
 
-    threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
+	threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
 	//Early initialization
-	
+
 	while(isThreadStillRunning(threadData) && !quit && downloadData.totalExpectedSize == 0)
 		usleep(50000);	//0.05s
-	
+
 	gettimeofday(&anchor1, NULL);
-	
-    while(isThreadStillRunning(threadData) && !quit)
-    {
-        if(rowViewResponsible != NULL && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
-        {
+
+	while(isThreadStillRunning(threadData) && !quit)
+	{
+		if(rowViewResponsible != NULL && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
+		{
 			if(prevDLBytes != downloadData.bytesDownloaded)
-            {
+			{
 				gettimeofday(&anchor2, NULL);
 				delay = (anchor2.tv_sec - anchor1.tv_sec) * 1000 + (anchor2.tv_usec - anchor1.tv_usec) / 1000.0;
-				
+
 				if (delay > 200)
 				{
 					if(delay)
 						downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) * 1000 / delay;
 					else
 						downloadSpeed = 0;
-					
+
 					prevDLBytes = downloadData.bytesDownloaded;
 					anchor1 = anchor2;
 				}
-				
+
 				if(nbElem != 0 && downloadData.totalExpectedSize != 0)
 					percentage = (currentPos * 100 / nbElem) + (downloadData.bytesDownloaded * 100) / (downloadData.totalExpectedSize * nbElem);
 				else
 					percentage = 0;
-				
+
 				DLMetadata->percentage = percentage;
 				DLMetadata->speed = downloadSpeed;
-				
+
 				if(!DLMetadata->initialized)
 					DLMetadata->initialized = true;
-	
+
 				updatePercentage(*rowViewResponsible, percentage, downloadSpeed);
-				
+
 				usleep(50000);	//100 ms
-            }
+			}
 			else
 				usleep(1000);	//1 ms
-        }
-        else
+		}
+		else
 			usleep(67000);	// 4/60 second, ~ 67 ms
-    }
+	}
 
-    if(quit)
-    {
-        while(isThreadStillRunning(threadData))
-            usleep(100);
-    }
+	if(quit)
+	{
+		while(isThreadStillRunning(threadData))
+			usleep(100);
+	}
 
 #ifdef _WIN32
-    CloseHandle(threadData);
+	CloseHandle(threadData);
 #endif
-	
-    return downloadData.errorCode;
+
+	return downloadData.errorCode;
 }
 
 static void downloadChapterCore(DL_DATA *data)
 {
 	if(data == NULL || data->outputContainer == NULL || data->retryAttempt > 3)
 		quit_thread(0);
-	
-    CURLcode res; //Get return from download
+
+	CURLcode res; //Get return from download
 
 	//Check if a proxy is configured
-    bool isProxyConfigured = false;
+	bool isProxyConfigured = false;
 	char IPProxy[40] = {0}; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
-    FILE *proxyFile = fopen("proxy", "r"); //Check proxy
-    if(proxyFile != NULL)
-    {
-        byte lengthProxy = 0, pos;
+	FILE *proxyFile = fopen("proxy", "r"); //Check proxy
+	if(proxyFile != NULL)
+	{
+		byte lengthProxy = 0, pos;
 		char c;
-		
+
 		while(lengthProxy < sizeof(IPProxy) && (c = fgetc(proxyFile)) != EOF)
 		{
 			if(c == '.' || c == ':' || isHexa(c))
@@ -158,13 +158,13 @@ static void downloadChapterCore(DL_DATA *data)
 		}
 		IPProxy[lengthProxy] = 0;
 		fclose(proxyFile);
-		
+
 		//On assume que libcurl est capable de proprement parser le proxy
 		//On vérifie juste la cohérence IPv4/IPv6
-		
+
 		bool couldBeIPv4 = true, couldBeIPv6 = true;
 		short separatorCount = 0;
-		
+
 		for (pos = 0; pos < lengthProxy && (couldBeIPv4 || couldBeIPv6); pos++)
 		{
 			if(IPProxy[pos] == '.')
@@ -184,63 +184,63 @@ static void downloadChapterCore(DL_DATA *data)
 			else if(couldBeIPv4 && !isNbr(IPProxy[pos]) && isHexa(IPProxy[pos]))
 				couldBeIPv4 = false;
 		}
-		
+
 		if((couldBeIPv4 && separatorCount == 3) || (couldBeIPv6 && separatorCount == 7))
 			isProxyConfigured = true;
-    }
-	
+	}
+
 	//Start the main work
 
-    CURL* curl = curl_easy_init();
-    if(curl != NULL)
-    {
-        if(isProxyConfigured)
-            curl_easy_setopt(curl, CURLOPT_PROXY, IPProxy); //Proxy
+	CURL* curl = curl_easy_init();
+	if(curl != NULL)
+	{
+		if(isProxyConfigured)
+			curl_easy_setopt(curl, CURLOPT_PROXY, IPProxy); //Proxy
 
-        curl_easy_setopt(curl, CURLOPT_URL, data->outputContainer->URL); //URL
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
-        defineUserAgent(curl);
+		curl_easy_setopt(curl, CURLOPT_URL, data->outputContainer->URL); //URL
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
+		defineUserAgent(curl);
 
-        if(!strncmp(data->outputContainer->URL, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(data->outputContainer->URL, STORE_URL, strlen(STORE_URL))) //RSP
-        {
-            curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
-            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
-        }
-        else	//We don't ship all existing certificates, so we don't check it on non-critical transactions
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+		if(!strncmp(data->outputContainer->URL, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(data->outputContainer->URL, STORE_URL, strlen(STORE_URL))) //RSP
+		{
+			curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
+			curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, sslAddRSPAndRepoCertificate);
+		}
+		else	//We don't ship all existing certificates, so we don't check it on non-critical transactions
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, data);
-        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, handleDownloadMetadata);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, data);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeDataChapter);
-        useDNSCache(curl);
-		
-		*(data->curlHandler) = curl;
-        res = curl_easy_perform(curl);
-		*(data->curlHandler) = NULL;
-        curl_easy_cleanup(curl);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, handleDownloadMetadata);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, data);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeDataChapter);
+		useDNSCache(curl);
 
-        if(res != CURLE_OK) //Si problème
-        {
-            data->errorCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
-			
+		*(data->curlHandler) = curl;
+		res = curl_easy_perform(curl);
+		*(data->curlHandler) = NULL;
+		curl_easy_cleanup(curl);
+
+		if(res != CURLE_OK) //Si problème
+		{
+			data->errorCode = libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
+
 			if(data->errorCode == CODE_RETOUR_PARTIAL)	//On va retenter une fois le téléchargement
 			{
 				data->retryAttempt++;
 				data->bytesDownloaded = data->totalExpectedSize = data->errorCode = 0;
 				((TMP_DL*) data->outputContainer)->current_pos = 0;
-				
+
 				downloadChapterCore(data);
 			}
 
 #ifdef DEV_VERSION
-            if(data->errorCode != CODE_RETOUR_DL_CLOSE)
-                logR(data->outputContainer->URL);
+			if(data->errorCode != CODE_RETOUR_DL_CLOSE)
+				logR(data->outputContainer->URL);
 #endif
-        }
-    }
+		}
+	}
 
 	quit_thread(0);
 }
@@ -249,89 +249,89 @@ static void downloadChapterCore(DL_DATA *data)
 static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
 {
 	if(quit)						//Global message to quit
-        return -1;
-	
-    if(ptr != NULL)
+		return -1;
+
+	if(ptr != NULL)
 	{
 		ptr->bytesDownloaded = nowDownloaded;
 		ptr->totalExpectedSize = totalToDownload;
 	}
-	
-    return 0;
+
+	return 0;
 }
 
 static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData)
 {
 	const size_t invalidCode = size * nmemb + 1;
-	
+
 	if(quit)						//Global message to quit
-        return invalidCode;
-	
+		return invalidCode;
+
 	else if(downloadData == NULL)
 		return invalidCode;
-	
+
 	else if(downloadData->aborted != NULL && *downloadData->aborted & DLSTATUS_ABORT)
 		return invalidCode;
-	
+
 	else if(!size || !nmemb)		//Rien à écrire
-        return 0;
-	
+		return 0;
+
 	TMP_DL *data = downloadData->outputContainer;
-	
+
 	if(data == NULL)
 		return invalidCode;
-	
-    DATA_DL_OBFS *output = data->buf;
-    char *input = ptr;
-	
+
+	DATA_DL_OBFS *output = data->buf;
+	char *input = ptr;
+
 	if(output == NULL)
 		return invalidCode;
-	
-    if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos || MIN(data->length, data->current_pos) == data->length)
-    {
-        if(output->data == NULL || output->mask == NULL)
-        {
-            data->current_pos = 0;
-            if(!downloadData->totalExpectedSize)
-                data->length = 30*1024*1024;
-            else
-                data->length = 3 * downloadData->totalExpectedSize / 2; //50% de marge
-			
+
+	if(output->data == NULL || output->mask == NULL || data->length != downloadData->totalExpectedSize || size * nmemb >= data->length - data->current_pos || MIN(data->length, data->current_pos) == data->length)
+	{
+		if(output->data == NULL || output->mask == NULL)
+		{
+			data->current_pos = 0;
+			if(!downloadData->totalExpectedSize)
+				data->length = 30*1024*1024;
+			else
+				data->length = 3 * downloadData->totalExpectedSize / 2; //50% de marge
+
 			output->data = calloc(1, data->length);
-            if(output->data == NULL)
-                return invalidCode;
-			
-			output->mask = malloc(data->length);
-            if(output->mask == NULL)
+			if(output->data == NULL)
 				return invalidCode;
-        }
-        else //Buffer trop petit, on l'agrandit
-        {
+
+			output->mask = malloc(data->length);
+			if(output->mask == NULL)
+				return invalidCode;
+		}
+		else //Buffer trop petit, on l'agrandit
+		{
 			if(data->length != downloadData->totalExpectedSize)
 				data->length = downloadData->totalExpectedSize;
-			
+
 			if(size * nmemb >= data->length - data->current_pos)
 				data->length += (downloadData->totalExpectedSize > size * nmemb ? downloadData->totalExpectedSize : size * nmemb);
-			
-            void *internalBufferTmp = realloc(output->data, data->length);
-            if(internalBufferTmp == NULL)
+
+			void *internalBufferTmp = realloc(output->data, data->length);
+			if(internalBufferTmp == NULL)
 				return invalidCode;
-            output->data = internalBufferTmp;
-			
+			output->data = internalBufferTmp;
+
 			internalBufferTmp = realloc(output->mask, data->length);
-            if(internalBufferTmp == NULL)
+			if(internalBufferTmp == NULL)
 				return invalidCode;
-            output->mask = internalBufferTmp;
-        }
-    }
-	
-    //Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
-	
+			output->mask = internalBufferTmp;
+		}
+	}
+
+	//Tronquer ne devrait plus être requis puisque nous agrandissons le buffer avant
+
 	for(uint i = 0; i < size * nmemb; data->current_pos++)
 	{
 		output->data[data->current_pos] = (~input[i++]) ^ (~output->mask[data->current_pos]);
 	}
-	
+
 	return size*nmemb;
 }
 
@@ -340,94 +340,94 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
 
 int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_length, bool SSL_enabled)
 {
-    if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return CODE_RETOUR_DL_CLOSE;
+	if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
+		return CODE_RETOUR_DL_CLOSE;
 
-    int retValue = internal_download_easy(adresse, POST, false, buffer_out, buffer_length, SSL_enabled);
-	
+	int retValue = internal_download_easy(adresse, POST, false, buffer_out, buffer_length, SSL_enabled);
+
 	if(*buffer_length == 0)
 	{
 		free(*buffer_out);
 		*buffer_out = NULL;
 	}
-	
+
 	return retValue;
 }
 
 int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled)
 {
-    if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
-        return CODE_RETOUR_DL_CLOSE;
+	if(checkNetworkState(CONNEXION_DOWN)) //Si reseau down
+		return CODE_RETOUR_DL_CLOSE;
 
-    return internal_download_easy(adresse, POST, true, &file_name, NULL, SSL_enabled);
+	return internal_download_easy(adresse, POST, true, &file_name, NULL, SSL_enabled);
 }
 
 static int internal_download_easy(char* adresse, char* POST, bool printToAFile, char **buffer_out, size_t * buffer_length, bool SSL_enabled)
 {
 	TMP_DL outputData;
-    FILE* output = NULL;
-    CURLcode res;
-	
+	FILE* output = NULL;
+	CURLcode res;
+
 	if(!printToAFile && buffer_length == NULL)
 		return CODE_RETOUR_INTERNAL_FAIL;
 
-    CURL * curl = curl_easy_init();
-    if(curl == NULL)
-    {
-        logR("Memory error");
-        return CODE_RETOUR_INTERNAL_FAIL;
-    }
+	CURL * curl = curl_easy_init();
+	if(curl == NULL)
+	{
+		logR("Memory error");
+		return CODE_RETOUR_INTERNAL_FAIL;
+	}
 
-    curl_easy_setopt(curl, CURLOPT_URL, adresse);
+	curl_easy_setopt(curl, CURLOPT_URL, adresse);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 5);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 90);
-	
+
 	defineUserAgent(curl);
 	useDNSCache(curl);
-	
+
 	if(POST != NULL)
-         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, POST);
+		 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, POST);
 
-    if(SSL_enabled == SSL_ON)
-    {
-        if(!strncmp(adresse, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(adresse, STORE_URL, strlen(STORE_URL))) //RSP
-        {
-            curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
-            curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
-        }
-        else
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-    }
+	if(SSL_enabled == SSL_ON)
+	{
+		if(!strncmp(adresse, SERVEUR_URL, strlen(SERVEUR_URL)) || !strncmp(adresse, STORE_URL, strlen(STORE_URL))) //RSP
+		{
+			curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
+			curl_easy_setopt(curl,CURLOPT_SSL_CTX_FUNCTION, ssl_add_rsp_certificate);
+		}
+		else
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+	}
 
-    if(printToAFile)
-    {
-        output = fopen(*buffer_out, "wb");
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-    }
-    else
-    {
+	if(printToAFile)
+	{
+		output = fopen(*buffer_out, "wb");
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+	}
+	else
+	{
 		if(*buffer_out == NULL)
 			*buffer_length = 0;
-		
-        outputData.buf = buffer_out;
-        outputData.length = *buffer_length;
-        outputData.current_pos = 0;
+
+		outputData.buf = buffer_out;
+		outputData.length = *buffer_length;
+		outputData.current_pos = 0;
 
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outputData);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
-		
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data_easy);
+
 		buffer_out[0] = 0;
-    }
+	}
 
-    res = curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
+	res = curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
 
-    if(output != NULL && printToAFile)
-        fclose(output);
+	if(output != NULL && printToAFile)
+		fclose(output);
 
-    if(res != CURLE_OK) //Si problème
+	if(res != CURLE_OK) //Si problème
 		return libcurlErrorCode(res); //On va interpreter et renvoyer le message d'erreur
 
 	if(!printToAFile)
@@ -436,18 +436,18 @@ static int internal_download_easy(char* adresse, char* POST, bool printToAFile, 
 		if(*buffer_out == NULL)
 			return CODE_RETOUR_INTERNAL_FAIL;
 	}
-	
-    return CODE_RETOUR_OK;
+
+	return CODE_RETOUR_OK;
 }
 
 /**Parsing functions**/
 static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_dl_void)
 {
-    const size_t blockSize = size * nmemb;
-    char *input = ptr;
-    TMP_DL *buffer_dl = buffer_dl_void;
+	const size_t blockSize = size * nmemb;
+	char *input = ptr;
+	TMP_DL *buffer_dl = buffer_dl_void;
 	char * dataField = *((char**)buffer_dl->buf);
-	
+
 	//Realloc memory if needed
 	if(buffer_dl->current_pos + blockSize > buffer_dl->length)
 	{
@@ -471,7 +471,7 @@ static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input)
 {
-    return fwrite(ptr, size, nmemb, input);
+	return fwrite(ptr, size, nmemb, input);
 }
 
 static void defineUserAgent(CURL *curl)
@@ -483,7 +483,7 @@ static void defineUserAgent(CURL *curl)
 
 BIO * getBIORSPCertificate()
 {
-    char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+	char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
 MIIFmDCCA4ACCQDWz8p5qOnRAzANBgkqhkiG9w0BAQ0FADCBjTENMAsGA1UEChME\n\
 TWF2eTEMMAoGA1UECxMDUlNQMSEwHwYJKoZIhvcNAQkBFhJ0YWlraUByYWtzaGF0\n\
 YS5jb20xDzANBgNVBAcTBkZyYW5jZTEOMAwGA1UECBMFUGFyaXMxCzAJBgNVBAYT\n\
@@ -521,7 +521,7 @@ VRJiKLld+auQS9k56WCwdqEuEE2jW4RN8Z5dlPrEbh3cA4CN2YjG8+wEkF0=\n\
 
 BIO * getBIORepoCertificate()
 {
-    char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
+	char * pem_cert = "-----BEGIN CERTIFICATE-----\n\
 MIIGYDCCBEigAwIBAgIJAOt83/Tp0VwUMA0GCSqGSIb3DQEBCwUAMH0xDTALBgNV\n\
 BAoTBE1hdnkxDDAKBgNVBAsTA0RFVjEhMB8GCSqGSIb3DQEJARYSdGFpa2lAcmFr\n\
 c2hhdGEuY29tMQ8wDQYDVQQHEwZGcmFuY2UxDjAMBgNVBAgTBVBhcmlzMQswCQYD\n\
@@ -558,7 +558,7 @@ we75HTdXs+KQKP7/iyBTWWjo7jBJWbHvOzjDjZMtiNkxyC5TBWO2X+QeM/K6u3j6\n\
 1g79hRSXl++8uoqQeuOdpp0jR2C+iivvZVHe1JKeN5yzWz64MEwKeHPYOdsYUUUy\n\
 4R8CFg==\n\
 -----END CERTIFICATE-----";
-    return BIO_new_mem_buf(pem_cert, -1);
+	return BIO_new_mem_buf(pem_cert, -1);
 }
 
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
@@ -567,19 +567,19 @@ static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 	X509 *certRSP = NULL;
 	BIO * bio;
 
-    store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
+	store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
 
-    bio = getBIORSPCertificate();                        ///Ancien certificat du RSP (<= 02/2014)
-    PEM_read_bio_X509(bio, &certRSP, 0, NULL);           // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
-    BIO_free(bio);
-    if (certRSP == NULL)
-        return CURLE_SSL_CERTPROBLEM;
+	bio = getBIORSPCertificate();                        ///Ancien certificat du RSP (<= 02/2014)
+	PEM_read_bio_X509(bio, &certRSP, 0, NULL);           // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
+	BIO_free(bio);
+	if (certRSP == NULL)
+		return CURLE_SSL_CERTPROBLEM;
 
-    /* add our certificates to this store */
-    if (! X509_STORE_add_cert(store, certRSP))
-        return CURLE_SSL_CERTPROBLEM;
+	/* add our certificates to this store */
+	if (! X509_STORE_add_cert(store, certRSP))
+		return CURLE_SSL_CERTPROBLEM;
 
-    return CURLE_OK ;
+	return CURLE_OK ;
 }
 
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
@@ -588,25 +588,25 @@ static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * p
 	X509 *certRSP = NULL, *certDpt = NULL;
 	BIO * bio;
 
-    store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
+	store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
 
-    bio = getBIORSPCertificate();                           ///Nouveau certificat du RSP (> 02/2014)
-    PEM_read_bio_X509(bio, &certRSP, 0, NULL);
-    BIO_free(bio);
-    if (certRSP == NULL)
-        return CURLE_SSL_CERTPROBLEM;
+	bio = getBIORSPCertificate();                           ///Nouveau certificat du RSP (> 02/2014)
+	PEM_read_bio_X509(bio, &certRSP, 0, NULL);
+	BIO_free(bio);
+	if (certRSP == NULL)
+		return CURLE_SSL_CERTPROBLEM;
 
-    bio = getBIORepoCertificate();                          ///On ajoute le certificat root des dépôts
-    PEM_read_bio_X509(bio, &certDpt, 0, NULL);
-    BIO_free(bio);
-    if (certDpt == NULL)
-        return CURLE_SSL_CERTPROBLEM;
+	bio = getBIORepoCertificate();                          ///On ajoute le certificat root des dépôts
+	PEM_read_bio_X509(bio, &certDpt, 0, NULL);
+	BIO_free(bio);
+	if (certDpt == NULL)
+		return CURLE_SSL_CERTPROBLEM;
 
-    /* add our certificates to this store */
-    if (! X509_STORE_add_cert(store, certRSP))
-        return CURLE_SSL_CERTPROBLEM;
+	/* add our certificates to this store */
+	if (! X509_STORE_add_cert(store, certRSP))
+		return CURLE_SSL_CERTPROBLEM;
 
-    if (! X509_STORE_add_cert(store, certDpt))
-        return CURLE_SSL_CERTPROBLEM;
-    return CURLE_OK ;
+	if (! X509_STORE_add_cert(store, certDpt))
+		return CURLE_SSL_CERTPROBLEM;
+	return CURLE_OK ;
 }

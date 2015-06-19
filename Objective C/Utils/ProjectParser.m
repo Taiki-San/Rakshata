@@ -664,8 +664,8 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 	
 	if(shortData.isInitialized)
 	{
-		memcpy(&output, &shortData, sizeof(shortData));
-		
+		output.data = shortData;
+
 		NSString * URL, * CRC;
 		NSArray * IDURL = @[JSON_PROJ_URL_SRGRID, JSON_PROJ_URL_SRGRID_2X, JSON_PROJ_URL_HEAD, JSON_PROJ_URL_HEAD_2X, JSON_PROJ_URL_CT, JSON_PROJ_URL_CT_2X, JSON_PROJ_URL_DD, JSON_PROJ_URL_DD_2X], * IDHash = @[JSON_PROJ_HASH_SRGRID, JSON_PROJ_HASH_SRGRID_2X, JSON_PROJ_HASH_HEAD, JSON_PROJ_HASH_HEAD_2X, JSON_PROJ_HASH_CT, JSON_PROJ_HASH_CT_2X, JSON_PROJ_HASH_DD, JSON_PROJ_HASH_DD_2X];
 
@@ -694,7 +694,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 		}
 	}
 	else
-		output.isInitialized = false;
+		output.data.isInitialized = false;
 	
 	return output;
 }
@@ -735,7 +735,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 			if(parseExtra)
 			{
 				((PROJECT_DATA_EXTRA*)outputData)[validElements] = parseBlocExtra(remoteData);
-				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].isInitialized;
+				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].data.isInitialized;
 			}
 			else
 			{
@@ -748,7 +748,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 				PROJECT_DATA * project;
 				
 				if(parseExtra)
-					project = (PROJECT_DATA*) &((PROJECT_DATA_EXTRA*)outputData)[validElements++];
+					project = &(((PROJECT_DATA_EXTRA*) outputData)[validElements++].data);
 				else
 					project = &((PROJECT_DATA*)outputData)[validElements++];
 				
@@ -934,10 +934,10 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName)
 
 void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * output)
 {
-	if(!input.isInitialized || output == NULL)
+	if(!input.data.isInitialized || output == NULL)
 		return;
-	
-	memcpy(output, &input, sizeof(PROJECT_DATA));
+
+	*output = input.data;
 }
 
 void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag)

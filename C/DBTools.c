@@ -285,9 +285,9 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].repo != NULL)
+		if(project[pos].data.repo != NULL)
 		{
-			repo = project[pos].repo;
+			repo = project[pos].data.repo;
 			break;
 		}
 	}
@@ -311,7 +311,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].repo == NULL)
+		if(project[pos].data.repo == NULL)
 			continue;
 		
 		for(byte i = 0; i < NB_IMAGES; i++)
@@ -344,7 +344,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 				current = new;
 			}
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
+			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].data.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
 			current->filename = strdup(imagePath);
 
 			if(current->filename == NULL)
@@ -363,8 +363,8 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			current->URL = project[pos].URLImages[i];
 			
 			current->updateType = imageID[i / 2];
-			current->repoID = getRepoID(project[pos].repo);
-			current->projectID = project[pos].projectID;
+			current->repoID = getRepoID(project[pos].data.repo);
+			current->projectID = project[pos].data.projectID;
 		}
 	}
 	

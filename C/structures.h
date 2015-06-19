@@ -219,17 +219,6 @@ typedef struct root_repository_data
 **
 **********************************************************************************************/
 
-/////////////////////////////////////////
-/////////////////////////////////////////
-////////						/////////
-////////		WARNING			/////////
-////////						/////////
-////////	 The two structs	/////////
-////////	have to be synced	/////////
-////////						/////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-
 typedef struct dataProject
 {
 	//Pointeurs, un bloc chacun (64b)
@@ -270,46 +259,10 @@ typedef struct dataProject
 	
 } PROJECT_DATA;
 
-//Type here how many time you forgot to update the second structure: 2
-
 typedef struct dataProjectWithExtra
 {
-	//Pointeurs, un bloc chacun (64b)
-	REPO_DATA *repo;
-	int *chapitresFull;
-	uint *chapitresPrix;
-	int *chapitresInstalled;
-	META_TOME *tomesFull;
-	META_TOME *tomesInstalled;
-	
-	//Un bloc de 64b complet chacun
-	size_t nombreChapitre;
-	size_t nombreChapitreInstalled;
-	size_t nombreTomes;
-	size_t nombreTomesInstalled;
-	
-	charType description[LENGTH_DESCRIPTION];
-	
-	//2 x ((51 + 1) x 32b) = 52 x 64b
-	charType projectName[LENGTH_PROJECT_NAME];
-	bool favoris;
-	charType authorName[LENGTH_AUTHORS];
-	bool japaneseOrder;
-	
-	//Deux blocs de 64b complets
-	uint32_t category;
-	uint32_t mainTag;
-	uint64_t tagMask;
-	
-	//Un bloc de 64b
-	uint32_t projectID;
-	uint32_t cacheDBID;
-	
-	uint8_t status;
-	bool isPaid;
-	bool haveDRM;
-	bool isInitialized;
-	
+	PROJECT_DATA data;
+
 	//2 x 64b
 	bool haveImages[NB_IMAGES];
 	char hashesImages[NB_IMAGES][LENGTH_CRC];
