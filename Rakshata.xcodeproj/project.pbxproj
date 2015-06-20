@@ -564,7 +564,7 @@
 		B6F6ECDB18A3001400E3B55B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		B6F6ECDC18A3001400E3B55B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		B6F6ECDF18A3001400E3B55B /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
-		B6F6ECE018A3001400E3B55B /* miniunzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniunzip.h; sourceTree = "<group>"; };
+		B6F6ECE018A3001400E3B55B /* zlibAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlibAPI.h; sourceTree = "<group>"; };
 		B6F6ECE218A3001400E3B55B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		B6F6ECE318A3001400E3B55B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
 		B6F6ECE518A3001400E3B55B /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
@@ -1339,7 +1339,7 @@
 				B6F6ECDB18A3001400E3B55B /* ioapi.c */,
 				B6F6ECDC18A3001400E3B55B /* ioapi.h */,
 				B6F6ECDF18A3001400E3B55B /* miniunz.c */,
-				B6F6ECE018A3001400E3B55B /* miniunzip.h */,
+				B6F6ECE018A3001400E3B55B /* zlibAPI.h */,
 				B6E07A1D1B35917B0016C9B0 /* minizip.c */,
 				B6F6ED1B18A3003500E3B55B /* unz_memory.c */,
 				B6F6ECE318A3001400E3B55B /* unzip.c */,

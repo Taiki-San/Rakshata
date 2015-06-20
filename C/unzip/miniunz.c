@@ -10,6 +10,10 @@
 
          Modifications for Zip64 support on both zip and unzip
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+ 
+		 Major modifications by Taiki
+		 Copyright (C) 2011-2015 Taiki ( http://www.taiki.us/ )
+
 */
 
 /*
@@ -18,38 +22,9 @@
   return UNZ_OK if there is no problem.
 */
 
-#ifndef _WIN32
-        #ifndef __USE_FILE_OFFSET64
-                #define __USE_FILE_OFFSET64
-        #endif
-        #ifndef __USE_LARGEFILE64
-                #define __USE_LARGEFILE64
-        #endif
-        #ifndef _LARGEFILE64_SOURCE
-                #define _LARGEFILE64_SOURCE
-        #endif
-        #ifndef _FILE_OFFSET_BIT
-                #define _FILE_OFFSET_BIT 64
-        #endif
-#endif
+#include "zlibAPI.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <errno.h>
-#include <fcntl.h>
-
-#ifdef _WIN32
-	#include <direct.h>
-	#include <io.h>
-#endif
-
-#include "unzip.h"
-
-#define CASESENSITIVITY (0)
-#define WRITEBUFFERSIZE (8192)
-#define MAXFILENAME (256)
+#define BUFFER_SIZE 0x4000
 
 #ifdef _WIN32
 	#define USEWIN32IOAPI
@@ -166,7 +141,7 @@ int doExtractCurrentfile(unzFile uf, char* filename_inzip, char* output_path, co
         }
 		free(write_filename);
 
-		rawData *buf_char = malloc((size_buf = WRITEBUFFERSIZE) * sizeof(rawData));
+		rawData *buf_char = malloc((size_buf = BUFFER_SIZE) * sizeof(rawData));
 		rawData *buf_enc = malloc(size_buf * sizeof(rawData));
         
 		if(buf_char == NULL || buf_enc == NULL)
@@ -333,7 +308,7 @@ int doExtract(unzFile uf, char *input, char *output_path, bool extractWithoutPat
 
 bool doExtractOnefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted)
 {
-    if(unzLocateFile(uf, filename, CASESENSITIVITY) != UNZ_OK)
+    if(unzLocateFile(uf, filename, 0) != UNZ_OK)
     {
 #ifdef DEV_VERSION
 		char temp[256];

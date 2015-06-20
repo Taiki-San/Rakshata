@@ -306,6 +306,7 @@ void removeFolder(char *path)
 	
     DIR *directory;           /* pointeur de répertoire */
     struct dirent *entry;     /* représente une entrée dans un répertoire. */
+	uint dirnameLength = strlen(path);
 
     directory = opendir(path);
     if(directory == NULL)
@@ -318,23 +319,22 @@ void removeFolder(char *path)
     {
         if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
             continue;
-		uint size = strlen(path) + strlen(entry->d_name) + 0x10;
-		char buffer[size];
 
-        snprintf(buffer, size, "%s/%s", path, entry->d_name);
+		char subdirName[dirnameLength + entry->d_namlen + 2];
+		snprintf(subdirName, sizeof(subdirName), "%s/%s", path, entry->d_name);
 
-		if(checkDirExist(buffer))	//Recursive call on a directory
+		if(checkDirExist(subdirName))	//Recursive call on a directory
 		{
 #ifdef DEV_VERSION
 			depth++;
-			removeFolder(buffer);
+			removeFolder(subdirName);
 			depth--;
 #else
-			removeFolder(buffer);
+			removeFolder(subdirName);
 #endif
 		}
         else
-            remove(buffer); //On est sur un fichier, on le supprime.
+            remove(subdirName); //On est sur un fichier, on le supprime.
     }
 
 	closedir(directory);
@@ -366,12 +366,16 @@ void ouvrirSite(const char *URL)
 
 bool checkDirExist(char *dirname)
 {
+#ifdef _WIN32
     DIR *directory = opendir(dirname);
-    if(directory != NULL)
-    {
+
+	if(directory != NULL)
         closedir(directory);
-        return true;
-    }
-    return false;
+
+	return directory != NULL;
+#else
+	struct stat s;
+	return stat(dirname, &s) != -1 && S_ISDIR(s.st_mode);
+#endif
 }
 

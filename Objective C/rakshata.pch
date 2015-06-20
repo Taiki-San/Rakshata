@@ -24,6 +24,7 @@
 #include "main.h"
 #include "encoding.h"
 #include "moduleDL.h"
+#include "zlibAPI.h"
  
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>

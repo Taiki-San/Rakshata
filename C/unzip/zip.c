@@ -851,9 +851,7 @@ extern zipFile  zipOpen2_64 (const void *pathname, int append, zipcharpc* global
 		return zipOpen3(pathname, append, globalcomment, NULL);
 }
 
-
-
-extern zipFile  zipOpen (const char* pathname, int append)
+extern zipFile zipOpen (const char* pathname, int append)
 {
 	return zipOpen3((const void*)pathname,append,NULL,NULL);
 }
@@ -1283,7 +1281,7 @@ static int zip64FlushWriteBuffer(zip64_internal* zi)
 	return err;
 }
 
-extern int  zipWriteInFileInZip (zipFile file,const void* buf,unsigned int len)
+extern int zipWriteInFileInZip (zipFile file, const void* buf, uint64_t len)
 {
 	zip64_internal* zi;
 	int err = ZIP_OK;

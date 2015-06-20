@@ -304,9 +304,7 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file,
  */
 
 
-extern int  zipWriteInFileInZip (zipFile file,
-											 const void* buf,
-											 unsigned len);
+extern int  zipWriteInFileInZip (zipFile file, const void* buf, uint64_t len);
 /*
 	Write data in the zipfile
 */
