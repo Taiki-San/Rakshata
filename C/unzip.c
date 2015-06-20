@@ -49,7 +49,7 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
     int err;
 
     err = unzGetGlobalInfo64(uf, &gi);
-    if (err!=UNZ_OK)
+    if(err != UNZ_OK)
 	{
 #ifdef DEV_VERSION
 	    char temp[100];
@@ -67,7 +67,7 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
         crashTemp(filename, sizeof(filename));
 
         err = unzGetCurrentFileInfo64(uf, &file_info, filename, sizeof(filename), NULL, 0, NULL, 0); //Get name -> 99% of what I need
-        if (err != UNZ_OK)
+        if(err != UNZ_OK)
         {
             char temp[100];
 			snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
@@ -77,10 +77,10 @@ static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
 
 		usstrcpy(filenameInzip[i], ustrlen(filename) + 1, filename);
 
-        if (i + 1 < gi.number_entry)
+        if(i + 1 < gi.number_entry)
         {
             err = unzGoToNextFile(uf);
-            if (err != UNZ_OK)
+            if(err != UNZ_OK)
             {
                 char temp[100];
                 snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
@@ -187,7 +187,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
     if(size && !checkDirExist(path)) //On change le dossier courant
     {
         createPath(outputZip); //En cas d'échec, on réessaie de créer le dossier
-        if (!checkDirExist(path)) //Si réechoue
+        if(!checkDirExist(path)) //Si réechoue
         {
             char temp[lengthPath + 100];
             snprintf(temp, sizeof(temp), "Error changing into %s, aborting", outputZip);
@@ -218,7 +218,7 @@ bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t si
     {
         if(checkNameFileZip(filename[i]))
         {
-			ret_value &= do_extract_onefile(uf, filename[i], path, extractWithoutPath, project.haveDRM ? pass[i] : NULL);
+			ret_value &= doExtractOnefile(uf, filename[i], path, extractWithoutPath, project.haveDRM ? pass[i] : NULL);
             nombreFichiersDecompresses++;
 
             if(i + 1 < nombreFichiers)

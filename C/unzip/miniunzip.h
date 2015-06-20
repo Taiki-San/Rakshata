@@ -20,7 +20,7 @@
 #include "unzip.h"
 #define MAXFILENAME (256)
 
-int do_extract(unzFile uf, char* input, char* output_path, bool extractWithoutPath, bool overwrite, const char* password);
-int do_extract_currentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, unsigned char* passwordPageCrypted);
-bool do_extract_onefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted);
+int doExtract(unzFile uf, char* input, char* output_path, bool extractWithoutPath, bool overwrite, const char* password);
+int doExtractCurrentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, unsigned char* passwordPageCrypted);
+bool doExtractOnefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted);
 

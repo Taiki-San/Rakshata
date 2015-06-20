@@ -125,7 +125,7 @@
 #  define zlibVersion           z_zlibVersion
 
 /* all zlib typedefs in zlib.h and zconf.h */
-#  define Byte                  z_Byte
+#  define byte                  z_Byte
 #  define Bytef                 z_Bytef
 #  define alloc_func            z_alloc_func
 #  define charf                 z_charf
@@ -138,9 +138,9 @@
 #  define in_func               z_in_func
 #  define intf                  z_intf
 #  define out_func              z_out_func
-#  define uInt                  z_uInt
+#  define uint32_t                  z_uInt
 #  define uIntf                 z_uIntf
-#  define uLong                 z_uLong
+#  define uint64_t                 z_uLong
 #  define uLongf                z_uLongf
 #  define voidp                 z_voidp
 #  define voidpc                z_voidpc
@@ -155,7 +155,7 @@
 #if defined(__MSDOS__) && !defined(MSDOS)
 #  define MSDOS
 #endif
-#if (defined(OS_2) || defined(__OS2__)) && !defined(OS2)
+#if(defined(OS_2) || defined(__OS2__)) && !defined(OS2)
 #  define OS2
 #endif
 #if defined(_WINDOWS) && !defined(WINDOWS)
@@ -166,7 +166,7 @@
 #    define WIN32
 #  endif
 #endif
-#if (defined(MSDOS) || defined(OS2) || defined(WINDOWS)) && !defined(WIN32)
+#if(defined(MSDOS) || defined(OS2) || defined(WINDOWS)) && !defined(WIN32)
 #  if !defined(__GNUC__) && !defined(__FLAT__) && !defined(__386__)
 #    ifndef SYS16BIT
 #      define SYS16BIT
@@ -260,24 +260,6 @@
  for small objects.
 */
 
-                        /* Type declarations */
-
-#ifndef OF /* function prototypes */
-#  ifdef STDC
-#    define OF(args)  args
-#  else
-#    define OF(args)  ()
-#  endif
-#endif
-
-#ifndef Z_ARG /* function prototypes for stdarg */
-#  if defined(STDC) || defined(Z_HAVE_STDARG_H)
-#    define Z_ARG(args)  args
-#  else
-#    define Z_ARG(args)  ()
-#  endif
-#endif
-
 /* The following definitions for FAR are needed only for MSDOS mixed
  * model programming (small or medium model with some far allocations).
  * This was tested only with MSC; for other MSDOS compilers you may have
@@ -294,7 +276,7 @@
 #      define FAR far
 #    endif
 #  endif
-#  if (defined(__SMALL__) || defined(__MEDIUM__))
+#  if(defined(__SMALL__) || defined(__MEDIUM__))
      /* Turbo C small or medium model */
 #    define SMALL_MEDIUM
 #    ifdef __BORLANDC__
@@ -306,18 +288,6 @@
 #endif
 
 #if defined(WINDOWS) || defined(WIN32)
-   /* If building or using zlib as a DLL, define ZLIB_DLL.
-    * This is not mandatory, but it offers a little performance increase.
-    */
-#  ifdef ZLIB_DLL
-#    if defined(WIN32) && (!defined(__BORLANDC__) || (__BORLANDC__ >= 0x500))
-#      ifdef ZLIB_INTERNAL
-#        define ZEXTERN extern __declspec(dllexport)
-#      else
-#        define ZEXTERN extern __declspec(dllimport)
-#      endif
-#    endif
-#  endif  /* ZLIB_DLL */
    /* If building or using zlib with the WINAPI/WINAPIV calling convention,
     * define ZLIB_WINAPI.
     * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
@@ -327,71 +297,37 @@
 #      undef FAR
 #    endif
 #    include <windows.h>
-     /* No need for _export, use ZLIB.DEF instead. */
-     /* For complete Windows compatibility, use WINAPI, not __stdcall. */
-#    define ZEXPORT
-#    define ZEXPORTVA
 #  endif
-#endif
-
-#if defined (__BEOS__)
-#  ifdef ZLIB_DLL
-#    ifdef ZLIB_INTERNAL
-#      define ZEXPORT   __declspec(dllexport)
-#      define ZEXPORTVA __declspec(dllexport)
-#    else
-#      define ZEXPORT   __declspec(dllimport)
-#      define ZEXPORTVA __declspec(dllimport)
-#    endif
-#  endif
-#endif
-
-#ifdef ZEXTERN
-#undef ZEXTERN
-#endif
-#define ZEXTERN
-
-#ifndef ZEXPORT
-#  define ZEXPORT
-#endif
-#ifndef ZEXPORTVA
-#  define ZEXPORTVA
 #endif
 
 #ifndef FAR
 #  define FAR
 #endif
 
-#if !defined(__MACTYPES__)
-typedef unsigned char  Byte;  /* 8 bits */
-#endif
-typedef unsigned int   uInt;  /* 16 bits or more */
-typedef unsigned long  uLong; /* 32 bits or more */
-
 #ifdef SMALL_MEDIUM
    /* Borland C/C++ and some old MSC versions ignore FAR inside typedef */
-#  define Bytef Byte FAR
+#  define Bytef byte FAR
 #else
-   typedef Byte  FAR Bytef;
+   typedef byte  FAR Bytef;
 #endif
 typedef char  FAR charf;
 typedef int   FAR intf;
-typedef uInt  FAR uIntf;
-typedef uLong FAR uLongf;
+typedef uint32_t  FAR uIntf;
+typedef uint64_t FAR uLongf;
 
 #ifdef STDC
    typedef void const *voidpc;
    typedef void FAR   *voidpf;
    typedef void       *voidp;
 #else
-   typedef Byte const *voidpc;
-   typedef Byte FAR   *voidpf;
-   typedef Byte       *voidp;
+   typedef byte const *voidpc;
+   typedef byte FAR   *voidpf;
+   typedef byte       *voidp;
 #endif
 
 #if !defined(Z_U4) && !defined(Z_SOLO) && defined(STDC)
 #  include <limits.h>
-#  if (UINT_MAX == 0xffffffffUL)
+#  if(UINT_MAX == 0xffffffffUL)
 #    define Z_U4 unsigned
 #  elif (ULONG_MAX == 0xffffffffUL)
 #    define Z_U4 unsigned long

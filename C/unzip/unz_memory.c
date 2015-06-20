@@ -19,26 +19,26 @@ struct zmem_data
 
 static voidpf zmemopen(voidpf opaque, const char *filename, int mode)
 {
-    if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ)
+    if((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ)
         return NULL;
 
-    uLong *pos = malloc(sizeof(uLong));
+    uint64_t *pos = malloc(sizeof(uint64_t));
 	if(pos != NULL)
 		*pos = 0;
     return pos;
 }
 
-static uLong zmemread(voidpf opaque, voidpf stream, void* buf, uLong size)
+static uint64_t zmemread(voidpf opaque, voidpf stream, void* buf, uint64_t size)
 {
     struct zmem_data *data = (struct zmem_data*)opaque;
-    uLong *pos = (uLong*)stream;
-    uLong remaining = data->length - *pos;
-	uLong i;
+    uint64_t *pos = (uint64_t*)stream;
+    uint64_t remaining = data->length - *pos;
+	uint64_t i;
 	
 	
 	size = size < remaining ? size : remaining;
 	
-    if (*pos > data->length)
+    if(*pos > data->length)
         return 0;
 
 	for(i = 0; i < size; i++)
@@ -68,10 +68,10 @@ static long zmemtell(voidpf opaque, voidpf stream)
     return * (long *) stream;
 }
 
-static long zmemseek(voidpf opaque, voidpf stream, uLong offset, int origin)
+static long zmemseek(voidpf opaque, voidpf stream, uint64_t offset, int origin)
 {
     struct zmem_data *data = (struct zmem_data*)opaque;
-    uLong *pos = (uLong*)stream;
+    uint64_t *pos = (uint64_t*)stream;
 
     switch (origin)
     {
