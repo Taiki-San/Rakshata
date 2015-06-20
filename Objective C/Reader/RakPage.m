@@ -52,7 +52,7 @@
 	NSRect tabFrame = [self lastFrame], scrollViewFrame = scrollView.scrollViewFrame;
 	
 	//Hauteur
-	if (tabFrame.size.height < scrollView.contentFrame.size.height)
+	if(tabFrame.size.height < scrollView.contentFrame.size.height)
 	{
 		scrollView.pageTooHigh = YES;
 		scrollViewFrame.size.height = tabFrame.size.height;
@@ -495,7 +495,7 @@
 
 - (void) setSliderPos : (NSPoint) newPos
 {
-	if (_scrollView != nil)
+	if(_scrollView != nil)
 	{
 		NSPoint point = _scrollView.contentView.bounds.origin;
 		
@@ -670,7 +670,7 @@
 
 - (void) jumpToPage : (uint) newPage
 {
-	if (newPage == _data.pageCourante || newPage >= _data.nombrePage)
+	if(newPage == _data.pageCourante || newPage >= _data.nombrePage)
 		return;
 	
 	uint pageCourante = _data.pageCourante;
@@ -1223,7 +1223,7 @@
 	
 	for(id object in data)
 	{
-		if ([object class] == [RakPageScrollView class])
+		if([object class] == [RakPageScrollView class])
 		{
 			nbElemCounted++;
 			
@@ -1265,7 +1265,7 @@
 		{
 			object = [internalData objectAtIndex:pos];
 			
-			if ([object class] == [RakPageScrollView class])
+			if([object class] == [RakPageScrollView class])
 			{
 				objectPage = object.page;
 				

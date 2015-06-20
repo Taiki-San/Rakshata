@@ -92,7 +92,7 @@ charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 	}
 
 	//If nothing was copied
-	if (pos == 0)
+	if(pos == 0)
 	{
 		free(output);
 		free(*languages);
@@ -652,7 +652,7 @@ char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeO
 	size_t length = [dataOutput length];
 	void * outputDataC = malloc(length);
 	
-	if (dataOutput == NULL)
+	if(dataOutput == NULL)
 		return NULL;
 	
 	[dataOutput getBytes:outputDataC length:length];

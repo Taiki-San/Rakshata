@@ -21,7 +21,7 @@ enum
 - (instancetype) initWithFrame : (NSRect) frame : (BOOL) isOneLevelBack
 {
 	self = [super initWithFrame : [self frameFromParent:frame]];
-	if (self != nil)
+	if(self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
 		[self setWantsLayer:YES];
@@ -249,12 +249,12 @@ enum
 		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.35] setFill];
 		NSRectFill(frame);
 	}
-	else if (animationInProgress)
+	else if(animationInProgress)
 	{
 		NSRect drawingRect = frame;
 		
 		drawingRect.size.width *= animationStatus;
-		if (animationStatus)
+		if(animationStatus)
 		{
 			[[controlView getColorBackgroundSlider] setFill];
 			NSRectFill(drawingRect);

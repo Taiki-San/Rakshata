@@ -95,7 +95,7 @@
 {
 	[super drawRect:dirtyRect];
 	
-	if (isFocusDrop)
+	if(isFocusDrop)
 		[self drawFocusRing];
 }
 

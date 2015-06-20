@@ -488,11 +488,11 @@
 
 - (NSTableRowView *) outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item
 {
-	if (![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakSerieListItem class] || ![(RakSerieListItem*) item isRootItem]))
+	if(![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakSerieListItem class] || ![(RakSerieListItem*) item isRootItem]))
 		return nil;
 	
 	NSTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
-	if (!rowView)
+	if(!rowView)
 	{
 		rowView = [[RakTableRowView alloc] init];
 		rowView.identifier = @"HeaderRowView";
@@ -529,7 +529,7 @@
 	{
 		NSString * identifier = [item isRootItem] ? @"RootLine" : @"StandardLine";
 		rowView = [outlineView makeViewWithIdentifier:identifier owner:self];
-		if (rowView == nil)
+		if(rowView == nil)
 		{
 			rowView = [[RakText alloc] init];
 			rowView.identifier = identifier;
@@ -570,7 +570,7 @@
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification
 {
-	if (notification.object == content && initializationStage == INIT_OVER)
+	if(notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}
@@ -578,7 +578,7 @@
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification
 {
-	if (notification.object == content && initializationStage == INIT_OVER)
+	if(notification.object == content && initializationStage == INIT_OVER)
 	{
 		[self updateMainListSizePadding];
 	}
@@ -716,7 +716,7 @@
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
 {
-	if ([draggedItems count] != 1)
+	if([draggedItems count] != 1)
 		return;
 	
 	currentDraggedItem = [draggedItems objectAtIndex:0];

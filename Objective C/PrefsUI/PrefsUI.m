@@ -15,7 +15,7 @@
 - (instancetype) initWithFrame : (NSRect) frame
 {
 	self = [super initWithNibName:nil bundle:nil];
-	if (self)
+	if(self != nil)
 	{
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
@@ -48,7 +48,7 @@
 - (instancetype) init
 {
 	self = [super init];
-	if(self)
+	if(self != nil)
 	{
 		viewControllerHUD = [[RakPrefsPopover alloc] initWithFrame : NSMakeRect(0, 0, 150, 150)];
 		[self setAnchor:nil];
@@ -63,7 +63,7 @@
 
 - (void)createPopover
 {
-	if (popover == nil)
+	if(popover == nil)
 	{
 		popover = [[NSPopover alloc] init];
 		
@@ -105,7 +105,7 @@
 {
 	NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
 	
-	if (closeReason)
+	if(closeReason)
 	{
 		// closeReason can be:
 		//      NSPopoverCloseReasonStandard

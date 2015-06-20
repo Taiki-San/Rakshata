@@ -280,7 +280,7 @@
 			rawJumpTable[positionRawTable++] = positionInstalled;
 	}
 	
-	if (positionRawTable == 0)	//nothing installed
+	if(positionRawTable == 0)	//nothing installed
 	{
 		_jumpToInstalled = NULL;
 		_nbElemInstalled = 0;
@@ -392,7 +392,7 @@
 {
 	if(rowIndex < _nbData)
 	{
-		if (_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
+		if(_jumpToInstalled != NULL && rowIndex < _nbElemInstalled)
 			rowIndex = _jumpToInstalled[rowIndex];
 		
 		return getStringForWchar(((PROJECT_DATA*) _data)[rowIndex].projectName);
@@ -405,7 +405,7 @@
 {
 	RakText * element = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
 	
-	if (row == selectedRowIndex)
+	if(row == selectedRowIndex)
 	{
 		[element setTextColor : highlight != nil ? highlight : [self getTextHighlightColor:0 :row]];
 		[element setDrawsBackground:YES];

@@ -137,10 +137,10 @@
 	NSRect horizontalScrollerFrame = [[view horizontalScroller] frame];
 	NSRect verticalScrollerFrame = [[view verticalScroller] frame];
 	
-	if ([view verticalScroller] != nil && ![[view verticalScroller] isKindOfClass:[RakScroller class]])
+	if([view verticalScroller] != nil && ![[view verticalScroller] isKindOfClass:[RakScroller class]])
 		[view setVerticalScroller:[[RakScroller alloc] initWithFrame:verticalScrollerFrame]];
 	
-	if ([view horizontalScroller] != nil && ![[view horizontalScroller] isKindOfClass:[RakScroller class]])
+	if([view horizontalScroller] != nil && ![[view horizontalScroller] isKindOfClass:[RakScroller class]])
 		[view setHorizontalScroller:[[RakScroller alloc] initWithFrame:horizontalScrollerFrame]];
 }
 

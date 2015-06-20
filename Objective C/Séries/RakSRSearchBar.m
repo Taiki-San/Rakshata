@@ -65,7 +65,7 @@
 	NSSize textSize = [self cellSizeForBounds:originalRect];
 	double heightDelta = originalRect.size.height - textSize.height;
 	
-	if (heightDelta > 0)
+	if(heightDelta > 0)
 	{
 		originalRect.size.height -= heightDelta;
 		originalRect.origin.y += (heightDelta / 2);
@@ -237,7 +237,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if ([object class] != [Prefs class])
+	if([object class] != [Prefs class])
 		return;
 	
 	[self initCell];
@@ -311,7 +311,7 @@
 {
 	BOOL result = NO;
 	
-	if ([textView respondsToSelector:commandSelector])
+	if([textView respondsToSelector:commandSelector])
 	{
 		noRecursive = YES;
 		

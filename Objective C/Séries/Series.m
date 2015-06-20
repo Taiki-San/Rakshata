@@ -15,7 +15,7 @@
 - (instancetype) init : (NSView*) contentView : (NSString *) state
 {
 	self = [super init];
-	if (self)
+	if(self != nil)
 	{
 		flag = TAB_SERIES;
 		
@@ -68,7 +68,7 @@
 {
 	NSString * output;
 	
-	if (coreView == nil || (output = [coreView getContextToGTFO]) == nil)
+	if(coreView == nil || (output = [coreView getContextToGTFO]) == nil)
 		return [super byebye];
 	else
 		[self removeFromSuperview];

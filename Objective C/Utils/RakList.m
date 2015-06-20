@@ -348,7 +348,7 @@
 	// Get an existing cell with the identifier if it exists
 	RakText *result = [tableView makeViewWithIdentifier : _identifier owner:self];
 	
-	if (result == nil)
+	if(result == nil)
 	{
 		result = [[RakText alloc] init];
 		result.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
@@ -638,7 +638,7 @@
 	
 	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 	
-	if (item == nil || [item class] != [RakDragItem class])
+	if(item == nil || [item class] != [RakDragItem class])
 		return NO;
 	
 	PROJECT_DATA localProject = getProjectByID(item.project.cacheDBID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)

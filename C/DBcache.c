@@ -630,7 +630,7 @@ uint * getFavoritesID(uint * nbFavorites)
 
 void setInstalled(uint cacheID)
 {
-	if (cache == NULL)
+	if(cache == NULL)
 		setupBDDCache();
 	
 	sqlite3_stmt * request = NULL;
@@ -645,7 +645,7 @@ void setInstalled(uint cacheID)
 
 void setUninstalled(bool isRoot, uint64_t repoID)
 {
-	if (cache == NULL)
+	if(cache == NULL)
 		return;
 	
 	sqlite3_stmt * request = NULL;

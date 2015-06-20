@@ -155,7 +155,7 @@
 {
 	_remind = !_remind;
 	
-	if (sender != nil && [sender class] == [RakButton class] && sender.cell != nil && [sender.cell class] == [RakButtonCell class])
+	if(sender != nil && [sender class] == [RakButton class] && sender.cell != nil && [sender.cell class] == [RakButtonCell class])
 		((RakButtonCell*)sender.cell).forceHighlight = _remind;
 }
 
@@ -177,7 +177,7 @@
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	
-	if (self != nil)
+	if(self != nil)
 	{
 		uint widthButton1 = self.frame.size.width / 2, widthButton2 = self.frame.size.width - widthButton1 - 1;
 		

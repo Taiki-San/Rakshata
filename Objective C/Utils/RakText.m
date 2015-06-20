@@ -27,7 +27,7 @@
 - (instancetype) initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
 {
 	self = [self initWithFrame : frame];
-	if (self != nil)
+	if(self != nil)
 	{
 		[self internalInit];
 		self.stringValue = text;
@@ -42,7 +42,7 @@
 {
 	self = [super init];
 	
-	if (self != nil)
+	if(self != nil)
 	{
 		[self internalInit];
 		
@@ -165,7 +165,7 @@
 	
 	[super setStringValue : aString];
 	
-	if ([self.cell wraps])
+	if([self.cell wraps])
 		[self setFrameSize: _discardHeight ? NSZeroSize : [self intrinsicContentSize]];
 }
 
@@ -192,7 +192,7 @@
 	{
 		_fixedWidth = fixedWidth;
 		
-		if ([self.cell wraps] && ![self.stringValue isEqualToString:@""])
+		if([self.cell wraps] && ![self.stringValue isEqualToString:@""])
 			[self setFrameSize:[self intrinsicContentSize]];
 	}
 }
@@ -204,7 +204,7 @@
 
 - (NSSize) intrinsicContentSize
 {
-	if (![self.cell wraps])
+	if(![self.cell wraps])
 		return [super intrinsicContentSize];
 	
 	NSRect frame = NSZeroRect;

@@ -146,7 +146,7 @@ enum
 
 - (void) tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	if (row == -1)
+	if(row == -1)
 		return;
 	
 	DATA_LOADED ** todoList = [controller getData:row : YES];
@@ -163,7 +163,7 @@ enum
 	RakMDLListView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
 	
 	// There is no existing cell to reuse so create a new one
-	if (result == nil)
+	if(result == nil)
 	{
 		result = [[RakMDLListView alloc] init :controller :row];
 		
@@ -203,7 +203,7 @@ enum
 {
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
 	
-	if (dataProject == NULL || 	(*dataProject)->datas == NULL)
+	if(dataProject == NULL || 	(*dataProject)->datas == NULL)
 		return [super getProjectDataForDrag:row];
 	
 	return *((*dataProject)->datas);
@@ -213,7 +213,7 @@ enum
 {
 	DATA_LOADED ** dataProject = [controller getData:row :YES];
 	
-	if (dataProject == NULL)
+	if(dataProject == NULL)
 		return nil;
 	
 	if((*dataProject)->listChapitreOfTome == NULL)
@@ -288,7 +288,7 @@ enum
 
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
-	if (sender == [self getSelfCode])	//Reorder
+	if(sender == [self getSelfCode])	//Reorder
 	{
 		if(project.repo == NULL || element == INVALID_SIGNED_VALUE || row > [self numberOfRowsInTableView:_tableView] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;

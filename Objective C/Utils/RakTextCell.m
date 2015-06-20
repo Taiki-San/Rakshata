@@ -43,7 +43,7 @@
 	NSSize textSize = [self cellSizeForBounds:originalRect];		// Get our ideal size for current text
 	
 	double heightDelta = originalRect.size.height - textSize.height;		// Center that in the proposed rect
-	if (heightDelta > 0)
+	if(heightDelta > 0)
 	{
 		originalRect.size.height -= heightDelta;
 		originalRect.origin.y += (heightDelta / 2);
@@ -72,7 +72,7 @@
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color
 {
 	self = [self initTextCell:text];
-	if (self != nil)
+	if(self != nil)
 	{
 		self.editable = NO;
 		self.bordered = NO;
@@ -98,7 +98,7 @@
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
-	if (flag && clearBackground)
+	if(flag && clearBackground)
 		self.backgroundColor = [NSColor clearColor];
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
@@ -140,7 +140,7 @@
 	NSSize textSize = [self cellSizeForBounds:originalRect];		// Get our ideal size for current text
 	
 	double heightDelta = originalRect.size.height - textSize.height;		// Center that in the proposed rect
-	if (heightDelta > 0)
+	if(heightDelta > 0)
 	{
 		originalRect.size.height -= heightDelta;
 		originalRect.origin.y += (heightDelta / 2);
@@ -151,7 +151,7 @@
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
-	if (flag)
+	if(flag)
 		self.backgroundColor = [NSColor clearColor];
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];

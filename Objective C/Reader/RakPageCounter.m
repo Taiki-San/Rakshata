@@ -18,7 +18,7 @@
 		return nil;
 	
 	self = [super initWithText:[superview bounds] :[NSString stringWithFormat:@"%d/%d", currentPageArg+1, pageMaxArg] :[self getFontColor]];
-	if (self)
+	if(self != nil)
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superview bounds].size.height : posX];
@@ -178,7 +178,7 @@
 
 - (BOOL)isPartialStringValid:(NSString*)partialString newEditingString:(NSString**)newString errorDescription:(NSString**)error
 {
-	if ([partialString length] == 0)
+	if([partialString length] == 0)
 		return YES;
 	
 	if([partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
@@ -273,7 +273,7 @@
 {
 	//TODO: investigate this bug...
 	
-	if (newSize.width < self.frame.size.height)
+	if(newSize.width < self.frame.size.height)
 		[super setFrameSize:newSize];
 }
 
@@ -301,7 +301,7 @@
 	
 	if(value > 0)
 	{
-		if (value > _maxPage)
+		if(value > _maxPage)
 		{
 			[textField setStringValue:[NSString stringWithFormat:@"%d", _maxPage]];
 		}

@@ -190,7 +190,7 @@ uint _currentTheme;
 	
 	while(i < NB_STAR)
 	{
-		if (intermediaryPoint != 0)
+		if(intermediaryPoint != 0)
 		{
 			[starIdle drawAtPoint:workingPoint fromRect:NSMakeRect(intermediaryPoint, 0, starActive.size.width - intermediaryPoint, starActive.size.height) operation:NSCompositeCopy fraction:1];
 			

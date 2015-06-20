@@ -480,7 +480,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 						continue;
 					
 					sqlite3_bind_int64(request, 1, (int64_t) getRepoID(&(root->subRepo[i])));
-					if (sqlite3_step(request) == SQLITE_ROW)
+					if(sqlite3_step(request) == SQLITE_ROW)
 					{
 						uint newValue = (uint32_t) sqlite3_column_int(request, 0);
 						if(newValue + output < newValue)
@@ -499,7 +499,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 		else
 		{
 			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(repo));
-			if (sqlite3_step(request) == SQLITE_ROW)
+			if(sqlite3_step(request) == SQLITE_ROW)
 			{
 				output = (uint32_t) sqlite3_column_int(request, 0);
 			}

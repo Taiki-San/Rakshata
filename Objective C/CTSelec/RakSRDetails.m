@@ -294,7 +294,7 @@ enum
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if ([object class] != [Prefs class])
+	if([object class] != [Prefs class])
 		return;
 	
 	infos.textColor = [self getTextColor];

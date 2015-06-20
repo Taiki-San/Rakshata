@@ -41,7 +41,7 @@ enum
 	
 	self = [self init];
 	
-	if (self != nil)
+	if(self != nil)
 	{
 		_rootCache = root;
 		_nbRoot = nbRoot;
@@ -100,7 +100,7 @@ enum
 
 - (NSTableRowView *) outlineView:(NSOutlineView *)outlineView rowViewForItem : (RakAddRepoItem*) item
 {
-	if (![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakAddRepoItem class] || ![item isRootItem]))
+	if(![self outlineView:outlineView isGroupItem:item] && ([item class] != [RakAddRepoItem class] || ![item isRootItem]))
 		return nil;
 	
 	RakTableRowView *rowView = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];

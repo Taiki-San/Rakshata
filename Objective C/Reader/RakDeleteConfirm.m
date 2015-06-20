@@ -155,7 +155,7 @@
 {
 	_remind = !_remind;
 	
-	if (sender != nil && [sender class] == [RakDeleteButton class] && sender.cell != nil && [sender.cell class] == [RakDeleteButtonCell class])
+	if(sender != nil && [sender class] == [RakDeleteButton class] && sender.cell != nil && [sender.cell class] == [RakDeleteButtonCell class])
 		((RakButtonCell*)sender.cell).forceHighlight = _remind;
 }
 

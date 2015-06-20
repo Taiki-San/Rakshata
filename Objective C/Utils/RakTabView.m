@@ -110,7 +110,7 @@
 
 - (void) contextChanged : (NSNotification*) notification
 {
-	if ([[notification object] class] != [self class])
+	if([[notification object] class] != [self class])
 	{
 		NSDictionary *userInfo = [notification userInfo];
 		
@@ -126,13 +126,13 @@
 			return;
 		
 		tmp = [userInfo objectForKey:@"selectionType"];
-		if (tmp != nil)
+		if(tmp != nil)
 			isTome = [tmp boolValue];
 		else
 			isTome = NO;
 		
 		tmp = [userInfo objectForKey:@"selection"];
-		if (tmp != nil)
+		if(tmp != nil)
 			element = [tmp intValue];
 		else
 			element = INVALID_SIGNED_VALUE;
@@ -307,7 +307,7 @@
 {
 	if(mainThread & TAB_READER)
 		[self readerIsOpening : context];
-	else if (mainThread & TAB_SERIES)
+	else if(mainThread & TAB_SERIES)
 		[self seriesIsOpening : context];
 	else if(mainThread & TAB_CT)
 		[self CTIsOpening : context];
@@ -741,7 +741,7 @@
 	
 	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 	
-	if (item == nil || [item class] != [RakDragItem class])
+	if(item == nil || [item class] != [RakDragItem class])
 		return NO;
 	
 	PROJECT_DATA localProject = getProjectByID(item.project.cacheDBID);	//We cannot trust the data from the D&D, as context may have changed during the D&D (end of DL)

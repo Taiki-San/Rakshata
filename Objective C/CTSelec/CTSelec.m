@@ -15,7 +15,7 @@
 - (instancetype) init : (NSView *) contentView : (NSString *) state
 {
 	self = [super init];
-	if (self)
+	if(self != nil)
 	{
 		flag = TAB_CT;
 		[self initView:contentView : state];
@@ -420,7 +420,7 @@
 
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
-	if (sender == TAB_SERIES || sender == TAB_MDL)
+	if(sender == TAB_SERIES || sender == TAB_MDL)
 		return NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

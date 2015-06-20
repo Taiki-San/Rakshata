@@ -190,7 +190,7 @@ enum
 		detail = [_responder nameOfParent: ((REPO_DATA *) data)->parentRepoID];
 	
 	RakPrefsRepoListItemView * result = [tableView makeViewWithIdentifier : _identifier owner:self];
-	if (result == nil)
+	if(result == nil)
 	{
 		result = [[RakPrefsRepoListItemView alloc] initWithRepo : _detailMode : tableColumn == _detailColumn : _rootMode : data : detail];
 		if(result != nil)

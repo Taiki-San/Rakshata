@@ -104,7 +104,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 	size_t local_output_length = 4 * ((input_length + 2) / 3);
 	
 	char *encoded_data = malloc(local_output_length + 1);
-	if (encoded_data == NULL) return NULL;
+	if(encoded_data == NULL) return NULL;
 	
 	for (size_t i = 0, j = 0; i < input_length;)
 	{
@@ -133,7 +133,7 @@ char *base64_encode(const unsigned char *data, size_t input_length, size_t *outp
 
 unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length)
 {
-	if (decoding_table[0] == 255)	//build table
+	if(decoding_table[0] == 255)	//build table
 	{
 		decoding_table[0] = 0;
 		
@@ -141,14 +141,14 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 			decoding_table[(unsigned char) encoding_table[i]] = i;
 	}
 	
-	if (input_length % 4 != 0) return NULL;
+	if(input_length % 4 != 0) return NULL;
 	
 	*output_length = input_length / 4 * 3;
-	if (data[input_length - 1] == '=') (*output_length)--;
-	if (data[input_length - 2] == '=') (*output_length)--;
+	if(data[input_length - 1] == '=') (*output_length)--;
+	if(data[input_length - 2] == '=') (*output_length)--;
 	
 	unsigned char *decoded_data = malloc(*output_length+1);
-	if (decoded_data == NULL) return NULL;
+	if(decoded_data == NULL) return NULL;
 	
 	for (size_t i = 0, j = 0; i < input_length;) {
 		
@@ -162,9 +162,9 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 		+ (sextet_c << 1 * 6)
 		+ (sextet_d << 0 * 6);
 		
-		if (j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
-		if (j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
-		if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
+		if(j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
+		if(j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
+		if(j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
 	}
 	
 	decoded_data[*output_length] = 0;
@@ -208,7 +208,7 @@ static int __wchar_forbitten(wchar_t sym)
 {
 
 	/* Surrogate pairs */
-	if (sym >= 0xd800 && sym <= 0xdfff)
+	if(sym >= 0xd800 && sym <= 0xdfff)
 		return (-1);
 
 	return (0);
@@ -261,7 +261,7 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 	wchar_t *wlim, high;
 	size_t n, total, i, n_bits;
 
-	if (in == NULL || insize == 0 || (outsize == 0 && out != NULL))
+	if(in == NULL || insize == 0 || (outsize == 0 && out != NULL))
 		return (0);
 
 	total = 0;
@@ -270,7 +270,7 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 	wlim = out + outsize;
 
 	for (; p < lim; p += n) {
-		if (__utf8_forbitten(*p) != 0 &&
+		if(__utf8_forbitten(*p) != 0 &&
 		    (flags & UTF8_IGNORE_ERROR) == 0)
 			return (0);
 
@@ -278,33 +278,33 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 		 * Get number of bytes for one wide character.
 		 */
 		n = 1;	/* default: 1 byte. Used when skipping bytes. */
-		if ((*p & 0x80) == 0)
+		if((*p & 0x80) == 0)
 			high = (wchar_t)*p;
-		else if ((*p & 0xe0) == _SEQ2) {
+		else if((*p & 0xe0) == _SEQ2) {
 			n = 2;
 			high = (wchar_t)(*p & 0x1f);
-		} else if ((*p & 0xf0) == _SEQ3) {
+		} else if((*p & 0xf0) == _SEQ3) {
 			n = 3;
 			high = (wchar_t)(*p & 0x0f);
-		} else if ((*p & 0xf8) == _SEQ4) {
+		} else if((*p & 0xf8) == _SEQ4) {
 			n = 4;
 			high = (wchar_t)(*p & 0x07);
-		} else if ((*p & 0xfc) == _SEQ5) {
+		} else if((*p & 0xfc) == _SEQ5) {
 			n = 5;
 			high = (wchar_t)(*p & 0x03);
-		} else if ((*p & 0xfe) == _SEQ6) {
+		} else if((*p & 0xfe) == _SEQ6) {
 			n = 6;
 			high = (wchar_t)(*p & 0x01);
 		} else {
-			if ((flags & UTF8_IGNORE_ERROR) == 0)
+			if((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);
 			continue;
 		}
 
 		/* does the sequence header tell us truth about length? */
-		if ((size_t) (lim - p) <= n - 1)
+		if((size_t) (lim - p) <= n - 1)
 		{
-			if ((flags & UTF8_IGNORE_ERROR) == 0)
+			if((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);
 			n = 1;
 			continue;	/* skip */
@@ -314,13 +314,13 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 		 * Validate sequence.
 		 * All symbols must have higher bits set to 10xxxxxx
 		 */
-		if (n > 1) {
+		if(n > 1) {
 			for (i = 1; i < n; i++) {
-				if ((p[i] & 0xc0) != _NXT)
+				if((p[i] & 0xc0) != _NXT)
 					break;
 			}
-			if (i != n) {
-				if ((flags & UTF8_IGNORE_ERROR) == 0)
+			if(i != n) {
+				if((flags & UTF8_IGNORE_ERROR) == 0)
 					return (0);
 				n = 1;
 				continue;	/* skip */
@@ -329,10 +329,10 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 
 		total++;
 
-		if (out == NULL)
+		if(out == NULL)
 			continue;
 
-		if (out >= wlim)
+		if(out >= wlim)
 			return (0);		/* no space left */
 
 		*out = 0;
@@ -343,14 +343,14 @@ size_t utf8_to_wchar(const char *in, size_t insize, wchar_t *out, size_t outsize
 		}
 		*out |= high << n_bits;
 
-		if (__wchar_forbitten(*out) != 0) {
-			if ((flags & UTF8_IGNORE_ERROR) == 0)
+		if(__wchar_forbitten(*out) != 0) {
+			if((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);	/* forbitten character */
 			else {
 				total--;
 				out--;
 			}
-		} else if (*out == _BOM && (flags & UTF8_SKIP_BOM) != 0) {
+		} else if(*out == _BOM && (flags & UTF8_SKIP_BOM) != 0) {
 			total--;
 			out--;
 		}
@@ -387,7 +387,7 @@ size_t wchar_to_utf8(const wchar_t *in, size_t insize, char *out, size_t outsize
 	u_char *p, *lim, *oc;
 	size_t total, n;
 
-	if (in == NULL || insize == 0 || (outsize == 0 && out != NULL))
+	if(in == NULL || insize == 0 || (outsize == 0 && out != NULL))
 		return (0);
 
 	w = (wchar_t *)in;
@@ -396,39 +396,39 @@ size_t wchar_to_utf8(const wchar_t *in, size_t insize, char *out, size_t outsize
 	lim = p + outsize;
 	total = 0;
 	for (; w < wlim; w++) {
-		if (__wchar_forbitten(*w) != 0) {
-			if ((flags & UTF8_IGNORE_ERROR) == 0)
+		if(__wchar_forbitten(*w) != 0) {
+			if((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);
 			else
 				continue;
 		}
 
-		if (*w == _BOM && (flags & UTF8_SKIP_BOM) != 0)
+		if(*w == _BOM && (flags & UTF8_SKIP_BOM) != 0)
 			continue;
 
-		if (*w < 0) {
-			if ((flags & UTF8_IGNORE_ERROR) == 0)
+		if(*w < 0) {
+			if((flags & UTF8_IGNORE_ERROR) == 0)
 				return (0);
 			continue;
-		} else if (*w <= 0x0000007f)
+		} else if(*w <= 0x0000007f)
 			n = 1;
-		else if (*w <= 0x000007ff)
+		else if(*w <= 0x000007ff)
 			n = 2;
-		else if (*w <= 0x0000ffff)
+		else if(*w <= 0x0000ffff)
 			n = 3;
-		else if (*w <= 0x001fffff)
+		else if(*w <= 0x001fffff)
 			n = 4;
-		else if (*w <= 0x03ffffff)
+		else if(*w <= 0x03ffffff)
 			n = 5;
-		else /* if (*w <= 0x7fffffff) */
+		else /* if(*w <= 0x7fffffff) */
 			n = 6;
 
 		total += n;
 
-		if (out == NULL)
+		if(out == NULL)
 			continue;
 
-		if ((size_t) (lim - p) <= n - 1)
+		if((size_t) (lim - p) <= n - 1)
 			return 0;		/* no space left */
 
 		/* make it work under different endians */

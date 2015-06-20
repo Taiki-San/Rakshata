@@ -281,7 +281,7 @@ enum
 	RakText *result = [tableView makeViewWithIdentifier:@"PFUDOR" owner:self];
 	BOOL isTitleColumn = [self isTitleColumn:tableColumn];
 	
-	if (result == nil)
+	if(result == nil)
 	{
 		result = [[RakText alloc] init];
 		

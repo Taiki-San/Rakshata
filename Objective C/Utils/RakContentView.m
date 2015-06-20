@@ -69,7 +69,7 @@
 	frame.origin.y += WIDTH_BORDER_FAREST;
 	
 	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [self middleBorderColor]];
-	if (internalRows1 != nil)
+	if(internalRows1 != nil)
 		[self addSubview:internalRows1];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_MIDDLE;
@@ -80,7 +80,7 @@
 	if(self.window.isMainWindow)
 	{
 		internalRows2 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_INTERNAL : 5.0 : [self lastBorderColor]];
-		if (internalRows2 != nil)
+		if(internalRows2 != nil)
 			[self addSubview:internalRows2];
 		
 		if(firstResponder == nil)

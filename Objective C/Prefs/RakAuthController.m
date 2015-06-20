@@ -88,7 +88,7 @@
 	[NSAnimationContext beginGrouping];
 	[[NSAnimationContext currentContext] setDuration:0.2f];
 	
-	if (initialAnimation)	//We remove the placeholder
+	if(initialAnimation)	//We remove the placeholder
 	{
 		frame = footerPlaceholder.frame;
 		frame.origin.y = -frame.size.height;

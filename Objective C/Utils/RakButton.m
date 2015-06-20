@@ -338,7 +338,7 @@
 	}
 	else if(!notAvailable)
 	{
-		if (flag)
+		if(flag)
 			self.backgroundColor = [NSColor clearColor];
 		[super highlight:flag withFrame:cellFrame inView:controlView];
 	}

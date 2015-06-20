@@ -17,7 +17,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     uint length;
     char *output = NULL;
 	
-    if (data.datas->repo->type == TYPE_DEPOT_DB || data.datas->repo->type == TYPE_DEPOT_OTHER)
+    if(data.datas->repo->type == TYPE_DEPOT_DB || data.datas->repo->type == TYPE_DEPOT_OTHER)
     {
         output = internalCraftBaseURL(*data.datas->repo, &length);
         if(output != NULL)
@@ -39,7 +39,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         }
     }
 
-    else if (isPaidProject(*data.datas)) //DL Payant
+    else if(isPaidProject(*data.datas)) //DL Payant
     {
 		char saltedPass[2*SHA256_DIGEST_LENGTH+1] = {0};
         saltPassword(saltedPass);
@@ -75,7 +75,7 @@ char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
             snprintf(output, *length, "https://dl.dropboxusercontent.com/u/%s", repoData.URL);
     }
 
-    else if (repoData.type == TYPE_DEPOT_OTHER)
+    else if(repoData.type == TYPE_DEPOT_OTHER)
     {
         *length = 200 + strlen(repoData.URL) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
         output = malloc(*length);
@@ -292,7 +292,7 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 			return ERROR_CHECK;
 		
 		int IDTome = projectData.tomesFull[*posIndexTome].ID;
-		if (IDTome == INVALID_SIGNED_VALUE)
+		if(IDTome == INVALID_SIGNED_VALUE)
 			return ERROR_CHECK;
 		
 		if(IDChap % 10)
@@ -394,7 +394,7 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 
 void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 {
-	if (tomeID >= data.nombreTomes || data.tomesFull == NULL)
+	if(tomeID >= data.nombreTomes || data.tomesFull == NULL)
 		return;
 	
 	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(data.repo);

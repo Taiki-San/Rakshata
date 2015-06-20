@@ -21,7 +21,7 @@ enum
 {
 	self = [super initWithFrame:[self getButtonFrame:frame]];
 	
-	if (self != nil)
+	if(self != nil)
 	{
 		__block uint oldWidthButton = 0;
 		

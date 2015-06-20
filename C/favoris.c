@@ -77,7 +77,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		for (posLine = nbSpaces = 0; line[posLine] && nbSpaces < 2; posLine++)
 			if(line[posLine] == ' ')	nbSpaces++;
 		
-		if (nbSpaces != 1)
+		if(nbSpaces != 1)
 			continue;
 		
 		//We read the data
@@ -86,7 +86,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		//There is a collision
 		if(!strcmp(URLRepo, URLRepoRef) && projectID == projectDB->projectID)
 		{
-			if (removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
+			if(removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
 			{
 				ret_value = true;
 				continue;
@@ -278,7 +278,7 @@ void getNewFavs()
 			for (posFull = 0; posFull < maxPos && current->chapitresFull[posFull] <= lastInstalled; posFull++);
 			for(; posFull < maxPos; posFull++)
 			{
-				if (!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
+				if(!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
 				{
 					if(prevElem != INVALID_SIGNED_VALUE)
 					{
@@ -301,7 +301,7 @@ void getNewFavs()
 			for (posFull = 0; posFull < maxPos && current->tomesInstalled[posFull].ID <= lastInstalled; posFull++);
 			for(; posFull < maxPos; posFull++)
 			{
-				if (!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
+				if(!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
 				{
 					if(prevElem != INVALID_SIGNED_VALUE)
 					{

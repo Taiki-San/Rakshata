@@ -70,7 +70,7 @@ void createNewThread(void *function, void *arg)
 #else
     pthread_t thread;
 
-    if (pthread_create(&thread, NULL, function, arg))
+    if(pthread_create(&thread, NULL, function, arg))
     {
 #ifdef DEV_VERSION
         logR("Failed at create thread\n");
@@ -103,7 +103,7 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
 
 #else
 
-    if (pthread_create(&threadID, NULL, function, arg))
+    if(pthread_create(&threadID, NULL, function, arg))
     {
 #ifdef DEV_VERSION
         logR("Failed at create thread\n");

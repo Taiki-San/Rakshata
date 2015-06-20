@@ -367,7 +367,7 @@ void releaseDataReader(DATA_LECTURE *data)
 	free(data->pageCouranteDuChapitre);		data->pageCouranteDuChapitre = NULL;
 	free(data->chapitreTomeCPT);			data->chapitreTomeCPT = NULL;
 	
-	if (data->nomPages != NULL)
+	if(data->nomPages != NULL)
 	{
 		for (uint i = data->nombrePage; i-- > 0; free(data->nomPages[i]));
 		free(data->nomPages);					data->nomPages = NULL;

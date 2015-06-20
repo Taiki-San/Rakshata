@@ -89,7 +89,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 				gettimeofday(&anchor2, NULL);
 				delay = (anchor2.tv_sec - anchor1.tv_sec) * 1000 + (anchor2.tv_usec - anchor1.tv_usec) / 1000.0;
 
-				if (delay > 200)
+				if(delay > 200)
 				{
 					if(delay)
 						downloadSpeed = (downloadData.bytesDownloaded - prevDLBytes) * 1000 / delay;
@@ -563,50 +563,41 @@ we75HTdXs+KQKP7/iyBTWWjo7jBJWbHvOzjDjZMtiNkxyC5TBWO2X+QeM/K6u3j6\n\
 
 static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 {
-	X509_STORE * store;
-	X509 *certRSP = NULL;
-	BIO * bio;
+	X509 * certRSP = NULL;
+	X509_STORE * store = SSL_CTX_get_cert_store((SSL_CTX *) sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
+	BIO * bio = getBIORSPCertificate();
 
-	store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
-
-	bio = getBIORSPCertificate();                        ///Ancien certificat du RSP (<= 02/2014)
 	PEM_read_bio_X509(bio, &certRSP, 0, NULL);           // use the BIO to read the PEM formatted certificate from memory into an X509 structure that SSL can use
 	BIO_free(bio);
-	if (certRSP == NULL)
-		return CURLE_SSL_CERTPROBLEM;
 
 	/* add our certificates to this store */
-	if (! X509_STORE_add_cert(store, certRSP))
+	if(certRSP == NULL || !X509_STORE_add_cert(store, certRSP))
 		return CURLE_SSL_CERTPROBLEM;
 
-	return CURLE_OK ;
+	return CURLE_OK;
 }
 
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm)
 {
-	X509_STORE * store;
 	X509 *certRSP = NULL, *certDpt = NULL;
-	BIO * bio;
 
-	store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
+	X509_STORE * store = SSL_CTX_get_cert_store((SSL_CTX *)sslctx);  // get a pointer to the X509 certificate store (which may be empty!)
 
-	bio = getBIORSPCertificate();                           ///Nouveau certificat du RSP (> 02/2014)
+	BIO * bio = getBIORSPCertificate();						//Certificat du RSP (services internes)
 	PEM_read_bio_X509(bio, &certRSP, 0, NULL);
 	BIO_free(bio);
-	if (certRSP == NULL)
+	if(certRSP == NULL)
 		return CURLE_SSL_CERTPROBLEM;
 
-	bio = getBIORepoCertificate();                          ///On ajoute le certificat root des dépôts
+	bio = getBIORepoCertificate();                          //On ajoute le certificat root des dépôts
 	PEM_read_bio_X509(bio, &certDpt, 0, NULL);
 	BIO_free(bio);
-	if (certDpt == NULL)
+	if(certDpt == NULL)
 		return CURLE_SSL_CERTPROBLEM;
 
 	/* add our certificates to this store */
-	if (! X509_STORE_add_cert(store, certRSP))
+	if(!X509_STORE_add_cert(store, certRSP) || !X509_STORE_add_cert(store, certDpt))
 		return CURLE_SSL_CERTPROBLEM;
 
-	if (! X509_STORE_add_cert(store, certDpt))
-		return CURLE_SSL_CERTPROBLEM;
-	return CURLE_OK ;
+	return CURLE_OK;
 }

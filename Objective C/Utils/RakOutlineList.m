@@ -16,7 +16,7 @@
 {
 	id view = [super makeViewWithIdentifier:identifier owner:owner];
 	
-	if ([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
+	if([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
 	{
 		uint themeID = [Prefs getCurrentTheme:nil];
 		[(NSButton *)view setImage:[RakResPath getImageFromTheme:@"TD->" :themeID]];
@@ -73,7 +73,7 @@
 {
 	self = [super init];
 	
-	if (self != nil)
+	if(self != nil)
 	{
 		nbColumn = 1;
 	}
@@ -227,7 +227,7 @@
 	if(item == nil)
 		return [self getNbRoot];
 	
-	else if ([item isRootItem])
+	else if([item isRootItem])
 		return [item getNbChildren];
 	
 	return 0;

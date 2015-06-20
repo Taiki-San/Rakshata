@@ -451,7 +451,7 @@ void serpent_set_key(const uint8_t userKey[], int keylen, SerpentInstance *ks)
 	for (i = 0; (uint) i < keylen / sizeof(int32_t); i++)
 		k[i] = LE32(((uint32_t*)userKey)[i]);
 	
-	if (keylen < 32)
+	if(keylen < 32)
 		k[keylen/4] |= (uint32_t)1 << ((keylen%4)*8);
 	
 	k += 8;
@@ -513,7 +513,7 @@ void serpent_encrypt(SerpentInstance *ks, const uint8_t *inBlock, uint8_t *outBl
 		afterS5(KX); afterS5(S6); afterS6(LT);
 		afterS6(KX); afterS6(S7);
 		
-		if (i == 4)
+		if(i == 4)
 			break;
 		
 		++i;

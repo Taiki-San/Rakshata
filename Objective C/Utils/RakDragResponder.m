@@ -101,7 +101,7 @@
 
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view
 {
-	if ([rowIndexes count] > 1)
+	if([rowIndexes count] > 1)
 		return;
 	
 	NSUInteger row = [rowIndexes firstIndex];

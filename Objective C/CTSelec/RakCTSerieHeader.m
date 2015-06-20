@@ -149,7 +149,7 @@ enum
 	_activeProject = projectID;
 	PROJECT_DATA project = getProjectByID(projectID);
 	
-	if (!project.isInitialized)
+	if(!project.isInitialized)
 		return;
 	else
 		releaseCTData(project);
@@ -326,7 +326,7 @@ enum
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if ([object class] != [Prefs class])
+	if([object class] != [Prefs class])
 		return;
 	
 	[self updateGradient];

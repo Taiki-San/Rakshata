@@ -134,7 +134,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 			destroyRequest(request);
 			
 			haveToUpdate = true;
-			if (nbOccurence != 0)
+			if(nbOccurence != 0)
 			{
 				byte value = wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead;
 				

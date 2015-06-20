@@ -57,7 +57,7 @@
 			[self mouseDown:event];
 	}
 	
-	if ([event type] == NSKeyDown)
+	if([event type] == NSKeyDown)
 	{
 		if(self.shiftPressed && self.commandPressed)
 		{
@@ -65,7 +65,7 @@
 			
 			if(_isMainWindow)
 			{
-				if ([character isEqualToString:@"f"])
+				if([character isEqualToString:@"f"])
 					[self toggleFullScreen:self];
 			}
 		}

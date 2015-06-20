@@ -163,7 +163,7 @@ void createPath(char *output)
 			longueur_output++;
 #ifdef _WIN32
             if(output[longueur_output] == '\\')
-                for(; output[longueur_output] && output[longueur_output] == '\\' ; longueur_output++); //Sous windows, il y a deux \\ .
+                for(; output[longueur_output] && output[longueur_output] == '\\'; longueur_output++); //Sous windows, il y a deux \\ .
 #endif
         }
     }
@@ -300,11 +300,11 @@ uint64_t getFileSize64(const char * filename)
 {
 #ifdef _WIN32
 	HANDLE hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
+    if(hFile == INVALID_HANDLE_VALUE)
         return 0; // error condition, could call GetLastError to find out more
 	
     LARGE_INTEGER size;
-    if (!GetFileSizeEx(hFile, &size))
+    if(!GetFileSizeEx(hFile, &size))
     {
         CloseHandle(hFile);
         return 0; // error condition, could call GetLastError to find out more
@@ -316,7 +316,7 @@ uint64_t getFileSize64(const char * filename)
 #else
 	struct stat st;
 	
-    if (stat(filename, &st) == 0 && st.st_size > 0)
+    if(stat(filename, &st) == 0 && st.st_size > 0)
         return (uint64_t) st.st_size;
 	
     return 0;

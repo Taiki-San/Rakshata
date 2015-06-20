@@ -17,7 +17,7 @@
 	[Prefs getPref : PREFS_GET_MAIN_THREAD : &_currentContext];
 	
 	self = [super initWithFrame : [self frameFromParent : parentBounds : headerHeight]];
-	if (self != nil)
+	if(self != nil)
 	{
 		self.autoresizesSubviews = NO;
 

@@ -247,7 +247,7 @@ enum
 
 - (void) mouseDown:(NSEvent *)theEvent
 {
-	if (!_isVisible || !_collapsed)
+	if(!_isVisible || !_collapsed)
 		return;
 	
 	[self updateCollapseState:!_collapsed : NO];

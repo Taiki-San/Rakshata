@@ -70,7 +70,7 @@
 		{
 			CGFloat delta = CT_READERMODE_BORDER_TABLEVIEW;
 			
-			if (_initialState == 0)		delta -= volOrigin.x;
+			if(_initialState == 0)		delta -= volOrigin.x;
 			else						delta -= chapOrigin.x;
 			
 			distanceToCoverPerMark = delta / stepsRemaining;

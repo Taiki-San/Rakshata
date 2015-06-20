@@ -189,7 +189,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
                 error++;
             }
 			
-			if (listDL[i] != NULL)
+			if(listDL[i] != NULL)
 			{
 				free(((DATA_DL_OBFS*) listDL[i])->data);
 				free(((DATA_DL_OBFS*) listDL[i])->mask);
@@ -210,7 +210,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	{
 		for(uint i = 0; i < nombreElement; free(listDL[i++]));
 		
-		if (!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
+		if(!DLAborted && isTome && !nbElemToInstall && *(input.currentState) == MDL_CODE_INSTALL_OVER)
 		{
 			setTomeReadable(*input.todoList->datas, input.todoList->identifier);
 			setInstalled(input.todoList->datas->cacheDBID);

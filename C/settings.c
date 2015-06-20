@@ -190,7 +190,7 @@ char* loadLargePrefs(char* flag)
 		}
         free(basePtr);
 	}
-	if (flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
+	if(flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
 		

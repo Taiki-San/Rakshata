@@ -191,7 +191,7 @@ enum
 	}
 	
 	//Text at extreme left
-	if (requestName != nil)
+	if(requestName != nil)
 	{
 		curFrame.size.height = wasMultiLine ? 34 : 17;
 		curFrame.size.width = cachedSize.width - REQUEST_OFFSET_WIDTH;
@@ -209,7 +209,7 @@ enum
 	newPoint.x = cachedSize.width - 3;
 	
 	//Icon at extreme right
-	if (_remove != nil)
+	if(_remove != nil)
 	{
 		curFrame = _remove.frame;
 		
@@ -248,7 +248,7 @@ enum
 	}
 	
 	
-	if (_pause != nil)
+	if(_pause != nil)
 	{
 		curFrame = _pause.frame;
 		

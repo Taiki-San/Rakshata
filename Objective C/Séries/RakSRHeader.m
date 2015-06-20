@@ -155,7 +155,7 @@
 	{
 		dirtyRect.size.height += SRSEARCHTAB_DEFAULT_HEIGHT;
 		
-		CGFloat border = dirtyRect.size.height / 5  ;
+		CGFloat border = dirtyRect.size.height / 5 ;
 		
 		[[self separatorColor] setFill];
 		NSRectFill(NSMakeRect(_separatorX, border, 1, dirtyRect.size.height - 2 * border));

@@ -17,7 +17,7 @@
 - (instancetype) init : (NSView*)contentView : (NSString *) state
 {
 	self = [super init];
-	if (self != nil)
+	if(self != nil)
 	{
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
@@ -164,7 +164,7 @@
 {
 	NSString * output;
 	
-	if (initialized)
+	if(initialized)
 		output = [self getContextToGTFO];
 	else
 		output = [super byebye];
@@ -562,7 +562,7 @@
 
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
-	if (sender == TAB_CT || sender == TAB_MDL)
+	if(sender == TAB_CT || sender == TAB_MDL)
 		return canDL ? NSDragOperationNone : NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

@@ -228,7 +228,7 @@
 	
 	for(byte pos = 0; pos < nbElem; pos++)
 	{
-		if (icons[pos] == nil)
+		if(icons[pos] == nil)
 			continue;
 		
 		origin.x = [self getPosXElement : pos + 1 : newWidth];

@@ -17,7 +17,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 	if(nbElem != NULL)
 		*nbElem = 0;
 	
-	if (chapterBloc == NULL)
+	if(chapterBloc == NULL)
 		return NULL;
 
 	if(paidContent && chaptersPrice == NULL)
@@ -27,7 +27,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 	uint counterVar = 0, *counter, pos = 0, pricePos = 0;
 	size_t nbSubBloc = [chapterBloc count];
 
-	if (nbSubBloc != 0)
+	if(nbSubBloc != 0)
 	{
 		id entry1, entry2 = nil;
 		int jump, first, last, sum;
@@ -36,7 +36,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 		BOOL isPrivateIfVolume = NO;
 		uint typeSize = isChapter ? sizeof(int) : sizeof(CONTENT_TOME);
 		
-		if (nbElem != NULL)		counter = nbElem;
+		if(nbElem != NULL)		counter = nbElem;
 		else					counter = &counterVar;
 		
 		for(NSDictionary * dictionary in chapterBloc)
@@ -385,7 +385,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			if(ARE_CLASSES_DIFFERENT(dict, [NSDictionary class]))	continue;
 			
 			readingName = objectForKey(dict, JSON_PROJ_VOL_READING_NAME, @"Reading name");
-			if (readingName == nil || ARE_CLASSES_DIFFERENT(readingName, [NSString class]) || [readingName length] == 0)
+			if(readingName == nil || ARE_CLASSES_DIFFERENT(readingName, [NSString class]) || [readingName length] == 0)
 			{
 				readingName = nil;
 				readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID");
@@ -439,7 +439,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 
 NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 {
-	if (volume == NULL)
+	if(volume == NULL)
 		return nil;
 	
 	NSMutableArray *output = [NSMutableArray array];
@@ -493,7 +493,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
-	if (ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]))
+	if(ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]))
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: couldn't find ID in %@", bloc);
@@ -806,7 +806,7 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 			continue;
 		
 		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID");
-		if (repoID == nil || ARE_CLASSES_DIFFERENT(repoID, [NSNumber class]))
+		if(repoID == nil || ARE_CLASSES_DIFFERENT(repoID, [NSNumber class]))
 		{
 #ifdef DEV_VERSION
 			NSLog(@"Project parser error: no authorID %@", remoteDataPart);
@@ -906,7 +906,7 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, ui
 	size_t length = [dataOutput length];
 	void * outputDataC = malloc(length);
 
-	if (dataOutput == NULL)
+	if(dataOutput == NULL)
 		return NULL;
 	
 	[dataOutput getBytes:outputDataC length:length];

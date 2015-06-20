@@ -114,7 +114,7 @@
 {
 	NSRect output = NSZeroRect;
 	
-	if (selector != NULL && [self respondsToSelector:selector])
+	if(selector != NULL && [self respondsToSelector:selector])
 	{
 		NSMethodSignature * signature = [[self class] instanceMethodSignatureForSelector:selector];
 		NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:signature];

@@ -85,7 +85,7 @@
 		//Draw the cell
 		frame.size.width = [self widthForSegment:i] - 1;
 		
-		if (animationRunning && (i == impactedCell || (isNextCellImpacted && i == impactedCell + 1)))
+		if(animationRunning && (i == impactedCell || (isNextCellImpacted && i == impactedCell + 1)))
 		{
 			NSColor * first, * second;
 			

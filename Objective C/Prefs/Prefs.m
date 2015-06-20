@@ -503,7 +503,7 @@ enum
 
 - (void) getPrefInternal : (uint) requestID : (void*) outputContainer : (void*) additionalData
 {
-	if (outputContainer == NULL)
+	if(outputContainer == NULL)
 		return;
 	
 	switch(requestID)

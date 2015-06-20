@@ -21,7 +21,7 @@
 	if(projectImage != nil)
 		projectImage.image = loadDDThumbnail(projectData);
 	
-	if (projectName != nil)
+	if(projectName != nil)
 	{
 		[projectName setStringValue:getStringForWchar(projectData.projectName)];
 		[projectName setTextColor:[Prefs getSystemColor:COLOR_ACTIVE:nil]];

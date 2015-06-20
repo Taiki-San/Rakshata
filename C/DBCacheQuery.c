@@ -171,7 +171,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	uint pos = 0;
 	PROJECT_DATA * output = NULL;
 	
-	if (nbElemCopied != NULL)
+	if(nbElemCopied != NULL)
 		*nbElemCopied = 0;
 	
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement

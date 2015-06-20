@@ -21,7 +21,7 @@ enum
 {
 	self = [super initWithFrame:frame];
 	
-	if (self)
+	if(self != nil)
 	{
 		_controller = controller;
 		[self setupInternal];

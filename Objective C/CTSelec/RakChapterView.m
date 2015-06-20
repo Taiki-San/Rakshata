@@ -15,7 +15,7 @@
 - (instancetype) initContent : (NSRect)frame : (PROJECT_DATA) project : (BOOL) isTome : (long [4]) context
 {
 	self = [super initWithFrame:frame];
-	if (self != nil)
+	if(self != nil)
 	{
 		[self setupInternal];
 		
@@ -43,7 +43,7 @@
 
 - (NSString *) getContextToGTFO
 {
-	if (coreview == nil)
+	if(coreview == nil)
 		return nil;
 	return [coreview getContextToGTFO];
 }

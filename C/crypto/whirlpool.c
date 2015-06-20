@@ -1687,7 +1687,7 @@ void NESSIEadd(const unsigned char * const source,
          */
         buffer[bufferPos++] |= (u8)(b >> bufferRem);
         bufferBits += 8 - bufferRem; /* bufferBits = 8*bufferPos; */
-        if (bufferBits == DIGESTBITS) {
+        if(bufferBits == DIGESTBITS) {
             /*
              * process data block:
              */
@@ -1708,7 +1708,7 @@ void NESSIEadd(const unsigned char * const source,
     /* now 0 <= sourceBits <= 8;
      * furthermore, all data (if any is left) is in source[sourcePos].
      */
-    if (sourceBits > 0) {
+    if(sourceBits > 0) {
         b = (source[sourcePos] << sourceGap) & 0xff; /* bits are left-justified on b. */
         /*
          * process the remaining bits:
@@ -1717,7 +1717,7 @@ void NESSIEadd(const unsigned char * const source,
     } else {
         b = 0;
     }
-    if (bufferRem + sourceBits < 8) {
+    if(bufferRem + sourceBits < 8) {
         /*
          * all remaining data fits on buffer[bufferPos],
          * and there still remains some space.
@@ -1733,7 +1733,7 @@ void NESSIEadd(const unsigned char * const source,
         /* now 0 <= sourceBits < 8;
          * furthermore, all data (if any is left) is in source[sourcePos].
          */
-        if (bufferBits == DIGESTBITS) {
+        if(bufferBits == DIGESTBITS) {
             /*
              * process data block:
              */
@@ -1772,8 +1772,8 @@ void NESSIEfinalize(struct NESSIEstruct * const structpointer,
     /*
      * pad with zero bits to complete (N*WBLOCKBITS - LENGTHBITS) bits:
      */
-    if (bufferPos > WBLOCKBYTES - LENGTHBYTES) {
-        if (bufferPos < WBLOCKBYTES) {
+    if(bufferPos > WBLOCKBYTES - LENGTHBYTES) {
+        if(bufferPos < WBLOCKBYTES) {
             memset(&buffer[bufferPos], 0, WBLOCKBYTES - bufferPos);
         }
         /*
@@ -1785,7 +1785,7 @@ void NESSIEfinalize(struct NESSIEstruct * const structpointer,
          */
         bufferPos = 0;
     }
-    if (bufferPos < WBLOCKBYTES - LENGTHBYTES) {
+    if(bufferPos < WBLOCKBYTES - LENGTHBYTES) {
         memset(&buffer[bufferPos], 0, (WBLOCKBYTES - LENGTHBYTES) - bufferPos);
     }
     bufferPos = WBLOCKBYTES - LENGTHBYTES;

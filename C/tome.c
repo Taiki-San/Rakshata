@@ -68,7 +68,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
 	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo);
 	
-	if (cache == NULL || encodedRepo == NULL)
+	if(cache == NULL || encodedRepo == NULL)
 	{
 		free(encodedRepo);
 		return false;
@@ -250,7 +250,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 			if(!details[posDetails].isPrivate)
 			{
 				curID = details[posDetails].ID;
-				if (curID % 10)
+				if(curID % 10)
 					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d.%d/shared", basePath, curID / 10, curID % 10);
 				else
 					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d/shared", basePath, curID / 10);

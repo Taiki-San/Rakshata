@@ -29,7 +29,7 @@
 		
 		char * stringOutput = malloc(length * 2 + 1);
 		
-		if (stringOutput == NULL)
+		if(stringOutput == NULL)
 		{
 			memoryError(2 * length + 1);
 			fclose(output);

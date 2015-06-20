@@ -22,7 +22,7 @@ enum
 - (instancetype) init : (NSView *) contentView : (NSString *) state
 {
 	self = [super init];
-	if (self)
+	if(self != nil)
 	{
 		flag = TAB_MDL;
 		_needUpdateMainViews = NO;
@@ -175,7 +175,7 @@ enum
 {
 	[super resizeAnimation];
 	
-	if (_popover != nil && ![self isDisplayed])
+	if(_popover != nil && ![self isDisplayed])
 	{
 		[_popover locationUpdated :[self createFrame] :YES];
 	}
@@ -476,7 +476,7 @@ enum
 		
 		self.forcedToShowUp = YES;
 	}
-	else if (self.forcedToShowUp)
+	else if(self.forcedToShowUp)
 		self.forcedToShowUp = NO;
 	
 	else
@@ -495,7 +495,7 @@ enum
 {
 	if(!canDL)
 		return NSDragOperationNone;
-	if (sender == TAB_SERIES || sender == TAB_CT)
+	if(sender == TAB_SERIES || sender == TAB_CT)
 		return NSDragOperationCopy;
 	
 	return [super dropOperationForSender:sender:canDL];

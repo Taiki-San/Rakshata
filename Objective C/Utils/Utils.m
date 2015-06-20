@@ -60,7 +60,7 @@ void flushBundleCache(NSBundle *bundle)
 {
 	// Before calling the function, we need to check if it exists
 	// since it was weak-linked.
-	if (_CFBundleFlushBundleCaches != NULL)
+	if(_CFBundleFlushBundleCaches != NULL)
 	{
 		CFBundleRef cfBundle = CFBundleCreate(nil, (__bridge CFURLRef)[bundle bundleURL]);
 

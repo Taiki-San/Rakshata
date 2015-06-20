@@ -66,7 +66,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 {
 	CGFloat output = -1;
 	
-	if (selector != NULL && [self respondsToSelector:selector])
+	if(selector != NULL && [self respondsToSelector:selector])
 	{
 		NSMethodSignature * signature = [[self class] instanceMethodSignatureForSelector:selector];
 		NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:signature];

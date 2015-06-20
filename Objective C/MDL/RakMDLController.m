@@ -311,7 +311,7 @@
 		return;
 	
 	uint pos;
-	for (pos = 0; pos < sizeCache && cache[pos]->cacheDBID != data.cacheDBID ; pos++);
+	for (pos = 0; pos < sizeCache && cache[pos]->cacheDBID != data.cacheDBID; pos++);
 	
 	if(pos == sizeCache || cache[pos]->cacheDBID != data.cacheDBID)
 		return;
@@ -384,7 +384,7 @@
 	int previousElem = INVALID_SIGNED_VALUE;
 	uint posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
 	
-	if (isTome)
+	if(isTome)
 	{
 		if(data.tomesFull == NULL || data.nombreTomes == 0)
 			return countInjected;
@@ -404,7 +404,7 @@
 	//On choppe les trous
 	for (; posFull < nbFull && posInst < nbInst; posFull++)
 	{
-		if (MDLCTRL_getDataFull(data, posFull, isTome) == MDLCTRL_getDataInstalled(data, posInst, isTome))
+		if(MDLCTRL_getDataFull(data, posFull, isTome) == MDLCTRL_getDataInstalled(data, posInst, isTome))
 			posInst++;
 		else
 		{
@@ -444,7 +444,7 @@
 	if(IDToPosition == NULL)
 		return;
 	
-	if (posStart > posEnd || posEnd >= discardedCount || (injectionPoint >= posStart && injectionPoint <= posEnd))
+	if(posStart > posEnd || posEnd >= discardedCount || (injectionPoint >= posStart && injectionPoint <= posEnd))
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Invalid data when reorder: posStart: %d, posEnd: %d, injectionPoint:%d, discardedCount: %d", posStart, posEnd, injectionPoint, discardedCount);
@@ -459,7 +459,7 @@
 	BOOL isMovingPartBeforeInsertion = posEnd < injectionPoint;
 	uint * movingPart = malloc(size * sizeof(uint));
 	
-	if (movingPart == NULL)
+	if(movingPart == NULL)
 	{
 		memoryError(size * sizeof(uint));
 		return;

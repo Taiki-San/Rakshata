@@ -750,7 +750,7 @@ int rijndaelSetupEncrypt(u32 *rk, const u8 *key, int keybits)
   rk[1] = GETU32(key +  4);
   rk[2] = GETU32(key +  8);
   rk[3] = GETU32(key + 12);
-  if (keybits == 128)
+  if(keybits == 128)
   {
     for (;;)
     {
@@ -764,14 +764,14 @@ int rijndaelSetupEncrypt(u32 *rk, const u8 *key, int keybits)
       rk[5] = rk[1] ^ rk[4];
       rk[6] = rk[2] ^ rk[5];
       rk[7] = rk[3] ^ rk[6];
-      if (++i == 10)
+      if(++i == 10)
         return 10;
       rk += 4;
     }
   }
   rk[4] = GETU32(key + 16);
   rk[5] = GETU32(key + 20);
-  if (keybits == 192)
+  if(keybits == 192)
   {
     for (;;)
     {
@@ -785,7 +785,7 @@ int rijndaelSetupEncrypt(u32 *rk, const u8 *key, int keybits)
       rk[ 7] = rk[ 1] ^ rk[ 6];
       rk[ 8] = rk[ 2] ^ rk[ 7];
       rk[ 9] = rk[ 3] ^ rk[ 8];
-      if (++i == 8)
+      if(++i == 8)
         return 12;
       rk[10] = rk[ 4] ^ rk[ 9];
       rk[11] = rk[ 5] ^ rk[10];
@@ -794,7 +794,7 @@ int rijndaelSetupEncrypt(u32 *rk, const u8 *key, int keybits)
   }
   rk[6] = GETU32(key + 24);
   rk[7] = GETU32(key + 28);
-  if (keybits == 256)
+  if(keybits == 256)
   {
     for (;;)
     {
@@ -808,7 +808,7 @@ int rijndaelSetupEncrypt(u32 *rk, const u8 *key, int keybits)
       rk[ 9] = rk[ 1] ^ rk[ 8];
       rk[10] = rk[ 2] ^ rk[ 9];
       rk[11] = rk[ 3] ^ rk[10];
-      if (++i == 7)
+      if(++i == 7)
         return 14;
       temp = rk[11];
       rk[12] = rk[ 4] ^
@@ -933,7 +933,7 @@ void rijndaelEncrypt(const u32 *rk, int nrounds, const u8 plaintext[16], u8 ciph
     t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >>  8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[37];
     t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >>  8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[38];
     t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >>  8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[39];
-    if (nrounds > 10)
+    if(nrounds > 10)
     {
       /* round 10: */
       s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >>  8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[40];
@@ -945,7 +945,7 @@ void rijndaelEncrypt(const u32 *rk, int nrounds, const u8 plaintext[16], u8 ciph
       t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >>  8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[45];
       t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >>  8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[46];
       t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >>  8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[47];
-      if (nrounds > 12)
+      if(nrounds > 12)
       {
         /* round 12: */
         s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >>  8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[48];
@@ -992,7 +992,7 @@ void rijndaelEncrypt(const u32 *rk, int nrounds, const u8 plaintext[16], u8 ciph
         Te3[(s2      ) & 0xff] ^
         rk[7];
         rk += 8;
-        if (--r == 0)
+        if(--r == 0)
             break;
       s0 =
         Te0[(t0 >> 24)       ] ^
@@ -1115,7 +1115,7 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
     t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >>  8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[37];
     t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >>  8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[38];
     t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >>  8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[39];
-    if (nrounds > 10)
+    if(nrounds > 10)
     {
       /* round 10: */
       s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >>  8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[40];
@@ -1127,7 +1127,7 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
       t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >>  8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[45];
       t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >>  8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[46];
       t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >>  8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[47];
-      if (nrounds > 12)
+      if(nrounds > 12)
       {
         /* round 12: */
         s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >>  8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[48];
@@ -1174,7 +1174,7 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
         Td3[(s0      ) & 0xff] ^
         rk[7];
       rk += 8;
-      if (--r == 0)
+      if(--r == 0)
           break;
       s0 =
         Td0[(t0 >> 24)       ] ^
@@ -1252,14 +1252,14 @@ void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput
 		{
 			inputFile = fopen((char *) input, "rb");
 			inputMemory = false;
-			if (inputFile == NULL)
+			if(inputFile == NULL)
 				return;
 		}
 		if(cryptIntoMemory != OUTPUT_IN_MEMORY)
 		{
 			outputFile = fopen((char *) output, "wb");
 			outputMemory = false;
-			if (outputFile == NULL)
+			if(outputFile == NULL)
 				return;
 		}
 	}

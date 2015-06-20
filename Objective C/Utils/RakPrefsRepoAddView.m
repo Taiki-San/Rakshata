@@ -70,7 +70,7 @@ enum
 			return nil;
 		
 		linearizedRepo = malloc(_nbRepo * sizeof(REPO_DATA *));
-		if (linearizedRepo == NULL)
+		if(linearizedRepo == NULL)
 			return nil;
 		
 		uint posLin = 0;

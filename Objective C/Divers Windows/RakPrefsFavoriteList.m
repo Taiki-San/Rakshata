@@ -223,7 +223,7 @@
 		return nil;
 		
 	RakPrefsFavoriteListView * result = [tableView makeViewWithIdentifier : _identifier owner:self];
-	if (result == nil)
+	if(result == nil)
 		result = [[RakPrefsFavoriteListView alloc] initWithProject:project andList:self];
 	else
 		[result updateContent : project];

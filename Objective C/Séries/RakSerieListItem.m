@@ -141,7 +141,7 @@
 
 - (PROJECT_DATA) getRawDataChild
 {
-	if (_isRootItem || _isMainList)
+	if(_isRootItem || _isMainList)
 		return getEmptyProject();
 	
 	else

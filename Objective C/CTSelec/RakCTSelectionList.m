@@ -356,10 +356,10 @@
 
 - (uint) getIndexOfElement : (int) element
 {
-	if (_data == NULL || (self.compactMode && _installedJumpTable == NULL))
+	if(_data == NULL || (self.compactMode && _installedJumpTable == NULL))
 		return LIST_INVALID_SELECTION;
 	
-	if (self.isTome)
+	if(self.isTome)
 	{
 		if(self.compactMode)
 		{
@@ -477,7 +477,7 @@
 			row += modulo * (_numberOfRows + 1);
 			row += (column - modulo) * _numberOfRows;
 		}
-		else if (modulo != 0)
+		else if(modulo != 0)
 		{
 			//We have several columns with different height, we have to check we're not exceeding one's height
 			if(column == modulo && row == _numberOfRows)
