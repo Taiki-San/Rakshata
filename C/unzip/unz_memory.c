@@ -45,7 +45,7 @@ static uint64_t zmemread(voidpf opaque, voidpf stream, void* buf, uint64_t size)
 
 	for(i = 0; i < size; i++)
 	{
-		((byte*) buf)[i] = ~(data->buf[*pos + i] ^ (~data->mask[*pos + i]));
+		((byte*) buf)[i] = ~(data->buf[*pos + i] ^ data->mask[*pos + i]);
 	}
 
 	*pos += i;

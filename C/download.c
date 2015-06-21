@@ -330,7 +330,7 @@ static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *do
 #ifndef __clang_analyzer__
 	for(uint i = 0; i < size * nmemb; data->current_pos++)
 	{
-		output->data[data->current_pos] = (~input[i++]) ^ (~output->mask[data->current_pos]);
+		output->data[data->current_pos] = (~input[i++]) ^ output->mask[data->current_pos];
 	}
 #endif
 
