@@ -12,10 +12,7 @@
 
 #include "unzip/unz_memory.c"
 
-#define NOMBRE_PAGE_MAX 500 //A dégager au prochain refactoring
-
 //Utils
-
 bool checkNameFileZip(char * fileToTest)
 {
 	if(!strncmp(fileToTest, "__MACOSX", 8) || !strncmp(fileToTest, ".DS_Store", 9))	//Dossier parasite de OSX
@@ -31,7 +28,7 @@ bool checkNameFileZip(char * fileToTest)
 	return true;
 }
 
-void MajToMin(char* input)
+void minimizeString(char* input)
 {
 	for(; *input; input++)
 	{
@@ -41,364 +38,313 @@ void MajToMin(char* input)
 }
 
 //Zip routines
-
-static bool do_list(unzFile uf, char filenameInzip[NOMBRE_PAGE_MAX][256])
+static bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
 {
-    unz_global_info64 gi;
+	if(filenameInzip == NULL)
+		return false;
+
+	//Load global data
+	unz_global_info64 gi;
     int err;
 
-    err = unzGetGlobalInfo64(uf, &gi);
-    if(err != UNZ_OK)
-	{
-#ifdef DEV_VERSION
-	    char temp[100];
-		snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetGlobalInfo", err);
-		logR(temp);
-#endif
+	if((err = unzGetGlobalInfo64(uf, &gi)) != UNZ_OK)
 		return false;
-	}
 
-	for (uint i = 0; i < gi.number_entry; i++)
+	//Allocate collector memory
+	uint nbEntry = gi.number_entry;
+	*filenameInzip = malloc((nbEntry + 1) * sizeof(char *));
+	if(*filenameInzip == NULL)
+		return false;
+
+	for(uint i = 0, rejected = 0; i < nbEntry; i++)
     {
-        char filename[256];
+		char filename[256] = {0};
         unz_file_info64 file_info;
 
-        crashTemp(filename, sizeof(filename));
+		//Get current item data
+        if((unzGetCurrentFileInfo64(uf, &file_info, filename, sizeof(filename), NULL, 0, NULL, 0)) != UNZ_OK)
+		{
+			nbEntry = i - rejected;
+			break;
+		}
 
-        err = unzGetCurrentFileInfo64(uf, &file_info, filename, sizeof(filename), NULL, 0, NULL, 0); //Get name -> 99% of what I need
-        if(err != UNZ_OK)
+		//If there is no data, we keep the entry empty
+		if(filename[0] == 0)
+			(*filenameInzip)[i - rejected++] = NULL;
+		else
+			(*filenameInzip)[i - rejected] = strdup(filename);
+
+		//Jump to the next element
+        if(i + 1 < nbEntry && (err = unzGoToNextFile(uf)) != UNZ_OK)
         {
-            char temp[100];
-			snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
-            logR(temp);
-            break;
-        }
-
-		usstrcpy(filenameInzip[i], ustrlen(filename) + 1, filename);
-
-        if(i + 1 < gi.number_entry)
-        {
-            err = unzGoToNextFile(uf);
-            if(err != UNZ_OK)
-            {
-                char temp[100];
-                snprintf(temp, sizeof(temp), "error %d with zipfile in unzGetCurrentFileInfo", err);
-                logR(temp);
-                break;
-            }
+			nbEntry = i + (filename[0] != 0);
+			break;
         }
     }
+
+	//Save data
+	*nbFichiers = nbEntry;
+	(*filenameInzip)[nbEntry] = NULL;
+
     return true;
 }
 
-bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, int preferenceSetting)
+bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail)
 {
-	bool extractWithoutPath = false, ret_value = true;
-	char *zipInput = NULL, *zipFileName = NULL, *zipOutput = NULL;
-    char *pathToConfigFile = NULL;
-	size_t lengthPath, lengthInput = 0, lengthOutput = 0;
-
-    unzFile uf = NULL;
-    zlib_filefunc_def fileops;
-
-	char *path = NULL;
-
-	if(inputData == NULL || outputZip == NULL)
+	if(inputData == NULL || outputPath == NULL)
 		return false;
-	else
-		lengthOutput = strlen(outputZip) + 1;
 
-	uint nombreFichiers = 0, nombreFichiersDecompresses = 0;
-    char filename[NOMBRE_PAGE_MAX][256]; //Recevra la liste de tous les fichiers
+	bool ret_value = true;
 
-    if(size) //Si extraction d'un chapitre
-        extractWithoutPath = true;
-    else
-	{
-		zipInput = inputData;
-		lengthInput = zipInput != NULL ? strlen(zipInput) : 0;
-		zipFileName = calloc(1, lengthInput + 5); //Input
-	}
-	
-    zipOutput = calloc(1, lengthOutput);
+	uint lengthOutput = strlen(outputPath) + 1, nombreFichiers = 0;
+	char ** filename = NULL, *pathToConfigFile = malloc(lengthOutput + 50);
 
-	//Allocation error
-    if((!size && zipFileName == NULL) || zipOutput == NULL)
+	//Init unzip file
+	zlib_filefunc_def fileops;
+	init_zmemfile(&fileops, ((DATA_DL_OBFS*)inputData)->data, ((DATA_DL_OBFS*)inputData)->mask, sizeInput);
+	unzFile zipFile = unzOpen2(NULL, &fileops);
+
+	if(pathToConfigFile == NULL || zipFile == NULL)
+		goto quit;
+
+	snprintf(pathToConfigFile, lengthOutput + 50, "%s/"CONFIGFILE, outputPath);
+
+	//We create if required the path
+	if(!checkDirExist(outputPath))
     {
-        free(zipFileName);
-        free(zipOutput);
-#ifdef DEV_VERSION
-        logR("Failed at allocate memory");
-#endif
-        return false;
-    }
-	else	//Copy data
-		memcpy(zipOutput, outputZip, lengthOutput);
-	
-	if(zipInput != NULL)
-	{
-		memcpy(zipFileName, zipInput, lengthInput);
-		if(zipFileName[lengthInput - 1] != 'p')
-		{
-			if(lengthInput + 5 < 5)
-				return false;
-			
-			zipFileName[lengthInput++] = '.';
-			zipFileName[lengthInput++] = 'z';
-			zipFileName[lengthInput++] = 'i';
-			zipFileName[lengthInput++] = 'p';
-			zipFileName[lengthInput++] = 0;
-		}
-	}
-
-    if(!size)
-    {
-		lengthPath = lengthInput + lengthOutput + 505;	//500 for currentWorkingDirectory + 2
-        path = malloc(lengthPath + 1);
-
-        uf = unzOpen(zipFileName);
-
-        if(uf == NULL)
+        createPath(outputPath);
+        if(!checkDirExist(outputPath))
         {
-			char currentWorkingDirectory[512];
-			getcwd(currentWorkingDirectory, sizeof(currentWorkingDirectory));
-            snprintf(path, lengthPath, "%s/%s", currentWorkingDirectory, zipFileName);
-            uf = unzOpen(path);
-			
-			if(uf == NULL)
-			{
-				char temp[lengthInput + 64];
-				snprintf(temp, sizeof(temp), "Can't open %s", zipFileName);
-				logR(temp);
-				goto quit;
-			}
-        }
-    }
-    else
-    {
-		lengthPath = lengthOutput;
-        path = calloc(1, lengthOutput + 3);
-        init_zmemfile(&fileops, ((DATA_DL_OBFS*)inputData)->data, ((DATA_DL_OBFS*)inputData)->mask, size);
-        uf = unzOpen2(NULL, &fileops);
-    }
-
-	strncat(path, outputZip, lengthPath - strlen(path));
-    if(size && !checkDirExist(path)) //On change le dossier courant
-    {
-        createPath(outputZip); //En cas d'échec, on réessaie de créer le dossier
-        if(!checkDirExist(path)) //Si réechoue
-        {
-            char temp[lengthPath + 100];
-            snprintf(temp, sizeof(temp), "Error changing into %s, aborting", outputZip);
+            char temp[lengthOutput + 100];
+            snprintf(temp, sizeof(temp), "Error creating path %s", outputPath);
             logR(temp);
             goto quit;
         }
     }
-
-    pathToConfigFile = calloc(1, strlen(path) + 50);
-    snprintf(pathToConfigFile, strlen(path) + 50, "%s/%s", path, CONFIGFILE);
-    if(checkFileExist(pathToConfigFile))
+	else if(checkFileExist(pathToConfigFile))		//Ensure the project is not already installed
         goto quit;
 
-	crashTemp(filename, sizeof(filename));
-	
 	//List files
-    ret_value &= do_list(uf, filename);
-	if(!ret_value)		goto quit;
+    ret_value &= listArchiveContent(zipFile, &filename, &nombreFichiers);
+	if(ret_value)
+	{
+		uint nombreFichierValide = 0;
 
-	//Count files inside archive
-    for(nombreFichiers = 0; nombreFichiers < NOMBRE_PAGE_MAX && filename[nombreFichiers][0] != 0; nombreFichiers++);
+		//Mot de pass des fichiers si la DRM est active
+		unsigned char pass[nombreFichiers][SHA256_DIGEST_LENGTH];
+		crashTemp(pass, sizeof(pass));
 
-	//Passes
-    unsigned char pass[NOMBRE_PAGE_MAX][SHA256_DIGEST_LENGTH];
-	crashTemp(pass, sizeof(pass));
-
-	for(uint i = 0; i < nombreFichiers; i++)
-    {
-        if(checkNameFileZip(filename[i]))
-        {
-			ret_value &= doExtractOnefile(uf, filename[i], path, extractWithoutPath, project.haveDRM ? pass[i] : NULL);
-            nombreFichiersDecompresses++;
-
-            if(i + 1 < nombreFichiers)
-            {
-                if(unzGoToNextFile(uf) != UNZ_OK)
-                    break;
-            }
-        }
-        else
-        {
-            if(filename[i][0] && filename[i][strlen(filename[i])-1] != '/' && i + 1 < nombreFichiers)
-            {
-                if(unzGoToNextFile(uf) != UNZ_OK)
-                    break;
-            }
-			
-			memcpy(&filename[i], &filename[i+1], (nombreFichiers - i - 1) * sizeof(filename[0]));
-			nombreFichiers--;
-			i--;
-        }
-    }
-
-    if(project.haveDRM)
-    {
-        /*On va écrire les clées dans un config.enc
-          Pour ça, on va classer les clées avec la longueur des clées, les nettoyer et les chiffrer*/
-		
-        uint nombreFichierDansConfigFile = 0;
-        char **nomPage = NULL;
-		unsigned char temp[256], *hugeBuffer = NULL;
-		
-		for(uint i = 0, j, k; i < nombreFichiers; i++) //On vire les paths des noms de fichiers
-        {
-            if(!filename[i][0])
-                continue;
-			
-			j = strlen(filename[i]);
-            for(; j > 0 && filename[i][j] != '/'; j--);
-            if(j)
-			{
-				for(k = 0, j++; filename[i][j] != 0 && j < 256; filename[i][k++] = filename[i][j++]);
-				filename[i][k] = 0;
-			}
-        }
-
-		for(uint i = 0; i < nombreFichiers; i++)
+		//Decompress files
+		for(uint i = 0; i < nombreFichiers && ret_value; i++)
 		{
-			if(!strcmp(filename[i], CONFIGFILE)) //On vire les clées du config.dat
+			//Name is valid
+			if(checkNameFileZip(filename[i]))
 			{
-				memcpy(&filename[i], &filename[i+1], (nombreFichiers - i - 1) * sizeof(filename[0]));
-				memcpy(&pass[i], &pass[i+1], (nombreFichiers - i - 1) * sizeof(pass[0]));
-				nombreFichiers--;
-				break;
+				ret_value &= doExtractOnefile(zipFile, filename[i], outputPath, true, project.haveDRM ? pass[i] : NULL);
+				nombreFichierValide++;
+			}
+			else
+			{
+				free(filename[i]);
+				filename[i] = NULL;
+			}
+
+			//Go to next file if needed
+			if(i + 1 < nombreFichiers)
+			{
+				if(unzGoToNextFile(zipFile) != UNZ_OK)
+					break;
 			}
 		}
-		
-        /*On va classer les fichier et les clées en ce basant sur config.dat*/
 
-        if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichiersDecompresses-2 && nombreFichierDansConfigFile != nombreFichiersDecompresses-1)) //-2 car -1 + un décallage de -1 due à l'optimisation pour le lecteur
-        {
-#ifdef DEV_VERSION
-            logR("config.dat invalid: encryption aborted.\n");
-#endif
-            for(uint i = 0; filename[i][0]; remove(filename[i++])); //On fais le ménage
-            if(nomPage != NULL)
-            {
-                for(uint i = 0; nomPage[i]; free(nomPage[i++]));
-                free(nomPage);
-            }
-            ret_value = false;
-            goto quit;
-        }
-		
-#ifdef MAINTAIN_SUPER_LEGACY_COMPATIBILITY
-		//Some legacy archive contain complexe file name, so we have to decapitalize them
-		for(uint i = 0; filename[i][0]; MajToMin(filename[i++]));
-#endif
-		
-		//Classement
-		for(uint j, i = 0; i < nombreFichiers && filename[i][0] != 0; i++)
-        {
-			MajToMin(nomPage[i]);
+		if(ret_value & project.haveDRM)
+		{
+			/*On va écrire les clées dans un config.enc
+			 Pour ça, on va classer les clées en fonction des pages, retirer les éléments invalides, puis on chiffre tout ce beau monde*/
 
-			for(j = 0; strcmp(nomPage[i], filename[j]) && filename[j][0] && j < nombreFichiers; j++);
+			uint nombreFichierDansConfigFile = 0;
+			char **nomPage = NULL;
+			byte temp[256];
 
-            if(j != i && !strcmp(nomPage[i], filename[j])) //Mauvais classement
-            {
-				strncpy((char*) temp, filename[i], sizeof(temp)); //On déplace les noms
-                strncpy(filename[i], filename[j], sizeof(filename[i]));
-				strncpy(filename[j], (char*) temp, sizeof(filename[j])); //On déplace les noms
-
-                memcpy(temp, pass[i], SHA256_DIGEST_LENGTH); //On déplace les clées
-                memcpy(pass[i], pass[j], SHA256_DIGEST_LENGTH);
-                memcpy(pass[j], temp, SHA256_DIGEST_LENGTH);
-                crashTemp(temp, SHA256_DIGEST_LENGTH);
-            }
-        }
-        free(nomPage);
-		
-		hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nombreFichiers + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
-        if(hugeBuffer == NULL)
-        {
-#ifdef DEV_VERSION
-            logR("Failed at allocate memory to buffer\n");
-#endif
-            quit_thread(0); //Libérer la mémoire serait pas mal
-        }
-		
-        int sizeWritten = sprintf((char *) hugeBuffer, "%d", nombreFichiers);
-		uint posBlob = sizeWritten > 0 ? (uint) sizeWritten : 0;
-
-		for(uint i = 0; i < nombreFichiers; i++) //Write config.enc
-        {
-            hugeBuffer[posBlob++] = ' ';
-            for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[posBlob++] = pass[i][keyPos++]);
-        }
-		
-		for(short remaining = posBlob % CRYPTO_BUFFER_SIZE; remaining && remaining < CRYPTO_BUFFER_SIZE; hugeBuffer[posBlob++] = 0, remaining++);
-
-		//We generate the masterkey
-        if(getMasterKey(temp) == GMK_RETVAL_OK && COMPTE_PRINCIPAL_MAIL != NULL)
-        {
-			uint lengthEmail = strlen(COMPTE_PRINCIPAL_MAIL);
-			if(lengthEmail != 0)
+			//On vire les paths des noms de fichiers
+			for(uint i = 0, j, k; i < nombreFichiers; i++)
 			{
-				//We want to copy COMPTE_PRINCIPAL_MAIL ASAP in order to preven TOCTOU
-				char * encodedEmail[lengthEmail * 2 + 1];
-				decToHex((void*) COMPTE_PRINCIPAL_MAIL, lengthEmail, (char*) encodedEmail);
+				if(filename[i] == NULL)
+					continue;
 
-				snprintf(pathToConfigFile, strlen(path) + 50, "%s/"DRM_FILE, path);
-				FILE * output = fopen(pathToConfigFile, "wb");
-				if(output != NULL)
+				j = strlen(filename[i]);
+				for(; j > 0 && filename[i][j] != '/'; j--);
+				if(j)
 				{
-					fputs((char*) encodedEmail, output);
-					fputc('\n', output);
-					
-					uint8_t hash[SHA256_DIGEST_LENGTH], chapter[10];
-					snprintf((char *)chapter, sizeof(chapter), "%d", preferenceSetting);
-					
-					internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
-					
-					crashTemp(temp, sizeof(temp));
-					
-					_AES(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, AES_ENCRYPT, AES_ECB);
-					crashTemp(hash, SHA256_DIGEST_LENGTH);
-					
-					fwrite(hugeBuffer, posBlob, 1, output);
-					fclose(output);
+					for(k = 0, j++; filename[i][j] != 0 && j < 256; filename[i][k++] = filename[i][j++]);
+					filename[i][k] = 0;
+				}
+			}
+
+			for(uint i = 0; i < nombreFichiers; i++)
+			{
+				if(filename[i] != NULL && !strcmp(filename[i], CONFIGFILE)) //On vire la clées du config.dat
+				{
+					free(filename[i]);
+					filename[i] = NULL;
+
+					do
+					{
+						memcpy(&(pass[i]), &(pass[i + 1]), sizeof(pass[0]));
+					} while(++i < nombreFichiers - 1);
+
+					nombreFichierValide--;
+
+					break;
+				}
+			}
+
+			//On va classer les fichier et les clées en ce basant sur config.dat
+			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide-2 && nombreFichierDansConfigFile != nombreFichierValide-1)) //-2 car -1 + un décallage de -1 due à l'optimisation pour le lecteur
+			{
+#ifdef DEV_VERSION
+				logR("config.dat invalid: encryption aborted.\n");
+#endif
+
+				removeFolder(outputPath);
+
+				if(nomPage != NULL)
+				{
+					for(uint i = 0; nomPage[i]; free(nomPage[i++]));
+					free(nomPage);
+				}
+				ret_value = false;
+				goto quit;
+			}
+
+#ifdef MAINTAIN_SUPER_LEGACY_COMPATIBILITY
+			//Some legacy archive contain complexe file name, so we have to decapitalize them
+			for(uint i = 0; filename[i][0]; minimizeString(filename[i++]));
+#endif
+
+			//Classement
+			for(uint j, i = 0; i < nombreFichiers; i++)
+			{
+				if(filename[i] == NULL)
+					continue;
+
+				minimizeString(nomPage[i]);
+
+				for(j = 0; j < nombreFichiers; j++)
+				{
+					if(filename[j] != NULL && strcmp(nomPage[i], filename[j]))
+						break;
+				}
+
+				if(j != i && j < nombreFichiers) //Mauvais classement
+				{
+					void * entry = filename[i];
+					filename[i] = filename[j];
+					filename[j] = entry;
+
+					char swapItem[SHA256_DIGEST_LENGTH];
+
+					memcpy(swapItem, pass[i], SHA256_DIGEST_LENGTH); //On déplace les clées
+					memcpy(pass[i], pass[j], SHA256_DIGEST_LENGTH);
+					memcpy(pass[j], swapItem, SHA256_DIGEST_LENGTH);
+					crashTemp(swapItem, SHA256_DIGEST_LENGTH);
+				}
+			}
+
+			for(uint i = 0; i < nombreFichierDansConfigFile; free(nomPage[i++]));
+			free(nomPage);
+
+			//Global encryption buffer
+			byte * hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
+			if(hugeBuffer == NULL)
+			{
+#ifdef DEV_VERSION
+				logR("Failed at allocate memory to buffer\n");
+#endif
+				memoryError((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE);
+				removeFolder(outputPath);
+				ret_value = false;
+				goto quit;
+			}
+
+			//Add the number of entries at the begining of the said buffer
+			int sizeWritten = sprintf((char *) hugeBuffer, "%d", nombreFichierValide);
+			uint posBlob = sizeWritten > 0 ? (uint) sizeWritten : 0;
+
+			//Inject the keys in the buffer
+			for(uint i = 0; i < nombreFichiers; i++)
+			{
+				if(filename[i] != NULL)
+				{
+					hugeBuffer[posBlob++] = ' ';
+					for(short keyPos = 0; keyPos < SHA256_DIGEST_LENGTH; hugeBuffer[posBlob++] = pass[i][keyPos++]);
+				}
+			}
+
+			//We generate the masterkey
+			if(getMasterKey(temp) == GMK_RETVAL_OK && COMPTE_PRINCIPAL_MAIL != NULL)
+			{
+				uint lengthEmail = strlen(COMPTE_PRINCIPAL_MAIL);
+				if(lengthEmail != 0)
+				{
+					//We want to copy COMPTE_PRINCIPAL_MAIL ASAP in order to prevent TOCTOU
+					char * encodedEmail[lengthEmail * 2 + 1];
+					decToHex((void*) COMPTE_PRINCIPAL_MAIL, lengthEmail, (char*) encodedEmail);
+
+					snprintf(pathToConfigFile, lengthOutput + 50, "%s/"DRM_FILE, outputPath);
+					FILE * output = fopen(pathToConfigFile, "wb");
+					if(output != NULL)
+					{
+						fputs((char*) encodedEmail, output);
+						fputc('\n', output);
+
+						uint8_t hash[SHA256_DIGEST_LENGTH], chapter[10];
+						snprintf((char *)chapter, sizeof(chapter), "%d", entryDetail);
+
+						internal_pbkdf2(SHA256_DIGEST_LENGTH, temp, SHA256_DIGEST_LENGTH, chapter, ustrlen(chapter), 512, PBKDF2_OUTPUT_LENGTH, hash);
+
+						crashTemp(temp, sizeof(temp));
+
+						_AES(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, AES_ENCRYPT, AES_ECB);
+						crashTemp(hash, SHA256_DIGEST_LENGTH);
+
+						fwrite(hugeBuffer, posBlob, 1, output);
+						fclose(output);
+					}
+					else //delete chapter
+					{
+						crashTemp(temp, sizeof(temp));
+						removeFolder(outputPath);
+					}
 				}
 				else //delete chapter
 				{
 					crashTemp(temp, sizeof(temp));
-					for(uint i = 0; filename[i][0]; remove(filename[i++]));
+					removeFolder(outputPath);
 				}
 			}
 			else //delete chapter
 			{
 				crashTemp(temp, sizeof(temp));
-				for(uint i = 0; filename[i][0]; remove(filename[i++]));
+				removeFolder(outputPath);
 			}
-        }
-		else //delete chapter
-		{
-			crashTemp(temp, sizeof(temp));
-			for(uint i = 0; filename[i][0]; remove(filename[i++]));
+
+			free(hugeBuffer);
 		}
-		
-        free(hugeBuffer);
-    }
+	}
 
 quit:
 
-    unzClose(uf);
-    if(size)
-        destroy_zmemfile(&fileops);
+	if(filename != NULL)
+	{
+		for(uint i = 0; i < nombreFichiers; free(filename[i++]));
+		free(filename);
+	}
 
-    free(path);
+    unzClose(zipFile);
+	destroy_zmemfile(&fileops);
     free(pathToConfigFile);
-    free(zipFileName);
-    free(zipOutput);
-	
+
 	return ret_value;
 }
 

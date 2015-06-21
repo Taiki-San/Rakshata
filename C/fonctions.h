@@ -136,10 +136,10 @@ void freeTomeList(META_TOME * data, uint length, bool includeDetails);
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Unzip.c**/
-bool miniunzip(void *inputData, char *outputZip, PROJECT_DATA project, size_t size, int preferenceSetting);
+bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail);
 
 /**Utilitaires.c**/
-#define crashTemp(string, length) memset(string, 0, length)
+#define crashTemp(string, length) bzero(string, length)
 int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
