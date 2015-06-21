@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+//This code was suggested on the StackOverflow topic: http://stackoverflow.com/questions/13961912/read-a-char-string-as-a-virtual-file
+
 struct zmem_data
 {
     byte *buf;
@@ -61,7 +63,6 @@ static int zmemerror(voidpf opaque, voidpf stream)
 {
     return stream == NULL;
 }
-
 
 static long zmemtell(voidpf opaque, voidpf stream)
 {
@@ -116,4 +117,3 @@ static void destroy_zmemfile(zlib_filefunc_def *inst)
     free(inst->opaque);
     inst->opaque = NULL;
 }
-

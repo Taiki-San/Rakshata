@@ -19,9 +19,9 @@
 #include "zip.h"
 
 //Unzip
-int doExtract(unzFile uf, char *input, char *output_path, bool extractWithoutPath);
-int doExtractCurrentfile(unzFile uf, char* filename_inzip, char* output_path, const bool* extractWithoutPath, unsigned char* passwordPageCrypted);
-bool doExtractOnefile(unzFile uf, char* filename, char* output_path, bool extractWithoutPath, unsigned char* passwordPageCrypted);
+int doExtractCurrentfile(unzFile zipFile, char* filenameInZip, char* outputPath, const bool extractWithoutPath, unsigned char* passwordPageCrypted);
+int doExtract(unzFile zipFile, char *input, char *outputPath, bool extractWithoutPath);
+bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted);
 
 //zip
 zipFile * createZip(const char * outfile);
