@@ -150,7 +150,7 @@
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
 		B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */; };
 		B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */; };
-		B6D127031AC72062003FFEC6 /* DotRakParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127021AC72062003FFEC6 /* DotRakParser.m */; };
+		B6D127031AC72062003FFEC6 /* DotRakSourceParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */; };
 		B6D9043F1AB8C8AD001A2D6B /* RakPrefsGeneralView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */; };
 		B6D904421AB8D7C7001A2D6B /* RakSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */; };
 		B6DFE1A71B1D007000D65E68 /* settings in Resources */ = {isa = PBXBuildFile; fileRef = B6DFE1A51B1D007000D65E68 /* settings */; };
@@ -479,7 +479,7 @@
 		B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRepoAddView.m; path = Utils/RakPrefsRepoAddView.m; sourceTree = "<group>"; };
 		B6D126FF1AC713F7003FFEC6 /* RakAddRepoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAddRepoController.h; path = Utils/RakAddRepoController.h; sourceTree = "<group>"; };
 		B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAddRepoController.m; path = Utils/RakAddRepoController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6D127021AC72062003FFEC6 /* DotRakParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakParser.m; path = "Objective C/Utils/DotRakParser.m"; sourceTree = "<group>"; };
+		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = "Objective C/Utils/DotRakSourceParser.m"; sourceTree = "<group>"; };
 		B6D9043D1AB8C8AD001A2D6B /* RakPrefsGeneralView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsGeneralView.h; path = "Divers Windows/RakPrefsGeneralView.h"; sourceTree = "<group>"; };
 		B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsGeneralView.m; path = "Divers Windows/RakPrefsGeneralView.m"; sourceTree = "<group>"; };
 		B6D904401AB8D7C7001A2D6B /* RakSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedControl.h; path = Utils/RakSegmentedControl.h; sourceTree = "<group>"; };
@@ -1389,7 +1389,7 @@
 				B6F6ECA418A3001400E3B55B /* chapitre.c */,
 				B6F6ECAF18A3001400E3B55B /* CTCommon.c */,
 				B6A6ACEC1AAEEA9C00CAF51E /* DBCache */,
-				B6D127021AC72062003FFEC6 /* DotRakParser.m */,
+				B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */,
 				B6F6ECB618A3001400E3B55B /* favoris.c */,
 				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
 				B678D033197717A600D7FE6A /* ProjectParser.m */,
@@ -1680,7 +1680,7 @@
 				B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */,
 				B6A1F59D1975684100A3AACD /* RakPageScrollView.m in Sources */,
 				B6F6ECEC18A3001400E3B55B /* check.c in Sources */,
-				B6D127031AC72062003FFEC6 /* DotRakParser.m in Sources */,
+				B6D127031AC72062003FFEC6 /* DotRakSourceParser.m in Sources */,
 				B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */,
 				B6F6ED0F18A3001400E3B55B /* settings.c in Sources */,
 				B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */,
