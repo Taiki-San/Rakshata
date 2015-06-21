@@ -1,20 +1,20 @@
 /*
-   miniunz.c
-   Version 1.1, February 14h, 2010
-   sample part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
+ miniunz.c
+ Version 1.1, February 14h, 2010
+ sample part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
 
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+ Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
-         Modifications of Unzip for Zip64
-         Copyright (C) 2007-2008 Even Rouault
+ Modifications of Unzip for Zip64
+ Copyright (C) 2007-2008 Even Rouault
 
-         Modifications for Zip64 support on both zip and unzip
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
- 
-		 Major modifications by Taiki
-		 Copyright (C) 2011-2015 Taiki ( http://www.taiki.us/ )
+ Modifications for Zip64 support on both zip and unzip
+ Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
-*/
+ Major modifications by Taiki
+ Copyright (C) 2011-2015 Taiki ( http://www.taiki.us/ )
+
+ */
 
 #include "zlibAPI.h"
 
@@ -22,37 +22,37 @@
 
 int doExtractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPath, const bool extractWithoutPath, unsigned char* passwordPageCrypted)
 {
-    int err = UNZ_OK;
-    unz_file_info64 file_info;
+	int err = UNZ_OK;
+	unz_file_info64 file_info;
 	char filenameInZip[BUFFER_SIZE];
 
 	//Load current file metadata
-    if((err = unzGetCurrentFileInfo64(zipFile, &file_info, filenameInZip, sizeof(filenameInZip), NULL, 0, NULL, 0)) != UNZ_OK || (filenameExpected != NULL && strcmp(filenameInZip, filenameExpected)))
-    {
+	if((err = unzGetCurrentFileInfo64(zipFile, &file_info, filenameInZip, sizeof(filenameInZip), NULL, 0, NULL, 0)) != UNZ_OK || (filenameExpected != NULL && strcmp(filenameInZip, filenameExpected)))
+	{
 #ifdef DEV_VERSION
-	    char temp[100];
+		char temp[100];
 		snprintf(temp, 100, "Invalid zip entry (%d)\n",err);
 		logR(temp);
 #endif
-        return err;
-    }
+		return err;
+	}
 
 	//Find the last / in the path
 	char * filenameWithoutPath = filenameInZip;
-    for(char * p = filenameInZip; *p != '\0'; p++)
-    {
-        if(*p == '/' || *p == '\\')
-            filenameWithoutPath = p + 1; //Restreint au nom seul
-    }
+	for(char * p = filenameInZip; *p != '\0'; p++)
+	{
+		if(*p == '/' || *p == '\\')
+			filenameWithoutPath = p + 1; //Restreint au nom seul
+	}
 
 	//If directory
-    if(*filenameWithoutPath == 0) //Si on est au bout du nom du fichier (/ final), c'est un dossier
-    {
-        if(!extractWithoutPath)
-            mkdirR(filenameInZip);
+	if(*filenameWithoutPath == 0) //Si on est au bout du nom du fichier (/ final), c'est un dossier
+	{
+		if(!extractWithoutPath)
+			mkdirR(filenameInZip);
 
 		return UNZ_OK;
-    }
+	}
 
 	char* outputFilename = NULL;
 	uint32_t sizeOutputPath;
@@ -192,7 +192,7 @@ int doExtractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPa
 	else
 		unzCloseCurrentFile(zipFile);
 
-    return err;
+	return err;
 }
 
 int doExtractFileInArchive(char * inputFile, char *outputPath, bool extractWithoutPath)
@@ -201,10 +201,10 @@ int doExtractFileInArchive(char * inputFile, char *outputPath, bool extractWitho
 	if(zipFile == NULL)
 		return false;
 
-    unz_global_info64 metadata;
-    int err;
+	unz_global_info64 metadata;
+	int err;
 
-    if((err = unzGetGlobalInfo64(zipFile, &metadata)) == UNZ_OK)
+	if((err = unzGetGlobalInfo64(zipFile, &metadata)) == UNZ_OK)
 	{
 		for (uint i = 0, nbEntry = metadata.number_entry; i < nbEntry; i++)
 		{
@@ -216,21 +216,21 @@ int doExtractFileInArchive(char * inputFile, char *outputPath, bool extractWitho
 
 	unzClose(zipFile);
 
-    return err;
+	return err;
 }
 
 bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted)
 {
-    if(unzLocateFile(zipFile, filename, 0) != UNZ_OK)
-    {
+	if(unzLocateFile(zipFile, filename, 0) != UNZ_OK)
+	{
 #ifdef DEV_VERSION
 		char temp[256];
 		snprintf(temp, 256, "File doesn't exist %s\n", filename);
 		logR(temp);
 #endif
-        return false;
-    }
+		return false;
+	}
 
-    return doExtractCurrentfile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
+	return doExtractCurrentfile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
 }
 

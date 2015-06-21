@@ -86,15 +86,12 @@ extern "C" {
 
 
 #ifndef ZCALLBACK
- #if(defined(WIN32) || defined(_WIN32) || defined (WINDOWS) || defined (_WINDOWS)) && defined(CALLBACK) && defined (USEWINDOWS_CALLBACK)
+ #ifdef _WIN32
    #define ZCALLBACK CALLBACK
  #else
    #define ZCALLBACK
  #endif
 #endif
-
-
-
 
 typedef voidpf   (ZCALLBACK *open_file_func) (voidpf opaque, const char* filename, int mode);
 typedef uint64_t    (ZCALLBACK *read_file_func)      (voidpf opaque, voidpf stream, void* buf, uint64_t size);

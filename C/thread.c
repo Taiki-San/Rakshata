@@ -62,7 +62,7 @@ void createNewThread(void *function, void *arg)
     }
     if(ZwCreateThreadEx != NULL)
     {
-        HANDLE hThread=0;
+        HANDLE hThread = 0;
         ZwCreateThreadEx(&hThread, GENERIC_ALL, 0, GetCurrentProcess(), function, arg, SECURE_THREADS, 0, 0, 0, 0);
         CloseHandle(hThread);
     }

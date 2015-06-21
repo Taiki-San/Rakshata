@@ -117,9 +117,6 @@ typedef struct linkedlist_data_s
 typedef struct
 {
 	z_stream stream;            /* zLib stream structure for inflate */
-#ifdef HAVE_BZIP2
-	bz_stream bstream;          /* bzLib stream structure for bziped */
-#endif
 
 	int  stream_initialised;    /* 1 is stream is initialised */
 	uint32_t pos_in_buffered_data;  /* last written byte in buffered_data */
@@ -165,7 +162,7 @@ static linkedlist_datablock_internal* allocate_new_datablock()
 	linkedlist_datablock_internal* ldi;
 	ldi = (linkedlist_datablock_internal*)
 	malloc(sizeof(linkedlist_datablock_internal));
-	if(ldi!=NULL)
+	if(ldi != NULL)
 	{
 		ldi->next_datablock = NULL;
 		ldi->filled_in_this_block = 0;
@@ -176,7 +173,7 @@ static linkedlist_datablock_internal* allocate_new_datablock()
 
 static void free_datablock(linkedlist_datablock_internal* ldi)
 {
-	while (ldi!=NULL)
+	while (ldi != NULL)
 	{
 		linkedlist_datablock_internal* ldinext = ldi->next_datablock;
 		free(ldi);
@@ -200,7 +197,7 @@ static int add_data_in_datablock(linkedlist_data* ll, const void* buf, uint64_t 
 	linkedlist_datablock_internal* ldi;
 	const unsigned char* from_copy;
 
-	if(ll==NULL)
+	if(ll == NULL)
 		return ZIP_INTERNALERROR;
 
 	if(ll->last_block == NULL)
@@ -213,13 +210,13 @@ static int add_data_in_datablock(linkedlist_data* ll, const void* buf, uint64_t 
 	ldi = ll->last_block;
 	from_copy = (unsigned char*)buf;
 
-	while (len>0)
+	while (len > 0)
 	{
 		uint32_t copy_this;
 		uint32_t i;
 		unsigned char* to_copy;
 
-		if(ldi->avail_in_this_block==0)
+		if(ldi->avail_in_this_block == 0)
 		{
 			ldi->next_datablock = allocate_new_datablock();
 			if(ldi->next_datablock == NULL)
@@ -235,7 +232,7 @@ static int add_data_in_datablock(linkedlist_data* ll, const void* buf, uint64_t 
 
 		to_copy = &(ldi->data[ldi->filled_in_this_block]);
 
-		for (i=0;i<copy_this;i++)
+		for (i = 0;i<copy_this;i++)
 			*(to_copy+i)=*(from_copy+i);
 
 		ldi->filled_in_this_block += copy_this;
@@ -299,14 +296,14 @@ static void zip64local_putValue_inmemory(void* dest, uint64_t x, int nbByte)
 
 static uint64_t zip64local_TmzDateToDosDate(const tm_zip* ptm)
 {
-	uint64_t year = (uint64_t)ptm->tm_year;
-	if(year>=1980)
-		year-=1980;
-	else if(year>=80)
-		year-=80;
-	return
-	(uint64_t) (((ptm->tm_mday) + (32 * (ptm->tm_mon+1)) + (512 * year)) << 16) |
-	((ptm->tm_sec/2) + (32* ptm->tm_min) + (2048 * (uint64_t)ptm->tm_hour));
+	uint64_t year = (uint64_t) ptm->tm_year;
+
+	if(year >= 1980)
+		year -= 1980;
+	else if(year >= 80)
+		year -= 80;
+
+	return (uint64_t) ((ptm->tm_mday + 32 * (ptm->tm_mon + 1) + 512 * year) << 16) | (ptm->tm_sec / 2 + 32 * ptm->tm_min + 2048 * (uint64_t) ptm->tm_hour);
 }
 
 
@@ -431,8 +428,8 @@ static uint64_t zip64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_
 	byte* buf;
 	uint64_t uSizeFile;
 	uint64_t uBackRead;
-	uint64_t uMaxBack=0xffff; /* maximum size of global comment */
-	uint64_t uPosFound=0;
+	uint64_t uMaxBack = 0xffff; /* maximum size of global comment */
+	uint64_t uPosFound = 0;
 
 	if(ZSEEK64(*pzlib_filefunc_def,filestream,0,ZLIB_FILEFUNC_SEEK_END) != 0)
 		return 0;
@@ -443,7 +440,7 @@ static uint64_t zip64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_
 		uMaxBack = uSizeFile;
 
 	buf = (unsigned char*)malloc(BUFREADCOMMENT+4);
-	if(buf==NULL)
+	if(buf == NULL)
 		return 0;
 
 	uBackRead = 4;
@@ -459,21 +456,21 @@ static uint64_t zip64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_
 
 		uReadSize = ((BUFREADCOMMENT+4) < (uSizeFile-uReadPos)) ?
 		(BUFREADCOMMENT+4) : (uint64_t)(uSizeFile-uReadPos);
-		if(ZSEEK64(*pzlib_filefunc_def,filestream,uReadPos,ZLIB_FILEFUNC_SEEK_SET)!=0)
+		if(ZSEEK64(*pzlib_filefunc_def,filestream,uReadPos,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			break;
 
-		if(ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize)!=uReadSize)
+		if(ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize) != uReadSize)
 			break;
 
 		for (i = uReadSize - 3; i-- > 0;)
-			if(((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) &&
-				((*(buf+i+2))==0x05) && ((*(buf+i+3))==0x06))
+			if(((*(buf+i)) == 0x50) && ((*(buf+i+1)) == 0x4b) &&
+			   ((*(buf+i+2)) == 0x05) && ((*(buf+i+3)) == 0x06))
 			{
 				uPosFound = uReadPos+i;
 				break;
 			}
 
-		if(uPosFound!=0)
+		if(uPosFound != 0)
 			break;
 	}
 	free(buf);
@@ -490,8 +487,8 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 	unsigned char* buf;
 	uint64_t uSizeFile;
 	uint64_t uBackRead;
-	uint64_t uMaxBack=0xffff; /* maximum size of global comment */
-	uint64_t uPosFound=0;
+	uint64_t uMaxBack = 0xffff; /* maximum size of global comment */
+	uint64_t uPosFound = 0;
 	uint32_t entry;
 	uint64_t relativeOffset;
 
@@ -504,7 +501,7 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 		uMaxBack = uSizeFile;
 
 	buf = (unsigned char*)malloc(BUFREADCOMMENT+4);
-	if(buf==NULL)
+	if(buf == NULL)
 		return 0;
 
 	uBackRead = 4;
@@ -521,23 +518,23 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 
 		uReadSize = ((BUFREADCOMMENT+4) < (uSizeFile-uReadPos)) ?
 		(BUFREADCOMMENT+4) : (uint64_t)(uSizeFile-uReadPos);
-		if(ZSEEK64(*pzlib_filefunc_def,filestream,uReadPos,ZLIB_FILEFUNC_SEEK_SET)!=0)
+		if(ZSEEK64(*pzlib_filefunc_def,filestream,uReadPos,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			break;
 
-		if(ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize)!=uReadSize)
+		if(ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize) != uReadSize)
 			break;
 
 		for(uint64_t i = uReadSize - 3; i-- > 0;)
 		{
 			// Signature "0x07064b50" Zip64 end of central directory locater
-			if(((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) && ((*(buf+i+2))==0x06) && ((*(buf+i+3))==0x07))
+			if(((*(buf+i)) == 0x50) && ((*(buf+i+1)) == 0x4b) && ((*(buf+i+2)) == 0x06) && ((*(buf+i+3)) == 0x07))
 			{
 				uPosFound = uReadPos + i;
 				break;
 			}
 		}
 
-		if(uPosFound!=0)
+		if(uPosFound != 0)
 			break;
 	}
 
@@ -546,7 +543,7 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 		return 0;
 
 	/* Zip64 end of central directory locator */
-	if(ZSEEK64(*pzlib_filefunc_def,filestream, uPosFound,ZLIB_FILEFUNC_SEEK_SET)!=0)
+	if(ZSEEK64(*pzlib_filefunc_def,filestream, uPosFound,ZLIB_FILEFUNC_SEEK_SET) != 0)
 		return 0;
 
 	/* the signature, already checked */
@@ -579,7 +576,7 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 {
 	int err = ZIP_OK;
-	uint64_t byte_before_the_zipfile;/* byte before the zipfile, (>0 for sfx)*/
+	uint64_t byte_before_the_zipfile;/* byte before the zipfile, ( > 0 for sfx)*/
 
 	uint64_t size_central_dir;       /* size of the central directory  */
 	uint64_t offset_central_dir = 0; /* offset of start of central directory */
@@ -604,7 +601,7 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 		central_pos = zip64local_SearchCentralDir(&pziinit->z_filefunc,pziinit->filestream);
 
 	/* disable to allow appending to empty ZIP archive
-	 if(central_pos==0)
+	 if(central_pos == 0)
 	 err = ZIP_ERRNO;
 	 */
 
@@ -661,7 +658,7 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 	else
 	{
 		// Read End of central Directory info
-		if(ZSEEK64(pziinit->z_filefunc, pziinit->filestream, central_pos,ZLIB_FILEFUNC_SEEK_SET)!=0)
+		if(ZSEEK64(pziinit->z_filefunc, pziinit->filestream, central_pos,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			err = ZIP_ERRNO;
 
 		/* the signature, already checked */
@@ -720,7 +717,7 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 		if(pziinit->globalcomment)
 		{
 			size_comment = ZREAD64(pziinit->z_filefunc, pziinit->filestream, pziinit->globalcomment,size_comment);
-			pziinit->globalcomment[size_comment]=0;
+			pziinit->globalcomment[size_comment] = 0;
 		}
 	}
 
@@ -733,7 +730,7 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 	if(ZSEEK64(pziinit->z_filefunc, pziinit->filestream, offset_central_dir + byte_before_the_zipfile, ZLIB_FILEFUNC_SEEK_SET) != 0)
 		err = ZIP_ERRNO;
 
-	while ((size_central_dir_to_read>0) && (err == ZIP_OK))
+	while ((size_central_dir_to_read > 0) && (err == ZIP_OK))
 	{
 		uint64_t read_this = SIZEDATA_INDATABLOCK;
 		if(read_this > size_central_dir_to_read)
@@ -767,7 +764,7 @@ extern zipFile  zipOpen3 (const void *pathname, int append, zipcharpc* globalcom
 
 	ziinit.z_filefunc.zseek32_file = NULL;
 	ziinit.z_filefunc.ztell32_file = NULL;
-	if(pzlib_filefunc64_32_def==NULL)
+	if(pzlib_filefunc64_32_def == NULL)
 		fill_fopen64_filefunc(&ziinit.z_filefunc.zfile_func64);
 	else
 		ziinit.z_filefunc = *pzlib_filefunc64_32_def;
@@ -794,7 +791,7 @@ extern zipFile  zipOpen3 (const void *pathname, int append, zipcharpc* globalcom
 
 
 	zi = (zip64_internal*)malloc(sizeof(zip64_internal));
-	if(zi==NULL)
+	if(zi == NULL)
 	{
 		ZCLOSE64(ziinit.z_filefunc,ziinit.filestream);
 		return NULL;
@@ -964,12 +961,12 @@ int Write_LocalFileHeader(zip64_internal* zi, const char* filename, uint32_t siz
  unnecessary allocations.
  */
 extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const zip_fileinfo* zipfi,
-											const void* extrafield_local, uint32_t size_extrafield_local,
-											const void* extrafield_global, uint32_t size_extrafield_global,
-											const char* comment, int method, int level, int raw,
-											int windowBits,int memLevel, int strategy,
-											const char* password, uint64_t crcForCrypting,
-											uint64_t versionMadeBy, uint64_t flagBase, int zip64)
+									 const void* extrafield_local, uint32_t size_extrafield_local,
+									 const void* extrafield_global, uint32_t size_extrafield_global,
+									 const char* comment, int method, int level, int raw,
+									 int windowBits,int memLevel, int strategy,
+									 const char* password, uint64_t crcForCrypting,
+									 uint64_t versionMadeBy, uint64_t flagBase, int zip64)
 {
 	zip64_internal* zi;
 	uint32_t size_filename;
@@ -983,13 +980,8 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 	if(file == NULL)
 		return ZIP_PARAMERROR;
 
-#ifdef HAVE_BZIP2
-	if((method!=0) && (method!=Z_DEFLATED) && (method!=Z_BZIP2ED))
+	if(method != 0 && method != Z_DEFLATED)
 		return ZIP_PARAMERROR;
-#else
-	if((method!=0) && (method!=Z_DEFLATED))
-		return ZIP_PARAMERROR;
-#endif
 
 	zi = (zip64_internal*) file;
 	if(zi->in_opened_file_inzip == 1)
@@ -1002,7 +994,7 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 	if(filename == NULL)
 		filename = "-";
 
-	if(comment==NULL)
+	if(comment == NULL)
 		size_comment = 0;
 	else
 		size_comment = (uint32_t)strlen(comment);
@@ -1061,12 +1053,12 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 	zip64local_putValue_inmemory(zi->ci.central_header+32,(uint64_t)size_comment,2);
 	zip64local_putValue_inmemory(zi->ci.central_header+34,(uint64_t)0,2); /*disk nm start*/
 
-	if(zipfi==NULL)
+	if(zipfi == NULL)
 		zip64local_putValue_inmemory(zi->ci.central_header+36,(uint64_t)0,2);
 	else
 		zip64local_putValue_inmemory(zi->ci.central_header+36,(uint64_t)zipfi->internal_fa,2);
 
-	if(zipfi==NULL)
+	if(zipfi == NULL)
 		zip64local_putValue_inmemory(zi->ci.central_header+38,(uint64_t)0,4);
 	else
 		zip64local_putValue_inmemory(zi->ci.central_header+38,(uint64_t)zipfi->external_fa,4);
@@ -1076,14 +1068,14 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 	else
 		zip64local_putValue_inmemory(zi->ci.central_header+42,(uint64_t)zi->ci.pos_local_header - zi->add_position_when_writting_offset,4);
 
-	for (i=0;i<size_filename;i++)
+	for (i = 0;i<size_filename;i++)
 		*(zi->ci.central_header+SIZECENTRALHEADER+i) = *(filename+i);
 
-	for (i=0;i<size_extrafield_global;i++)
+	for (i = 0;i<size_extrafield_global;i++)
 		*(zi->ci.central_header+SIZECENTRALHEADER+size_filename+i) =
 		*(((const char*)extrafield_global)+i);
 
-	for (i=0;i<size_comment;i++)
+	for (i = 0;i<size_comment;i++)
 		*(zi->ci.central_header+SIZECENTRALHEADER+size_filename+
 		  size_extrafield_global+i) = *(comment+i);
 	if(zi->ci.central_header == NULL)
@@ -1096,16 +1088,6 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 
 	err = Write_LocalFileHeader(zi, filename, size_extrafield_local, extrafield_local);
 
-#ifdef HAVE_BZIP2
-	zi->ci.bstream.avail_in = (uint32_t)0;
-	zi->ci.bstream.avail_out = (uint32_t)Z_BUFSIZE;
-	zi->ci.bstream.next_out = (char*)zi->ci.buffered_data;
-	zi->ci.bstream.total_in_hi32 = 0;
-	zi->ci.bstream.total_in_lo32 = 0;
-	zi->ci.bstream.total_out_hi32 = 0;
-	zi->ci.bstream.total_out_lo32 = 0;
-#endif
-
 	zi->ci.stream.avail_in = (uint32_t)0;
 	zi->ci.stream.avail_out = (uint32_t)Z_BUFSIZE;
 	zi->ci.stream.next_out = zi->ci.buffered_data;
@@ -1113,54 +1095,37 @@ extern int  zipOpenNewFileInZip4_64 (zipFile file, const char* filename, const z
 	zi->ci.stream.total_out = 0;
 	zi->ci.stream.data_type = Z_BINARY;
 
-#ifdef HAVE_BZIP2
-	if((err == ZIP_OK) && (zi->ci.method == Z_DEFLATED || zi->ci.method == Z_BZIP2ED) && (!zi->ci.raw))
-#else
-		if((err == ZIP_OK) && (zi->ci.method == Z_DEFLATED) && (!zi->ci.raw))
-#endif
+	if(err == ZIP_OK && zi->ci.method == Z_DEFLATED && !zi->ci.raw)
+	{
+		if(zi->ci.method == Z_DEFLATED)
 		{
-			if(zi->ci.method == Z_DEFLATED)
-			{
-				zi->ci.stream.zalloc = (alloc_func)0;
-				zi->ci.stream.zfree = (free_func)0;
-				zi->ci.stream.opaque = (voidpf)0;
+			zi->ci.stream.zalloc = (alloc_func)0;
+			zi->ci.stream.zfree = (free_func)0;
+			zi->ci.stream.opaque = (voidpf)0;
 
-				if(windowBits>0)
-					windowBits = -windowBits;
+			if(windowBits > 0)
+				windowBits = -windowBits;
 
-				err = deflateInit2(&zi->ci.stream, level, Z_DEFLATED, windowBits, memLevel, strategy);
+			err = deflateInit2(&zi->ci.stream, level, Z_DEFLATED, windowBits, memLevel, strategy);
 
-				if(err == Z_OK)
-					zi->ci.stream_initialised = Z_DEFLATED;
-			}
-			else if(zi->ci.method == Z_BZIP2ED)
-			{
-#ifdef HAVE_BZIP2
-				// Init BZip stuff here
-				zi->ci.bstream.bzalloc = 0;
-				zi->ci.bstream.bzfree = 0;
-				zi->ci.bstream.opaque = (voidpf)0;
-
-				err = BZ2_bzCompressInit(&zi->ci.bstream, level, 0,35);
-				if(err == BZ_OK)
-					zi->ci.stream_initialised = Z_BZIP2ED;
-#endif
-			}
-
+			if(err == Z_OK)
+				zi->ci.stream_initialised = Z_DEFLATED;
 		}
+	}
 
 	if(err == Z_OK)
 		zi->in_opened_file_inzip = 1;
+
 	return err;
 }
 
 extern int  zipOpenNewFileInZip4 (zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										 const void* extrafield_local, uint32_t size_extrafield_local,
-										 const void* extrafield_global, uint32_t size_extrafield_global,
-										 const char* comment, int method, int level, int raw,
-										 int windowBits,int memLevel, int strategy,
-										 const char* password, uint64_t crcForCrypting,
-										 uint64_t versionMadeBy, uint64_t flagBase)
+								  const void* extrafield_local, uint32_t size_extrafield_local,
+								  const void* extrafield_global, uint32_t size_extrafield_global,
+								  const char* comment, int method, int level, int raw,
+								  int windowBits,int memLevel, int strategy,
+								  const char* password, uint64_t crcForCrypting,
+								  uint64_t versionMadeBy, uint64_t flagBase)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1171,11 +1136,11 @@ extern int  zipOpenNewFileInZip4 (zipFile file, const char* filename, const zip_
 }
 
 extern int  zipOpenNewFileInZip3 (zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										 const void* extrafield_local, uint32_t size_extrafield_local,
-										 const void* extrafield_global, uint32_t size_extrafield_global,
-										 const char* comment, int method, int level, int raw,
-										 int windowBits,int memLevel, int strategy,
-										 const char* password, uint64_t crcForCrypting)
+								  const void* extrafield_local, uint32_t size_extrafield_local,
+								  const void* extrafield_global, uint32_t size_extrafield_global,
+								  const char* comment, int method, int level, int raw,
+								  int windowBits,int memLevel, int strategy,
+								  const char* password, uint64_t crcForCrypting)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1186,11 +1151,11 @@ extern int  zipOpenNewFileInZip3 (zipFile file, const char* filename, const zip_
 }
 
 extern int  zipOpenNewFileInZip3_64(zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										   const void* extrafield_local, uint32_t size_extrafield_local,
-										   const void* extrafield_global, uint32_t size_extrafield_global,
-										   const char* comment, int method, int level, int raw,
-										   int windowBits,int memLevel, int strategy,
-										   const char* password, uint64_t crcForCrypting, int zip64)
+									const void* extrafield_local, uint32_t size_extrafield_local,
+									const void* extrafield_global, uint32_t size_extrafield_global,
+									const char* comment, int method, int level, int raw,
+									int windowBits,int memLevel, int strategy,
+									const char* password, uint64_t crcForCrypting, int zip64)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1201,9 +1166,9 @@ extern int  zipOpenNewFileInZip3_64(zipFile file, const char* filename, const zi
 }
 
 extern int  zipOpenNewFileInZip2(zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										const void* extrafield_local, uint32_t size_extrafield_local,
-										const void* extrafield_global, uint32_t size_extrafield_global,
-										const char* comment, int method, int level, int raw)
+								 const void* extrafield_local, uint32_t size_extrafield_local,
+								 const void* extrafield_global, uint32_t size_extrafield_global,
+								 const char* comment, int method, int level, int raw)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1214,9 +1179,9 @@ extern int  zipOpenNewFileInZip2(zipFile file, const char* filename, const zip_f
 }
 
 extern int  zipOpenNewFileInZip2_64(zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										   const void* extrafield_local, uint32_t size_extrafield_local,
-										   const void* extrafield_global, uint32_t size_extrafield_global,
-										   const char* comment, int method, int level, int raw, int zip64)
+									const void* extrafield_local, uint32_t size_extrafield_local,
+									const void* extrafield_global, uint32_t size_extrafield_global,
+									const char* comment, int method, int level, int raw, int zip64)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1227,9 +1192,9 @@ extern int  zipOpenNewFileInZip2_64(zipFile file, const char* filename, const zi
 }
 
 extern int  zipOpenNewFileInZip64 (zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										  const void* extrafield_local, uint32_t size_extrafield_local,
-										  const void*extrafield_global, uint32_t size_extrafield_global,
-										  const char* comment, int method, int level, int zip64)
+								   const void* extrafield_local, uint32_t size_extrafield_local,
+								   const void*extrafield_global, uint32_t size_extrafield_global,
+								   const char* comment, int method, int level, int zip64)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1240,9 +1205,9 @@ extern int  zipOpenNewFileInZip64 (zipFile file, const char* filename, const zip
 }
 
 extern int  zipOpenNewFileInZip (zipFile file, const char* filename, const zip_fileinfo* zipfi,
-										const void* extrafield_local, uint32_t size_extrafield_local,
-										const void*extrafield_global, uint32_t size_extrafield_global,
-										const char* comment, int method, int level)
+								 const void* extrafield_local, uint32_t size_extrafield_local,
+								 const void*extrafield_global, uint32_t size_extrafield_global,
+								 const char* comment, int method, int level)
 {
 	return zipOpenNewFileInZip4_64 (file, filename, zipfi,
 									extrafield_local, size_extrafield_local,
@@ -1260,22 +1225,8 @@ static int zip64FlushWriteBuffer(zip64_internal* zi)
 		err = ZIP_ERRNO;
 
 	zi->ci.totalCompressedData += zi->ci.pos_in_buffered_data;
-
-#ifdef HAVE_BZIP2
-	if(zi->ci.method == Z_BZIP2ED)
-	{
-		zi->ci.totalUncompressedData += zi->ci.bstream.total_in_lo32;
-		zi->ci.bstream.total_in_lo32 = 0;
-		zi->ci.bstream.total_in_hi32 = 0;
-	}
-	else
-#endif
-	{
-		zi->ci.totalUncompressedData += zi->ci.stream.total_in;
-		zi->ci.stream.total_in = 0;
-	}
-
-
+	zi->ci.totalUncompressedData += zi->ci.stream.total_in;
+	zi->ci.stream.total_in = 0;
 	zi->ci.pos_in_buffered_data = 0;
 
 	return err;
@@ -1294,97 +1245,57 @@ extern int zipWriteInFileInZip (zipFile file, const void* buf, uint64_t len)
 		return ZIP_PARAMERROR;
 
 	zi->ci.crc32 = crc32(zi->ci.crc32,buf,(uint32_t)len);
+	zi->ci.stream.next_in = (Bytef*)buf;
+	zi->ci.stream.avail_in = len;
 
-#ifdef HAVE_BZIP2
-	if(zi->ci.method == Z_BZIP2ED && (!zi->ci.raw))
+	while(err == ZIP_OK && zi->ci.stream.avail_in > 0)
 	{
-		zi->ci.bstream.next_in = (void*)buf;
-		zi->ci.bstream.avail_in = len;
-		err = BZ_RUN_OK;
-
-		while ((err==BZ_RUN_OK) && (zi->ci.bstream.avail_in>0))
+		if(zi->ci.stream.avail_out == 0)
 		{
-			if(zi->ci.bstream.avail_out == 0)
-			{
-				if(zip64FlushWriteBuffer(zi) == ZIP_ERRNO)
-					err = ZIP_ERRNO;
-				zi->ci.bstream.avail_out = (uint32_t)Z_BUFSIZE;
-				zi->ci.bstream.next_out = (char*)zi->ci.buffered_data;
-			}
-
-
-			if(err != BZ_RUN_OK)
-				break;
-
-			if((zi->ci.method == Z_BZIP2ED) && (!zi->ci.raw))
-			{
-				uint64_t uTotalOutBefore_lo = zi->ci.bstream.total_out_lo32;
-				//          uint64_t uTotalOutBefore_hi = zi->ci.bstream.total_out_hi32;
-				err=BZ2_bzCompress(&zi->ci.bstream,  BZ_RUN);
-
-				zi->ci.pos_in_buffered_data += (uint32_t)(zi->ci.bstream.total_out_lo32 - uTotalOutBefore_lo);
-			}
+			if(zip64FlushWriteBuffer(zi) == ZIP_ERRNO)
+				err = ZIP_ERRNO;
+			zi->ci.stream.avail_out = (uint32_t)Z_BUFSIZE;
+			zi->ci.stream.next_out = zi->ci.buffered_data;
 		}
 
-		if(err == BZ_RUN_OK)
-			err = ZIP_OK;
-	}
-	else
-#endif
-	{
-		zi->ci.stream.next_in = (Bytef*)buf;
-		zi->ci.stream.avail_in = len;
 
-		while ((err == ZIP_OK) && (zi->ci.stream.avail_in>0))
+		if(err != ZIP_OK)
+			break;
+
+		if((zi->ci.method == Z_DEFLATED) && (!zi->ci.raw))
 		{
-			if(zi->ci.stream.avail_out == 0)
+			uint64_t uTotalOutBefore = zi->ci.stream.total_out;
+			err=deflate(&zi->ci.stream,  Z_NO_FLUSH);
+			if(uTotalOutBefore > zi->ci.stream.total_out)
 			{
-				if(zip64FlushWriteBuffer(zi) == ZIP_ERRNO)
-					err = ZIP_ERRNO;
-				zi->ci.stream.avail_out = (uint32_t)Z_BUFSIZE;
-				zi->ci.stream.next_out = zi->ci.buffered_data;
+				int bBreak = 0;
+				bBreak++;
 			}
 
-
-			if(err != ZIP_OK)
-				break;
-
-			if((zi->ci.method == Z_DEFLATED) && (!zi->ci.raw))
-			{
-				uint64_t uTotalOutBefore = zi->ci.stream.total_out;
-				err=deflate(&zi->ci.stream,  Z_NO_FLUSH);
-				if(uTotalOutBefore > zi->ci.stream.total_out)
-				{
-					int bBreak = 0;
-					bBreak++;
-				}
-
-				zi->ci.pos_in_buffered_data += (uint32_t)(zi->ci.stream.total_out - uTotalOutBefore);
-			}
+			zi->ci.pos_in_buffered_data += (uint32_t) (zi->ci.stream.total_out - uTotalOutBefore);
+		}
+		else
+		{
+			uint32_t copy_this,i;
+			if(zi->ci.stream.avail_in < zi->ci.stream.avail_out)
+				copy_this = zi->ci.stream.avail_in;
 			else
+				copy_this = zi->ci.stream.avail_out;
+
+			for (i = 0; i < copy_this; i++)
+				*(((char*)zi->ci.stream.next_out)+i) =
+				*(((const char*)zi->ci.stream.next_in)+i);
 			{
-				uint32_t copy_this,i;
-				if(zi->ci.stream.avail_in < zi->ci.stream.avail_out)
-					copy_this = zi->ci.stream.avail_in;
-				else
-					copy_this = zi->ci.stream.avail_out;
-
-				for (i = 0; i < copy_this; i++)
-					*(((char*)zi->ci.stream.next_out)+i) =
-					*(((const char*)zi->ci.stream.next_in)+i);
-				{
-					zi->ci.stream.avail_in -= copy_this;
-					zi->ci.stream.avail_out-= copy_this;
-					zi->ci.stream.next_in+= copy_this;
-					zi->ci.stream.next_out+= copy_this;
-					zi->ci.stream.total_in+= copy_this;
-					zi->ci.stream.total_out+= copy_this;
-					zi->ci.pos_in_buffered_data += copy_this;
-				}
+				zi->ci.stream.avail_in -= copy_this;
+				zi->ci.stream.avail_out-= copy_this;
+				zi->ci.stream.next_in+= copy_this;
+				zi->ci.stream.next_out+= copy_this;
+				zi->ci.stream.total_in+= copy_this;
+				zi->ci.stream.total_out+= copy_this;
+				zi->ci.pos_in_buffered_data += copy_this;
 			}
-		}// while(...)
+		}
 	}
-
 	return err;
 }
 
@@ -1434,35 +1345,13 @@ extern int  zipCloseFileInZipRaw64 (zipFile file, uint64_t uncompressed_size, ui
 	}
 	else if((zi->ci.method == Z_BZIP2ED) && (!zi->ci.raw))
 	{
-#ifdef HAVE_BZIP2
-		err = BZ_FINISH_OK;
-		while (err==BZ_FINISH_OK)
-		{
-			uint64_t uTotalOutBefore;
-			if(zi->ci.bstream.avail_out == 0)
-			{
-				if(zip64FlushWriteBuffer(zi) == ZIP_ERRNO)
-					err = ZIP_ERRNO;
-				zi->ci.bstream.avail_out = (uint32_t)Z_BUFSIZE;
-				zi->ci.bstream.next_out = (char*)zi->ci.buffered_data;
-			}
-			uTotalOutBefore = zi->ci.bstream.total_out_lo32;
-			err=BZ2_bzCompress(&zi->ci.bstream,  BZ_FINISH);
-			if(err == BZ_STREAM_END)
-				err = Z_STREAM_END;
-
-			zi->ci.pos_in_buffered_data += (uint32_t)(zi->ci.bstream.total_out_lo32 - uTotalOutBefore);
-		}
-
-		if(err == BZ_FINISH_OK)
-			err = ZIP_OK;
-#endif
+		err = ZIP_PARAMERROR;
 	}
 
 	if(err == Z_STREAM_END)
 		err = ZIP_OK; /* this is normal */
 
-	if((zi->ci.pos_in_buffered_data>0) && (err == ZIP_OK))
+	if((zi->ci.pos_in_buffered_data > 0) && (err == ZIP_OK))
 	{
 		if(zip64FlushWriteBuffer(zi)==ZIP_ERRNO)
 			err = ZIP_ERRNO;
@@ -1475,15 +1364,6 @@ extern int  zipCloseFileInZipRaw64 (zipFile file, uint64_t uncompressed_size, ui
 			err = tmp_err;
 		zi->ci.stream_initialised = 0;
 	}
-#ifdef HAVE_BZIP2
-	else if((zi->ci.method == Z_BZIP2ED) && (!zi->ci.raw))
-	{
-		int tmperr = BZ2_bzCompressEnd(&zi->ci.bstream);
-		if(err == ZIP_OK)
-			err = tmperr;
-		zi->ci.stream_initialised = 0;
-	}
-#endif
 
 	if(!zi->ci.raw)
 	{
@@ -1589,7 +1469,7 @@ extern int  zipCloseFileInZipRaw64 (zipFile file, uint64_t uncompressed_size, ui
 
 		uint64_t cur_pos_inzip = ZTELL64(zi->z_filefunc,zi->filestream);
 
-		if(ZSEEK64(zi->z_filefunc,zi->filestream, zi->ci.pos_local_header + 14,ZLIB_FILEFUNC_SEEK_SET)!=0)
+		if(ZSEEK64(zi->z_filefunc,zi->filestream, zi->ci.pos_local_header + 14,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			err = ZIP_ERRNO;
 
 		if(err == ZIP_OK)
@@ -1600,7 +1480,7 @@ extern int  zipCloseFileInZipRaw64 (zipFile file, uint64_t uncompressed_size, ui
 			if(zi->ci.pos_zip64extrainfo > 0)
 			{
 				// Update the size in the ZIP64 extended field.
-				if(ZSEEK64(zi->z_filefunc,zi->filestream, zi->ci.pos_zip64extrainfo + 4,ZLIB_FILEFUNC_SEEK_SET)!=0)
+				if(ZSEEK64(zi->z_filefunc,zi->filestream, zi->ci.pos_zip64extrainfo + 4,ZLIB_FILEFUNC_SEEK_SET) != 0)
 					err = ZIP_ERRNO;
 
 				if(err == ZIP_OK) /* compressed size, unknown */
@@ -1619,7 +1499,7 @@ extern int  zipCloseFileInZipRaw64 (zipFile file, uint64_t uncompressed_size, ui
 				err = zip64local_putValue(&zi->z_filefunc,zi->filestream,uncompressed_size,4);
 		}
 
-		if(ZSEEK64(zi->z_filefunc,zi->filestream, cur_pos_inzip,ZLIB_FILEFUNC_SEEK_SET)!=0)
+		if(ZSEEK64(zi->z_filefunc,zi->filestream, cur_pos_inzip,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			err = ZIP_ERRNO;
 	}
 
@@ -1779,7 +1659,7 @@ extern int  zipClose (zipFile file, const char* global_comment)
 		err = zipCloseFileInZip (file);
 	}
 
-	if(global_comment==NULL)
+	if(global_comment == NULL)
 		global_comment = zi->globalcomment;
 
 	centraldir_pos_inzip = ZTELL64(zi->z_filefunc,zi->filestream);
@@ -1787,9 +1667,9 @@ extern int  zipClose (zipFile file, const char* global_comment)
 	if(err == ZIP_OK)
 	{
 		linkedlist_datablock_internal* ldi = zi->central_dir.first_block;
-		while (ldi!=NULL)
+		while (ldi != NULL)
 		{
-			if((err == ZIP_OK) && (ldi->filled_in_this_block>0))
+			if((err == ZIP_OK) && (ldi->filled_in_this_block > 0))
 			{
 				if(ZWRITE64(zi->z_filefunc,zi->filestream, ldi->data, ldi->filled_in_this_block) != ldi->filled_in_this_block)
 					err = ZIP_ERRNO;
@@ -1866,20 +1746,20 @@ extern int zipRemoveExtraInfoBlock (char* pData, int* dataLen, short sHeader)
 	{
 		// clean old extra info block.
 		memset(pData,0, *dataLen);
-
+		
 		// copy the new extra info block over the old
 		if(size > 0)
 			memcpy(pData, pNewHeader, size);
-
+		
 		// set the new extra info size
 		*dataLen = size;
-
+		
 		retVal = ZIP_OK;
 	}
 	else
 		retVal = ZIP_ERRNO;
-
+	
 	free(pNewHeader);
-
+	
 	return retVal;
 }

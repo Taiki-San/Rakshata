@@ -30,7 +30,7 @@ static void F(uint32_t prf_hlen, const uint8_t *pw, size_t pwlen, const uint8_t 
     for(i=1; i<count; i++)
     {
         sha256_salted(pw,pwlen,buffer,prf_hlen,buffer);
-        for(k=0; k<prf_hlen; k++)
+        for(k = 0; k < prf_hlen; k++)
             u[k] ^= buffer[k];
     }
 }
@@ -52,7 +52,7 @@ int internal_pbkdf2(uint32_t prf_hlen, const uint8_t *input, size_t inputLength,
         r = lengthOutput % prf_hlen;
 
 
-        for(i=0; i<l; i++)
+        for(i = 0; i < l; i++)
 		{
             out = output + (i * prf_hlen);
             F(prf_hlen, input, inputLength, salt, saltLength, iteneration, i+1, tmpbuff, out);

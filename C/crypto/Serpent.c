@@ -472,7 +472,7 @@ k[(8-r)*4 + 5] = b;		\
 k[(8-r)*4 + 6] = c;		\
 k[(8-r)*4 + 7] = d;}	\
 
-	for (i=0; i<4; i++)
+	for (i = 0; i < 4; i++)
 	{
 		afterS2(LK); afterS2(S3); afterS3(SK);
 		afterS1(LK); afterS1(S2); afterS2(SK);
