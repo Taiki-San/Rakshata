@@ -89,25 +89,6 @@ bool downloadedProjectListSeemsLegit(char *data)
 	return data[pos] == '{';
 }
 
-uint getNumberLineReturn(char *input)
-{
-	uint output, pos;
-	bool wasLastLineAReturn = true;
-	
-	for(output = pos = 0; input[pos] && input[pos] != '#'; pos++)
-	{
-		if(input[pos] == '\n' && !wasLastLineAReturn)
-		{
-			output++;
-			wasLastLineAReturn = true;
-		}
-		else if(wasLastLineAReturn && input[pos] > ' ' && input[pos] <= '~')
-			wasLastLineAReturn = false;
-	}
-	
-	return output;
-}
-
 bool extractCurrentLine(char * input, uint *posInput, char * output, uint lengthOutput)
 {
 	//This function is an advanced sanitizer of the line. It will copy the right amount of data, strip every unexepected char and return a nice, sanitized string
@@ -561,6 +542,16 @@ PROJECT_DATA getEmptyProject()
 	return project;
 }
 
+void freeProjectData(PROJECT_DATA* projectDB)
+{
+	if(projectDB == NULL)
+		return;
+
+	size_t pos;
+	for(pos = 0; projectDB[pos].isInitialized; releaseCTData(projectDB[pos++]));
+	free(projectDB);
+}
+
 REPO_DATA getEmptyRepo()
 {
 	REPO_DATA repo;
@@ -568,6 +559,56 @@ REPO_DATA getEmptyRepo()
 	memset(&repo, 0, sizeof(REPO_DATA));
 	
 	return repo;
+}
+
+void freeRootRepo(ROOT_REPO_DATA ** root)
+{
+	if(root == NULL)
+		return;
+
+	for(uint i = 0; root[i] != NULL; i++)
+	{
+		freeSingleRootRepo(root[i]);
+	}
+
+	free(root);
+}
+
+void freeSingleRootRepo(ROOT_REPO_DATA * root)
+{
+	_freeSingleRootRepo(root, true);
+}
+
+void _freeSingleRootRepo(ROOT_REPO_DATA * root, bool releaseMemory)
+{
+	free(root->subRepo);
+
+	if(root->descriptions != NULL)
+	{
+		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+			free(root->descriptions[j]);
+	}
+
+	if(root->langueDescriptions != NULL)
+	{
+		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+			free(root->langueDescriptions[j]);
+	}
+
+	free(root->descriptions);
+	free(root->langueDescriptions);
+
+	if(releaseMemory)
+		free(root);
+}
+
+void freeRepo(REPO_DATA ** repos)
+{
+	if(repos == NULL)
+		return;
+
+	for(uint i = 0; repos[i] != NULL; free(repos[i++]));
+	free(repos);
 }
 
 #pragma mark - Sort function

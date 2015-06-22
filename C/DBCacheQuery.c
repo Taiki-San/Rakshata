@@ -223,6 +223,180 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	return output;
 }
 
+PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installed)
+{
+	PROJECT_DATA * output = calloc(1, sizeof(PROJECT_DATA));
+	if(output == NULL)
+		return NULL;
+
+	sqlite3_stmt* request = NULL;
+
+	if(installed)
+	{
+		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", &request);
+	}
+	else
+		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
+
+	sqlite3_bind_int64(request, 1, (int64_t) IDRepo);
+	sqlite3_bind_int(request, 2, (int32_t) projectID);
+
+	if(sqlite3_step(request) == SQLITE_ROW)
+	{
+		if(!copyOutputDBToStruct(request, output, true))
+		{
+			free(output);
+			output = NULL;
+		}
+
+		if(sqlite3_step(request) == SQLITE_ROW)
+		{
+			free(output);
+			output = NULL;
+			logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
+		}
+	}
+	else
+	{
+		free(output);
+		output = NULL;
+
+		if(!installed)
+			logR("[Error]: Request not found, something went wrong when parsing the data :/");
+	}
+
+	destroyRequest(request);
+
+	return output;
+}
+
+PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
+{
+	sqlite3_stmt* request = NULL;
+	PROJECT_DATA output = getEmptyProject();
+
+	if(cache != NULL && cacheID != UINT_MAX)
+	{
+		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+		sqlite3_bind_int(request, 1, (int32_t) cacheID);
+
+		MUTEX_LOCK(cacheParseMutex);
+
+		if(sqlite3_step(request) == SQLITE_ROW)
+			copyOutputDBToStruct(request, &output, copyDynamic);
+
+		MUTEX_UNLOCK(cacheParseMutex);
+
+		destroyRequest(request);
+	}
+
+	return output;
+}
+
+PROJECT_DATA getProjectByID(uint cacheID)
+{
+	return getProjectByIDHelper(cacheID, true);
+}
+
+uint * getFavoritesID(uint * nbFavorites)
+{
+	if(nbFavorites == NULL || cache == NULL)
+		return NULL;
+
+	uint * output = malloc(nbElemInCache * sizeof(uint));	//nbMax of entries
+	if(output == NULL)
+		return NULL;
+
+	sqlite3_stmt * request;
+	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", &request) != SQLITE_OK)
+	{
+		free(output);
+		return NULL;
+	}
+
+	*nbFavorites = 0;
+	while(sqlite3_step(request) == SQLITE_ROW && *nbFavorites < nbElemInCache)
+		output[(*nbFavorites)++] = (uint32_t) sqlite3_column_int(request, 0);
+
+	destroyRequest(request);
+
+	if(*nbFavorites == 0)
+	{
+		free(output);	output = NULL;
+	}
+	else if(*nbFavorites != nbElemInCache)
+	{
+		void * tmp = realloc(output, *nbFavorites * sizeof(uint));
+		if(tmp != NULL)
+			output = tmp;
+	}
+
+	return output;
+}
+
+void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price)
+{
+	sqlite3_stmt* request = NULL;
+
+	if(wantTome)
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+	else
+		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+
+	sqlite3_bind_int(request, 1, (int32_t) cacheID);
+
+	if(sqlite3_step(request) != SQLITE_ROW)
+		return NULL;
+
+	uint nbElemOut = (uint32_t) sqlite3_column_int(request, 0);
+	void * output = NULL;
+
+	if(nbElemOut != 0)
+	{
+		if(wantTome)
+		{
+			output = calloc(nbElemOut + 1, sizeof(META_TOME));
+
+			if(output != NULL)
+			{
+				((META_TOME*)output)[nbElemOut].ID = INVALID_SIGNED_VALUE;		//Whatever copyTomeList may do, the array is valid by now
+				copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
+			}
+		}
+		else
+		{
+			output = malloc((nbElemOut + 1) * sizeof(int));
+			if(output != NULL)
+			{
+				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
+				((int*) output)[nbElemOut] = INVALID_SIGNED_VALUE;				//In the case it was missing (kinda like a canary)
+			}
+
+			if(price != NULL)
+			{
+				void * data = (int*) sqlite3_column_int64(request, 2);
+				if(data != NULL)
+				{
+					*price = malloc(nbElemOut * sizeof(uint));
+					if(*price != NULL)
+					{
+						memcpy(*price, data, nbElemOut * sizeof(int));
+					}
+				}
+				else
+					*price = NULL;
+			}
+		}
+
+		if(output != NULL && nbElemUpdated != NULL)
+			*nbElemUpdated = nbElemOut;
+	}
+	else if(nbElemUpdated != NULL)
+		*nbElemUpdated = 0;
+
+	return output;
+}
+
 /*************		REPOSITORIES DATA		*****************/
 
 uint64_t getRepoID(REPO_DATA * repo)
@@ -241,7 +415,7 @@ uint getSubrepoFromRepoID(uint64_t repoID)
 	return repoID & UINT_MAX;
 }
 
-uint64_t getRepoIndexFromURL(char * URL)
+uint64_t getRepoIndexFromURL(const char * URL)
 {
 	for(uint i = 0; i < lengthRepo; i++)
 	{
@@ -444,54 +618,3 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 	
 	return output;
 }
-
-void freeRootRepo(ROOT_REPO_DATA ** root)
-{
-	if(root == NULL)
-		return;
-	
-	for(uint i = 0; root[i] != NULL; i++)
-	{
-		freeSingleRootRepo(root[i]);
-	}
-	
-	free(root);
-}
-
-void freeSingleRootRepo(ROOT_REPO_DATA * root)
-{
-	_freeSingleRootRepo(root, true);
-}
-
-void _freeSingleRootRepo(ROOT_REPO_DATA * root, bool releaseMemory)
-{
-	free(root->subRepo);
-	
-	if(root->descriptions != NULL)
-	{
-		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
-			free(root->descriptions[j]);
-	}
-	
-	if(root->langueDescriptions != NULL)
-	{
-		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
-			free(root->langueDescriptions[j]);
-	}
-	
-	free(root->descriptions);
-	free(root->langueDescriptions);
-	
-	if(releaseMemory)
-		free(root);
-}
-
-void freeRepo(REPO_DATA ** repos)
-{
-	if(repos == NULL)
-		return;
-	
-	for(uint i = 0; repos[i] != NULL; free(repos[i++]));
-	free(repos);
-}
-

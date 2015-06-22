@@ -266,16 +266,16 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 		return NULL;
 	}
 	
-	char *team;
+	char *repoURL;
 	uint projectID;
 	while (*nbElem < 3 && sqlite3_step(request) == SQLITE_ROW)
 	{
-		team =	(char *) sqlite3_column_text(request, 2);
+		repoURL =	(char *) sqlite3_column_text(request, 2);
 		projectID = (uint) sqlite3_column_int(request, 3);
 		
-		if(team != NULL)
+		if(repoURL != NULL)
 		{
-			uint64_t repoID = getRepoIndexFromURL(team);
+			uint64_t repoID = getRepoIndexFromURL(repoURL);
 			if(repoID != UINT64_MAX)
 			{
 				output[*nbElem] = getDataFromSearch(repoID, projectID, true);
@@ -285,13 +285,13 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 				else
 				{
 					//We craft a PROJECT_DATA structure for updateRecentEntry
-					uint lengthTeam = strlen(team) + 1;
+					uint lengthTeam = strlen(repoURL) + 1;
 					PROJECT_DATA tmpProject = getEmptyProject();
 
 					REPO_DATA tmpRepo;
 					memset(&tmpRepo, 0, sizeof(tmpRepo));
 
-					strncpy(tmpRepo.URL, team, lengthTeam);
+					strncpy(tmpRepo.URL, repoURL, lengthTeam);
 					tmpProject.repo = &tmpRepo;
 					tmpProject.projectID = projectID;
 					

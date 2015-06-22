@@ -131,7 +131,7 @@ void freeRepo(REPO_DATA ** repos);
 uint64_t getRepoID(REPO_DATA * repo);
 uint getRootFromRepoID(uint64_t repoID);
 uint getSubrepoFromRepoID(uint64_t repoID);
-uint64_t getRepoIndexFromURL(char * URL);
+uint64_t getRepoIndexFromURL(const char * URL);
 REPO_DATA * getRepoForID(uint64_t repoID);
 ROOT_REPO_DATA * getRootRepoForID(uint repoID);
 bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy);
