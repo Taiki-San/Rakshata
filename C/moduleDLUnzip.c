@@ -38,57 +38,6 @@ void minimizeString(char* input)
 }
 
 //Zip routines
-static bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
-{
-	if(filenameInzip == NULL)
-		return false;
-
-	//Load global data
-	unz_global_info64 gi;
-    int err;
-
-	if((err = unzGetGlobalInfo64(uf, &gi)) != UNZ_OK)
-		return false;
-
-	//Allocate collector memory
-	uint nbEntry = gi.number_entry;
-	*filenameInzip = malloc((nbEntry + 1) * sizeof(char *));
-	if(*filenameInzip == NULL)
-		return false;
-
-	for(uint i = 0, rejected = 0; i < nbEntry; i++)
-    {
-		char filename[256] = {0};
-        unz_file_info64 file_info;
-
-		//Get current item data
-        if((unzGetCurrentFileInfo64(uf, &file_info, filename, sizeof(filename), NULL, 0, NULL, 0)) != UNZ_OK)
-		{
-			nbEntry = i - rejected;
-			break;
-		}
-
-		//If there is no data, we keep the entry empty
-		if(filename[0] == 0)
-			(*filenameInzip)[i - rejected++] = NULL;
-		else
-			(*filenameInzip)[i - rejected] = strdup(filename);
-
-		//Jump to the next element
-        if(i + 1 < nbEntry && (err = unzGoToNextFile(uf)) != UNZ_OK)
-        {
-			nbEntry = i + (filename[0] != 0);
-			break;
-        }
-    }
-
-	//Save data
-	*nbFichiers = nbEntry;
-	(*filenameInzip)[nbEntry] = NULL;
-
-    return true;
-}
-
 bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail)
 {
 	if(inputData == NULL || outputPath == NULL)
