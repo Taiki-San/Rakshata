@@ -25,7 +25,7 @@
 {
 	_fileContentCopy = fileContent;
 	
-	output = parserRakFile(_fileContentCopy, &nbRoot);
+	output = parserRakSourceFile(_fileContentCopy, &nbRoot);
 	window = ((RakAppDelegate *) [NSApp delegate]).window;
 	
 	ICONS_UPDATE * iconsData = NULL, * newIcons, * endIcons;

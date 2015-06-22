@@ -33,16 +33,16 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 		return false;
 	
 	//We first extract the DB version
-	NSNumber * version = objectForKey(parseData, JSON_TAG_VERSION, @"version");
-	if(version == nil || ARE_CLASSES_DIFFERENT(version, [NSNumber class]))
+	NSNumber * version = objectForKey(parseData, JSON_TAG_VERSION, @"version", [NSNumber class]);
+	if(version == nil)
 		return false;
 	else
 		*newDBVersion = [version unsignedIntValue];
 
 	//The JSON is composed of two main sections
-	NSArray * mainTags = objectForKey(parseData, JSON_TAG_TAGS, @"tags"), * mainCats = objectForKey(parseData, JSON_TAG_CATEGORY, @"type");
+	NSArray * mainTags = objectForKey(parseData, JSON_TAG_TAGS, @"tags", [NSArray class]), * mainCats = objectForKey(parseData, JSON_TAG_CATEGORY, @"type", [NSArray class]);
 
-	if(mainTags == nil || ARE_CLASSES_DIFFERENT(mainTags, [NSArray class]) || mainCats == nil || ARE_CLASSES_DIFFERENT(mainCats, [NSArray class]))
+	if(mainTags == nil || mainCats == nil)
 		return false;
 	
 	uint nbTags = [mainTags count], nbCategories = [mainCats count];
@@ -67,12 +67,12 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 		if(ARE_CLASSES_DIFFERENT(currentTag, [NSDictionary class]))
 			continue;
 		
-		NSNumber * ID = objectForKey(currentTag, JSON_TAG_ID, @"id");
-		if(ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]) || [ID unsignedIntValue] == TAG_NO_VALUE)
+		NSNumber * ID = objectForKey(currentTag, JSON_TAG_ID, @"id", [NSNumber class]);
+		if(ID == nil || [ID unsignedIntValue] == TAG_NO_VALUE)
 			continue;
 		
-		NSString * name = objectForKey(currentTag, JSON_TAG_NAME, @"name");
-		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0)
+		NSString * name = objectForKey(currentTag, JSON_TAG_NAME, @"name", [NSString class]);
+		if(name == nil || [name length] == 0)
 			continue;
 		
 		//Data sanitized, copy them
@@ -104,20 +104,20 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	uint currentPosCat = 0;
 	for(NSDictionary * currentCat in mainCats)
 	{
-		NSNumber * ID = objectForKey(currentCat, JSON_TAG_ID, @"id");
-		if(ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]) || [ID unsignedIntValue] == TAG_NO_VALUE)
+		NSNumber * ID = objectForKey(currentCat, JSON_TAG_ID, @"id", [NSNumber class]);
+		if(ID == nil || [ID unsignedIntValue] == TAG_NO_VALUE)
 			continue;
 		
-		NSNumber * master = objectForKey(currentCat, JSON_TAG_MASTER, @"master");
-		if(master == nil || ARE_CLASSES_DIFFERENT(master, [NSNumber class]))
+		NSNumber * master = objectForKey(currentCat, JSON_TAG_MASTER, @"master", [NSNumber class]);
+		if(master == nil)
 			continue;
 		
-		NSString * name = objectForKey(currentCat, JSON_TAG_NAME, @"name");
-		if(name == nil || ARE_CLASSES_DIFFERENT(name, [NSString class]) || [name length] == 0)
+		NSString * name = objectForKey(currentCat, JSON_TAG_NAME, @"name", [NSString class]);
+		if(name == nil || [name length] == 0)
 			continue;
 		
-		NSArray * tagsOfCat = objectForKey(currentCat, JSON_TAG_TAGS, @"tags");
-		if(tagsOfCat == nil || ARE_CLASSES_DIFFERENT(tagsOfCat, [NSArray class]) || [tagsOfCat count] == 0 || [tagsOfCat count] > TAG_PAR_CAT)
+		NSArray * tagsOfCat = objectForKey(currentCat, JSON_TAG_TAGS, @"tags", [NSArray class]);
+		if(tagsOfCat == nil || [tagsOfCat count] == 0 || [tagsOfCat count] > TAG_PAR_CAT)
 			continue;
 		
 		//Data sanitized, copy them

@@ -67,14 +67,14 @@ NSArray * loadCustomColor(const char * file)
 	//Iterate the parsed data to correlate the content with our codes
 	for(uint pos = 0; pos < sizeof(ID); pos++)
 	{
-		NSArray * currentEntry = objectForKey(parseData, [NSString stringWithFormat:@"%d", ID[pos]], [NSString stringWithUTF8String:names[pos]]);
+		NSArray * currentEntry = objectForKey(parseData, [NSString stringWithFormat:@"%d", ID[pos]], [NSString stringWithUTF8String:names[pos]], [NSArray class]);
 		
 		if(currentEntry == nil)
 		{
 			NSLog(@"Hupf, couldn't find `%s` in the custom font file, aborting loading", names[pos]);
 			return nil;
 		}
-		else if(ARE_CLASSES_DIFFERENT(currentEntry, [NSArray class]) || [currentEntry count] != 4)
+		else if([currentEntry count] != 4)
 		{
 			NSLog(@"Invalid entry for key `%s`", names[pos]);
 			return nil;

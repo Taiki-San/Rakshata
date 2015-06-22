@@ -12,7 +12,7 @@
 
 #include "JSONParser.h"
 
-ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
+ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 {
 	NSError * parseError = nil;
 	NSDictionary * parseData = [NSJSONSerialization JSONObjectWithData:fileContent options:0 error:&parseError];
@@ -29,8 +29,8 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 		return NULL;
 	
 	//Check the file version
-	NSNumber * version = objectForKey(parseData, JSON_RAK_MIN_VERSION, @"version");
-	if(version == nil || ARE_CLASSES_DIFFERENT(version, [NSNumber class]) || [version unsignedIntValue] > VERSION_RAK_FILE)
+	NSNumber * version = objectForKey(parseData, JSON_RAK_MIN_VERSION, @"version", [NSNumber class]);
+	if(version == nil || [version unsignedIntValue] > VERSION_RAK_FILE)
 	{
 		NSLog(@"Rakshata couldn't read the file you submitted, sorry :/");
 		return NULL;
@@ -38,8 +38,8 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 	
 	//Ok, let's extract the payload
 	uint nbElements;
-	NSArray * payload = objectForKey(parseData, JSON_RAK_PAYLOAD, @"payload");
-	if(payload == nil || ARE_CLASSES_DIFFERENT(payload, [NSArray class]) || !(nbElements = [payload count]))
+	NSArray * payload = objectForKey(parseData, JSON_RAK_PAYLOAD, @"payload", [NSArray class]);
+	if(payload == nil || !(nbElements = [payload count]))
 	{
 		NSLog(@"Empty file");
 		return NULL;
@@ -73,16 +73,16 @@ ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem)
 		NSString * URL;
 		NSArray * preselection;
 		
-		type = objectForKey(entry, JSON_RAK_TYPE, @"type");
-		if(type == nil || ARE_CLASSES_DIFFERENT(type, [NSNumber class]) || ![type unsignedCharValue] || [type unsignedCharValue] > MAX_TYPE_DEPOT)
+		type = objectForKey(entry, JSON_RAK_TYPE, @"type", [NSNumber class]);
+		if(type == nil || ![type unsignedCharValue] || [type unsignedCharValue] > MAX_TYPE_DEPOT)
 			continue;
 		
-		URL = objectForKey(entry, JSON_RAK_URL, @"URL");
-		if(URL == nil || ARE_CLASSES_DIFFERENT(URL, [NSString class]) || ![URL length] || [URL length] >= REPO_URL_LENGTH)
+		URL = objectForKey(entry, JSON_RAK_URL, @"URL", [NSString class]);
+		if(URL == nil || ![URL length] || [URL length] >= REPO_URL_LENGTH)
 			continue;
 		
-		preselection = objectForKey(entry, JSON_RAK_PRESELECTION, @"preselection");
-		if(preselection != nil && (ARE_CLASSES_DIFFERENT(preselection, [NSArray class]) || ![preselection count]))
+		preselection = objectForKey(entry, JSON_RAK_PRESELECTION, @"preselection", [NSArray class]);
+		if(preselection != nil || ![preselection count])
 			continue;
 		
 		//Craft a structure to send to the update routine in order to gather the data

@@ -17,7 +17,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 	if(nbElem != NULL)
 		*nbElem = 0;
 	
-	if(chapterBloc == NULL)
+	if(chapterBloc == nil)
 		return NULL;
 
 	if(paidContent && chaptersPrice == NULL)
@@ -43,11 +43,11 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 		{
 			if(ARE_CLASSES_DIFFERENT(dictionary, [NSDictionary class]))	continue;
 			
-			entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_DETAILS, @"details");
+			entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_DETAILS, @"details", [NSObject class]);
 			if(isChapter && paidContent)
-				entry2 = objectForKey(dictionary, JSON_PROJ_PRICE, @"price");
+				entry2 = objectForKey(dictionary, JSON_PROJ_PRICE, @"price", [NSObject class]);
 			else if(!isChapter)
-				entry2 = objectForKey(dictionary, JSON_PROJ_VOL_ISRESERVEDTOVOL, @"privateTome");
+				entry2 = objectForKey(dictionary, JSON_PROJ_VOL_ISRESERVEDTOVOL, @"privateTome", [NSObject class]);
 				
 			if(entry1 != nil && !ARE_CLASSES_DIFFERENT(entry1, [NSArray class]))	//This is a special chunck
 			{
@@ -120,14 +120,14 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 			}
 			else
 			{
-				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_JUMP, @"jump");
-				if(entry1 != nil && !ARE_CLASSES_DIFFERENT(entry1, [NSNumber class]))	jump = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_JUMP, @"jump", [NSNumber class]);
+				if(entry1 != nil)	jump = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
-				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_FIRST, @"first");
-				if(entry1 != nil && !ARE_CLASSES_DIFFERENT(entry1, [NSNumber class]))	first = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_FIRST, @"first", [NSNumber class]);
+				if(entry1 != nil)	first = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
-				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_LAST, @"last");
-				if(entry1 != nil && !ARE_CLASSES_DIFFERENT(entry1, [NSNumber class]))	last = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
+				entry1 = objectForKey(dictionary, JSON_PROJ_CHAP_LAST, @"last", [NSNumber class]);
+				if(entry1 != nil)	last = [(NSNumber*) entry1 integerValue];	else	{	continue;	}
 				
 				if(jump == 0 || (last < first && jump > 0) || (last > first && jump < 0))
 					continue;
@@ -384,26 +384,26 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		{
 			if(ARE_CLASSES_DIFFERENT(dict, [NSDictionary class]))	continue;
 			
-			readingName = objectForKey(dict, JSON_PROJ_VOL_READING_NAME, @"Reading name");
-			if(readingName == nil || ARE_CLASSES_DIFFERENT(readingName, [NSString class]) || [readingName length] == 0)
+			readingName = objectForKey(dict, JSON_PROJ_VOL_READING_NAME, @"Reading name", [NSString class]);
+			if(readingName == nil || [readingName length] == 0)
 			{
 				readingName = nil;
-				readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID");
-				if(readingID == nil || ARE_CLASSES_DIFFERENT(readingID, [NSNumber class]))	continue;
+				readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID", [NSNumber class]);
+				if(readingID == nil)	continue;
 			}
 			else
 				readingID = nil;
 			
-			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID");
-			if(internalID == nil || ARE_CLASSES_DIFFERENT(internalID, [NSNumber class]))	continue;
+			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID", [NSNumber class]);
+			if(internalID == nil)	continue;
 
-			description = objectForKey(dict, JSON_PROJ_DESCRIPTION, @"Description");
+			description = objectForKey(dict, JSON_PROJ_DESCRIPTION, @"Description", [NSString class]);
 			
-			content = objectForKey(dict, JSON_PROJ_CHAPTERS, @"chapters");
-			if(content == nil || ARE_CLASSES_DIFFERENT(content, [NSArray class]))			continue;
+			content = objectForKey(dict, JSON_PROJ_CHAPTERS, @"chapters", [NSArray class]);
+			if(content == nil)			continue;
 			
 			if(paidContent)
-				priceObj = objectForKey(dict, JSON_PROJ_PRICE, @"price");
+				priceObj = objectForKey(dict, JSON_PROJ_PRICE, @"price", [NSNumber class]);
 			
 			output[cache].details = parseChapterStructure(content, &(output[cache].lengthDetails), NO, NO, NULL);
 			
@@ -419,7 +419,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			if(description == nil)			output[cache].description[0] = 0;
 			else							wcsncpy(output[cache].description, (charType*) [description cStringUsingEncoding:NSUTF32StringEncoding], TOME_DESCRIPTION_LENGTH);
 			
-			if(priceObj == nil || ARE_CLASSES_DIFFERENT(priceObj, [NSNumber class]))	output[cache].price = UINT_MAX;
+			if(priceObj == nil)				output[cache].price = INVALID_VALUE;
 			else							output[cache].price = [priceObj unsignedIntValue];
 			
 			cache++;
@@ -492,8 +492,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	NSNumber *ID, *status = nil, *rightToLeft = nil, *tagMask = nil, *paidContent = nil, *DRM = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
-	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
-	if(ID == nil || ARE_CLASSES_DIFFERENT(ID, [NSNumber class]))
+	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID", [NSNumber class]);
+	if(ID == nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: couldn't find ID in %@", bloc);
@@ -501,8 +501,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName");
-	if(projectName == nil || ARE_CLASSES_DIFFERENT(projectName, [NSString class]) || [projectName length] == 0)
+	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName", [NSString class]);
+	if(projectName == nil || [projectName length] == 0)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: couldn't find name for ID %@ in %@", ID, bloc);
@@ -510,8 +510,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil);
-	if(DRM != nil && ARE_CLASSES_DIFFERENT(DRM, [NSNumber class]))
+	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil, [NSNumber class]);
+	if(DRM != nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: invalid DRM for ID %@ (%@) in %@", ID, projectName, bloc);
@@ -519,8 +519,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price");
-	if(paidContent != nil && ARE_CLASSES_DIFFERENT(paidContent, [NSNumber class]))
+	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price", [NSNumber class]);
+	if(paidContent != nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: invalid paid status for ID %@ (%@) in %@", ID, projectName, bloc);
@@ -530,8 +530,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
-	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters"), &nbChapters, YES, isPaidContent, &chaptersPrices);
-	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes"), &nbVolumes, isPaidContent);
+	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters", [NSArray class]), &nbChapters, YES, isPaidContent, &chaptersPrices);
+	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes", [NSArray class]), &nbVolumes, isPaidContent);
 
 	if(nbChapters == 0)
 	{
@@ -547,11 +547,11 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description");
-	if(description == nil || ARE_CLASSES_DIFFERENT(description, [NSString class]) || [description length] == 0)	description = nil;
+	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description", [NSString class]);
+	if(description == nil || [description length] == 0)	description = nil;
 	
-	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author");
-	if(authors == nil || ARE_CLASSES_DIFFERENT(authors, [NSString class]) || [authors length] == 0)
+	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author", [NSString class]);
+	if(authors == nil || [authors length] == 0)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: no author for project of ID %@ (%@) in %@", ID, projectName, bloc);
@@ -559,8 +559,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status");
-	if(status == nil || ARE_CLASSES_DIFFERENT(status, [NSNumber class]))
+	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status", [NSNumber class]);
+	if(status == nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: no status for project of ID %@ (%@) in %@", ID, projectName, bloc);
@@ -568,8 +568,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	asianOrder = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading");
-	if(asianOrder == nil || ARE_CLASSES_DIFFERENT(asianOrder, [NSNumber class]))
+	rightToLeft = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading", [NSNumber class]);
+	if(rightToLeft == nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: invalid asian_order_of_reading for project of ID %@ (%@) in %@", ID, projectName, bloc);
@@ -578,8 +578,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 
 	
-	tagMask = objectForKey(bloc, JSON_PROJ_TAGMASK , @"tagMask");
-	if(tagMask == nil || ARE_CLASSES_DIFFERENT(tagMask, [NSNumber class]))
+	tagMask = objectForKey(bloc, JSON_PROJ_TAGMASK , @"tagMask", [NSNumber class]);
+	if(tagMask == nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: invalid tagMask for project of ID %@ (%@) in %@", ID, projectName, bloc);
@@ -672,8 +672,8 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 
 		for(byte i = 0; i < NB_IMAGES; i++)
 		{
-			URL = objectForKey(bloc, IDURL[i], nil);
-			CRC = objectForKey(bloc, IDHash[i], nil);
+			URL = objectForKey(bloc, IDURL[i], nil, [NSString class]);
+			CRC = objectForKey(bloc, IDHash[i], nil, [NSString class]);
 			
 			if(URL == nil || CRC == nil)
 				output.haveImages[i] = false;
@@ -704,9 +704,9 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 {
 	void * outputData = NULL;
 	bool isInit;
-	NSArray * projects = objectForKey(remoteData, JSON_PROJ_PROJECTS, @"projects");
+	NSArray * projects = objectForKey(remoteData, JSON_PROJ_PROJECTS, @"projects", [NSArray class]);
 	
-	if(projects == nil || ARE_CLASSES_DIFFERENT(projects, [NSArray class]))
+	if(projects == nil)
 	{
 #ifdef DEV_VERSION
 		NSLog(@"Project parser error: invalid 'projects' in %@", remoteData);
@@ -806,8 +806,8 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 		if(ARE_CLASSES_DIFFERENT(remoteDataPart, [NSDictionary class]))
 			continue;
 		
-		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID");
-		if(repoID == nil || ARE_CLASSES_DIFFERENT(repoID, [NSNumber class]))
+		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID", [NSNumber class]);
+		if(repoID == nil)
 		{
 #ifdef DEV_VERSION
 			NSLog(@"Project parser error: no authorID %@", remoteDataPart);
@@ -921,7 +921,7 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, ui
 
 #pragma mark - Toolbox
 
-id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName)
+id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class expectedClass)
 {
 	id value = [dict objectForKey : ID];
 	
@@ -929,6 +929,9 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName)
 	{
 		value = [dict objectForKey:fullName];
 	}
+
+	if(value == nil || (expectedClass != [NSObject class] && ARE_CLASSES_DIFFERENT(value, expectedClass)))
+		return nil;
 	
 	return value;
 }

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName);
+id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class expectedClass);
 
 //Project parser
 PROJECT_DATA parseBloc(NSDictionary * bloc);
@@ -22,7 +22,7 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
 //Rak parser
 //This function will perform a lot of network task, and thus should _really_ be run in a thread
-ROOT_REPO_DATA ** parserRakFile(NSData * fileContent, uint * nbElem);
+ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem);
 
 #define JSON_PROJ_AUTHOR_ID	@"ROOT-ID"
 #define ARE_CLASSES_DIFFERENT(a, b) (![a isKindOfClass:b])
