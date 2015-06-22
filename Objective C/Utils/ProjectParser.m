@@ -511,23 +511,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 	
 	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil, [NSNumber class]);
-	if(DRM != nil)
-	{
-#ifdef DEV_VERSION
-		NSLog(@"Project parser error: invalid DRM for ID %@ (%@) in %@", ID, projectName, bloc);
-#endif
-		goto end;
-	}
-	
 	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price", [NSNumber class]);
-	if(paidContent != nil)
-	{
-#ifdef DEV_VERSION
-		NSLog(@"Project parser error: invalid paid status for ID %@ (%@) in %@", ID, projectName, bloc);
-#endif
-		goto end;
-	}
-	
+
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters", [NSArray class]), &nbChapters, YES, isPaidContent, &chaptersPrices);

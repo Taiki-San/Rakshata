@@ -182,9 +182,7 @@ fail:	//We'll jump back here when it's starting to go wrong
 		goto fail;
 	
 	isMature = objectForKey(dict, JSON_REPO_SUB_MATURE, @"mature_content", [NSNumber class]);
-	if(isMature != nil)
-		goto fail;
-	
+
 	if(isLocal)
 	{
 		NSNumber * _isActive = objectForKey(dict, JSON_REPO_SUB_ACTIVE, @"is_active_repo", [NSNumber class]);
