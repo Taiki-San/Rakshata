@@ -341,12 +341,12 @@ static int zip64local_getShort (const zlib_filefunc64_32_def* pzlib_filefunc_def
 		x = i;
 
 	if(err == ZIP_OK && (err = zip64local_getByte(pzlib_filefunc_def, filestream, &i)) == ZIP_OK)
-	{
 		x += ((short) i) << 8;
-		*pX = x;
-	}
 	else
-		*pX = 0;
+		x = 0;
+
+	if(pX != NULL)
+		*pX = x;
 
 	return err;
 }
@@ -367,12 +367,12 @@ static int zip64local_getLong (const zlib_filefunc64_32_def* pzlib_filefunc_def,
 		x += ((uint32_t) i) << 16;
 
 	if(err == ZIP_OK && (err = zip64local_getByte(pzlib_filefunc_def, filestream, &i)) == ZIP_OK)
-	{
 		x += ((uint32_t) i) << 24;
-		*pX = x;
-	}
 	else
-		*pX = 0;
+		x = 0;
+
+	if(pX != NULL)
+		*pX = x;
 
 	return err;
 }
@@ -405,12 +405,12 @@ static int zip64local_getLong64 (const zlib_filefunc64_32_def* pzlib_filefunc_de
 		x += ((uint64_t) i) << 48;
 
 	if(err == ZIP_OK && (err = zip64local_getByte(pzlib_filefunc_def, filestream, &i)) == ZIP_OK)
-	{
 		x += ((uint64_t) i) << 56;
-		*pX = x;
-	}
 	else
-		*pX = 0;
+		x = 0;
+
+	if(pX != NULL)
+		*pX = x;
 
 	return err;
 }
@@ -581,12 +581,8 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 	uint64_t size_central_dir = 0;		/* size of the central directory  */
 	uint64_t offset_central_dir = 0;	/* offset of start of central directory */
 	uint64_t central_pos = 0;
-	uint32_t entry = 0;
-
-	uint32_t number_disk = 0;			/* number of the current dist, used for spaning ZIP, unsupported, always 0*/
-	uint32_t number_disk_with_CD = 0;	/* number the the disk with central dir, used for spaning ZIP, unsupported, always 0*/
-	uint64_t number_entry = 0;
 	uint64_t number_entry_CD = 0;		/* total number of entries in the central dir (same than number_entry on nospan) */
+
 	uint16_t VersionMadeBy, VersionNeeded;
 	uint16_t size_comment = 0;
 
@@ -607,12 +603,15 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 
 	if(hasZIP64Record)
 	{
-		uint64_t sizeEndOfCentralDirectory;
+		uint32_t number_disk;			/* number of the current dist, used for spaning ZIP, unsupported, always 0*/
+		uint32_t number_disk_with_CD;	/* number the the disk with central dir, used for spaning ZIP, unsupported, always 0*/
+		uint64_t number_entry, sizeEndOfCentralDirectory;
+
 		if(ZSEEK64(pziinit->z_filefunc, pziinit->filestream, central_pos, ZLIB_FILEFUNC_SEEK_SET) != 0)
 			err = ZIP_ERRNO;
 
 		/* the signature, already checked */
-		if(zip64local_getLong(&pziinit->z_filefunc, pziinit->filestream, &entry) != ZIP_OK)
+		if(zip64local_getLong(&pziinit->z_filefunc, pziinit->filestream, NULL) != ZIP_OK)
 			err = ZIP_ERRNO;
 
 		/* size of zip64 end of central directory record */
@@ -657,36 +656,35 @@ int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 	}
 	else
 	{
+		uint16_t number_disk;			/* number of the current dist, used for spaning ZIP, unsupported, always 0*/
+		uint16_t number_disk_with_CD;	/* number the the disk with central dir, used for spaning ZIP, unsupported, always 0*/
+		uint16_t number_entry;
+
 		// Read End of central Directory info
 		if(ZSEEK64(pziinit->z_filefunc, pziinit->filestream, central_pos,ZLIB_FILEFUNC_SEEK_SET) != 0)
 			err = ZIP_ERRNO;
 
 		/* the signature, already checked */
-		if(zip64local_getLong(&pziinit->z_filefunc, pziinit->filestream, &entry) != ZIP_OK)
+		if(zip64local_getLong(&pziinit->z_filefunc, pziinit->filestream, NULL) != ZIP_OK)
 			err = ZIP_ERRNO;
 
 		/* number of this disk */
-		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, (uint16_t *) &number_disk) != ZIP_OK)
+		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, &number_disk) != ZIP_OK)
 			err = ZIP_ERRNO;
 
 		/* number of the disk with the start of the central directory */
-		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, (uint16_t *) &number_disk_with_CD) != ZIP_OK)
+		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, &number_disk_with_CD) != ZIP_OK)
 			err = ZIP_ERRNO;
 
 		/* total number of entries in the central dir on this disk */
-		number_entry = 0;
-		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, (uint16_t *) &entry) != ZIP_OK)
+		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, &number_entry) != ZIP_OK)
 			err = ZIP_ERRNO;
-		else
-			number_entry = entry;
 
 		/* total number of entries in the central dir */
 		if(zip64local_getShort(&pziinit->z_filefunc, pziinit->filestream, (uint16_t *) &number_entry_CD) != ZIP_OK)
 			err = ZIP_ERRNO;
-		else
-			number_entry_CD = entry;
 
-		if(number_entry_CD != number_entry || number_disk_with_CD != 0 || number_disk != 0)
+		if(err == ZIP_OK && (number_entry_CD != number_entry || number_disk_with_CD != 0 || number_disk != 0))
 			err = ZIP_BADZIPFILE;
 
 		/* size of the central directory */
@@ -1709,11 +1707,11 @@ extern int  zipClose (zipFile file, const char* global_comment)
 extern int zipRemoveExtraInfoBlock (char* pData, int* dataLen, short sHeader)
 {
 	char* p = pData;
-	int size = 0;
+	uint size = 0;
 	char* pNewHeader;
 	char* pTmp;
 	short header;
-	short dataSize;
+	uint16_t dataSize;
 
 	int retVal = ZIP_OK;
 
@@ -1726,13 +1724,13 @@ extern int zipRemoveExtraInfoBlock (char* pData, int* dataLen, short sHeader)
 	while(p < (pData + *dataLen))
 	{
 		header = *(short*)p;
-		dataSize = *(((short*)p)+1);
+		dataSize = (uint16_t) *(((short*)p)+1);
 
 		if( header == sHeader ) // Header found.
 		{
 			p += dataSize + 4; // skip it. do not copy to temp buffer
 		}
-		else
+		else if((int16_t) dataSize >= 0)
 		{
 			// Extra Info block should not be removed, So copy it to the temp buffer.
 			memcpy(pTmp, p, dataSize + 4);
@@ -1742,17 +1740,17 @@ extern int zipRemoveExtraInfoBlock (char* pData, int* dataLen, short sHeader)
 
 	}
 
-	if(size < *dataLen)
+	if(size < (uint32_t) *dataLen)
 	{
 		// clean old extra info block.
-		memset(pData,0, *dataLen);
+		memset(pData, 0, (uint32_t) *dataLen);
 		
 		// copy the new extra info block over the old
 		if(size > 0)
-			memcpy(pData, pNewHeader, size);
+			memcpy(pData, pNewHeader, (uint32_t) size);
 		
 		// set the new extra info size
-		*dataLen = size;
+		*dataLen = (int) size;
 		
 		retVal = ZIP_OK;
 	}

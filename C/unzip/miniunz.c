@@ -233,20 +233,74 @@ bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool ex
 	return doExtractCurrentfile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
 }
 
+bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
+{
+	if(filenameInzip == NULL)
+		return false;
+
+	//Load global data
+	unz_global_info64 gi;
+	int err;
+
+	if((err = unzGetGlobalInfo64(uf, &gi)) != UNZ_OK)
+		return false;
+
+	//Allocate collector memory
+	uint nbEntry = gi.number_entry;
+	*filenameInzip = malloc((nbEntry + 1) * sizeof(char *));
+	if(*filenameInzip == NULL)
+		return false;
+
+	for(uint i = 0, rejected = 0; i < nbEntry; i++)
+	{
+		char filename[256] = {0};
+		unz_file_info64 file_info;
+
+		//Get current item data
+		if((unzGetCurrentFileInfo64(uf, &file_info, filename, sizeof(filename), NULL, 0, NULL, 0)) != UNZ_OK)
+		{
+			nbEntry = i - rejected;
+			break;
+		}
+
+		//If there is no data, we keep the entry empty
+		if(filename[0] == 0)
+			(*filenameInzip)[i - rejected++] = NULL;
+		else
+			(*filenameInzip)[i - rejected] = strdup(filename);
+
+		//Jump to the next element
+		if(i + 1 < nbEntry && (err = unzGoToNextFile(uf)) != UNZ_OK)
+		{
+			nbEntry = i + (filename[0] != 0);
+			break;
+		}
+	}
+
+	//Save data
+	*nbFichiers = nbEntry;
+	(*filenameInzip)[nbEntry] = NULL;
+
+	return true;
+}
+
 bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput)
 {
 	if(zipFile == NULL || output == NULL)
 		return false;
 
 	unz_file_info64 metadata;
-	if(unzGetCurrentFileInfo64(zipFile, &metadata, NULL, 0, NULL, 0, NULL, 0) != UNZ_OK)
+	if(unzGetCurrentFileInfo64(zipFile, &metadata, NULL, 0, NULL, 0, NULL, 0) != UNZ_OK || unzOpenCurrentFile(zipFile) != UNZ_OK)
 		return false;
 
 	*output = malloc(metadata.uncompressed_size + 1);
 	if(*output == NULL)
+	{
+		unzCloseCurrentFile(zipFile);
 		return false;
+	}
 
-	int err;
+	int err = 0;
 	uint64_t posOutput = 0;
 	byte workingBuffer[BUFFER_SIZE];
 
@@ -259,12 +313,14 @@ bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput)
 			return false;
 		}
 
-		memcpy(&((*output)[posOutput]), workingBuffer, err);
+		memcpy(&((*output)[posOutput]), workingBuffer, (uint) err);
 		posOutput += (uint) err;
 
 	} while(err > 0 && posOutput < metadata.uncompressed_size);
 
 	(*output)[(*sizeOutput = posOutput)] = 0;
+
+	unzCloseCurrentFile(zipFile);
 
 	return true;
 }

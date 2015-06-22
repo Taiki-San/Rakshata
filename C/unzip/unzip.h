@@ -326,27 +326,7 @@ extern "C" {
   If there is no error, the return value is UNZ_OK.
 	 */
 
-	extern int  unzOpenCurrentFilePassword (unzFile file);
-	/*
-  Open for reading data the current file in the zipfile.
-  password is a crypting password
-  If there is no error, the return value is UNZ_OK.
-	 */
-
-	extern int  unzOpenCurrentFile2 (unzFile file,
-									 int* method,
-									 int* level,
-									 int raw);
-	/*
-  Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
-	 if raw==1
-  *method will receive method of compression, *level will receive level of
-	 compression
-  note : you can set level parameter as NULL (if you did not want known level,
-	 but you CANNOT set method parameter as NULL
-	 */
-
-	extern int  unzOpenCurrentFile3 (unzFile file,
+	extern int  unzOpenCurrentFileInternal (unzFile file,
 									 int* method,
 									 int* level,
 									 int raw);
