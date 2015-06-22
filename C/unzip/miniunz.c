@@ -234,3 +234,38 @@ bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool ex
 	return doExtractCurrentfile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
 }
 
+bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput)
+{
+	if(zipFile == NULL || output == NULL)
+		return false;
+
+	unz_file_info64 metadata;
+	if(unzGetCurrentFileInfo64(zipFile, &metadata, NULL, 0, NULL, 0, NULL, 0) != UNZ_OK)
+		return false;
+
+	*output = malloc(metadata.uncompressed_size + 1);
+	if(*output == NULL)
+		return false;
+
+	int err;
+	uint64_t posOutput = 0;
+	byte workingBuffer[BUFFER_SIZE];
+
+	do
+	{
+		if((err = unzReadCurrentFile(zipFile, workingBuffer, BUFFER_SIZE)) < 0 || posOutput + (uint) err > metadata.uncompressed_size)
+		{
+			free(*output);
+			*output = NULL;
+			return false;
+		}
+
+		memcpy(&((*output)[posOutput]), workingBuffer, err);
+		posOutput += (uint) err;
+
+	} while(err > 0 && posOutput < metadata.uncompressed_size);
+
+	(*output)[(*sizeOutput = posOutput)] = 0;
+
+	return true;
+}

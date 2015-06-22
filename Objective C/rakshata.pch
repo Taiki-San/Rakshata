@@ -43,6 +43,7 @@
 	#import "Reader.h"
 
 	#import "RakAuthController.h"
+	#import "RakImportController.h"
 
 	#import "RakContentView.h"
 	#import "RakAppDelegate.h"

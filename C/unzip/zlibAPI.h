@@ -22,6 +22,7 @@
 int doExtractCurrentfile(unzFile zipFile, char* filenameInZip, char* outputPath, const bool extractWithoutPath, unsigned char* passwordPageCrypted);
 int doExtract(unzFile zipFile, char *input, char *outputPath, bool extractWithoutPath);
 bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted);
+bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput);
 
 //zip
 zipFile * createZip(const char * outfile);

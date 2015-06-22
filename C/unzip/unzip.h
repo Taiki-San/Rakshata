@@ -112,8 +112,8 @@ extern "C" {
 		uint64_t compression_method;   /* compression method              2 bytes */
 		uint64_t dosDate;              /* last mod file date in Dos fmt   4 bytes */
 		uint64_t crc;                  /* crc-32                          4 bytes */
-		uint64_t compressed_size;   /* compressed size                 8 bytes */
-		uint64_t uncompressed_size; /* uncompressed size               8 bytes */
+		uint64_t compressed_size;      /* compressed size                 8 bytes */
+		uint64_t uncompressed_size;    /* uncompressed size               8 bytes */
 		uint64_t size_filename;        /* filename length                 2 bytes */
 		uint64_t size_file_extra;      /* extra field length              2 bytes */
 		uint64_t size_file_comment;    /* file comment length             2 bytes */

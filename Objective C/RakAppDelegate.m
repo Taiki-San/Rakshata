@@ -153,8 +153,24 @@
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-	[[[RakAddRepoController alloc] init] performSelectorInBackground:@selector(analyseFileContent:) withObject:[NSData dataWithContentsOfFile:filename]];
-	
+	NSString * extension = [filename pathExtension];
+	byte branch;
+
+	if([extension caseInsensitiveCompare:@"rakSource"] == NSOrderedSame)
+		branch = 1;
+	else if([extension caseInsensitiveCompare:@"rak"] == NSOrderedSame)
+		branch = 2;
+	else
+		return NO;
+
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+		if(branch == 1)
+			[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
+		else
+			[RakImportController importFile:filename :branch == 2];
+	});
+
 	return YES;
 }
 
