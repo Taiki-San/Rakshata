@@ -24,7 +24,7 @@
 	{
 		mainScroller = [[NSPageController alloc] init];
 		mainScroller.view = container;
-		mainScroller.transitionStyle = dataRequest.japaneseOrder ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
+		mainScroller.transitionStyle = dataRequest.rightToLeft ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 		mainScroller.delegate = self;
 	}
 	
@@ -1032,7 +1032,7 @@
 		CGFloat width = self.bounds.size.width;
 		delta = width - 2 * READER_BORDURE_VERT_PAGE;
 		
-		if(withShift ^ !_project.japaneseOrder)
+		if(withShift ^ !_project.rightToLeft)
 			delta *= -1;
 		
 		

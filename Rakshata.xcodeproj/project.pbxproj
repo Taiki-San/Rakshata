@@ -178,6 +178,7 @@
 		B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ED38561AF183B8007293E5 /* RakAnimationController.m */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
+		B6F131341B372E4100042F8C /* RakImportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F131331B372E4100042F8C /* RakImportController.m */; };
 		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
 		B6F6ECEB18A3001400E3B55B /* chapitre.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA418A3001400E3B55B /* chapitre.c */; };
 		B6F6ECEC18A3001400E3B55B /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECA518A3001400E3B55B /* check.c */; };
@@ -523,6 +524,8 @@
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
+		B6F131321B372E4100042F8C /* RakImportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImportController.h; path = "Import:Export/RakImportController.h"; sourceTree = "<group>"; };
+		B6F131331B372E4100042F8C /* RakImportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportController.m; path = "Import:Export/RakImportController.m"; sourceTree = "<group>"; };
 		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
 		B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAuthTools.m; path = Prefs/RakAuthTools.m; sourceTree = "<group>"; };
 		B6F6ECA418A3001400E3B55B /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = C/chapitre.c; sourceTree = "<group>"; };
@@ -1221,6 +1224,7 @@
 			children = (
 				B6CC724318723044003A745B /* CT */,
 				B6ECCB221B29BC030073D10B /* Foreground View */,
+				B6F131311B372E1000042F8C /* Import/Export */,
 				B6CC724618723071003A745B /* MDL */,
 				B6218242187351A3008AC5DD /* Prefs */,
 				B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */,
@@ -1302,6 +1306,15 @@
 				B6F6ECC018A3001400E3B55B /* lecteur_tool.c */,
 			);
 			name = "Lecteur Core";
+			sourceTree = "<group>";
+		};
+		B6F131311B372E1000042F8C /* Import/Export */ = {
+			isa = PBXGroup;
+			children = (
+				B6F131321B372E4100042F8C /* RakImportController.h */,
+				B6F131331B372E4100042F8C /* RakImportController.m */,
+			);
+			name = Import/Export;
 			sourceTree = "<group>";
 		};
 		B6F2F7B319CE2C830044A69C /* RakAuth */ = {
@@ -1629,6 +1642,7 @@
 				B6BD45C11A7D240400C2A675 /* RakGridView.m in Sources */,
 				B68ED56D19DAA63100644A79 /* RakCTHTableController.m in Sources */,
 				B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */,
+				B6F131341B372E4100042F8C /* RakImportController.m in Sources */,
 				B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */,
 				B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */,
 				B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */,

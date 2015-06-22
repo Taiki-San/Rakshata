@@ -92,7 +92,7 @@ bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
 	if(a.tagMask != b.tagMask)
 		return false;
 	
-	if(a.japaneseOrder != b.japaneseOrder)
+	if(a.rightToLeft != b.rightToLeft)
 		return false;
 	
 	if(a.isPaid != b.isPaid)

@@ -50,7 +50,7 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool 
 	sqlite3_bind_text(internalRequest, 6, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(internalRequest, 7, data.status);
 	sqlite3_bind_int(internalRequest, 8, (int32_t) data.category);
-	sqlite3_bind_int(internalRequest, 9, data.japaneseOrder);
+	sqlite3_bind_int(internalRequest, 9, data.rightToLeft);
 	sqlite3_bind_int(internalRequest, 10, data.isPaid);
 	sqlite3_bind_int(internalRequest, 11, (int32_t) data.mainTag);
 	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.tagMask);
@@ -167,7 +167,7 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID)
 	sqlite3_bind_text(request, 3, utf8Author, lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(request, 4, data.status);
 	sqlite3_bind_int(request, 5, (int32_t) data.category);
-	sqlite3_bind_int(request, 6, data.japaneseOrder);
+	sqlite3_bind_int(request, 6, data.rightToLeft);
 	sqlite3_bind_int(request, 7, data.isPaid);
 	sqlite3_bind_int(request, 8, (int32_t) data.mainTag);
 	sqlite3_bind_int64(request, 9, (int64_t) data.tagMask);

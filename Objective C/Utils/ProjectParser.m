@@ -489,7 +489,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *asianOrder = nil, *tagMask = nil, *paidContent = nil, *DRM = nil;
+	NSNumber *ID, *status = nil, *rightToLeft = nil, *tagMask = nil, *paidContent = nil, *DRM = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID");
@@ -598,6 +598,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	convertTagMask([tagMask unsignedLongLongValue], &(data.category), &(data.tagMask), &(data.mainTag));
 
 	data.haveDRM = (DRM != nil && [DRM boolValue]) | (DRM == nil && isPaidContent);
+	data.rightToLeft = [rightToLeft boolValue];
 	data.isInitialized = true;
 	
 	wcsncpy(data.projectName, (charType*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
@@ -648,7 +649,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.status) forKey:JSON_PROJ_STATUS];
 	
 	[output setObject:@(project.tagMask) forKey:JSON_PROJ_TAGMASK];
-	[output setObject:@(project.japaneseOrder) forKey:JSON_PROJ_ASIAN_ORDER];
+	[output setObject:@(project.rightToLeft) forKey:JSON_PROJ_ASIAN_ORDER];
 	[output setObject:@(project.haveDRM) forKey:JSON_PROJ_DRM];
 	
 	if(project.isPaid)

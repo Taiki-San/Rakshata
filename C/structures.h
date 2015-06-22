@@ -190,7 +190,7 @@ typedef struct root_repository_data
 **			-	status					État du projet (en cours, fini, suspendu, etc...)
 **			-	type					Type du projet (comics/BD/manga/webcomics)
 **			-	category				Catégorie du projet
-**			-	japaneseOrder			Sens de lecture
+**			-	rightToLeft				Sens de lecture
 **			-	isPaid					Contenus payants disponibles
 **			-	haveDRM					Les DRM sont-elles activées
 **
@@ -241,7 +241,7 @@ typedef struct dataProject
 	charType projectName[LENGTH_PROJECT_NAME];
 	bool favoris;
 	charType authorName[LENGTH_AUTHORS];
-	bool japaneseOrder;
+	bool rightToLeft;
 	
 	//Deux blocs de 64b complets
 	uint32_t category;
