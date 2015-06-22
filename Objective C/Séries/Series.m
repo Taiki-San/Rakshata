@@ -100,7 +100,7 @@
 	if(self.mainThread != TAB_SERIES)
 		return;
 	
-	const char * string = [[theEvent charactersIgnoringModifiers] cStringUsingEncoding:NSASCIIStringEncoding];
+	const char * string = [[theEvent charactersIgnoringModifiers] UTF8String];
 	char c;
 	
 	if(string == NULL)

@@ -335,7 +335,7 @@ enum
 	{
 		for(uint i = 0; i < nbSubRepo; i++)
 		{
-			if(!strcmp([element cStringUsingEncoding:NSASCIIStringEncoding], root->langueDescriptions[i]))
+			if(!strcmp([element UTF8String], root->langueDescriptions[i]))
 				return root->descriptions[i];
 		}
 	}

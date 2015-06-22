@@ -88,7 +88,7 @@ charType ** parseDescriptions(NSArray * array, char *** languages, uint *length)
 		
 		//Copy
 		memcpy(output[pos], [description cStringUsingEncoding:NSUTF32LittleEndianStringEncoding], (lengthDescription + 1) * sizeof(charType));
-		memcpy((*languages)[pos++], [language cStringUsingEncoding:NSASCIIStringEncoding], lengthLanguage + 1);
+		memcpy((*languages)[pos++], [language UTF8String], lengthLanguage + 1);
 	}
 
 	//If nothing was copied
@@ -130,7 +130,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 	
 	NSString * stringToHash = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
 	
-	return checkSignature([stringToHash cStringUsingEncoding:NSUTF8StringEncoding], [signature cStringUsingEncoding:NSASCIIStringEncoding]);
+	return checkSignature([stringToHash cStringUsingEncoding:NSUTF8StringEncoding], [signature UTF8String]);
 }
 
 REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)
@@ -194,10 +194,10 @@ fail:	//We'll jump back here when it's starting to go wrong
 	
 	output.repoID = [repoID unsignedIntValue];
 	wstrncpy(output.name, REPO_NAME_LENGTH, (void *) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
-	strncpy(output.language, [language cStringUsingEncoding:NSASCIIStringEncoding], REPO_LANGUAGE_LENGTH);
+	strncpy(output.language, [language UTF8String], REPO_LANGUAGE_LENGTH);
 	output.type = [type unsignedCharValue];
-	strncpy(output.URL, [URL cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-	strncpy(output.website, [website cStringUsingEncoding:NSASCIIStringEncoding], REPO_WEBSITE_LENGTH);
+	strncpy(output.URL, [URL UTF8String], REPO_URL_LENGTH);
+	strncpy(output.website, [website UTF8String], REPO_WEBSITE_LENGTH);
 	output.isMature = isMature != nil ? [isMature boolValue] : NO;
 	
 	output.parentRepoID = parentID;
@@ -332,13 +332,13 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			
 			if(URLImage != nil)
 			{
-				strncpy(outputExtra[pos].URLImage, [URLImage cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-				strncpy(outputExtra[pos].hashImage, [hash cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
+				strncpy(outputExtra[pos].URLImage, [URLImage UTF8String], REPO_URL_LENGTH);
+				strncpy(outputExtra[pos].hashImage, [hash UTF8String], LENGTH_CRC);
 				
 				if(URLImageRetina != nil)
 				{
-					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
-					strncpy(outputExtra[pos].hashImageRetina, [hashRetina cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
+					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina UTF8String], REPO_URL_LENGTH);
+					strncpy(outputExtra[pos].hashImageRetina, [hashRetina UTF8String], LENGTH_CRC);
 					outputExtra[pos].haveRetina = true;
 				}
 				else
@@ -431,7 +431,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	rootWip->subRepoAreExtra = wantExtra;
 	
 	wstrncpy(rootWip->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
-	usstrcpy(rootWip->URL, REPO_URL_LENGTH, [URL cStringUsingEncoding:NSASCIIStringEncoding]);
+	usstrcpy(rootWip->URL, REPO_URL_LENGTH, [URL UTF8String]);
 	
 	rootWip->descriptions = descriptions;
 	rootWip->langueDescriptions = languages;

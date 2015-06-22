@@ -47,7 +47,7 @@ enum
 	BOOL oldWantCollapse = NO;
 	if([state length] != 0)	//Any content
 	{
-		if([state cStringUsingEncoding:NSASCIIStringEncoding][0] == '1')
+		if([state UTF8String][0] == '1')
 			oldWantCollapse = YES;
 		
 		if([state length] > 2 && [state isNotEqualTo:STATE_EMPTY])	//We may have some actual content

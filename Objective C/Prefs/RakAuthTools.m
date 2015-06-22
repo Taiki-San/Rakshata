@@ -156,7 +156,7 @@
 	}
 	
 	NSString * string = [self.stringValue copy];
-	const char * data = [string cStringUsingEncoding:NSASCIIStringEncoding];
+	const char * data = [string UTF8String];
 	
 	byte retValue = checkLogin(data);
 	

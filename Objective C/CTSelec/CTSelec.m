@@ -84,7 +84,7 @@
 
 - (BOOL) initCoreview : (NSArray*) dataState
 {
-	uint64_t indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+	uint64_t indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] UTF8String]);
 	if(indexTeam == UINT64_MAX)
 	{
 		NSLog(@"Couldn't find the repo to restore, abort :/");

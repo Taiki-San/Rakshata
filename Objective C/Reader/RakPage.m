@@ -216,7 +216,7 @@
 			
 		default:
 		{
-			const char * string = [character cStringUsingEncoding:NSASCIIStringEncoding];
+			const char * string = [character UTF8String];
 			char c;
 			
 			if(character == nil || string == nil)

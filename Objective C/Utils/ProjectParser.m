@@ -664,11 +664,11 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 				output.haveImages[i] = false;
 			else
 			{
-				char * URLCopy = strdup([URL cStringUsingEncoding:NSASCIIStringEncoding]);
+				char * URLCopy = strdup([URL UTF8String]);
 				
 				if(URLCopy != NULL)
 				{
-					strncpy((void*) &(output.hashesImages[i]), [CRC cStringUsingEncoding:NSASCIIStringEncoding], LENGTH_CRC);
+					strncpy((void*) &(output.hashesImages[i]), [CRC UTF8String], LENGTH_CRC);
 					output.URLImages[i] = URLCopy;
 					output.haveImages[i] = true;
 				}

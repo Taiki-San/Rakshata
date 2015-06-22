@@ -61,7 +61,7 @@
 		{
 			do
 			{
-				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] cStringUsingEncoding:NSASCIIStringEncoding]);
+				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] UTF8String]);
 				if(repoID == UINT64_MAX)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");

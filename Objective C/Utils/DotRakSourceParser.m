@@ -87,7 +87,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 		
 		//Craft a structure to send to the update routine in order to gather the data
 		dummyRepo.type = [type unsignedCharValue];
-		strncpy(dummyRepo.URL, [URL cStringUsingEncoding:NSASCIIStringEncoding], REPO_URL_LENGTH);
+		strncpy(dummyRepo.URL, [URL UTF8String], REPO_URL_LENGTH);
 		dummyRepo.URL[REPO_URL_LENGTH - 1] = 0;
 
 		size_t length;

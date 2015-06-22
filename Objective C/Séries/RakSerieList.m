@@ -81,7 +81,7 @@
 		{
 			if([dataState count] == 5)
 			{
-				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] cStringUsingEncoding:NSASCIIStringEncoding]);
+				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] UTF8String]);
 				if(repoID == UINT64_MAX)
 				{
 					NSLog(@"Couldn't find the repo to restore, abort :/");
