@@ -576,17 +576,17 @@ static uint64_t zip64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzli
 int LoadCentralDirectoryRecord(zip64_internal* pziinit)
 {
 	int err = ZIP_OK;
-	uint64_t byte_before_the_zipfile;/* byte before the zipfile, ( > 0 for sfx)*/
+	uint64_t byte_before_the_zipfile = 0;	/* byte before the zipfile, ( > 0 for sfx)*/
 
-	uint64_t size_central_dir;       /* size of the central directory  */
-	uint64_t offset_central_dir = 0; /* offset of start of central directory */
-	uint64_t central_pos;
-	uint32_t entry;
+	uint64_t size_central_dir = 0;		/* size of the central directory  */
+	uint64_t offset_central_dir = 0;	/* offset of start of central directory */
+	uint64_t central_pos = 0;
+	uint32_t entry = 0;
 
-	uint32_t number_disk;          /* number of the current dist, used for spaning ZIP, unsupported, always 0*/
-	uint32_t number_disk_with_CD;  /* number the the disk with central dir, used for spaning ZIP, unsupported, always 0*/
+	uint32_t number_disk = 0;			/* number of the current dist, used for spaning ZIP, unsupported, always 0*/
+	uint32_t number_disk_with_CD = 0;	/* number the the disk with central dir, used for spaning ZIP, unsupported, always 0*/
 	uint64_t number_entry = 0;
-	uint64_t number_entry_CD = 0;  /* total number of entries in the central dir (same than number_entry on nospan) */
+	uint64_t number_entry_CD = 0;		/* total number of entries in the central dir (same than number_entry on nospan) */
 	uint16_t VersionMadeBy, VersionNeeded;
 	uint16_t size_comment = 0;
 

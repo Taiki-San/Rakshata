@@ -67,12 +67,11 @@ int doExtractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPa
 
 	snprintf(outputFilename, sizeOutputPath, "%s/%s", outputPath, filenameToUse);
 
-	//If there was a password, we open the file with it
-	if((err = unzOpenCurrentFilePassword(zipFile)) != UNZ_OK)
+	if((err = unzOpenCurrentFile(zipFile)) != UNZ_OK)
 	{
 #ifdef DEV_VERSION
 		char temp[100];
-		snprintf(temp, 100, "Invalid password (%d)\n",err);
+		snprintf(temp, 100, "Decompression error (%d)\n", err);
 		logR(temp);
 #endif
 		return err;
