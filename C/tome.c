@@ -57,21 +57,31 @@ void setTomeReadable(PROJECT_DATA projectDB, int ID)
 //Require the ID of the element in tomeFull
 bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 {
+	bool releaseAtTheEnd = false, retValue = true;
+
 	if(projectDB.tomesFull == NULL)
-		return false;
-	
+	{
+		nullifyCTPointers(&projectDB);
+		getUpdatedTomeList(&projectDB, false);
+		releaseAtTheEnd = true;
+	}
+
 	uint pos = getPosForID(projectDB, false, ID), posDetails;
 	
 	if(pos == INVALID_VALUE || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
-		return false;
-	
+	{
+		retValue = false;
+		goto end;
+	}
+
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
 	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo);
 	
 	if(cache == NULL || encodedRepo == NULL)
 	{
 		free(encodedRepo);
-		return false;
+		retValue = false;
+		goto end;
 	}
 	
 	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
@@ -113,14 +123,25 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		
 		snprintf(fullPath, sizeof(fullPath), "%s/%s/%s", basePath, intermediaryDirectory, CONFIGFILE);
         if(!checkFileExist(fullPath))
-            return false;
-		
+		{
+			retValue = false;
+			break;
+		}
+
 		snprintf(fullPath, sizeof(fullPath), "%s/%s/installing", basePath, intermediaryDirectory);
         if(checkFileExist(fullPath))
-            return false;
+		{
+			retValue = false;
+			break;
+		}
 	}
-	
-    return true;
+
+end:
+
+	if(releaseAtTheEnd)
+		releaseCTData(projectDB);
+
+    return retValue;
 }
 
 void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
