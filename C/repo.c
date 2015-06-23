@@ -164,7 +164,10 @@ char * getPathForRepo(REPO_DATA * repo)
 	char * output = calloc(20, sizeof(char));
 	if(output != NULL)
 	{
-		snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
+		if(repo->locale)
+			strncpy(output, LOCAL_REPO_NAME, 20);
+		else
+			snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
 	}
 	
 	return output;

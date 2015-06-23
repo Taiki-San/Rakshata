@@ -33,6 +33,7 @@
 /*Standard des dépôts*/
 #define CONFIGFILE "config.dat"
 #define CONFIGFILETOME "config.tome.dat"
+#define LOCAL_REPO_NAME "local/"
 #define VERSION_REPO 3
 #define VERSION_FIRST_REPO_JSON 3
 #define VERSION_PROJECT 1

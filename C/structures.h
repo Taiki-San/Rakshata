@@ -135,6 +135,7 @@ typedef struct repository_data
 	byte type;
 	bool isMature;
 	bool active;
+	bool locale;
 	
 	//32b
 	uint repoID;

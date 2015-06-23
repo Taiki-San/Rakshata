@@ -16,16 +16,30 @@
 
 @end
 
+@interface RakImportItem : NSObject
+
+@property NSString * path;
+@property PROJECT_DATA_EXTRA projectData;
+@property int contentID;
+@property BOOL isTome;
+
+- (void) install : (unzFile *) archive;
+
+@end
+
+
 #define ARCHIVE_VERSION 1
 
 #define METADATA_FILE "catalog.json"
 
 #define RAK_STRING_VERSION				@"version"
-#define RAK_STRING_METADATA				@"METADATA"
+#define RAK_STRING_METADATA				@"metadata"
 #define RAK_STRING_METADATA_PROJECT		@"projects"
 #define RAK_STRING_METADATA_PROJECTID	@"projectID"
+#define RAK_STRING_METADATA_PROJECTNAME	@"projectName"
 #define RAK_STRING_METADATA_REPOTYPE	@"repoType"
 #define RAK_STRING_METADATA_REPOURL		@"repoURL"
+#define RAK_STRING_METADATA_REPO_PROJID	@"repoProjectID"
 #define RAK_STRING_METADATA_DESCRIPTION	@"description"
 #define RAK_STRING_METADATA_AUTHOR		@"author"
 #define RAK_STRING_METADATA_STATUS		@"status"

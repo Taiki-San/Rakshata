@@ -17,6 +17,11 @@
 	loginPromptOpen = NO;
 	_hasFocus = YES;
 
+#ifdef DEV_VERSION
+	deleteCrashFile();
+	[RakImportController importFile:@"test.rak" :YES];
+#endif
+
 	self.window.isMainWindow = YES;
 	[self.window setDelegate:self];
 	[self.window configure];

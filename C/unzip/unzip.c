@@ -1209,9 +1209,7 @@ extern int  unzGetFilePos64(unzFile file, unz64_file_pos*  file_pos)
 	return UNZ_OK;
 }
 
-extern int  unzGetFilePos(
-						  unzFile file,
-						  unz_file_pos* file_pos)
+extern int  unzGetFilePos(unzFile file, unz_file_pos* file_pos)
 {
 	unz64_file_pos file_pos64;
 	int err = unzGetFilePos64(file,&file_pos64);
@@ -1245,9 +1243,7 @@ extern int  unzGoToFilePos64(unzFile file, const unz64_file_pos* file_pos)
 	return err;
 }
 
-extern int  unzGoToFilePos(
-						   unzFile file,
-						   unz_file_pos* file_pos)
+extern int  unzGoToFilePos(unzFile file, unz_file_pos* file_pos)
 {
 	unz64_file_pos file_pos64;
 	if(file_pos == NULL)
