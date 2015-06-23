@@ -148,7 +148,7 @@
 
 - (void) clickedConfirm : (BOOL) signup
 {
-	const char * email = [mailInput.stringValue UTF8String], * pass = [passInput.stringValue cStringUsingEncoding:NSUTF8StringEncoding];
+	const char * email = [mailInput.stringValue UTF8String], * pass = [passInput.stringValue UTF8String];
 	
 	switch (login((char*) email, (char*) pass, signup))
 	{

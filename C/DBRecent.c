@@ -278,7 +278,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 			uint64_t repoID = getRepoIndexFromURL(repoURL);
 			if(repoID != UINT64_MAX)
 			{
-				output[*nbElem] = getDataFromSearch(repoID, projectID, true);
+				output[*nbElem] = getProjectFromSearch(repoID, projectID, true);
 				
 				if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
 					(*nbElem)++;

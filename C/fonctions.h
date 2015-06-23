@@ -23,6 +23,7 @@ void networkAndVersionTest();
 bool checkNetworkState(int state);
 
 /**CTCommon.c**/
+void nullifyCTPointers(PROJECT_DATA * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);

@@ -130,7 +130,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 	
 	NSString * stringToHash = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
 	
-	return checkSignature([stringToHash cStringUsingEncoding:NSUTF8StringEncoding], [signature UTF8String]);
+	return checkSignature([stringToHash UTF8String], [signature UTF8String]);
 }
 
 REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)

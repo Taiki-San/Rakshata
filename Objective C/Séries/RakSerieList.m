@@ -90,7 +90,7 @@
 				
 				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
 				
-				PROJECT_DATA * project = getDataFromSearch(repoID, projectID, NO);
+				PROJECT_DATA * project = getProjectFromSearch(repoID, projectID, NO);
 				
 				if(project == NULL || project->repo == NULL)
 				{

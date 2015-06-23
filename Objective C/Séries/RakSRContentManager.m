@@ -80,7 +80,7 @@
 	}
 	
 	//We get the filtered list
-	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch cStringUsingEncoding:NSUTF8StringEncoding] : NULL, installedOnly, freeOnly);
+	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch UTF8String] : NULL, installedOnly, freeOnly);
 	if(filtered == NULL && *_nbElemActivated != 0)
 	{
 		if(includeCacheRefresh)

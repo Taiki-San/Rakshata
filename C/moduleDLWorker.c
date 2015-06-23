@@ -385,25 +385,25 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
     {
 		if(subFolder)
 		{
-			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre/10, chapitre%10);
+			if(chapitre % 10)
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10);
 		}
 		else
 		{
-			if(chapitre%10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre/10, chapitre%10);
+			if(chapitre % 10)
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre/10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10);
 		}
     }
     else
     {
-        if(chapitre%10)
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, chapitre/10, chapitre%10);
+        if(chapitre % 10)
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, chapitre / 10, chapitre % 10);
         else
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedRepo, projectDB->projectID, chapitre/10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedRepo, projectDB->projectID, chapitre / 10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);

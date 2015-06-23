@@ -178,9 +178,7 @@
 	if(project.isInitialized)
 	{
 		_cachedProject = project;
-		_cachedProject.chapitresFull = _cachedProject.chapitresInstalled = NULL;
-		_cachedProject.tomesFull = _cachedProject.tomesInstalled = NULL;
-		_cachedProject.chapitresPrix = NULL;
+		nullifyCTPointers(&_cachedProject);
 	}
 }
 

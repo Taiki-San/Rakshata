@@ -70,7 +70,7 @@
 		B678675418F5F407004AA6B4 /* RakSerieView.m in Sources */ = {isa = PBXBuildFile; fileRef = B678675318F5F407004AA6B4 /* RakSerieView.m */; };
 		B678675718F5F4A8004AA6B4 /* RakTabContentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */; };
 		B678866C1A82552800774431 /* RakSRContentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B678866B1A82552800774431 /* RakSRContentManager.m */; };
-		B678D0321977178A00D7FE6A /* DBrecent.c in Sources */ = {isa = PBXBuildFile; fileRef = B678D0311977178A00D7FE6A /* DBrecent.c */; };
+		B678D0321977178A00D7FE6A /* DBRecent.c in Sources */ = {isa = PBXBuildFile; fileRef = B678D0311977178A00D7FE6A /* DBRecent.c */; };
 		B678D034197717A600D7FE6A /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
 		B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutTools.m */; };
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
@@ -216,7 +216,7 @@
 		B6FBD5ED1AD87BAE00304FE9 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBD5EC1AD87BAE00304FE9 /* RakPrefsAddRepoList.m */; };
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
-		B6FE79E118B903B4004BE38D /* DBcache.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FE79E018B903B4004BE38D /* DBcache.c */; };
+		B6FE79E118B903B4004BE38D /* DBCacheInstalled.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FE79E018B903B4004BE38D /* DBCacheInstalled.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -585,7 +585,7 @@
 		B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTProjectSynopsis.m; path = CTSelec/RakCTProjectSynopsis.m; sourceTree = "<group>"; };
 		B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Rakshata.entitlements; sourceTree = "<group>"; };
 		B6FD250818B1537E0025FE74 /* whirlpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = whirlpool.c; sourceTree = "<group>"; };
-		B6FE79E018B903B4004BE38D /* DBcache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBcache.c; path = C/DBcache.c; sourceTree = "<group>"; };
+		B6FE79E018B903B4004BE38D /* DBCacheInstalled.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheInstalled.c; path = C/DBCacheInstalled.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -938,15 +938,15 @@
 		B6A6ACEC1AAEEA9C00CAF51E /* DBCache */ = {
 			isa = PBXGroup;
 			children = (
-				B6FE79E018B903B4004BE38D /* DBcache.c */,
 				B6A6ACED1AAEEAB900CAF51E /* dbCache.h */,
 				B6A6ACF21AAEEF0000CAF51E /* DBCacheInit.c */,
+				B6FE79E018B903B4004BE38D /* DBCacheInstalled.c */,
 				B6A6ACEE1AAEED3A00CAF51E /* DBCacheIO.c */,
 				B6A6ACF01AAEEE0100CAF51E /* DBCacheQuery.c */,
 				B6A6ACF41AAEEF4D00CAF51E /* DBCacheRepo.c */,
 				B6C655F21AC412F400AE32BA /* DBDebug.c */,
 				B61279FC1A586B5E0034C241 /* dbProperties.h */,
-				B678D0311977178A00D7FE6A /* DBrecent.c */,
+				B678D0311977178A00D7FE6A /* DBRecent.c */,
 				B6F6ECB018A3001400E3B55B /* DBRefresh.c */,
 				B62935D41A7E71E800DE20E2 /* DBSearch.c */,
 				B660542C1B0A3295003CC79E /* DBTags.c */,
@@ -1668,7 +1668,7 @@
 				B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */,
 				B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */,
 				B6F6ED0D18A3001400E3B55B /* securite.c in Sources */,
-				B678D0321977178A00D7FE6A /* DBrecent.c in Sources */,
+				B678D0321977178A00D7FE6A /* DBRecent.c in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
 				B6F6ED0A18A3001400E3B55B /* native.c in Sources */,
@@ -1684,7 +1684,7 @@
 				B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */,
 				B6D9043F1AB8C8AD001A2D6B /* RakPrefsGeneralView.m in Sources */,
 				B678674E18F5ED4A004AA6B4 /* RakMenuText.m in Sources */,
-				B6FE79E118B903B4004BE38D /* DBcache.c in Sources */,
+				B6FE79E118B903B4004BE38D /* DBCacheInstalled.c in Sources */,
 				B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */,
 				B69D61D8186CA308003504F9 /* Series.m in Sources */,
 				B6ACB32F1B037988009AFF7C /* RakMDLFooter.m in Sources */,

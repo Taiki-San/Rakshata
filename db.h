@@ -110,7 +110,8 @@ bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
 
 void freeProjectData(PROJECT_DATA* projectDB);
 
-PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installed);
+PROJECT_DATA * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic);
+PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed);
 PROJECT_DATA getProjectByID(uint cacheID);
 PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic);
 

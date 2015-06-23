@@ -272,7 +272,7 @@
 - (NSArray *)control:(NSControl *)control textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
 	uint nbElem;
-	char ** output = getProjectNameStartingWith([textView.string cStringUsingEncoding:NSUTF8StringEncoding], &nbElem);
+	char ** output = getProjectNameStartingWith([textView.string UTF8String], &nbElem);
 	
 	if(output == NULL || nbElem == 0)
 	{

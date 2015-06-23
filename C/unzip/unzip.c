@@ -330,13 +330,10 @@ static int strcmpcasenosensitive_internal (const char* fileName1, const char* fi
  (like 1 on Unix, 2 on Windows)
 
  */
-extern int  unzStringFileNameCompare (const char*  fileName1,
-									  const char*  fileName2,
-									  int iCaseSensitivity)
-
+extern int  unzStringFileNameCompare (const char*  fileName1, const char*  fileName2, int iCaseSensitivity)
 {
 	if(iCaseSensitivity == 0)
-		iCaseSensitivity=CASESENSITIVITYDEFAULTVALUE;
+		iCaseSensitivity = CASESENSITIVITYDEFAULTVALUE;
 
 	if(iCaseSensitivity==1)
 		return strcmp(fileName1,fileName2);

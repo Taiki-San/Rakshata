@@ -42,15 +42,15 @@ bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)
 	
 	if(encodedHash == NULL)		return false;
 
-	if(chapitre%10)
+	if(chapitre % 10)
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre/10, chapitre%10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, projectDB.projectID, chapitre/10, chapitre%10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre / 10, chapitre % 10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, projectDB.projectID, chapitre / 10, chapitre % 10);
     }
     else
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre/10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, projectDB.projectID, chapitre/10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre / 10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, projectDB.projectID, chapitre / 10);
     }
 	
 	free(encodedHash);
@@ -156,9 +156,9 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool car
 		return;
 	
 	if(chapitreDelete % 10)
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedRepo, projectDB.projectID, chapitreDelete/10, chapitreDelete%10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedRepo, projectDB.projectID, chapitreDelete / 10, chapitreDelete % 10);
 	else
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedRepo, projectDB.projectID, chapitreDelete/10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedRepo, projectDB.projectID, chapitreDelete / 10);
 	
 	snprintf(dirCheck, sizeof(dirCheck), "%s/shared", dir);
 	

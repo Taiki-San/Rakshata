@@ -10,6 +10,13 @@
 **                                                                                          **
 *********************************************************************************************/
 
+void nullifyCTPointers(PROJECT_DATA * project)
+{
+	project->chapitresFull = project->chapitresInstalled = NULL;
+	project->tomesFull = project->tomesInstalled = NULL;
+	project->chapitresPrix = NULL;
+}
+
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
 {
     if(isTome)

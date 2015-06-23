@@ -92,7 +92,7 @@
 	}
 	
 	uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
-	PROJECT_DATA * project = getDataFromSearch(indexTeam, projectID, false);
+	PROJECT_DATA * project = getProjectFromSearch(indexTeam, projectID, false);
 	
 	if(project == NULL)
 	{

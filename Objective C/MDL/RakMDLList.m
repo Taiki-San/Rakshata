@@ -302,9 +302,7 @@ enum
 	else
 	{
 		//Prevent the update from messing with memory that will get freed later
-		project.chapitresFull = project.chapitresInstalled = NULL;
-		project.tomesFull = project.tomesInstalled = NULL;
-		project.chapitresPrix = NULL;
+		nullifyCTPointers(&project);
 		getUpdatedCTList(&project, isTome);
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;

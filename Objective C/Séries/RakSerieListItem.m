@@ -68,10 +68,8 @@
 					dataChild	= *(PROJECT_DATA *) data;
 					releaseCTData(dataChild);
 				}
-				
-				dataChild.chapitresFull = dataChild.chapitresInstalled = NULL;
-				dataChild.tomesFull = dataChild.tomesInstalled = NULL;
-				dataChild.chapitresPrix = NULL;
+
+				nullifyCTPointers(&dataChild);
 			}
 		}
 	}

@@ -27,10 +27,8 @@ enum
 	if(self != nil)
 	{
 		//We really don't care about those data, so we don't want the burden of having to update them
-		project.chapitresFull = project.chapitresInstalled = NULL;
-		project.tomesFull = project.tomesInstalled = NULL;
-		project.chapitresPrix = NULL;
-		
+		nullifyCTPointers(&project);
+
 		_project = project;
 		_workingArea.origin = NSZeroPoint;
 		_workingArea.size = [self defaultWorkingSize];
@@ -68,9 +66,7 @@ enum
 - (void) updateProject : (PROJECT_DATA) project
 {
 	//We really don't care about those data, so we don't want the burden of having to update them
-	project.chapitresFull = project.chapitresInstalled = NULL;
-	project.tomesFull = project.tomesInstalled = NULL;
-	project.chapitresPrix = NULL;
+	nullifyCTPointers(&project);
 	
 	_project = project;
 	

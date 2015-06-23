@@ -143,9 +143,7 @@ enum
 	if(project.isInitialized)
 	{
 		_project = project;
-		_project.chapitresFull = _project.chapitresInstalled = NULL;
-		_project.tomesFull = _project.tomesInstalled = NULL;
-		_project.chapitresPrix = NULL;
+		nullifyCTPointers(&_project);
 	}
 }
 

@@ -223,7 +223,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	return output;
 }
 
-PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installed)
+PROJECT_DATA * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic)
 {
 	PROJECT_DATA * output = calloc(1, sizeof(PROJECT_DATA));
 	if(output == NULL)
@@ -243,7 +243,7 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
-		if(!copyOutputDBToStruct(request, output, true))
+		if(!copyOutputDBToStruct(request, output, copyDynamic))
 		{
 			free(output);
 			output = NULL;
@@ -268,6 +268,11 @@ PROJECT_DATA * getDataFromSearch (uint64_t IDRepo, uint projectID, bool installe
 	destroyRequest(request);
 
 	return output;
+}
+
+PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed)
+{
+	return _getProjectFromSearch(IDRepo, projectID, installed, true);
 }
 
 PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
