@@ -1914,11 +1914,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
-					/usr/local/lib,
 				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_LDFLAGS = "-lnghttp2";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Rakshata;
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1999,15 +1998,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
-					/usr/local/lib,
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null",
-					"-lnghttp2",
-				);
+				OTHER_LDFLAGS = "-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Rakshata;
 				RUN_CLANG_STATIC_ANALYZER = NO;

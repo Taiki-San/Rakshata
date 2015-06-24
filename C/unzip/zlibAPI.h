@@ -18,10 +18,16 @@
 #include "unzip.h"
 #include "zip.h"
 
+enum
+{
+	STRIP_PATH_NONE = 0,
+	STRIP_PATH_ALL,
+	STRIP_PATH_FIRST
+};
+
 //Unzip
-int doExtractCurrentfile(unzFile zipFile, char* filenameInZip, char* outputPath, const bool extractWithoutPath, unsigned char* passwordPageCrypted);
-int doExtract(unzFile zipFile, char *input, char *outputPath, bool extractWithoutPath);
-bool doExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted);
+int extractCurrentfile(unzFile zipFile, char* filenameInZip, char* outputPath, int extractWithoutPath, unsigned char* passwordPageCrypted);
+bool extractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted);
 bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers);
 bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput);
 
