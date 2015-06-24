@@ -374,11 +374,11 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 {
 	if(elemToDel == INVALID_SIGNED_VALUE)	//On supprime tout
 	{
-		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForRepo(project.repo);
+		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForProject(project);
 		
 		if(encodedRepo != NULL)
 		{
-			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, project.projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
 			removeFolder(path);
 		}
 		free(encodedRepo);
@@ -391,16 +391,16 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 
 void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 {
-	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForRepo(project.repo);
+	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForProject(project);
 	FILE* fichier = NULL;
 	
 	if(encodedRepo == NULL)
 		return;
 
     if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedRepo, project.projectID);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/"CONFIGFILETOME, encodedRepo);
 	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/%d/"CONFIGFILE, encodedRepo, project.projectID);
+        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/"CONFIGFILE, encodedRepo);
 
 	fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);

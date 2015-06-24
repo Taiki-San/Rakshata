@@ -165,12 +165,27 @@ char * getPathForRepo(REPO_DATA * repo)
 	if(output != NULL)
 	{
 		if(repo->locale)
-			strncpy(output, LOCAL_REPO_NAME, 20);
+			strncpy(output, LOCAL_PATH_NAME, 20);
 		else
 			snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
 	}
 	
 	return output;
+}
+
+char * getPathForProject(PROJECT_DATA project)
+{
+	char * repoPath = getPathForRepo(project.repo);
+	if(repoPath == NULL)
+		return NULL;
+
+	char rootPath[strlen(repoPath) + 20];
+
+	//Craft the path with the project in it
+	snprintf(rootPath, sizeof(rootPath), project.locale ? "%s/"LOCAL_PATH_NAME"_%d" : "%s/%d", repoPath, project.projectID);
+	free(repoPath);
+
+	return strdup(rootPath);
 }
 
 char * getPathForRootRepo(ROOT_REPO_DATA * repo)

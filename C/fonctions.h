@@ -98,6 +98,7 @@ bool checkDirExist(char *dirname);
 /**Repo.c**/
 bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput);
 char * getPathForRepo(REPO_DATA * repo);
+char * getPathForProject(PROJECT_DATA project);
 char * getPathForRootRepo(ROOT_REPO_DATA * repo);
 byte defineTypeRepo(char *URL);
 

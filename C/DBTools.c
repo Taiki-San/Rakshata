@@ -177,13 +177,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 			removeFromSearch(searchData, oldData[posOld].cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
-			if(encodedRepo != NULL)
+			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
+			if(encodedPath != NULL)
 			{
-				snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);
+				snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedPath);
 				removeFolder(path);
+				free(encodedPath);
 			}
-			free(encodedRepo);
 #endif
 			posOld++;
 		}
@@ -226,13 +226,13 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		removeFromSearch(searchData, oldData[posOld].cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
-		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedRepo = getPathForRepo(oldData[posOld].repo);
-		if(encodedRepo != NULL)
+		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
+		if(encodedPath != NULL)
 		{
-			snprintf(path, sizeof(path), PROJECT_ROOT"%s/%d", encodedRepo, oldData[posOld].projectID);
+			snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedPath);
 			removeFolder(path);
+			free(encodedPath);
 		}
-		free(encodedRepo);
 #endif
 		posOld++;
 	}
@@ -325,7 +325,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 				current = new;
 			}
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, "%d_%s%s.png", project[pos].data.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
+			snprintf(&imagePath[length], sizeof(imagePath) - length, project[pos].data.locale ?  LOCAL_PATH_NAME"_%d_%s%s.png" : "%d_%s%s.png", project[pos].data.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
 			current->filename = strdup(imagePath);
 
 			if(current->filename == NULL)

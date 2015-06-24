@@ -58,7 +58,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 		{
 			NSBundle * bundle = [NSBundle bundleWithPath: [NSString stringWithFormat:@""IMAGE_CACHE_DIR"/%s/", repoPath]];
 			if(bundle != nil)
-				image = [bundle imageForResource:[NSString stringWithFormat:@"%d_%s", project.projectID, suffix]];
+				image = [bundle imageForResource:[NSString stringWithFormat: project.locale ? @""LOCAL_PATH_NAME"_%d_%s" : @"%d_%s", project.projectID, suffix]];
 			
 			free(repoPath);
 		}

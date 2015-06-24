@@ -37,17 +37,17 @@ void refreshTomeList(PROJECT_DATA *projectDB)
 
 void setTomeReadable(PROJECT_DATA projectDB, int ID)
 {
-	char pathWithTemp[600], pathWithoutTemp[600], *encodedRepo = getPathForRepo(projectDB.repo);
+	char pathWithTemp[600], pathWithoutTemp[600], *encodedPath = getPathForProject(projectDB);
 	
-	if(encodedRepo != NULL)
+	if(encodedPath != NULL)
 	{
-		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME".tmp", encodedRepo, projectDB.projectID, ID);
-		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, ID);
+		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/Tome_%d/"CONFIGFILETOME".tmp", encodedPath, ID);
+		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/Tome_%d/"CONFIGFILETOME, encodedPath, ID);
 		rename(pathWithTemp, pathWithoutTemp);
 		
 		projectDB.tomesFull = projectDB.tomesInstalled = NULL;
 		getUpdatedTomeList(&projectDB, false);
-		free(encodedRepo);
+		free(encodedPath);
 	}
 
 	if(!checkTomeReadable(projectDB, ID))
@@ -75,17 +75,17 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 	}
 
 	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
-	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedRepo = getPathForRepo(projectDB.repo);
+	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedPath = getPathForProject(projectDB);
 	
-	if(cache == NULL || encodedRepo == NULL)
+	if(cache == NULL || encodedPath == NULL)
 	{
-		free(encodedRepo);
+		free(encodedPath);
 		retValue = false;
 		goto end;
 	}
 	
-	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
-	free(encodedRepo);
+	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s", encodedPath);
+	free(encodedPath);
 	
 	for(posDetails = 0; posDetails < projectDB.tomesFull[pos].lengthDetails; posDetails++)
 	{
@@ -156,14 +156,14 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
 	
     if(dernierLu != NULL)
     {
-		char temp[LENGTH_PROJECT_NAME*2+100], *encodedRepo = getPathForRepo(project->repo);
+		char temp[LENGTH_PROJECT_NAME*2+100], *encodedPath = getPathForProject(*project);
 		FILE* config;
 		
-		if(encodedRepo == NULL)
+		if(encodedPath == NULL)
 			return;
 		
-		snprintf(temp, sizeof(temp), PROJECT_ROOT"%s/%d/"CONFIGFILETOME, encodedRepo, project->projectID);
-		free(encodedRepo);
+		snprintf(temp, sizeof(temp), PROJECT_ROOT"%s/"CONFIGFILETOME, encodedPath);
+		free(encodedPath);
 		if((config = fopen(temp, "r")) != NULL)
 		{
 			*dernierLu = INVALID_SIGNED_VALUE;
@@ -252,8 +252,8 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		return;
 	}
 	
-	char * encodedRepo = getPathForRepo(projectDB.repo);
-	if(encodedRepo == NULL)
+	char * encodedPath = getPathForProject(projectDB);
+	if(encodedPath == NULL)
 		return;
 	
 	position = getPosForID(projectDB, true, tomeDelete);
@@ -264,7 +264,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];
 		CONTENT_TOME * details = projectDB.tomesInstalled[position].details;
 		
-		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/%d", encodedRepo, projectDB.projectID);
+		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s", encodedPath);
 		
 		for(uint posDetails = 0; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
 		{
@@ -282,7 +282,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		}
 	}
 	
-    snprintf(dir, length, PROJECT_ROOT"%s/%d/Tome_%d/", encodedRepo, projectDB.projectID, tomeDelete);
+    snprintf(dir, length, PROJECT_ROOT"%s/Tome_%d/", encodedPath, tomeDelete);
 	removeFolder(dir);
-	free(encodedRepo);
+	free(encodedPath);
 }

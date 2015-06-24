@@ -115,21 +115,21 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(!isTome && posTomeInStruct != ERROR_CHECK)		//chapitre, il va falloir le copier ailleurs
 				{
-					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedRepo = getPathForRepo(todoListTmp.datas->repo);
-					if(encodedRepo == NULL)
+					char oldPath[2*LENGTH_PROJECT_NAME + 384], newPath[2*LENGTH_PROJECT_NAME + 256], *encodedPath = getPathForProject(*todoListTmp.datas);
+					if(encodedPath == NULL)
 						continue;
 					
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
-						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/Tome_%d/native/Chapitre_%d.%d", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/Chapitre_%d.%d", encodedPath, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
-						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedRepo, todoListTmp.datas->projectID, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/Tome_%d/native/Chapitre_%d", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/Chapitre_%d", encodedPath, todoListTmp.chapitre / 10);
 					}
-					free(encodedRepo);
+					free(encodedPath);
 					
 					rename(oldPath, newPath);
 					
@@ -374,9 +374,9 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
 bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable)
 {
     bool wentFine = true;
-    char temp[600], basePath[500], *encodedRepo = getPathForRepo(projectDB->repo);
+    char temp[600], basePath[500], *encodedPath = getPathForProject(*projectDB);
 	
-	if(encodedRepo == NULL)
+	if(encodedPath == NULL)
 		return true;
 	
     /*Récupération des valeurs envoyés*/
@@ -386,24 +386,24 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 		if(subFolder)
 		{
 			if(chapitre % 10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10, chapitre % 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/Tome_%d/Chapitre_%d.%d/", encodedPath, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/Tome_%d/Chapitre_%d/", encodedPath, tome, chapitre / 10);
 		}
 		else
 		{
 			if(chapitre % 10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10, chapitre % 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/Tome_%d/native/Chapitre_%d.%d/", encodedPath, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d/", encodedRepo, projectDB->projectID, tome, chapitre / 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/Tome_%d/native/Chapitre_%d/", encodedPath, tome, chapitre / 10);
 		}
     }
     else
     {
         if(chapitre % 10)
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d.%d/", encodedRepo, projectDB->projectID, chapitre / 10, chapitre % 10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/Chapitre_%d.%d/", encodedPath, chapitre / 10, chapitre % 10);
         else
-            snprintf(basePath, 500, PROJECT_ROOT"%s/%d/Chapitre_%d/", encodedRepo, projectDB->projectID, chapitre / 10);
+            snprintf(basePath, 500, PROJECT_ROOT"%s/Chapitre_%d/", encodedPath, chapitre / 10);
     }
 	
     snprintf(temp, 600, "%s/"CONFIGFILE, basePath);

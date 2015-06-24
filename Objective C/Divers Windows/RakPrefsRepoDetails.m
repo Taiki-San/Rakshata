@@ -502,9 +502,10 @@ enum
 	self.window.title = NSLocalizedString(@"PREFS-DELETE-PURGE", nil);
 	
 	//Delete projects
-	char path[256];
-	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", getPathForRepo(repoData));
+	char path[256], *repoPath = getPathForRepo(repoData);
+	snprintf(path, sizeof(path), PROJECT_ROOT"%s/", repoPath);
 	removeFolder(path);
+	free(repoPath);
 	
 	if(!nukeRepo)
 		setUninstalled(false, ID);	//Update DB, and notify everything

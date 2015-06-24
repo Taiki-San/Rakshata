@@ -38,19 +38,19 @@ bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)
     char pathConfigFile[LENGTH_PROJECT_NAME*3+350];
     char pathInstallFlag[LENGTH_PROJECT_NAME*3+350];
 	
-	char * encodedHash = getPathForRepo(projectDB.repo);
+	char * encodedHash = getPathForProject(projectDB);
 	
 	if(encodedHash == NULL)		return false;
 
 	if(chapitre % 10)
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre / 10, chapitre % 10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/installing", encodedHash, projectDB.projectID, chapitre / 10, chapitre % 10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/Chapitre_%d.%d/"CONFIGFILE, encodedHash, chapitre / 10, chapitre % 10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/Chapitre_%d.%d/installing", encodedHash, chapitre / 10, chapitre % 10);
     }
     else
     {
-        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/%d/Chapitre_%d/"CONFIGFILE, encodedHash, projectDB.projectID, chapitre / 10);
-        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/%d/Chapitre_%d/installing", encodedHash, projectDB.projectID, chapitre / 10);
+        snprintf(pathConfigFile, sizeof(pathConfigFile), PROJECT_ROOT"%s/Chapitre_%d/"CONFIGFILE, encodedHash, chapitre / 10);
+        snprintf(pathInstallFlag, sizeof(pathInstallFlag), PROJECT_ROOT"%s/Chapitre_%d/installing", encodedHash, chapitre / 10);
     }
 	
 	free(encodedHash);
@@ -70,13 +70,14 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
     if(projectDB->chapitresFull == NULL || projectDB->nombreChapitre == 0)
 		return;
 	
-    char configFilePath[256];
-	char * encodedHash = getPathForRepo(projectDB->repo);
-	
+	char * encodedHash = getPathForProject(*projectDB);
 	if(encodedHash == NULL)
 		return;
 
-    snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/%d/", encodedHash, projectDB->projectID);
+	char configFilePath[strlen(encodedHash) + 30];
+
+	snprintf(configFilePath, sizeof(configFilePath), PROJECT_ROOT"%s/", encodedHash);
+
 	free(encodedHash);
 	
     if(!isInstalled(configFilePath))
@@ -150,15 +151,15 @@ void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
 
 void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters)
 {
-    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedRepo = getPathForRepo(projectDB.repo);
+    char dir[2*LENGTH_PROJECT_NAME + 50], dirCheck[2*LENGTH_PROJECT_NAME + 60], *encodedRepo = getPathForProject(projectDB);
 	
 	if(encodedRepo == NULL)
 		return;
 	
 	if(chapitreDelete % 10)
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d.%d", encodedRepo, projectDB.projectID, chapitreDelete / 10, chapitreDelete % 10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/Chapitre_%d.%d", encodedRepo, chapitreDelete / 10, chapitreDelete % 10);
 	else
-		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/%d/Chapitre_%d", encodedRepo, projectDB.projectID, chapitreDelete / 10);
+		snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/Chapitre_%d", encodedRepo, chapitreDelete / 10);
 	
 	snprintf(dirCheck, sizeof(dirCheck), "%s/shared", dir);
 	
@@ -174,15 +175,15 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool car
 			if(IDTomeLinked != INVALID_VALUE)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
-				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/"CONFIGFILETOME, encodedRepo, projectDB.projectID, IDTomeLinked);
+				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/Tome_%d/"CONFIGFILETOME, encodedRepo, IDTomeLinked);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
 					//On crée le dossier
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native", encodedRepo, projectDB.projectID, IDTomeLinked);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/Tome_%d/native", encodedRepo, IDTomeLinked);
 					mkdirR(dirVol);
 					
 					//On craft le nouveau nom
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/%d/Tome_%d/native/Chapitre_%d", encodedRepo, projectDB.projectID, IDTomeLinked, chapitreDelete);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/Tome_%d/native/Chapitre_%d", encodedRepo, IDTomeLinked, chapitreDelete);
 					rename(dir, dirVol);
 					
 					//On supprime le fichier shared
@@ -211,15 +212,15 @@ bool isChapterShared(char *path, PROJECT_DATA data, int ID)
 	}
 	else if(ID != INVALID_SIGNED_VALUE)
 	{
-		char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForRepo(data.repo);
+		char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForProject(data);
 		
 		if(encodedRepo == NULL)
 			return false;
 		
 		if(ID % 10)
-			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d.%d/shared", encodedRepo, data.projectID, ID / 10, ID % 10);
+			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/Chapitre_%d.%d/shared", encodedRepo, ID / 10, ID % 10);
 		else
-			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/%d/Chapitre_%d/shared", encodedRepo, data.projectID, ID / 10);
+			snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/Chapitre_%d/shared", encodedRepo, ID / 10);
 		
 		free(encodedRepo);
 		return checkFileExist(newPath);

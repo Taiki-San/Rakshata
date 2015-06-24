@@ -89,7 +89,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			//Name is valid
 			if(checkNameFileZip(filename[i]))
 			{
-				ret_value &= doExtractOnefile(zipFile, filename[i], outputPath, true, project.haveDRM ? pass[i] : NULL);
+				ret_value &= extractOnefile(zipFile, filename[i], outputPath, STRIP_PATH_ALL, project.haveDRM ? pass[i] : NULL);
 				nombreFichierValide++;
 			}
 			else

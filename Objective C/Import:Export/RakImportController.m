@@ -332,6 +332,8 @@ enum
 	entryNumber = objectForKey(entry, RAK_STRING_METADATA_ASIANORDER, nil, [NSNumber class]);
 	if(entryNumber != nil)
 		currentProject->data.rightToLeft = [entryNumber boolValue];
+
+	currentProject->data.locale = true;
 }
 
 + (void) analyseImages : (PROJECT_DATA_EXTRA *) currentProject : (NSDictionary *) entry

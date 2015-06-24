@@ -255,6 +255,7 @@ typedef struct dataProject
 	
 	uint8_t status;
 	bool isPaid;
+	bool locale;
 	bool haveDRM;
 	bool isInitialized;
 	

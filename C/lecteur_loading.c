@@ -29,7 +29,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 {
 	uint nombreToursRequis = 1, nombrePageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
 	int chapterRequestedForVolume = INVALID_SIGNED_VALUE;
-	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedRepo = getPathForRepo(projectDB.repo);
+	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedPath = getPathForProject(projectDB);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
 	
@@ -39,7 +39,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 	dataReader->chapitreTomeCPT = NULL;
 	dataReader->pageCouranteDuChapitre = NULL;
 	
-	if(encodedRepo == NULL)
+	if(encodedPath == NULL)
 		return false;
 	
     if(isTome)
@@ -97,7 +97,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested / 10);
 		}
 		
-        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s/%s", encodedRepo, projectDB.projectID, name, CONFIGFILE);
+        snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/%s", encodedPath, name, CONFIGFILE);
 		
         nomPagesTmp = loadChapterConfigDat(input_path, &nombrePageInChunck);
         if(nomPagesTmp != NULL)
@@ -168,7 +168,7 @@ memoryFail:
             }
             else
             {
-                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%d/%s", encodedRepo, projectDB.projectID, name);
+                snprintf(dataReader->path[posID], LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s", encodedPath, name);
                 if(isTome)
                     dataReader->chapitreTomeCPT[posID] = chapterRequestedForVolume;
                 else
@@ -217,7 +217,7 @@ memoryFail:
 	if(dataReader->pageCourante >= dataReader->nombrePage)
 		dataReader->pageCourante = dataReader->nombrePage != 0 ? dataReader->nombrePage - 1 : 0;
 	
-	free(encodedRepo);
+	free(encodedPath);
     return true;
 }
 
