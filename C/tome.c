@@ -188,7 +188,7 @@ void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
             if(project->tomesInstalled[nbElem-deletedItems].details != NULL)
 				free(project->tomesInstalled[nbElem-deletedItems].details);
 			
-			for(uint base = nbElem - deletedItems, length = project->nombreTomes - nbElem - 1; base < length; base++)
+			for(uint base = nbElem - deletedItems, length = project->nombreTomesInstalled - 1; base < length; base++)
 				project->tomesInstalled[base] = project->tomesInstalled[base + 1];
 
 			project->nombreTomesInstalled--;

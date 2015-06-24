@@ -438,7 +438,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int cha
 		}
     }
 
-	free(encodedRepo);
+	free(encodedPath);
     return wentFine;
 }
 

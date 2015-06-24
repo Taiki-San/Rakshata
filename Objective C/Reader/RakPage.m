@@ -1114,7 +1114,7 @@
 			int64_t basePage = _data.pageCourante;
 			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
-			for(i = 0; i < 5 && basePage >= i * move && basePage + i * move < max; i++)
+			for(i = 1; i <= 5 && (basePage >= i * move || basePage + i * move < max); i++)
 			{
 				if(![self entryValid : *data : basePage + 1 + i * move])
 				{

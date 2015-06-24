@@ -1157,7 +1157,8 @@ extern int  unzLocateFile (unzFile file, const char *szFileName, int iCaseSensit
 
 			err = unzGoToNextFile(file);
 		}
-		else  if(firstPass)
+
+		if(firstPass && err == UNZ_END_OF_LIST_OF_FILE)
 		{
 			firstPass = false;
 			err = unzGoToFirstFile(file);
