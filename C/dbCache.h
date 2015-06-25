@@ -48,7 +48,7 @@ void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_
 bool isAppropriateNumberOfRepo(uint requestedNumber);
 
 /**DBDebug.c**/
-int createRequest(sqlite3 *db, const char *zSql, sqlite3_stmt **ppStmt);
+sqlite3_stmt * createRequest(sqlite3 *db, const char *zSql);
 int destroyRequest(sqlite3_stmt *pStmt);
 #ifdef DEV_VERSION
 void errorLogCallback(void *pArg, int iErrCode, const char *zMsg);

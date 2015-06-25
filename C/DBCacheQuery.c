@@ -213,8 +213,7 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		else
 			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" ORDER BY %s ASC", sortRequest);
 		
-		sqlite3_stmt* request = NULL;
-		createRequest(cache, requestString, &request);
+		sqlite3_stmt* request = createRequest(cache, requestString);
 		
 		MUTEX_LOCK(cacheParseMutex);
 		
@@ -248,11 +247,9 @@ PROJECT_DATA * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool inst
 	sqlite3_stmt* request = NULL;
 
 	if(installed)
-	{
-		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1", &request);
-	}
+		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1");
 	else
-		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2", &request);
+		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2");
 
 	sqlite3_bind_int64(request, 1, (int64_t) IDRepo);
 	sqlite3_bind_int(request, 2, (int32_t) projectID);
@@ -293,12 +290,11 @@ PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool insta
 
 PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic)
 {
-	sqlite3_stmt* request = NULL;
 	PROJECT_DATA output = getEmptyProject();
 
 	if(cache != NULL && cacheID != UINT_MAX)
 	{
-		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+		sqlite3_stmt* request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 		sqlite3_bind_int(request, 1, (int32_t) cacheID);
 
 		MUTEX_LOCK(cacheParseMutex);
@@ -328,8 +324,9 @@ uint * getFavoritesID(uint * nbFavorites)
 	if(output == NULL)
 		return NULL;
 
-	sqlite3_stmt * request;
-	if(createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", &request) != SQLITE_OK)
+	sqlite3_stmt * request = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC");
+
+	if(request == NULL)
 	{
 		free(output);
 		return NULL;
@@ -360,9 +357,9 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 	sqlite3_stmt* request = NULL;
 
 	if(wantTome)
-		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 	else
-		createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	sqlite3_bind_int(request, 1, (int32_t) cacheID);
 

@@ -37,15 +37,12 @@ sqlite3* getPtrRecentDB()
 	if(!checkRecentDBValid(internalDB))
 	{
 		//On la détruit, et on recrée
-		sqlite3_stmt * request = NULL;
-		
-		if(createRequest(internalDB, "DROP TABLE IF EXISTS `RakHL3IsALie`", &request) == SQLITE_OK)
-			sqlite3_step(request);
+		sqlite3_stmt * request = createRequest(internalDB, "DROP TABLE IF EXISTS `RakHL3IsALie`");
+		sqlite3_step(request);
 		destroyRequest(request);
 		
-		
-		int output;
-		if((output = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_team)" text, "DBNAMETOID(RDB_REC_projectID)" INTEGER);", &request)) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+		request = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_team)" text, "DBNAMETOID(RDB_REC_projectID)" INTEGER);");
+		if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 		{
 			destroyRequest(request);
 			sqlite3_close(internalDB);
@@ -72,9 +69,9 @@ void flushRecentMutex()
 
 bool checkRecentDBValid(sqlite3 * DB)
 {
-	sqlite3_stmt * request = NULL;
-	
-	if(createRequest(DB, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='RakHL3IsALie';", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 1)
+	sqlite3_stmt * request = createRequest(DB, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='RakHL3IsALie';");
+
+	if(request == NULL || sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 1)
 	{
 		destroyRequest(request);
 		return false;
@@ -106,9 +103,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	if(database == NULL)
 		return false;
 	
-	sqlite3_stmt * request = NULL;
+	sqlite3_stmt * request = createRequest(database, "BEGIN EXCLUSIVE TRANSACTION");
 	
-	if(createRequest(database, "BEGIN EXCLUSIVE TRANSACTION", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		destroyRequest(request);
 	
@@ -120,7 +117,8 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	destroyRequest(request);
 	
 	//We check if the element exist
-	if(createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", &request) == SQLITE_OK)
+	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;");
+	if(request != NULL)
 	{
 		sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, (int32_t) data.projectID);
@@ -139,8 +137,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				byte value = wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead;
 				
 				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
-				
-				if(createRequest(database, requestString, &request) == SQLITE_OK)
+
+				request = createRequest(database, requestString);
+				if(request != NULL)
 				{
 					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 					sqlite3_bind_int(request, 2, (int32_t) data.projectID);
@@ -155,7 +154,8 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 							destroyRequest(request);
 							
 							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", value);
-							if(createRequest(database, requestString, &request) == SQLITE_OK)
+
+							if((request = createRequest(database, requestString)) != NULL)
 							{
 								sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 								sqlite3_bind_int(request, 2, (int32_t) data.projectID);
@@ -180,7 +180,8 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				snprintf(requestString, sizeof(requestString), "UPDATE RakHL3IsALie SET `%d` = ?%d WHERE "DBNAMETOID(RDB_REC_team)" = ?3 AND "DBNAMETOID(RDB_REC_projectID)" = ?4;", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? 2 : 1);
 			
 			//Setup the handler
-			if(createRequest(database, requestString, &request) == SQLITE_OK)
+			request = createRequest(database, requestString);
+			if(request != NULL)
 			{
 				if(!nbOccurence || !wasItADL)
 					sqlite3_bind_int64(request, 1, recentRead);
@@ -195,10 +196,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 		}
 	}
 	destroyRequest(request);
-	
-	if(createRequest(database, "END TRANSACTION", &request) == SQLITE_OK)
-		sqlite3_step(request);
 
+	request = createRequest(database, "END TRANSACTION");
+	sqlite3_step(request);
 	destroyRequest(request);
 	
 	if(localDB)
@@ -221,8 +221,8 @@ void removeRecentEntryInternal(char * URLRepo, uint projectID)
 	if(database == NULL)
 		return;
 	
-	sqlite3_stmt * request = NULL;
-	if(createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2", &request) == SQLITE_OK)
+	sqlite3_stmt * request = createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2");;
+	if(request != NULL)
 	{
 		sqlite3_bind_text(request, 1, URLRepo, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, (int32_t) projectID);
@@ -252,13 +252,13 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 		return NULL;
 	}
 	
-	sqlite3_stmt * request = NULL;
 	char requestString[96];
 	int code = wantDL ? RDB_REC_lastDL : RDB_REC_lastRead;
 	
 	snprintf(requestString, sizeof(requestString), "SELECT * FROM RakHL3IsALie WHERE `%d` > 0 ORDER BY `%d` DESC", code, code);
-	
-	if(createRequest(database, requestString, &request) != SQLITE_OK)
+	sqlite3_stmt * request = createRequest(database, requestString);
+
+	if(request == NULL)
 	{
 		free(output);
 		destroyRequest(request);
@@ -302,7 +302,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					updateRecentEntry(NULL, tmpProject, 0, wantDL);
 					
 					database = getPtrRecentDB();
-					if(database == NULL || createRequest(database, requestString, &request) != SQLITE_OK)
+					if(database == NULL || (request = createRequest(database, requestString)) == NULL)
 						break;
 				}
 			}

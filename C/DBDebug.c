@@ -12,15 +12,26 @@
 
 #include "dbCache.h"
 
-int createRequest(sqlite3 *db, const char *zSql, sqlite3_stmt **ppStmt)
+sqlite3_stmt * createRequest(sqlite3 *db, const char *zSql)
 {
-	int output = sqlite3_prepare_v2(db, zSql, -1, ppStmt, NULL);
+	if(db == NULL)
+		return NULL;
+
+	sqlite3_stmt *ppStmt = NULL;
+
+	int output = sqlite3_prepare_v2(db, zSql, -1, &ppStmt, NULL);
 	
 #ifdef VERBOSE_REQUEST
-	printf("Creating request %p with `%s` (status: %d)\n", *ppStmt, zSql, output);
+	printf("Creating request %p with `%s` (status: %d)\n", ppStmt, zSql, output);
 #endif
-	
-	return output;
+
+	if(output != SQLITE_OK && ppStmt != NULL)
+	{
+		destroyRequest(ppStmt);
+		ppStmt = NULL;
+	}
+
+	return ppStmt;
 }
 
 int destroyRequest(sqlite3_stmt *pStmt)

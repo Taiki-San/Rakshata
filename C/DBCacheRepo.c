@@ -462,11 +462,11 @@ bool isAppropriateNumberOfRepo(uint requestedNumber)
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 {
 	uint output = 0;
-	sqlite3_stmt * request = NULL;
+	sqlite3_stmt * request = createRequest(cache, "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_isInstalled)" = 1");;
 	
 	MUTEX_LOCK(cacheMutex);
 	
-	if(createRequest(cache, "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_isInstalled)" = 1", &request) == SQLITE_OK)
+	if(request != NULL)
 	{
 		if(isRoot)
 		{

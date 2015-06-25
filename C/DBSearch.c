@@ -47,7 +47,7 @@ void buildSearchTables(sqlite3 *_cache)
 	
 	sqlite3_stmt* request = NULL;
 	
-	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if((request = createRequest(_cache, "CREATE TABLE "TABLE_NAME_AUTHOR" ("DBNAMETOID(RDB_authors)" TEXT UNIQUE ON CONFLICT FAIL, "DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT);")) == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
@@ -56,7 +56,7 @@ void buildSearchTables(sqlite3 *_cache)
 	
 	destroyRequest(request);
 	
-	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_TAG"("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_tagID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_tagType)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if((request = createRequest(_cache, "CREATE TABLE "TABLE_NAME_TAG"("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_tagID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_tagType)" INTEGER NOT NULL);")) == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
@@ -65,7 +65,7 @@ void buildSearchTables(sqlite3 *_cache)
 
 	destroyRequest(request);
 	
-	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if((request = createRequest(_cache, "CREATE TABLE "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL);")) == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
@@ -74,7 +74,7 @@ void buildSearchTables(sqlite3 *_cache)
 	
 	destroyRequest(request);
 	
-	if(createRequest(_cache, "CREATE TABLE "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL);", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if((request = createRequest(_cache, "CREATE TABLE "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)" INTEGER NOT NULL, "DBNAMETOID(RDBS_dataID)" INTEGER NOT NULL);")) == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
@@ -82,7 +82,7 @@ void buildSearchTables(sqlite3 *_cache)
 	}
 	
 	//We need at least one (invalid) data :/
-	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");", &request) != SQLITE_OK || sqlite3_step(request) != SQLITE_DONE)
+	if((request = createRequest(_cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values("STRINGIZE(RDBS_TYPE_UNUSED)", "STRINGIZE(RDBS_TYPE_UNUSED)");")) == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
 		initialized = false;
 		destroyRequest(request);
@@ -113,57 +113,57 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	if(output == NULL)
 		return NULL;
 	
-	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_AUTHOR"("DBNAMETOID(RDB_authors)") values(?1);", &(output->addAuthor)) != SQLITE_OK)
+	if((output->addAuthor = createRequest(_cache, "INSERT INTO "TABLE_NAME_AUTHOR"("DBNAMETOID(RDB_authors)") values(?1);")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TAG)");", &(output->addTag)) != SQLITE_OK)
+	if((output->addTag = createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_TAG)");")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_CAT)");", &(output->addType)) != SQLITE_OK)
+	if((output->addType = createRequest(_cache, "INSERT INTO "TABLE_NAME_TAG"("DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDBS_tagType)") values(?1, "STRINGIZE(RDBS_TYPE_CAT)");")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_authors)" = ?1;", &(output->getAuthorID)) != SQLITE_OK)
+	if((output->getAuthorID = createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_authors)" = ?1;")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND "DBNAMETOID(RDB_tagID)" = ?1;", &(output->getTagID)) != SQLITE_OK)
+	if((output->getTagID = createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND "DBNAMETOID(RDB_tagID)" = ?1;")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)" AND "DBNAMETOID(RDB_tagID)" = ?1;", &(output->getTypeID)) != SQLITE_OK)
+	if((output->getTypeID = createRequest(_cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)" AND "DBNAMETOID(RDB_tagID)" = ?1;")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "INSERT INTO "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)", "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)") values(?1, ?2, ?3);", &(output->addProject)) != SQLITE_OK)
+	if((output->addProject = createRequest(_cache, "INSERT INTO "TABLE_NAME_CORRES" ("DBNAMETOID(RDB_ID)", "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)") values(?1, ?2, ?3);")) == NULL)
 		goto fail;
 	else
 		stage++;
 
-	if(createRequest(_cache, "UPDATE "TABLE_NAME_CORRES" SET "DBNAMETOID(RDBS_dataID)" = ?2 WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?3;", &(output->updateProject)) != SQLITE_OK)
+	if((output->updateProject = createRequest(_cache, "UPDATE "TABLE_NAME_CORRES" SET "DBNAMETOID(RDBS_dataID)" = ?2 WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?3;")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1", &(output->removeProject)) != SQLITE_OK)
+	if((output->removeProject = createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_CAT)";", &(output->flushCategories)) != SQLITE_OK)
+	if((output->flushCategories = createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_CAT)";")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if(createRequest(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", &(output->readProject)) != SQLITE_OK)
+	if((output->readProject = createRequest(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;")) == NULL)
 		goto fail;
 	else
 		stage++;
@@ -504,7 +504,7 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	sqlite3_stmt * request;
 	
-	if(createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2 LIMIT 1", &request) != SQLITE_OK)
+	if((request = createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2 LIMIT 1")) == NULL)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -518,7 +518,7 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	destroyRequest(request);
 
-	if(createRequest(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);", &request) != SQLITE_OK)
+	if((request = createRequest(cache, "INSERT INTO "TABLE_NAME_RESTRICTIONS" ("DBNAMETOID(RDBS_dataType)", "DBNAMETOID(RDBS_dataID)") values(?1, ?2);")) == NULL)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -540,7 +540,7 @@ bool removeRestriction(uint64_t code, byte type)
 	
 	sqlite3_stmt * request;
 	
-	if(createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;", &request) != SQLITE_OK)
+	if((request = createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;")) == NULL)
 		return false;
 	
 	sqlite3_bind_int(request, 1, type);
@@ -562,7 +562,7 @@ bool flushRestriction()
 	
 	sqlite3_stmt * request;
 	
-	if(createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS";", &request) != SQLITE_OK)
+	if((request = createRequest(cache, "DELETE FROM "TABLE_NAME_RESTRICTIONS";")) == NULL)
 		return false;
 	
 	bool output = sqlite3_step(request) == SQLITE_DONE;
@@ -605,9 +605,9 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	if(cache == NULL || data == UINT_MAX)
 		return;
 	
-	sqlite3_stmt * request;
+	sqlite3_stmt * request = createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;");
 	
-	if(createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDBS_dataID)" = ?1 AND "DBNAMETOID(RDBS_dataType)" = ?2;", &request) != SQLITE_OK)
+	if(request == NULL)
 		return;
 	
 	sqlite3_bind_int64(request, 1, data);
@@ -620,11 +620,11 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	//We have to delete the entry
 	if(nothingRemaining)
 	{
-		if(type == RDBS_TYPE_AUTHOR && createRequest(cache, "DELETE FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK);
+		if(type == RDBS_TYPE_AUTHOR && (request = createRequest(cache, "DELETE FROM "TABLE_NAME_AUTHOR" WHERE "DBNAMETOID(RDB_ID)" = ?1")) != NULL);
 
-		else if(type == RDBS_TYPE_TAG && createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)"", &request) == SQLITE_OK);
+		else if(type == RDBS_TYPE_TAG && (request = createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)"")) != NULL);
 		
-		else if(type == RDBS_TYPE_CAT && createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)"", &request) == SQLITE_OK);
+		else if(type == RDBS_TYPE_CAT && (request = createRequest(cache, "DELETE FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDB_ID)" = ?1 AND "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)"")) != NULL);
 		
 		else
 			return;
@@ -653,7 +653,7 @@ bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * ta
 		request = ((SEARCH_JUMPTABLE) table)->readProject;
 	else
 	{
-		if(createRequest(cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;", &request) != SQLITE_OK)
+		if((request = createRequest(cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;")) == NULL)
 			return false;
 	}
 
@@ -691,19 +691,19 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	if(type == RDBS_TYPE_AUTHOR)
 	{
 		*dataLength = nbAuthor;
-		if(createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" COLLATE "SORT_FUNC" ASC;", &request) != SQLITE_OK)
+		if((request = createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" COLLATE "SORT_FUNC" ASC;")) == NULL)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_TAG)
 	{
 		*dataLength = nbTag;
-		if(createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";", &request) != SQLITE_OK)
+		if((request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";")) == NULL)
 			return NULL;
 	}
 	else if(type == RDBS_TYPE_CAT)
 	{
 		*dataLength = nbType;
-		if(createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)";", &request) != SQLITE_OK)
+		if((request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)";")) == NULL)
 			return NULL;
 	}
 	else
@@ -822,7 +822,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 
 	}
 	
-	if(createRequest(cache, requestString, &request) != SQLITE_OK)
+	if((request = createRequest(cache, requestString)) == NULL)
 	{
 #ifdef DEV_VERSION
 		logR(requestString);
@@ -869,7 +869,7 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	
 	sqlite3_stmt * request;
 	
-	if(createRequest(cache, requestText, &request) != SQLITE_OK)
+	if((request = createRequest(cache, requestText)) == NULL)
 	{
 		free(output);
 		return NULL;

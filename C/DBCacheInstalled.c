@@ -40,8 +40,7 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 		}
 		
 		
-		sqlite3_stmt* request = NULL;
-		createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC", &request);
+		sqlite3_stmt* request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC");
 		
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -78,8 +77,7 @@ bool isProjectInstalledInCache (uint ID)
 {
 	bool output = false;
 	
-	sqlite3_stmt* request = NULL;
-	createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1", &request);
+	sqlite3_stmt* request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	if(cache != NULL)
 	{
@@ -102,9 +100,8 @@ void setInstalled(uint cacheID)
 	if(cache == NULL)
 		setupBDDCache();
 	
-	sqlite3_stmt * request = NULL;
-
-	if(cache != NULL && createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_isInstalled)" = 1 WHERE "DBNAMETOID(RDB_ID)" = ?1", &request) == SQLITE_OK)
+	sqlite3_stmt * request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_isInstalled)" = 1 WHERE "DBNAMETOID(RDB_ID)" = ?1");
+	if(request != NULL)
 	{
 		sqlite3_bind_int(request, 1, (int32_t) cacheID);
 		sqlite3_step(request);
@@ -114,11 +111,8 @@ void setInstalled(uint cacheID)
 
 void setUninstalled(bool isRoot, uint64_t repoID)
 {
-	if(cache == NULL)
-		return;
-	
-	sqlite3_stmt * request = NULL;
-	if(createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?1", &request) != SQLITE_OK)
+	sqlite3_stmt * request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_isInstalled)" = 0 WHERE "DBNAMETOID(RDB_repo)" = ?1");
+	if(request == NULL)
 		return;
 	
 	if(isRoot)
