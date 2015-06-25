@@ -63,9 +63,11 @@ int extractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPath
 	//If directory
 	if(*filenameWithoutPath == 0) //Si on est au bout du nom du fichier (/ final), c'est un dossier
 	{
+		//For now, we simply ignore them. If we wanted to consider them, we should append filenameInZip to outputPath
+#if 0
 		if(extractWithoutPath == STRIP_PATH_NONE)
 			mkdirR(filenameInZip);
-
+#endif
 		return UNZ_OK;
 	}
 
