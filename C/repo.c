@@ -182,7 +182,7 @@ char * getPathForProject(PROJECT_DATA project)
 	char rootPath[strlen(repoPath) + 20];
 
 	//Craft the path with the project in it
-	snprintf(rootPath, sizeof(rootPath), project.locale ? "%s/"LOCAL_PATH_NAME"_%d" : "%s/%d", repoPath, project.projectID);
+	snprintf(rootPath, sizeof(rootPath), project.locale && !project.repo->locale ? "%s/"LOCAL_PATH_NAME"_%d" : "%s/%d", repoPath, project.projectID);
 	free(repoPath);
 
 	return strdup(rootPath);

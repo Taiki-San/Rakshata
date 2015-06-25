@@ -13,6 +13,7 @@
 id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class expectedClass);
 
 //Project parser
+void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapter, BOOL paidContent, uint ** chaptersPrice);
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
 void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
@@ -45,6 +46,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_STATUS @"15"
 #define JSON_PROJ_TAGMASK @"16"
 #define JSON_PROJ_ASIAN_ORDER @"17"
+#define JSON_PROJ_ISLOCAL @"18"
 #define JSON_PROJ_PRICE @"19"
 #define JSON_PROJ_DRM @"4.2"
 

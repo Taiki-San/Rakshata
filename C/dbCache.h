@@ -114,6 +114,7 @@ void initializeTags(void * mainCache);
 #define RDB_DRM				18
 #define RDB_tomes			19
 #define RDB_favoris			20
+#define RDB_isLocal			21
 
 #define RDBS_dataID			21
 #define RDBS_dataType		22

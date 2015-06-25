@@ -489,7 +489,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *rightToLeft = nil, *tagMask = nil, *paidContent = nil, *DRM = nil;
+	NSNumber *ID, *status = nil, *rightToLeft = nil, *tagMask = nil, *paidContent = nil, *DRM = nil, * isLocale;
 	NSString * projectName = nil, *description = nil, *authors = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID", [NSNumber class]);
@@ -509,7 +509,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 #endif
 		goto end;
 	}
-	
+
+	isLocale = objectForKey(bloc, JSON_PROJ_ISLOCAL, nil, [NSNumber class]);
 	DRM = objectForKey(bloc, JSON_PROJ_DRM, nil, [NSNumber class]);
 	paidContent = objectForKey(bloc, JSON_PROJ_PRICE, @"price", [NSNumber class]);
 
@@ -582,6 +583,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	convertTagMask([tagMask unsignedLongLongValue], &(data.category), &(data.tagMask), &(data.mainTag));
 
+	data.locale = isLocale != nil && [isLocale boolValue];
 	data.haveDRM = (DRM != nil && [DRM boolValue]) | (DRM == nil && isPaidContent);
 	data.rightToLeft = [rightToLeft boolValue];
 	data.isInitialized = true;
@@ -636,6 +638,9 @@ NSDictionary * reverseParseBloc(PROJECT_DATA project)
 	[output setObject:@(project.tagMask) forKey:JSON_PROJ_TAGMASK];
 	[output setObject:@(project.rightToLeft) forKey:JSON_PROJ_ASIAN_ORDER];
 	[output setObject:@(project.haveDRM) forKey:JSON_PROJ_DRM];
+
+	if(project.locale)
+		[output setObject:@(YES) forKey:JSON_PROJ_ISLOCAL];
 	
 	if(project.isPaid)
 		[output setObject:@(YES) forKey:JSON_PROJ_PRICE];
@@ -721,6 +726,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 			if(parseExtra)
 			{
 				((PROJECT_DATA_EXTRA*)outputData)[validElements] = parseBlocExtra(remoteData);
+				((PROJECT_DATA_EXTRA*)outputData)[validElements].data.locale = false;
 				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].data.isInitialized;
 			}
 			else

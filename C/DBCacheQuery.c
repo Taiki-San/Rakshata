@@ -83,6 +83,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	output->mainTag = (uint32_t) sqlite3_column_int(state, RDB_mainTagID-1);
 	output->tagMask = (uint64_t) sqlite3_column_int64(state, RDB_tagMask-1);
 	output->nombreChapitre = (uint32_t) sqlite3_column_int(state, RDB_nombreChapitre-1);
+	output->locale = (bool) sqlite3_column_int(state, RDB_isLocal-1);
 	
 	if(copyDynamic)
 	{

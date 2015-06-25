@@ -62,25 +62,15 @@ enum
 		if(unzLocateFile(file, [item.path UTF8String], true) != UNZ_OK)
 			continue;
 
-		bool locale = item.projectData.data.repo->locale;
-
 		//At this point, we know two things: the project is valid, exist in the archive
-		if(!locale && checkReadable(item.projectData.data, item.isTome, item.contentID))
+		if(checkReadable(item.projectData.data, item.isTome, item.contentID))
 		{
 			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_DUPLICATE)}];
-		}
-		else
-		{
-
+			continue;
 		}
 
 		//Well, I guess we can carry on
-
-		if(locale)
-		{
-
-		}
-
+		[item install:file];
 	}
 
 	unzClose(file);
@@ -148,11 +138,13 @@ enum
 		if(currentProject == NULL)
 			continue;
 
-		currentProject->data.projectID = [entryID unsignedIntValue];
 		wcsncpy(currentProject->data.projectName, (charType*) [entryName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
 
 		if([self analyseRepo:currentProject :entry :entryName :&projectNames])
 			[self analyseMetadata:currentProject :entry];
+
+		if(currentProject->data.locale || currentProject->data.repo->locale)
+			currentProject->data.projectID = getEmptyLocalSlot(currentProject->data);
 
 		[self analyseImages:currentProject :entry];
 
@@ -191,15 +183,51 @@ enum
 		if(isTome == nil || entityID == nil)
 			continue;
 
+		//If this is a volume, we need the metadata
+		META_TOME * volumeData = NULL;
+		if([isTome boolValue])
+		{
+			NSArray * volDetail = objectForKey(entry, RAK_STRING_CONTENT_VOL_DETAILS, nil, [NSArray class]);
+			if(volDetail == nil)
+				continue;
+
+			volumeData = calloc(1, sizeof(META_TOME));
+			if(volumeData == NULL)
+				continue;
+
+			volumeData->details = parseChapterStructure(volDetail, &(volumeData->lengthDetails), NO, NO, NULL);
+			if(volumeData->lengthDetails == 0)
+			{
+				free(volumeData);
+				continue;
+			}
+		}
+
 		//Okay, everything is complete, we throw it in a data structre and we're good
 		RakImportItem * item = [RakImportItem new];
 		if(item == nil)
+		{
+			free(volumeData);
 			continue;
+		}
 
 		item.path = [dirName stringByAppendingString:@"/"];
-		item.projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 		item.isTome = [isTome boolValue];
 		item.contentID = [entityID intValue];
+
+		//We insert into the structure the metadata of the volume
+		if([isTome boolValue])
+		{
+			PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
+
+			volumeData->ID = item.contentID;
+			projectData.data.tomesFull = projectData.data.tomesInstalled = volumeData;
+			projectData.data.nombreTomes = projectData.data.nombreTomesInstalled = 1;
+
+			item.projectData = projectData;
+		}
+		else
+			item.projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 
 		//Duplicate images URL, so they can be freeed later
 		for(byte i = 0; i < NB_IMAGES; i++)
@@ -230,6 +258,11 @@ enum
 
 + (BOOL) analyseRepo : (PROJECT_DATA_EXTRA *) currentProject : (NSDictionary *) entry : (NSString *) entryName : (NSArray **) projectNames
 {
+	if(currentProject == NULL)
+		return NO;
+
+	currentProject->data.locale = true;	//Unless we overwrite it, this is a locale project
+
 	NSNumber * entryNumber = objectForKey(entry, RAK_STRING_METADATA_REPOTYPE, nil, [NSNumber class]);
 	NSString * entryString = objectForKey(entry, RAK_STRING_METADATA_REPOURL, nil, [NSString class]);
 	if(entryNumber != nil && [entryNumber unsignedCharValue] <= MAX_TYPE_DEPOT && entryString != nil)

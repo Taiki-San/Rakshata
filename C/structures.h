@@ -194,6 +194,7 @@ typedef struct root_repository_data
 **			-	rightToLeft				Sens de lecture
 **			-	isPaid					Contenus payants disponibles
 **			-	haveDRM					Les DRM sont-elles activées
+**			-	locale					Le projet vient-il d'une source externe et a été importé par un .rak
 **
 **		Page d'info
 **			- hashLarge					CRC32 de la version courante

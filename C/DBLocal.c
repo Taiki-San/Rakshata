@@ -12,3 +12,7 @@
 
 #include "dbCache.h"
 
+uint getEmptyLocalSlot(PROJECT_DATA project)
+{
+	return 1;
+}

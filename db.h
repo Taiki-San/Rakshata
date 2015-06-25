@@ -184,6 +184,9 @@ void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 
+/******		DBLocal.c		*******/
+uint getEmptyLocalSlot(PROJECT_DATA project);
+
 /**tagManagement.c**/
 CATEGORY getCategoryForID(uint32_t categoryID);
 uint getRootCategoryIDForID(uint32_t categoryID);

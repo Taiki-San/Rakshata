@@ -56,4 +56,5 @@
 #define RAK_STRING_CONTENT_DIRECTORY	@"dirName"
 #define RAK_STRING_CONTENT_PROJECT		@"projectID"
 #define RAK_STRING_CONTENT_ISTOME		@"isTome"
+#define RAK_STRING_CONTENT_VOL_DETAILS	@"detail"
 #define RAK_STRING_CONTENT_ID			@"ID"
