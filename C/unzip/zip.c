@@ -107,7 +107,7 @@ typedef struct linkedlist_datablock_internal_s
 	unsigned char data[SIZEDATA_INDATABLOCK];
 } linkedlist_datablock_internal;
 
-typedef struct linkedlist_data_s
+typedef struct
 {
 	linkedlist_datablock_internal* first_block;
 	linkedlist_datablock_internal* last_block;

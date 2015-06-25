@@ -82,7 +82,7 @@ typedef void   (*free_func)  (voidpf opaque, voidpf address);
 
 struct internal_state;
 
-typedef struct z_stream_s {
+typedef struct {
     z_const Bytef *next_in;     /* next input byte */
     uint32_t     avail_in;  /* number of bytes available at next_in */
     uint64_t    total_in;  /* total number of input bytes read so far */
@@ -109,7 +109,7 @@ typedef z_stream FAR *z_streamp;
      gzip header information passed to and from zlib routines.  See RFC 1952
   for more details on the meanings of these fields.
 */
-typedef struct gz_header_s {
+typedef struct {
     int     text;       /* true if compressed data believed to be text */
     uint64_t   time;       /* modification time */
     int     xflags;     /* extra flags (not used when writing a gzip file) */

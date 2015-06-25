@@ -89,14 +89,14 @@ extern "C" {
 
 	/* unz_global_info structure contain global data about the ZIPfile
 	 These data comes from the end of central dir */
-	typedef struct unz_global_info64_s
+	typedef struct
 	{
 		uint64_t number_entry;         /* total number of entries in
 										the central dir on this disk */
 		uint64_t size_comment;         /* size of the global comment of the zipfile */
 	} unz_global_info64;
 
-	typedef struct unz_global_info_s
+	typedef struct
 	{
 		uint64_t number_entry;         /* total number of entries in
 										the central dir on this disk */
@@ -104,7 +104,7 @@ extern "C" {
 	} unz_global_info;
 
 	/* unz_file_info contain information about a file in the zipfile */
-	typedef struct unz_file_info64_s
+	typedef struct
 	{
 		uint64_t version;              /* version made by                 2 bytes */
 		uint64_t version_needed;       /* version needed to extract       2 bytes */
@@ -125,7 +125,7 @@ extern "C" {
 		tm_unz tmu_date;
 	} unz_file_info64;
 
-	typedef struct unz_file_info_s
+	typedef struct
 	{
 		uint64_t version;              /* version made by                 2 bytes */
 		uint64_t version_needed;       /* version needed to extract       2 bytes */
@@ -247,7 +247,7 @@ extern "C" {
 	/* ****************************************** */
 	/* Ryan supplied functions */
 	/* unz_file_info contain information about a file in the zipfile */
-	typedef struct unz_file_pos_s
+	typedef struct
 	{
 		uint64_t pos_in_zip_directory;   /* offset in zip file directory */
 		uint64_t num_of_file;            /* # of file */
@@ -261,7 +261,7 @@ extern "C" {
 							   unzFile file,
 							   unz_file_pos* file_pos);
 
-	typedef struct unz64_file_pos_s
+	typedef struct
 	{
 		uint64_t pos_in_zip_directory;   /* offset in zip file directory */
 		uint64_t num_of_file;            /* # of file */

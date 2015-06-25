@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-typedef struct project_data_for_drag_drop
+typedef struct //project_data_for_drag_drop
 {
 	PROJECT_DATA data;
 	int selection;

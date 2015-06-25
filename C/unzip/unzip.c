@@ -109,7 +109,7 @@ const char unz_copyright[] =
 " unzip Copyright 1998-20xx Gilles Vollant - http://www.winimage.com/zLibDll";
 
 /* unz_file_info_interntal contain internal info about a file in zipfile*/
-typedef struct unz_file_info64_internal_s
+typedef struct
 {
 	uint64_t offset_curfile;/* relative offset of local header 8 bytes */
 } unz_file_info64_internal;
@@ -1187,7 +1187,7 @@ extern int  unzLocateFile (unzFile file, const char *szFileName, int iCaseSensit
  */
 
 /*
- typedef struct unz_file_pos_s
+ typedef struct
  {
  uint64_t pos_in_zip_directory;   // offset in file
  uint64_t num_of_file;            // # of file

@@ -40,7 +40,7 @@
 
 @end
 
-typedef struct smartReload_data
+typedef struct //smartReload_data
 {
 	uint64_t data;
 	BOOL installed;

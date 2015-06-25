@@ -175,7 +175,7 @@ typedef signed long long s64;
 #define LENGTHBYTES 32
 #define LENGTHBITS  (8*LENGTHBYTES) /* 256 */
 
-typedef struct NESSIEstruct {
+typedef struct {
     u8  bitLength[LENGTHBYTES]; /* global number of hashed bits (256-bit counter) */
     u8  buffer[WBLOCKBYTES];    /* buffer of data to hash */
     int bufferBits;             /* current number of bits on the buffer */
@@ -1288,7 +1288,7 @@ static const u64 rc[R + 1] = {
 /**
  * The core Whirlpool transform.
  */
-static void processBuffer(struct NESSIEstruct * const structpointer) {
+static void processBuffer(NESSIEstruct * const structpointer) {
     int i, r;
     u64 K[8];        /* the round key */
     u64 block[8];    /* mu(buffer) */
@@ -1597,7 +1597,7 @@ static void processBuffer(struct NESSIEstruct * const structpointer) {
 /**
  * Initialize the hashing state.
  */
-void NESSIEinit(struct NESSIEstruct * const structpointer) {
+void NESSIEinit(NESSIEstruct * const structpointer) {
     int i;
 
     memset(structpointer->bitLength, 0, 32);
@@ -1639,7 +1639,7 @@ void NESSIEinit(struct NESSIEstruct * const structpointer) {
 
 void NESSIEadd(const unsigned char * const source,
                unsigned long sourceBits,
-               struct NESSIEstruct * const structpointer) {
+               NESSIEstruct * const structpointer) {
     /*
                        sourcePos
                        |
@@ -1755,8 +1755,8 @@ void NESSIEadd(const unsigned char * const source,
  *
  * This method uses the invariant: bufferBits < DIGESTBITS
  */
-void NESSIEfinalize(struct NESSIEstruct * const structpointer,
-                    unsigned char * const result) {
+void NESSIEfinalize(NESSIEstruct * const structpointer, unsigned char * const result)
+{
     int i;
     u8 *buffer      = structpointer->buffer;
     u8 *bitLength   = structpointer->bitLength;

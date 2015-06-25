@@ -20,14 +20,14 @@ typedef wchar_t charType;
 //Copied from sqlite3.h
 typedef struct sqlite3_stmt sqlite3_stmt;
 
-typedef struct details_tome_data
+typedef struct
 {
 	int ID;
 	bool isPrivate;			//Chapitre indé
 
 } CONTENT_TOME;
 
-typedef struct tome_metadata
+typedef struct
 {
 	CONTENT_TOME * details;
 	
@@ -51,20 +51,20 @@ typedef struct
 
 //Gestion du tag
 
-typedef struct tag_verbose_structure
+typedef struct
 {
 	charType * name;
 	uint ID;
 	
 } TAG_VERBOSE;
 
-typedef struct tag_structure
+typedef struct
 {
 	uint ID;
 	
 } TAG;
 
-typedef struct category_verbose_structure
+typedef struct
 {
 	uint ID;
 	uint rootID;
@@ -75,7 +75,7 @@ typedef struct category_verbose_structure
 	
 } CATEGORY_VERBOSE;
 
-typedef struct category_structure
+typedef struct
 {
 	TAG tags[TAG_PAR_CAT];
 	uint ID;
@@ -121,7 +121,7 @@ typedef struct category_structure
  **********************************************************************************************/
 
 
-typedef struct repository_data
+typedef struct
 {
 	//Bloc sans padding
 	
@@ -143,7 +143,7 @@ typedef struct repository_data
 	
 } REPO_DATA;
 
-typedef struct repository_data_extra
+typedef struct
 {
 	REPO_DATA * data;
 	
@@ -157,7 +157,7 @@ typedef struct repository_data_extra
 	
 } REPO_DATA_EXTRA;
 
-typedef struct root_repository_data
+typedef struct
 {
 	charType name[REPO_NAME_LENGTH];
 	
@@ -221,7 +221,7 @@ typedef struct root_repository_data
 **
 **********************************************************************************************/
 
-typedef struct dataProject
+typedef struct
 {
 	//Pointeurs, un bloc chacun (64b)
 	REPO_DATA *repo;
@@ -262,7 +262,7 @@ typedef struct dataProject
 	
 } PROJECT_DATA;
 
-typedef struct dataProjectWithExtra
+typedef struct
 {
 	PROJECT_DATA data;
 

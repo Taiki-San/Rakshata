@@ -23,6 +23,7 @@
 @property int contentID;
 @property BOOL isTome;
 
+- (BOOL) isReadable;
 - (void) install : (unzFile *) archive;
 
 @end

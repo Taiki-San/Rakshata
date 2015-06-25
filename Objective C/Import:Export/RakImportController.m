@@ -63,7 +63,7 @@ enum
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
-		if(checkReadable(item.projectData.data, item.isTome, item.contentID))
+		if([item isReadable])
 		{
 			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_DUPLICATE)}];
 			continue;
@@ -216,25 +216,22 @@ enum
 		item.contentID = [entityID intValue];
 
 		//We insert into the structure the metadata of the volume
+		PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 		if([isTome boolValue])
 		{
-			PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
-
 			volumeData->ID = item.contentID;
 			projectData.data.tomesFull = projectData.data.tomesInstalled = volumeData;
 			projectData.data.nombreTomes = projectData.data.nombreTomesInstalled = 1;
-
-			item.projectData = projectData;
 		}
-		else
-			item.projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 
 		//Duplicate images URL, so they can be freeed later
 		for(byte i = 0; i < NB_IMAGES; i++)
 		{
-			if(item.projectData.haveImages[i])
-				item.projectData.URLImages[i] = strdup(item.projectData.URLImages[i]);
+			if(projectData.haveImages[i])
+				projectData.URLImages[i] = strdup(projectData.URLImages[i]);
 		}
+
+		item.projectData = projectData;
 
 		[output addObject:item];
 	}

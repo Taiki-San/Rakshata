@@ -16,7 +16,7 @@ static bool initialized = false;
 
 static int64_t nbAuthor = 0, nbTag = 0, nbType = 0;
 
-typedef struct buildTablePointer
+typedef struct randoName
 {
 	sqlite3_stmt * addAuthor;
 	sqlite3_stmt * addTag;
@@ -108,7 +108,7 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 		return NULL;
 	
 	byte stage = 0;
-	SEARCH_JUMPTABLE output = malloc(sizeof(struct buildTablePointer));
+	SEARCH_JUMPTABLE output = malloc(sizeof(struct randoName));
 	
 	if(output == NULL)
 		return NULL;

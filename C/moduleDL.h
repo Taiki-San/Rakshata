@@ -59,7 +59,7 @@ enum downloadStatusCodes {
 	DLSTATUS_ABORT		= 0xf0
 };
 
-typedef struct metadata_UI_data_loaded
+typedef struct
 {
 	size_t speed;
 	double percentage;
@@ -67,7 +67,7 @@ typedef struct metadata_UI_data_loaded
 	
 } METADATA_LOADED;
 
-typedef struct data_loaded_from_download_list
+typedef struct
 {
 	void * rowViewResponsible;
 	CURL * curlHandler;
@@ -85,7 +85,7 @@ typedef struct data_loaded_from_download_list
 	uint8_t downloadSuspended;	//Divised in two parts
 } DATA_LOADED;
 
-typedef struct intermediary_from_data_loaded_to_DL_thread
+typedef struct //intermediary_from_data_loaded_to_DL_thread
 {
 	void ** rowViewResponsible;
 	CURL ** curlHandler;
@@ -103,7 +103,7 @@ typedef struct intermediary_from_data_loaded_to_DL_thread
 	
 }PROXY_DATA_LOADED;
 
-typedef struct data_sent_to_pay_thread
+typedef struct //data_sent_to_pay_thread
 {
     int8_t ** statusLocal;
     int prix;
@@ -112,13 +112,13 @@ typedef struct data_sent_to_pay_thread
     bool somethingToPay;
 } DATA_PAY;
 
-typedef struct download_data_obfuscated
+typedef struct //download_data_obfuscated
 {
 	char *data;
 	char *mask;
 } DATA_DL_OBFS;
 
-typedef struct download_data_struct
+typedef struct //download_data_struct
 {
     char *URL;
     void *buf;
@@ -138,14 +138,14 @@ typedef struct {
 	short retryAttempt;
 } DL_DATA;
 
-typedef struct main_data_module_DL
+typedef struct //main_data_module_DL
 {
     PROXY_DATA_LOADED* todoList;
     void* buf;
     size_t length;
 } DATA_MOD_DL;
 
-typedef struct argument_to_main_worker
+typedef struct //argument_to_main_worker
 {
 	DATA_LOADED **** todoList;
 	int8_t *** status;
@@ -157,7 +157,7 @@ typedef struct argument_to_main_worker
 	
 } MDL_MWORKER_ARG;
 
-typedef struct argument_to_MDL_handler
+typedef struct //argument_to_MDL_handler
 {
 	uint selfCode;
     int8_t *currentState;

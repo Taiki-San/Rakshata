@@ -12,6 +12,11 @@
 
 @implementation RakImportItem
 
+- (BOOL) isReadable
+{
+	return checkReadable(_projectData.data, _isTome, _contentID);
+}
+
 - (void) install : (unzFile *) archive
 {
 	char * projectPath = getPathForProject(_projectData.data);
