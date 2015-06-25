@@ -181,22 +181,37 @@ PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	output = malloc((nbElemInCache + 1) * sizeof(PROJECT_DATA));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
 	if(output != NULL)
 	{
-		//On craft la requète en fonctions des arguments
-		char sortRequest[50], requestString[200];
+		char sortRequest[50], requestString[300], searchCond[200];
+		int lengthWritten = 0;
+
+		//Sort requirement
 		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
 			strncpy(sortRequest, DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC, 50);
 		else if((maskRequest & RDB_SORTMASK) == SORT_REPO)
 			strncpy(sortRequest, DBNAMETOID(RDB_repo), 50);
 		else
 			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
-		
+
+		//Type of data we look for
 		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
-			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY %s ASC", sortRequest);
+			lengthWritten += snprintf(searchCond, 200, DBNAMETOID(RDB_isInstalled)" = 1");
 		else if((maskRequest & RDB_LOADMASK) == RDB_LOAD_FAVORITE)
-			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY %s ASC", sortRequest);
+			lengthWritten += snprintf(searchCond, 200, DBNAMETOID(RDB_favoris)" = 1");
+
+		//Don't want local data
+		if((maskRequest & RDB_REMOTE_MASK) == RDB_REMOTE_ONLY)
+		{
+			if(lengthWritten)
+				lengthWritten += snprintf(&(searchCond[lengthWritten]), 200 - lengthWritten, " AND "DBNAMETOID(RDB_isLocal)" = 0");
+			else
+				lengthWritten = snprintf(searchCond, 200, DBNAMETOID(RDB_isLocal)" = 0");
+		}
+
+		//Craft the final request
+		if(lengthWritten)
+			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" WHERE %s ORDER BY %s ASC", sortRequest, searchCond);
 		else
-			snprintf(requestString, 200, "SELECT * FROM "MAIN_CACHE" ORDER BY %s ASC", sortRequest);
-		
+			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" ORDER BY %s ASC", sortRequest);
 		
 		sqlite3_stmt* request = NULL;
 		createRequest(cache, requestString, &request);

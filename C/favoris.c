@@ -154,7 +154,7 @@ void updateFavorites()
 		return;
 	
 	uint nbElem;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO, &nbElem);
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
     if(projectDB == NULL)
         return;
 	
@@ -257,7 +257,7 @@ void getNewFavs()
 	bool prevIsTome;
 	int lastInstalled, prevElem = INVALID_SIGNED_VALUE;
 	uint nbProject, prevProjectIndex;
-    PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO, &nbProject), *current;
+    PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO | RDB_REMOTE_ONLY, &nbProject), *current;
 
     if(projectDB == NULL)
         return;

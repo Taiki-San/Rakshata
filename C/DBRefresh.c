@@ -176,7 +176,7 @@ void * refreshRepoHelper(REPO_DATA * repo, bool standalone)
 {
 	uint nbElem, posBase = 0, posEnd = 0;
 	uint64_t requestedID = getRepoID(repo);
-	PROJECT_DATA * project = getCopyCache(SORT_REPO, &nbElem);
+	PROJECT_DATA * project = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
 	
 	while(posBase < nbElem && getRepoID(project[posBase].repo) != requestedID)		posBase++;
 	
@@ -257,7 +257,7 @@ void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, 
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd, nbRepoRefreshed = 0;
-	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO, &nbElem);
+	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
 	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 	
 	while(posBase != nbElem)

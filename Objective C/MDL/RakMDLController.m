@@ -25,7 +25,7 @@
 		quit = NO;
 		
 		//We have to make reference to entries of cache. In order to keep it updatable, we have to allocate memory for each entry
-		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID, &sizeCache);
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID | RDB_REMOTE_ONLY, &sizeCache);
 		PROJECT_DATA ** futureCache = calloc(sizeCache, sizeof(PROJECT_DATA *));
 		if(futureCache == NULL)
 		{
@@ -119,7 +119,7 @@
 	else	//Full update
 	{
 		uint newSize;
-		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID, &newSize);
+		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID | RDB_REMOTE_ONLY, &newSize);
 		
 		if(_cache != NULL && newSize != 0)
 		{

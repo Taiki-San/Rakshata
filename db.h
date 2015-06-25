@@ -32,7 +32,12 @@ enum getCopyDBCodes
 	//Amount of detail
 	RDB_COPY_ALL			= 0x0,
 	RDB_EXCLUDE_DYNAMIC		= 0x10,
-	RDB_COPY_MASK			= RDB_EXCLUDE_DYNAMIC
+	RDB_COPY_MASK			= RDB_EXCLUDE_DYNAMIC,
+
+	//Want only remote or also the locally imported data
+	RDB_REMOTE_ONLY			= 0x20,
+	RDB_INCLUDE_LOCAL		= 0x0,
+	RDB_REMOTE_MASK			= RDB_REMOTE_ONLY
 };
 
 enum

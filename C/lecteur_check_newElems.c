@@ -15,7 +15,7 @@
 uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {
 	uint posStart, posEnd, nbElemFullData;
-	PROJECT_DATA * fullData = getCopyCache(SORT_REPO, &nbElemFullData);
+	PROJECT_DATA * fullData = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY, &nbElemFullData);
 	
 	if(fullData == NULL)
 		return 0;
