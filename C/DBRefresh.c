@@ -176,34 +176,34 @@ void * refreshRepoHelper(REPO_DATA * repo, bool standalone)
 {
 	uint nbElem, posBase = 0, posEnd = 0;
 	uint64_t requestedID = getRepoID(repo);
-	PROJECT_DATA * project = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
+	PROJECT_DATA_PARSED * project = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY | RDB_PARSED_OUTPUT, &nbElem);
 	
-	while(posBase < nbElem && getRepoID(project[posBase].repo) != requestedID)		posBase++;
+	while(posBase < nbElem && getRepoID(project[posBase].project.repo) != requestedID)		posBase++;
 	
 	//Repo couldn't be found :|
 	if(posBase == nbElem)
 	{
-		freeProjectData(project);
+		freeParseProjectData(project);
 		
-		PROJECT_DATA emptyProject = getEmptyProject();
-		emptyProject.repo = repo;
+		PROJECT_DATA_PARSED emptyProject = getEmptyParsedProject();
+		emptyProject.project.repo = repo;
 		
 		return updateProjectsFromRepo(&emptyProject, 0, 0, standalone);
 	}
 	
 	posEnd = posBase + 1;
-	while(posEnd < nbElem && requestedID == getRepoID(project[posEnd].repo))			posEnd++;
+	while(posEnd < nbElem && requestedID == getRepoID(project[posEnd].project.repo))			posEnd++;
 	
 	void * output = updateProjectsFromRepo(project, posBase, posEnd, standalone);
 	
-	freeProjectData(project);
+	freeParseProjectData(project);
 	
 	return output;
 }
 
-void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone)
+void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint posEnd, bool standalone)
 {
-	REPO_DATA *globalRepo = oldData[posBase].repo;
+	REPO_DATA *globalRepo = oldData[posBase].project.repo;
 	uint magnitudeInput = posEnd - posBase, nbElem = 0;
 	char * bufferDL = NULL;
 	void * output = NULL;
@@ -221,12 +221,12 @@ void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, 
 		//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
 		if(projects != NULL)
 		{
-			PROJECT_DATA *projectShort = malloc(nbElem * sizeof(PROJECT_DATA));
+			PROJECT_DATA_PARSED *projectShort = malloc(nbElem * sizeof(PROJECT_DATA_PARSED));
 			if(projectShort != NULL)
 			{
 				for (uint pos = 0; pos < nbElem; pos++)
 				{
-					moveProjectExtraToStandard(projects[pos], &projectShort[pos]);
+					moveProjectExtraToParsed(projects[pos], &projectShort[pos]);
 					
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
 					if(projectShort[pos].isPaid && !paidRepo)
@@ -257,7 +257,7 @@ void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, 
 void updateProjects()
 {
 	uint nbElem, posBase = 0, posEnd, nbRepoRefreshed = 0;
-	PROJECT_DATA * oldData = getCopyCache(RDB_LOADALL | SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
+	PROJECT_DATA_PARSED * oldData = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY | RDB_PARSED_OUTPUT, &nbElem);
 	ICONS_UPDATE * iconData = NULL, * endIcon, * newIcon;
 	
 	while(posBase != nbElem)
@@ -309,19 +309,19 @@ void updateProjects()
 					if(posEnd != UINT_MAX)
 					{
 						//Now, find the repo in our base, starting from where we left (it's supposed to be ordered)
-						for(; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].repo); posRepo++);
+						for(; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].project.repo); posRepo++);
 						
 						//Couldn't find the repo, weird, let's recheck from the begining
 						if(posRepo == realNumberOfRepo)
 						{
-							for(posRepo = 0; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].repo); posRepo++);
+							for(posRepo = 0; posRepo < realNumberOfRepo && getRepoID(repo[posRepo]) != getRepoID(oldData[posBase].project.repo); posRepo++);
 							
 							//Okay, the repo was probably deleted
 							if(posRepo == realNumberOfRepo)
 							{
 #ifdef DEV_VERSION
 								char temp[100+LONGUEUR_URL];
-								snprintf(temp, sizeof(temp), "Repo deleted during refresh? %d - %d", oldData[posBase].repo->parentRepoID, oldData[posBase].repo->repoID);
+								snprintf(temp, sizeof(temp), "Repo deleted during refresh? %d - %d", oldData[posBase].project.repo->parentRepoID, oldData[posBase].project.repo->repoID);
 								logR(temp);
 #endif
 								posBase = posEnd;								
@@ -366,7 +366,7 @@ void updateProjects()
 	
 	createNewThread(updateProjectImages, iconData);
 	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
-	freeProjectData(oldData);
+	freeParseProjectData(oldData);
 	notifyFullUpdate();
 }
 

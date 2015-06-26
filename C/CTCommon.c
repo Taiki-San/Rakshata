@@ -40,6 +40,141 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 		internalDeleteChapitre(projectDB, selection, true);
 }
 
+#define getData(run, dataInject, index)	ACCESS_DATA(run == 1, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+
+void generateCTUsable(PROJECT_DATA_PARSED * project)
+{
+	uint nbElemToInject, nbElemBase, sumEntries;
+	void * dataBase, *dataInject;
+	uint16_t sizeOfType;
+
+	//We have two passes, one for the chapters, one for the volume
+
+	for(byte run = 0; run < 2; run++)
+	{
+		//Choose to inject the smallest list
+
+		if(run == 0)	//chapters
+		{
+			if(project->nombreChapitreLocal < project->nombreChapitreRemote)
+			{
+				nbElemToInject = project->nombreChapitreLocal;
+				dataInject = project->chapitresLocal;
+				nbElemBase = project->nombreChapitreRemote;
+				dataBase = project->chapitresRemote;
+			}
+			else
+			{
+				nbElemBase = project->nombreChapitreLocal;
+				dataBase = project->chapitresLocal;
+				nbElemToInject = project->nombreChapitreRemote;
+				dataInject = project->chapitresRemote;
+			}
+
+			sizeOfType = sizeof(int);
+		}
+		else
+		{
+			if(project->nombreTomeLocal < project->nombreTomeRemote)
+			{
+				nbElemToInject = project->nombreTomeLocal;
+				dataInject = project->tomeLocal;
+				nbElemBase = project->nombreTomeRemote;
+				dataBase = project->tomeRemote;
+			}
+			else
+			{
+				nbElemBase = project->nombreTomeLocal;
+				dataBase = project->tomeLocal;
+				nbElemToInject = project->nombreTomeRemote;
+				dataInject = project->tomeRemote;
+			}
+
+			sizeOfType = sizeof(META_TOME);
+		}
+
+		//Have anything to inject?
+		if((sumEntries = nbElemBase + nbElemToInject) != 0)
+		{
+			void * outputData = malloc(sumEntries * sizeOfType);
+			if(outputData != NULL)
+			{
+				uint currentLength = nbElemBase;
+				memcpy(outputData, dataBase, nbElemBase * sizeOfType);
+
+				//We actually have something to inject, otherwise, we only had one list
+				if(nbElemToInject != 0)
+				{
+					//Ok, we now merge. We work backward to we don't have to deal with offsets as we insert into the list
+					for(uint posInject = 0; posInject < nbElemToInject; posInject++)
+					{
+						int dataToInject = getData(run, dataInject, posInject);
+						uint posLowestDiff = 0;
+						//Okay, we look for the closest value in the list
+						for(uint posBase = 1, newDiff, lowestDiff = llabs(getData(run, outputData, 0) - dataToInject); posBase < nbElemBase; posBase++)
+						{
+							newDiff = llabs(getData(run, outputData, posBase) - dataToInject);
+							if(newDiff < lowestDiff)
+							{
+								posLowestDiff = posBase;
+								lowestDiff = newDiff;
+							}
+						}
+
+						//We have the position of the element to inject in posLowestDiff
+						int nextValue = getData(run, outputData, (posLowestDiff == currentLength ? posLowestDiff : posLowestDiff + 1));
+						int previousValue = getData(run, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
+						bool increasing = nextValue >= previousValue;	//increasing, we got after the value
+						bool goNext = increasing == (getData(run, outputData, posLowestDiff) < dataToInject);
+
+						//We offset what come next
+						if(run == 0)
+						{
+							for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+								((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
+
+							//We insert
+							if(goNext)
+								((int *) outputData)[posLowestDiff + 1] = dataToInject;
+							else
+							{
+								((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
+								((int *) outputData)[posLowestDiff] = dataToInject;
+							}
+						}
+						else
+						{
+							for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+								((META_TOME *) outputData)[offseter + 1] = ((META_TOME *) outputData)[offseter];
+
+							//We insert
+							if(goNext)
+								((META_TOME *) outputData)[posLowestDiff + 1] = ((META_TOME *) dataInject)[posInject];
+							else
+							{
+								((META_TOME *) outputData)[posLowestDiff + 1] = ((META_TOME *) outputData)[posLowestDiff];
+								((META_TOME *) outputData)[posLowestDiff] = ((META_TOME *) dataInject)[posInject];
+							}
+						}
+					}
+				}
+
+				//Chapitres
+				if(run == 0)
+				{
+					project->project.chapitresFull = outputData;
+					project->project.nombreChapitre = sumEntries;
+				}
+				else
+				{
+					project->project.tomesFull = outputData;
+					project->project.nombreTomes = sumEntries;
+				}
+			}
+		}
+	}
+}
+
 //Return a list containing only installed elements
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome)
 {
@@ -68,6 +203,19 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 	}
 	
 	return output;
+}
+
+void releaseParsedData(PROJECT_DATA_PARSED data)
+{
+	if(!data.project.isInitialized)
+		return;
+
+	free(data.chapitresLocal);
+	free(data.chapitresRemote);
+	freeTomeList(data.tomeLocal, data.nombreTomeLocal, true);
+	freeTomeList(data.tomeRemote, data.nombreTomeRemote, true);
+
+	releaseCTData(data.project);
 }
 
 void releaseCTData(PROJECT_DATA data)

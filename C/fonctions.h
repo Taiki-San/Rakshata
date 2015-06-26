@@ -23,11 +23,14 @@ void networkAndVersionTest();
 bool checkNetworkState(int state);
 
 /**CTCommon.c**/
+#define ACCESS_DATA(isTome, dataChap, dataTome) (isTome ? dataTome : dataChap)
 void nullifyCTPointers(PROJECT_DATA * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
+void generateCTUsable(PROJECT_DATA_PARSED * project);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);
+void releaseParsedData(PROJECT_DATA_PARSED data);
 void releaseCTData(PROJECT_DATA data);
 
 /**Download.c**/
@@ -50,9 +53,9 @@ void getNewFavs();
 
 /**JSONParser.m**/
 PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint * nbElem);
-PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem);
-char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput);
-void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * output);
+PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem);
+char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput);
+void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSED * output);
 
 void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag);
 
@@ -146,7 +149,7 @@ int sortNumbers(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 int sortRootRepo(const void *a, const void *b);
-bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b);
+bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b);
 uint positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 void createPath(char *output);

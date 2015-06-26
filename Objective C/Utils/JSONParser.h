@@ -49,6 +49,10 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_ISLOCAL @"18"
 #define JSON_PROJ_PRICE @"19"
 #define JSON_PROJ_DRM @"4.2"
+#define JSON_PROJ_CHAP_REMOTE @"20"
+#define JSON_PROJ_CHAP_LOCAL @"21"
+#define JSON_PROJ_VOL_REMOTE @"22"
+#define JSON_PROJ_VOL_LOCAL @"23"
 
 #define JSON_PROJ_URL_SRGRID @"20"
 #define JSON_PROJ_HASH_SRGRID @"21"

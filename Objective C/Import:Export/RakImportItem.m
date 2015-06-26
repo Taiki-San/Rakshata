@@ -14,12 +14,12 @@
 
 - (BOOL) isReadable
 {
-	return checkReadable(_projectData.data, _isTome, _contentID);
+	return checkReadable(_projectData.data.project, _isTome, _contentID);
 }
 
 - (void) install : (unzFile *) archive
 {
-	char * projectPath = getPathForProject(_projectData.data);
+	char * projectPath = getPathForProject(_projectData.data.project);
 	if(projectPath == NULL)
 		return;
 
@@ -69,7 +69,7 @@
 
 	//Decompression is over, now, we need to ensure everything is fine
 
-	if(!checkReadable(_projectData.data, _isTome, selection))
+	if(![self isReadable])
 	{
 		//Oh, the entry was not valid 😱
 		logR("Uh? Invalid import :|");

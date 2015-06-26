@@ -14,6 +14,9 @@
 
 int64_t alreadyRefreshed;
 
+//Repo ID are the combinaison of two 32 bits integer, thus, it can not be below 2^32 + 1 so, we're safe
+#define LOCAL_REPO_ID 42
+
 enum getCopyDBCodes
 {
 	//Type of data
@@ -36,8 +39,9 @@ enum getCopyDBCodes
 
 	//Want only remote or also the locally imported data
 	RDB_REMOTE_ONLY			= 0x20,
+	RDB_PARSED_OUTPUT		= 0x40,
 	RDB_INCLUDE_LOCAL		= 0x0,
-	RDB_REMOTE_MASK			= RDB_REMOTE_ONLY
+	RDB_REMOTE_MASK			= RDB_REMOTE_ONLY | RDB_PARSED_OUTPUT
 };
 
 enum
@@ -107,18 +111,22 @@ uint setupBDDCache();
 void syncCacheToDisk(byte syncCode);
 void flushDB();
 
-PROJECT_DATA * getCopyCache(uint maskRequest, uint* nbElemCopied);
+void * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
 PROJECT_DATA getEmptyProject();
+PROJECT_DATA_PARSED getEmptyParsedProject();
+PROJECT_DATA_EXTRA getEmptyExtraProject();
 REPO_DATA getEmptyRepo();
-bool updateCache(PROJECT_DATA data, char whatCanIUse, uint projectID);
+bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID);
 
+void freeParseProjectData(PROJECT_DATA_PARSED * projectDB);
 void freeProjectData(PROJECT_DATA* projectDB);
 
-PROJECT_DATA * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic);
+void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic, bool wantParsed);
 PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed);
+PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed);
+PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID);
 PROJECT_DATA getProjectByID(uint cacheID);
-PROJECT_DATA getProjectByIDHelper(uint cacheID, bool copyDynamic);
 
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);
@@ -140,6 +148,7 @@ uint getSubrepoFromRepoID(uint64_t repoID);
 uint64_t getRepoIndexFromURL(const char * URL);
 REPO_DATA * getRepoForID(uint64_t repoID);
 ROOT_REPO_DATA * getRootRepoForID(uint repoID);
+void setFavoriteForID(uint cacheID, bool isFavorite);
 bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy);
 void setUninstalled(bool isRoot, uint64_t repoID);
 
@@ -179,7 +188,7 @@ void updateDatabase(bool forced);
 void refreshRepo(REPO_DATA * repo);
 int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
-void * updateProjectsFromRepo(PROJECT_DATA* oldData, uint posBase, uint posEnd, bool standalone);
+void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint posEnd, bool standalone);
 
 /******		DBTools.c	  ******/
 bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);

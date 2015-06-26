@@ -264,7 +264,25 @@ typedef struct
 
 typedef struct
 {
-	PROJECT_DATA data;
+	PROJECT_DATA project;
+
+	int *chapitresRemote;
+	int *chapitresLocal;
+
+	uint nombreChapitreRemote;
+	uint nombreChapitreLocal;
+
+	META_TOME * tomeRemote;
+	META_TOME * tomeLocal;
+
+	uint nombreTomeRemote;
+	uint nombreTomeLocal;
+
+} PROJECT_DATA_PARSED;
+
+typedef struct
+{
+	PROJECT_DATA_PARSED data;
 
 	//2 x 64b
 	bool haveImages[NB_IMAGES];

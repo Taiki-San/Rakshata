@@ -64,16 +64,16 @@ bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output)
 
 #pragma mark - Refresh Projects
 
-uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem)
+uint defineBoundsRepoOnProjectDB(PROJECT_DATA_PARSED * oldData, uint posBase, uint nbElem)
 {
 	if(oldData == NULL)
 		return UINT_MAX;
 	
-	for(; posBase < nbElem && oldData[posBase].repo == NULL; posBase++);
+	for(; posBase < nbElem && oldData[posBase].project.repo == NULL; posBase++);
 	
-	uint64_t repoID = getRepoID(oldData[posBase].repo);
+	uint64_t repoID = getRepoID(oldData[posBase].project.repo);
 	
-	for (posBase++; posBase < nbElem && getRepoID(oldData[posBase].repo) == repoID; posBase++);
+	for (posBase++; posBase < nbElem && getRepoID(oldData[posBase].project.repo) == repoID; posBase++);
 	
 	return posBase;
 }
@@ -138,20 +138,25 @@ bool extractCurrentLine(char * input, uint *posInput, char * output, uint length
 	return (rank >= 5 && rank <= 9);
 }
 
-bool isProjectListSorted(PROJECT_DATA* data, uint length)
+bool isProjectListSorted(PROJECT_DATA_PARSED* data, uint length)
 {
 	int logData;
 	for(uint i = 1; i < length; i++)
 	{
-		if((logData = sortProjects(&data[i-1], &data[i])) > 0)
+		if((logData = sortProjects(&data[i-1].project, &data[i].project)) > 0)
 			return false;
 	}
 	return true;
 }
 
-void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData)
+/**
+ Will update the repo of containing oldData with newData
+ /!\ Designed to work with a remote refresh, not an import
+ */
+
+void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, PROJECT_DATA_PARSED * newData, uint magnitudeNewData)
 {
-	uint64_t repoID = getRepoID(oldData[0].repo);
+	uint64_t repoID = getRepoID(oldData[0].project.repo);
 	
 	//On commence par reclasser les éléments
 	if(!isProjectListSorted(oldData, magnitudeOldData))
@@ -162,7 +167,7 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	uint posOld = 0, posNew = 0;
 	int outputSort;
-	PROJECT_DATA internalBufferOld, internalBufferNew;
+	PROJECT_DATA_PARSED internalBufferOld, internalBufferNew;
 	sqlite3_stmt * request = getAddToCacheRequest(cache);
 	void * searchData = buildSearchJumpTable(NULL);
 	
@@ -173,8 +178,8 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
-			removeFromCache(oldData[posOld]);
-			removeFromSearch(searchData, oldData[posOld].cacheDBID);
+			removeFromCache(oldData[posOld].project);
+			removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
 			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
@@ -191,29 +196,34 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 		{
 			internalBufferOld = oldData[posOld];
 			internalBufferNew = newData[posNew];
-			
+
+			internalBufferNew.chapitresLocal = internalBufferOld.chapitresLocal;
+			internalBufferNew.nombreChapitreLocal = internalBufferOld.nombreChapitreLocal;
+			internalBufferNew.tomeLocal = internalBufferOld.tomeLocal;
+			internalBufferNew.nombreTomeLocal = internalBufferOld.nombreTomeLocal;
+
 			if(!areProjectsIdentical(internalBufferOld, internalBufferNew))	//quelque chose à changé
 			{
-				newData[posNew].cacheDBID = oldData[posOld].cacheDBID;
-				newData[posNew].favoris = oldData[posOld].favoris;
+				generateCTUsable(&internalBufferNew);
+				
+				newData[posNew].project.cacheDBID = oldData[posOld].project.cacheDBID;
+				newData[posNew].project.favoris = oldData[posOld].project.favoris;
 				
 				updateCache(newData[posNew], RDB_UPDATE_ID, INVALID_VALUE);
-				updateProjectSearch(searchData, newData[posNew]);
+				updateProjectSearch(searchData, newData[posNew].project);
 			}
 
-			free(newData[posNew].chapitresFull);	//updateCache en fait une copie
-			free(newData[posNew].chapitresPrix);
-			freeTomeList(newData[posNew].tomesFull, newData[posNew].nombreTomes, true);
-			
+			releaseParsedData(newData[posNew]);	//updateCache en fait une copie
+
 			posOld++;
 			posNew++;
 		}
 		
 		else						//Nouveau projet
 		{
-			newData[posNew].cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
-			if(newData[posNew].cacheDBID != 0)
-				insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
+			newData[posNew].project.cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
+			if(newData[posNew].project.cacheDBID != 0)
+				insertInSearch(searchData, INSERT_PROJECT, newData[posNew].project);
 			
 			posNew++;
 		}
@@ -222,8 +232,8 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	while (posOld < magnitudeOldData)
 	{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
-		removeFromCache(oldData[posOld]);
-		removeFromSearch(searchData, oldData[posOld].cacheDBID);
+		removeFromCache(oldData[posOld].project);
+		removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
 		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
@@ -239,9 +249,9 @@ void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_
 	
 	while (posNew < magnitudeNewData)
 	{
-		newData[posNew].cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
-		if(newData[posNew].cacheDBID != 0)
-			insertInSearch(searchData, INSERT_PROJECT, newData[posNew]);
+		newData[posNew].project.cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
+		if(newData[posNew].project.cacheDBID != 0)
+			insertInSearch(searchData, INSERT_PROJECT, newData[posNew].project);
 		
 		posNew++;
 	}
@@ -266,9 +276,9 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].data.repo != NULL)
+		if(project[pos].data.project.repo != NULL)
 		{
-			repo = project[pos].data.repo;
+			repo = project[pos].data.project.repo;
 			break;
 		}
 	}
@@ -292,7 +302,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 	
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].data.repo == NULL)
+		if(project[pos].data.project.repo == NULL)
 			continue;
 		
 		for(byte i = 0; i < NB_IMAGES; i++)
@@ -325,7 +335,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 				current = new;
 			}
 			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, project[pos].data.locale ?  LOCAL_PATH_NAME"_%d_%s%s.png" : "%d_%s%s.png", project[pos].data.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
+			snprintf(&imagePath[length], sizeof(imagePath) - length, project[pos].data.project.locale ?  LOCAL_PATH_NAME"_%d_%s%s.png" : "%d_%s%s.png", project[pos].data.project.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
 			current->filename = strdup(imagePath);
 
 			if(current->filename == NULL)
@@ -344,8 +354,8 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			current->URL = project[pos].URLImages[i];
 			
 			current->updateType = imageID[i / 2];
-			current->repoID = getRepoID(project[pos].data.repo);
-			current->projectID = project[pos].data.projectID;
+			current->repoID = getRepoID(project[pos].data.project.repo);
+			current->projectID = project[pos].data.project.projectID;
 		}
 	}
 	
@@ -536,10 +546,38 @@ bool isInstalled(char * basePath)
 PROJECT_DATA getEmptyProject()
 {
 	PROJECT_DATA project;
-	
+
 	memset(&project, 0, sizeof(PROJECT_DATA));
-	
+
 	return project;
+}
+
+PROJECT_DATA_PARSED getEmptyParsedProject()
+{
+	PROJECT_DATA_PARSED project;
+
+	memset(&project, 0, sizeof(project));
+
+	return project;
+}
+
+PROJECT_DATA_EXTRA getEmptyExtraProject()
+{
+	PROJECT_DATA_EXTRA project;
+
+	memset(&project, 0, sizeof(project));
+
+	return project;
+}
+
+void freeParseProjectData(PROJECT_DATA_PARSED * projectDB)
+{
+	if(projectDB == NULL)
+		return;
+
+	size_t pos;
+	for(pos = 0; projectDB[pos].project.isInitialized; releaseParsedData(projectDB[pos++]));
+	free(projectDB);
 }
 
 void freeProjectData(PROJECT_DATA* projectDB)
