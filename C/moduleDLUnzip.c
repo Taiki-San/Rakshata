@@ -159,7 +159,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 				if(nomPage != NULL)
 				{
-					for(uint i = 0; nomPage[i]; free(nomPage[i++]));
+					for(uint i = 0; nombreFichierDansConfigFile; free(nomPage[i++]));
 					free(nomPage);
 				}
 				ret_value = false;
