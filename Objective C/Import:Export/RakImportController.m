@@ -70,7 +70,8 @@ enum
 		}
 
 		//Well, I guess we can carry on
-		[item install:file];
+		if([item install:file])
+			[item processThumbs:file];
 	}
 
 	unzClose(file);

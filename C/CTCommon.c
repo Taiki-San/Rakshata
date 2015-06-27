@@ -46,6 +46,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 {
 	uint nbElemToInject, nbElemBase, sumEntries;
 	void * dataBase, *dataInject;
+	uint * chaptersPrice = NULL;
 	uint16_t sizeOfType;
 
 	//We have two passes, one for the chapters, one for the volume
@@ -56,39 +57,19 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 
 		if(run == 0)	//chapters
 		{
-			if(project->nombreChapitreLocal < project->nombreChapitreRemote)
-			{
-				nbElemToInject = project->nombreChapitreLocal;
-				dataInject = project->chapitresLocal;
-				nbElemBase = project->nombreChapitreRemote;
-				dataBase = project->chapitresRemote;
-			}
-			else
-			{
-				nbElemBase = project->nombreChapitreLocal;
-				dataBase = project->chapitresLocal;
-				nbElemToInject = project->nombreChapitreRemote;
-				dataInject = project->chapitresRemote;
-			}
+			nbElemToInject = project->nombreChapitreLocal;
+			dataInject = project->chapitresLocal;
+			nbElemBase = project->nombreChapitreRemote;
+			dataBase = project->chapitresRemote;
 
 			sizeOfType = sizeof(int);
 		}
 		else
 		{
-			if(project->nombreTomeLocal < project->nombreTomeRemote)
-			{
-				nbElemToInject = project->nombreTomeLocal;
-				dataInject = project->tomeLocal;
-				nbElemBase = project->nombreTomeRemote;
-				dataBase = project->tomeRemote;
-			}
-			else
-			{
-				nbElemBase = project->nombreTomeLocal;
-				dataBase = project->tomeLocal;
-				nbElemToInject = project->nombreTomeRemote;
-				dataInject = project->tomeRemote;
-			}
+			nbElemToInject = project->nombreTomeLocal;
+			dataInject = project->tomeLocal;
+			nbElemBase = project->nombreTomeRemote;
+			dataBase = project->tomeRemote;
 
 			sizeOfType = sizeof(META_TOME);
 		}
@@ -99,6 +80,18 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 			void * outputData = malloc(sumEntries * sizeOfType);
 			if(outputData != NULL)
 			{
+				if(run == 0 && project->project.chapitresPrix != NULL)	//Chapters
+				{
+					chaptersPrice = malloc(sumEntries * sizeof(uint));
+					if(chaptersPrice == NULL)
+					{
+						free(outputData);
+						continue;
+					}
+
+					memcpy(chaptersPrice, project->project.chapitresPrix, nbElemBase * sizeof(uint));
+				}
+
 				uint currentLength = nbElemBase;
 				memcpy(outputData, dataBase, nbElemBase * sizeOfType);
 
@@ -131,15 +124,24 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						if(run == 0)
 						{
 							for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+							{
 								((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
+								chaptersPrice[offseter + 1] = chaptersPrice[offseter];
+							}
 
 							//We insert
 							if(goNext)
+							{
 								((int *) outputData)[posLowestDiff + 1] = dataToInject;
+								chaptersPrice[posLowestDiff + 1] = 0;
+							}
 							else
 							{
 								((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
+								chaptersPrice[posLowestDiff + 1] = chaptersPrice[posLowestDiff];
+
 								((int *) outputData)[posLowestDiff] = dataToInject;
+								chaptersPrice[posLowestDiff] = 0;
 							}
 						}
 						else
@@ -164,6 +166,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				{
 					project->project.chapitresFull = outputData;
 					project->project.nombreChapitre = sumEntries;
+					project->project.chapitresPrix = chaptersPrice;
 				}
 				else
 				{

@@ -24,7 +24,8 @@
 @property BOOL isTome;
 
 - (BOOL) isReadable;
-- (void) install : (unzFile *) archive;
+- (BOOL) install : (unzFile *) archive;
+- (void) processThumbs : (unzFile *) archive;
 
 @end
 
