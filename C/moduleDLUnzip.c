@@ -149,7 +149,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			}
 
 			//On va classer les fichier et les clées en ce basant sur config.dat
-			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide-2 && nombreFichierDansConfigFile != nombreFichierValide-1)) //-2 car -1 + un décallage de -1 due à l'optimisation pour le lecteur
+			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide && nombreFichierDansConfigFile != nombreFichierValide-1))
 			{
 #ifdef DEV_VERSION
 				logR("config.dat invalid: encryption aborted.\n");

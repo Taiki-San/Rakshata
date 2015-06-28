@@ -62,6 +62,8 @@
 	[self.window makeKeyWindow];
 	
 	deleteCrashFile();
+
+	_initialized = YES;
 }
 
 - (RakContentView*) getContentView
@@ -128,10 +130,10 @@
 
 #pragma mark - Access to tabs
 
-- (Series *)	serie	{	return tabSerie;	}
-- (CTSelec *)	CT		{	return tabCT;		}
-- (MDL *)		MDL		{	return tabMDL;		}
-- (Reader *)	reader	{	return tabReader;	}
+- (Series *)	serie	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabSerie;	}
+- (CTSelec *)	CT		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabCT;		}
+- (MDL *)		MDL		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabMDL;		}
+- (Reader *)	reader	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabReader;	}
 
 #pragma mark - Application Delegate
 
@@ -141,7 +143,7 @@
 	
 	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
 	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
-	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];		tabReader = nil;
+	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
 	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
 	
 	[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]

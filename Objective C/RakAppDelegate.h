@@ -27,6 +27,7 @@
 	MUTEX_VAR loginMutex;
 }
 
+@property BOOL initialized;
 @property (weak) IBOutlet RakWindow *window;
 @property BOOL haveDistractionFree;
 @property BOOL hasFocus;

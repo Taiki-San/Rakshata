@@ -184,6 +184,7 @@ char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition,
 	uint sizePerElem = LONGUEUR_URL + LONGUEUR_COURT + 20;
 	size_t fullSize = nombreTotal * sizePerElem;
 	char * output = malloc(fullSize + 1), buffer[sizePerElem];
+	output[0] = 0;
 	
     if(output != NULL)
     {

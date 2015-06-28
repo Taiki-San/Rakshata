@@ -84,8 +84,12 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 		case SQLITE_OK:
 		default:
 		{
-			addToCache(NULL, project, repoID, true, false);
 			destroyRequest(request);
+
+			generateCTUsable(&cachedProject);
+
+			if(addToCache(NULL, project, repoID, true, false))
+				insertInSearch(NULL, INSERT_PROJECT, project.project);
 			return;
 		}
 	}
@@ -111,6 +115,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			cachedProject.chapitresLocal = newField;
 		}
 	}
+
+	generateCTUsable(&cachedProject);
 
 	updateCache(cachedProject, RDB_UPDATE_ID, 0);
 	releaseParsedData(cachedProject);

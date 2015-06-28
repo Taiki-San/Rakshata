@@ -123,40 +123,51 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						//We offset what come next
 						if(run == 0)
 						{
-							for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+							if(currentLength)
 							{
-								((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
-								chaptersPrice[offseter + 1] = chaptersPrice[offseter];
-							}
+								for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+								{
+									((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
+									chaptersPrice[offseter + 1] = chaptersPrice[offseter];
+								}
 
-							//We insert
-							if(goNext)
-							{
-								((int *) outputData)[posLowestDiff + 1] = dataToInject;
-								chaptersPrice[posLowestDiff + 1] = 0;
+								//We insert
+								if(goNext)
+								{
+									((int *) outputData)[posLowestDiff + 1] = dataToInject;
+									chaptersPrice[posLowestDiff + 1] = 0;
+								}
+								else
+								{
+									((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
+									chaptersPrice[posLowestDiff + 1] = chaptersPrice[posLowestDiff];
+
+									((int *) outputData)[posLowestDiff] = dataToInject;
+									chaptersPrice[posLowestDiff] = 0;
+								}
 							}
 							else
-							{
-								((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
-								chaptersPrice[posLowestDiff + 1] = chaptersPrice[posLowestDiff];
-
-								((int *) outputData)[posLowestDiff] = dataToInject;
-								chaptersPrice[posLowestDiff] = 0;
-							}
+								((int *) outputData)[currentLength++] = dataToInject;
 						}
 						else
 						{
-							for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
-								((META_TOME *) outputData)[offseter + 1] = ((META_TOME *) outputData)[offseter];
-
-							//We insert
-							if(goNext)
-								((META_TOME *) outputData)[posLowestDiff + 1] = ((META_TOME *) dataInject)[posInject];
-							else
+							if(currentLength)
 							{
-								((META_TOME *) outputData)[posLowestDiff + 1] = ((META_TOME *) outputData)[posLowestDiff];
-								((META_TOME *) outputData)[posLowestDiff] = ((META_TOME *) dataInject)[posInject];
+								for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+									((META_TOME *) outputData)[offseter + 1] = ((META_TOME *) outputData)[offseter];
+
+								//We insert
+								if(goNext)
+									copyTomeList(&((META_TOME *) dataInject)[posInject], 1, &((META_TOME *) outputData)[posLowestDiff + 1]);
+
+								else
+								{
+									((META_TOME *) outputData)[posLowestDiff + 1] = ((META_TOME *) outputData)[posLowestDiff];
+									copyTomeList(&((META_TOME *) dataInject)[posInject], 1, &((META_TOME *) outputData)[posLowestDiff]);
+								}
 							}
+							else
+								copyTomeList(&((META_TOME *) dataInject)[posInject], 1, &((META_TOME *) outputData)[currentLength++]);
 						}
 					}
 				}

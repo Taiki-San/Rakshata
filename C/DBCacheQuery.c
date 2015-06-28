@@ -282,7 +282,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 		//Craft the final request
 		if(lengthWritten)
-			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" WHERE %s ORDER BY %s ASC", sortRequest, searchCond);
+			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" WHERE %s ORDER BY %s ASC", searchCond, sortRequest);
 		else
 			snprintf(requestString, sizeof(requestString), "SELECT * FROM "MAIN_CACHE" ORDER BY %s ASC", sortRequest);
 		
@@ -576,6 +576,13 @@ REPO_DATA * getRepoForID(uint64_t repoID)
 	
 	if(output != NULL)
 	{
+		if(repoID == LOCAL_REPO_ID)
+		{
+			*output = getEmptyRepo();
+			output->locale = true;
+			return output;
+		}
+
 		for(uint i = 0; i < lengthRepo; i++)
 		{
 			if(repoList[i] != NULL && getRepoID(repoList[i]) == repoID)

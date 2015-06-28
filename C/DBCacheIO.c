@@ -154,7 +154,6 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 		if(data.tomeLocal != (void*) sqlite3_column_int64(request, 8))
 			freeTomeList((void*) sqlite3_column_int64(request, 8), (uint32_t) sqlite3_column_int(request, 9), true);
 
-
 		if(whatCanIUse != RDB_UPDATE_ID)
 			DBID = (uint32_t) sqlite3_column_int(request, 10);
 	}
