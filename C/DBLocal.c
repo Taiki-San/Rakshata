@@ -49,9 +49,9 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 	return baseID;
 }
 
-void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome, void* selection)
+void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 {
-	if(selection == NULL)
+	if(ACCESS_DATA(isTome, (void *) project.chapitresLocal, (void *) project.tomeLocal) == NULL)
 		return;
 
 	//Okay, we have quite some work to do
@@ -66,8 +66,52 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome, void* selecti
 
 	sqlite3_stmt * request = createRequest(cache, requestString);
 
-	if(sqlite3_step(request) == SQLITE_OK)	//No match
-		addToCache(NULL, project, repoID, true, false);
+	PROJECT_DATA_PARSED cachedProject;
+	switch(sqlite3_step(request))
+	{
+		//We found something, we need to insert our new data in the base
+		//If we can't load the data, we just insert the new entry
+		case SQLITE_ROW:
+		{
+			cachedProject = getParsedProjectByID((uint) sqlite3_column_int(request, 0));
 
-	destroyRequest(request);
+			//Successfully loaded the data
+			if(cachedProject.project.isInitialized)
+				break;
+		}
+
+		//Insert into the base, and quit
+		case SQLITE_OK:
+		default:
+		{
+			addToCache(NULL, project, repoID, true, false);
+			destroyRequest(request);
+			return;
+		}
+	}
+
+	//We insert the new item
+	if(isTome)
+	{
+		META_TOME * newField = realloc(cachedProject.tomeLocal, (project.nombreTomeLocal + cachedProject.nombreTomeLocal) * sizeof(META_TOME));
+		if(newField != NULL)
+		{
+			memcpy(&newField[cachedProject.nombreTomeLocal], project.tomeLocal, project.nombreTomeLocal * sizeof(META_TOME));
+			cachedProject.nombreTomeLocal += project.nombreTomeLocal;
+			cachedProject.tomeLocal = newField;
+		}
+	}
+	else
+	{
+		int * newField = realloc(cachedProject.chapitresLocal, (project.nombreChapitreLocal + cachedProject.nombreChapitreLocal) * sizeof(int));
+		if(newField != NULL)
+		{
+			memcpy(&newField[cachedProject.nombreChapitreLocal], project.chapitresLocal, project.nombreChapitreLocal * sizeof(int));
+			cachedProject.nombreChapitreLocal += project.nombreChapitreLocal;
+			cachedProject.chapitresLocal = newField;
+		}
+	}
+
+	updateCache(cachedProject, RDB_UPDATE_ID, 0);
+	releaseParsedData(cachedProject);
 }
