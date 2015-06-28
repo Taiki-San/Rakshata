@@ -116,6 +116,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 		}
 	}
 
+	consolidateCTLocale(&cachedProject, isTome);
 	generateCTUsable(&cachedProject);
 
 	updateCache(cachedProject, RDB_UPDATE_ID, 0);

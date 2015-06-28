@@ -204,6 +204,8 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 
 			if(!areProjectsIdentical(internalBufferOld, internalBufferNew))	//quelque chose à changé
 			{
+				consolidateCTLocale(&internalBufferNew, false);
+				consolidateCTLocale(&internalBufferNew, true);
 				generateCTUsable(&internalBufferNew);
 				
 				newData[posNew].project.cacheDBID = oldData[posOld].project.cacheDBID;

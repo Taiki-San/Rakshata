@@ -111,7 +111,23 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 							{
 								posLowestDiff = posBase;
 								lowestDiff = newDiff;
+
+								if(lowestDiff == 0)		//collision
+								{
+									posLowestDiff = INVALID_VALUE;
+									break;
+								}
 							}
+						}
+
+						//Collision, we drop the value
+						if(posLowestDiff == INVALID_VALUE)
+						{
+#ifdef DEV_VERSION
+							logR("Duplicates in local, shouldn't happen o0");
+#endif
+							sumEntries--;
+							continue;
 						}
 
 						//We have the position of the element to inject in posLowestDiff
@@ -200,6 +216,114 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				}
 			}
 		}
+	}
+}
+
+void consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
+{
+	uint lengthLocale = ACCESS_DATA(isTome, project->nombreChapitreLocal, project->nombreTomeLocal);
+	if(lengthLocale == 0)
+		return;
+
+	//First, ensure items in the local store are not in the remote list
+	//O(n^2) because I'm busy for now
+	uint lengthSearch = ACCESS_DATA(isTome, project->nombreChapitreRemote, project->nombreTomeRemote), finalLength = lengthLocale;
+
+	void * dataSet = ACCESS_DATA(isTome, (void*) project->chapitresLocal, (void*) project->tomeLocal), * dataSetSearch = ACCESS_DATA(isTome, (void*) project->chapitresRemote, (void*) project->tomeRemote);
+	if(lengthSearch != 0)
+	{
+		for(uint pos = 0; pos < lengthLocale; pos++)
+		{
+			int value = getData(isTome, dataSet, pos);
+
+			for(uint posSearch = 0; posSearch < lengthSearch; posSearch++)
+			{
+				//And, collision
+				if(getData(isTome, dataSetSearch, posSearch) == value)
+				{
+					if(isTome)
+						project->tomeLocal[pos].ID = INVALID_SIGNED_VALUE;
+					else
+						project->chapitresLocal[pos] = INVALID_SIGNED_VALUE;
+
+					finalLength--;
+					break;
+				}
+			}
+		}
+	}
+
+	//Ensure everything is installed
+	for(uint pos = 0; pos < lengthLocale; pos++)
+	{
+		//Eh, we have to delete it
+		int entry = getData(isTome, dataSet, pos);
+
+		if(entry != INVALID_SIGNED_VALUE && !checkReadable(project->project, isTome, entry))
+		{
+			if(isTome)
+				project->tomeLocal[pos].ID = INVALID_SIGNED_VALUE;
+			else
+				project->chapitresLocal[pos] = INVALID_SIGNED_VALUE;
+			finalLength--;
+		}
+	}
+
+	//Okay, we now compact the list
+	if(finalLength == 0)	//No valid element... cool?
+	{
+		if(isTome)
+		{
+			freeTomeList(project->tomeLocal, project->nombreTomeLocal, true);
+			project->tomeLocal = NULL;
+			project->nombreTomeLocal = 0;
+		}
+		else
+		{
+			free(project->chapitresLocal);
+			project->chapitresLocal = NULL;
+			project->nombreChapitreLocal = 0;
+		}
+
+	}
+	else if(isTome)
+	{
+		META_TOME data[finalLength];
+
+		//Compact in static buffer
+		for(uint pos = 0, posFinal = 0; pos < lengthLocale && posFinal < finalLength; pos++)
+		{
+			if(project->tomeLocal[pos].ID != INVALID_SIGNED_VALUE)
+				data[posFinal++] = project->tomeLocal[pos];
+			else
+				free(project->tomeLocal[pos].details);
+		}
+
+		//Resize the output buffer
+		void * tmp = realloc(project->tomeLocal, sizeof(data));
+		if(tmp != NULL)
+			project->tomeLocal = tmp;
+
+		//Copy and ship ~
+		memcpy(project->tomeLocal, data, sizeof(data));
+		project->nombreTomeLocal = finalLength;
+	}
+	else
+	{
+		int data[finalLength];
+
+		for(uint pos = 0, posFinal = 0; pos < lengthLocale && posFinal < finalLength; pos++)
+		{
+			if(project->chapitresLocal[pos] != INVALID_SIGNED_VALUE)
+				data[posFinal++] = project->chapitresLocal[pos];
+		}
+
+		void * tmp = realloc(project->chapitresLocal, sizeof(data));
+		if(tmp != NULL)
+			project->chapitresLocal = tmp;
+
+		memcpy(project->chapitresLocal, data, sizeof(data));
+		project->nombreChapitreLocal = finalLength;
 	}
 }
 
