@@ -86,6 +86,7 @@ enum
 
 	unzClose(file);
 
+	syncCacheToDisk(SYNC_PROJECTS);
 	notifyFullUpdate();
 }
 
@@ -157,7 +158,7 @@ enum
 			[self analyseMetadata:currentProject :entry];
 
 		//Not a known project in a known repo
-		if(currentProject->data.project.locale || currentProject->data.project.repo->locale)
+		if(currentProject->data.project.cacheDBID == 0 && (currentProject->data.project.locale || currentProject->data.project.repo->locale))
 			currentProject->data.project.projectID = getEmptyLocalSlot(currentProject->data.project);
 
 		[self analyseImages:currentProject :entry];
@@ -240,7 +241,10 @@ enum
 		{
 			projectData.data.chapitresLocal = malloc(sizeof(int));
 			if(projectData.data.chapitresLocal != NULL)
+			{
 				*projectData.data.chapitresLocal = item.contentID;
+				projectData.data.nombreChapitreLocal = 1;
+			}
 		}
 
 		//Duplicate images URL, so they can be freeed later
@@ -466,7 +470,7 @@ enum
 + (NSArray *) buildProjectNamesList
 {
 	uint nbElem;
-	PROJECT_DATA * projects = getCopyCache(RDB_EXCLUDE_DYNAMIC, &nbElem);
+	PROJECT_DATA * projects = getCopyCache(RDB_EXCLUDE_DYNAMIC | RDB_INCLUDE_LOCAL, &nbElem);
 
 	if(projects == NULL)
 		return nil;

@@ -125,25 +125,39 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						{
 							if(currentLength)
 							{
-								for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+								if(chaptersPrice != NULL)
 								{
-									((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
-									chaptersPrice[offseter + 1] = chaptersPrice[offseter];
+									for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+									{
+										((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
+										chaptersPrice[offseter + 1] = chaptersPrice[offseter];
+									}
+
+									if(goNext)
+										chaptersPrice[posLowestDiff + 1] = 0;
+									else
+									{
+										chaptersPrice[posLowestDiff + 1] = chaptersPrice[posLowestDiff];
+										chaptersPrice[posLowestDiff] = 0;
+									}
+
+								}
+								else
+								{
+									for(uint offseter = currentLength++ - 1; offseter != posLowestDiff; offseter--)
+										((int *) outputData)[offseter + 1] = ((int *) outputData)[offseter];
 								}
 
 								//We insert
 								if(goNext)
 								{
 									((int *) outputData)[posLowestDiff + 1] = dataToInject;
-									chaptersPrice[posLowestDiff + 1] = 0;
 								}
 								else
 								{
 									((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
-									chaptersPrice[posLowestDiff + 1] = chaptersPrice[posLowestDiff];
 
 									((int *) outputData)[posLowestDiff] = dataToInject;
-									chaptersPrice[posLowestDiff] = 0;
 								}
 							}
 							else

@@ -86,7 +86,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 		{
 			destroyRequest(request);
 
-			generateCTUsable(&cachedProject);
+			generateCTUsable(&project);
 
 			if(addToCache(NULL, project, repoID, true, false))
 				insertInSearch(NULL, INSERT_PROJECT, project.project);
