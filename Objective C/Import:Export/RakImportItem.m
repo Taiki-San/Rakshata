@@ -14,7 +14,44 @@
 
 - (BOOL) isReadable
 {
-	return checkReadable(_projectData.data.project, _isTome, _contentID);
+	if(!_isTome)
+		return checkReadable(_projectData.data.project, false, _contentID);
+
+	//The volume must be in the list
+	META_TOME * tomeFull = _projectData.data.project.tomesFull;
+	uint lengthTomeFull = _projectData.data.project.nombreTomes;
+
+	_projectData.data.project.tomesFull = _projectData.data.tomeLocal;
+	_projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
+
+	bool output = checkReadable(_projectData.data.project, true, _contentID);
+
+	_projectData.data.project.tomesFull = tomeFull;
+	_projectData.data.project.nombreTomes = lengthTomeFull;
+
+	return output;
+}
+
+- (BOOL) needMoreData
+{
+	if(_projectData.data.project.isInitialized)
+		return false;
+
+	PROJECT_DATA project = _projectData.data.project;
+
+	if(project.authorName[0] == 0)
+		return true;
+
+	if(project.description[0] == 0)
+		return true;
+
+	if(project.tagMask == 0)
+		return true;
+
+	if(project.status == STATUS_INVALID)
+		return true;
+
+	return false;
 }
 
 - (BOOL) install : (unzFile *) archive
@@ -76,6 +113,10 @@
 	{
 		//Oh, the entry was not valid 😱
 		logR("Uh? Invalid import :|");
+
+		if(_isTome)
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/Tome_%d", projectPath, _contentID);
+
 		removeFolder(basePath);
 		return false;
 	}
@@ -110,6 +151,12 @@
 
 		extractCurrentfile(archive, NULL, imagePath, true, NULL);
 	}
+}
+
+- (void) registerProject
+{
+	_projectData.data.project.isInitialized = true;
+	registerImportEntry(_projectData.data, _isTome);
 }
 
 @end

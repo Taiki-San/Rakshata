@@ -24,8 +24,11 @@
 @property BOOL isTome;
 
 - (BOOL) isReadable;
+- (BOOL) needMoreData;
+
 - (BOOL) install : (unzFile *) archive;
 - (void) processThumbs : (unzFile *) archive;
+- (void) registerProject;
 
 @end
 

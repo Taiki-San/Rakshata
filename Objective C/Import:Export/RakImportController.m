@@ -14,7 +14,8 @@
 
 enum
 {
-	PROBLEM_DUPLICATE
+	PROBLEM_DUPLICATE,
+	PROBLEM_METADATA
 };
 
 @implementation RakImportController
@@ -63,6 +64,12 @@ enum
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
+		if([item needMoreData])	//We need to ask extra details to the user
+		{
+			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_METADATA)}];
+			continue;
+		}
+
 		if([item isReadable])
 		{
 			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_DUPLICATE)}];
@@ -71,10 +78,15 @@ enum
 
 		//Well, I guess we can carry on
 		if([item install:file])
+		{
 			[item processThumbs:file];
+			[item registerProject];
+		}
 	}
 
 	unzClose(file);
+
+	notifyFullUpdate();
 }
 
 + (NSArray *) analyzeManifest : (NSData *) data
@@ -223,6 +235,12 @@ enum
 			volumeData->ID = item.contentID;
 			projectData.data.tomeLocal = volumeData;
 			projectData.data.nombreTomeLocal = 1;
+		}
+		else
+		{
+			projectData.data.chapitresLocal = malloc(sizeof(int));
+			if(projectData.data.chapitresLocal != NULL)
+				*projectData.data.chapitresLocal = item.contentID;
 		}
 
 		//Duplicate images URL, so they can be freeed later
@@ -384,6 +402,8 @@ enum
 	NSNumber * entryNumber = objectForKey(entry, RAK_STRING_METADATA_STATUS, nil, [NSNumber class]);
 	if(entryNumber != nil)
 		currentProject->data.project.status = [entryNumber unsignedCharValue];
+	else
+		currentProject->data.project.status = STATUS_INVALID;
 
 	//TagMask
 	entryNumber = objectForKey(entry, RAK_STRING_METADATA_TAGMASK, nil, [NSNumber class]);
