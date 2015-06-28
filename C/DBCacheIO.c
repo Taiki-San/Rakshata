@@ -110,10 +110,8 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	//On libère la mémoire des éléments remplacés
 	if(whatCanIUse == RDB_UPDATE_ID)
 	{
-		DBID = data.project.cacheDBID;
-
 		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
-		sqlite3_bind_int(request, 1, (int32_t) DBID);
+		sqlite3_bind_int(request, 1, (int32_t) (DBID = data.project.cacheDBID));
 	}
 	else
 	{
@@ -178,7 +176,7 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	lengthA = wchar_to_utf8(data.project.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
 	
 	//On pratique le remplacement effectif
-	request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_category)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_mainTagID)" = ?8, "DBNAMETOID(RDB_tagMask)" = ?9, "DBNAMETOID(RDB_nombreChapitre)" = ?10, "DBNAMETOID(RDB_chapitres)" = ?11, "DBNAMETOID(RDB_chapitreRemoteLength)" = ?12, "DBNAMETOID(RDB_chapitreRemote)" = ?13, "DBNAMETOID(RDB_chapitreLocalLength)" = ?14, "DBNAMETOID(RDB_chapitreLocal)" = ?15, "DBNAMETOID(RDB_chapitresPrice)" = ?16, "DBNAMETOID(RDB_nombreTomes)" = ?17, "DBNAMETOID(RDB_DRM)" = ?18, "DBNAMETOID(RDB_tomes)" = ?19, "DBNAMETOID(RDB_tomeRemoteLength)" = ?20, "DBNAMETOID(RDB_tomeRemote)" = ?21, "DBNAMETOID(RDB_tomeLocalLength)" = ?22, "DBNAMETOID(RDB_tomeLocal)" = ?23, "DBNAMETOID(RDB_favoris)" = ?24 "DBNAMETOID(RDB_isLocal)" = ?25 WHERE "DBNAMETOID(RDB_ID)" = ?26");
+	request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_category)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_mainTagID)" = ?8, "DBNAMETOID(RDB_tagMask)" = ?9, "DBNAMETOID(RDB_nombreChapitre)" = ?10, "DBNAMETOID(RDB_chapitres)" = ?11, "DBNAMETOID(RDB_chapitreRemoteLength)" = ?12, "DBNAMETOID(RDB_chapitreRemote)" = ?13, "DBNAMETOID(RDB_chapitreLocalLength)" = ?14, "DBNAMETOID(RDB_chapitreLocal)" = ?15, "DBNAMETOID(RDB_chapitresPrice)" = ?16, "DBNAMETOID(RDB_nombreTomes)" = ?17, "DBNAMETOID(RDB_DRM)" = ?18, "DBNAMETOID(RDB_tomes)" = ?19, "DBNAMETOID(RDB_tomeRemoteLength)" = ?20, "DBNAMETOID(RDB_tomeRemote)" = ?21, "DBNAMETOID(RDB_tomeLocalLength)" = ?22, "DBNAMETOID(RDB_tomeLocal)" = ?23, "DBNAMETOID(RDB_favoris)" = ?24, "DBNAMETOID(RDB_isLocal)" = ?25 WHERE "DBNAMETOID(RDB_ID)" = ?26");
 	
 	sqlite3_bind_text(request, 1, utf8Project, lengthP, SQLITE_STATIC);
 	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);

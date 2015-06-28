@@ -17,16 +17,16 @@ int sortNumbers(const void *a, const void *b)
 
 int sortProjects(const void *a, const void *b)
 {
-    const PROJECT_DATA *struc1 = a;
-    const PROJECT_DATA *struc2 = b;
+    const PROJECT_DATA_PARSED *struc1 = a;
+    const PROJECT_DATA_PARSED *struc2 = b;
 
-    if(struc1->repo == NULL || struc1->projectName[0] == 0)
+    if(struc1->project.repo == NULL || struc1->project.projectName[0] == 0)
         return 1;
-    else if(struc2->repo == NULL || struc2->projectName[0] == 0)
+    else if(struc2->project.repo == NULL || struc2->project.projectName[0] == 0)
         return -1;
-	else if(!strcmp(struc1->repo->URL, struc2->repo->URL))
-		return sortNumbers(&(struc1->projectID), &(struc2->projectID));
-    return wcscmp(struc1->projectName, struc2->projectName);
+	else if(!strcmp(struc1->project.repo->URL, struc2->project.repo->URL))
+		return sortNumbers(&(struc1->project.projectID), &(struc2->project.projectID));
+    return wcscmp(struc1->project.projectName, struc2->project.projectName);
 }
 
 int sortRepo(const void *a, const void *b)

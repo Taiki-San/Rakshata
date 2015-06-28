@@ -668,10 +668,30 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	if(!shortData.isInitialized)
 		return output;
 
+	output.project = shortData;
+
 	output.chapitresRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreRemote, YES, NO, NULL);
 	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
 	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
 	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
+
+	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
+	{
+		output.nombreChapitreRemote = output.project.nombreChapitre;
+
+		output.chapitresRemote = malloc(output.nombreChapitreRemote * sizeof(int));
+		if(output.chapitresRemote != NULL)
+			memcpy(output.chapitresRemote, output.project.chapitresFull, output.nombreChapitreRemote * sizeof(int));
+	}
+
+	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.tomesFull != NULL)
+	{
+		output.nombreTomeRemote = output.project.nombreTomes;
+
+		output.tomeRemote = malloc(output.nombreTomeRemote * sizeof(META_TOME));
+		if(output.tomeRemote != NULL)
+			copyTomeList(output.project.tomesFull, output.nombreTomeRemote, output.tomeRemote);
+	}
 
 	return output;
 }
@@ -768,7 +788,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 				if(parseExtra)
 					project = &(((PROJECT_DATA_EXTRA*) outputData)[validElements++].data.project);
 				else
-					project = &((PROJECT_DATA*)outputData)[validElements++];
+					project = &((PROJECT_DATA_PARSED*)outputData)[validElements++].project;
 				
 				project->repo = repo;
 			}
@@ -795,7 +815,25 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 		return NULL;
 	}
 		
-	return parseProjectJSON(repo, remoteData, nbElem, true);
+	PROJECT_DATA_EXTRA * output = parseProjectJSON(repo, remoteData, nbElem, true);
+
+	if(output != NULL)
+	{
+		for(uint pos = 0; pos < *nbElem; pos++)
+		{
+			output[pos].data.chapitresRemote = output[pos].data.project.chapitresFull;
+			output[pos].data.nombreChapitreRemote = output[pos].data.project.nombreChapitre;
+			output[pos].data.tomeRemote = output[pos].data.project.tomesFull;
+			output[pos].data.nombreTomeRemote = output[pos].data.project.nombreTomes;
+
+			output[pos].data.project.chapitresFull = NULL;
+			output[pos].data.project.nombreChapitre = 0;
+			output[pos].data.project.tomesFull = NULL;
+			output[pos].data.project.nombreTomes = 0;
+		}
+	}
+
+	return output;
 }
 
 PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem)
@@ -823,7 +861,7 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 		if(ARE_CLASSES_DIFFERENT(remoteDataPart, [NSDictionary class]))
 			continue;
 		
-		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID", [NSNumber class]);
+		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, nil, [NSNumber class]);
 		if(repoID == nil)
 		{
 #ifdef DEV_VERSION
@@ -844,11 +882,11 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 
 				if(nbElemPart)
 				{
-					void * buf = realloc(output, (*nbElem + nbElemPart) * sizeof(PROJECT_DATA));
+					void * buf = realloc(output, (*nbElem + nbElemPart) * sizeof(PROJECT_DATA_PARSED));
 					if(buf != NULL)
 					{
 						output = buf;
-						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA));
+						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA_PARSED));
 						*nbElem += nbElemPart;
 					}
 				}
@@ -959,12 +997,6 @@ void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSE
 		return;
 
 	*output = input.data;
-
-	output->chapitresRemote = output->project.chapitresFull;			output->project.chapitresFull = NULL;
-	output->nombreChapitreRemote = output->project.nombreChapitre;		output->project.nombreChapitre = 0;
-
-	output->tomeRemote = output->project.tomesFull;						output->project.tomesFull = NULL;
-	output->nombreTomeRemote = output->project.nombreTomes;				output->project.nombreTomes = 0;
 }
 
 void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag)

@@ -201,6 +201,7 @@ uint setupBDDCache()
 					}
 				}
 
+				//In case of error, let's not leak memory
 				releaseParsedData(projects[pos]);
 			}
 

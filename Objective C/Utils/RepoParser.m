@@ -135,8 +135,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 
 REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)
 {
-	REPO_DATA output;
-	output.active = false;
+	REPO_DATA output = getEmptyRepo();
 	
 	if(error == NULL)
 		return output;

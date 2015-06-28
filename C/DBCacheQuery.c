@@ -220,8 +220,8 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
 	}
 
 	//And, finally, tomeRemote
-	output->nombreTomeRemote = (uint32_t) sqlite3_column_int(state, RDB_tomeLocalLength-1);
-	buffer = (void*) sqlite3_column_int64(state, RDB_tomeLocal-1);
+	output->nombreTomeRemote = (uint32_t) sqlite3_column_int(state, RDB_tomeRemoteLength-1);
+	buffer = (void*) sqlite3_column_int64(state, RDB_tomeRemote-1);
 	if(buffer != NULL)
 	{
 		output->tomeRemote = malloc(output->nombreTomeRemote * sizeof(META_TOME));
@@ -243,7 +243,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 {
 	uint pos = 0;
 	void * output = NULL;
-	bool wantParsedOutput = (maskRequest & RDB_REMOTE_MASK) == RDB_PARSED_OUTPUT, copyDynamic = (maskRequest & RDB_COPY_MASK) != RDB_EXCLUDE_DYNAMIC;
+	bool wantParsedOutput = (maskRequest & RDB_REMOTE_MASK) & RDB_PARSED_OUTPUT, copyDynamic = (maskRequest & RDB_COPY_MASK) != RDB_EXCLUDE_DYNAMIC;
 	
 	if(nbElemCopied != NULL)
 		*nbElemCopied = 0;
@@ -272,7 +272,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			lengthWritten += snprintf(searchCond, 200, DBNAMETOID(RDB_favoris)" = 1");
 
 		//Don't want local data
-		if((maskRequest & RDB_REMOTE_MASK) == RDB_REMOTE_ONLY)
+		if((maskRequest & RDB_REMOTE_MASK) & RDB_REMOTE_ONLY)
 		{
 			if(lengthWritten)
 				lengthWritten += snprintf(&(searchCond[lengthWritten]), 200 - (uint) lengthWritten, " AND "DBNAMETOID(RDB_isLocal)" = 0");
@@ -303,7 +303,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			}
 			else
 			{
-				if(!copyOutputDBToStruct(request, &output[pos], copyDynamic))
+				if(!copyOutputDBToStruct(request, &((PROJECT_DATA *) output)[pos], copyDynamic))
 					continue;
 
 				if(((PROJECT_DATA *) output)[pos].isInitialized)

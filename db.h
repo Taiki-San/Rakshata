@@ -200,6 +200,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 
 /******		DBLocal.c		*******/
 uint getEmptyLocalSlot(PROJECT_DATA project);
+void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome);
 
 /**tagManagement.c**/
 CATEGORY getCategoryForID(uint32_t categoryID);

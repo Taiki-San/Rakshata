@@ -143,7 +143,7 @@ bool isProjectListSorted(PROJECT_DATA_PARSED* data, uint length)
 	int logData;
 	for(uint i = 1; i < length; i++)
 	{
-		if((logData = sortProjects(&data[i-1].project, &data[i].project)) > 0)
+		if((logData = sortProjects(&data[i-1], &data[i])) > 0)
 			return false;
 	}
 	return true;
@@ -160,10 +160,10 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 	
 	//On commence par reclasser les éléments
 	if(!isProjectListSorted(oldData, magnitudeOldData))
-		qsort(oldData, magnitudeOldData, sizeof(PROJECT_DATA), sortProjects);
+		qsort(oldData, magnitudeOldData, sizeof(PROJECT_DATA_PARSED), sortProjects);
 	
 	if(!isProjectListSorted(newData, magnitudeNewData))
-		qsort(newData, magnitudeNewData, sizeof(PROJECT_DATA), sortProjects);
+		qsort(newData, magnitudeNewData, sizeof(PROJECT_DATA_PARSED), sortProjects);
 	
 	uint posOld = 0, posNew = 0;
 	int outputSort;
