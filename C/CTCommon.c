@@ -114,7 +114,6 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 	uint16_t sizeOfType;
 
 	//We have two passes, one for the chapters, one for the volume
-
 	for(byte run = 0; run < 2; run++)
 	{
 		//Choose to inject the smallest list
