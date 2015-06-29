@@ -370,6 +370,9 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, b
 			free(output);
 			output = NULL;
 			logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
+#ifdef DEV_VERSION
+			printf("Project was %ls\n", wantParsed ? ((PROJECT_DATA_PARSED *) output)->project.projectName : ((PROJECT_DATA *) output)->projectName);
+#endif
 		}
 	}
 	else

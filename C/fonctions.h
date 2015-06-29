@@ -29,7 +29,7 @@ void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 void generateCTUsable(PROJECT_DATA_PARSED * project);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
-void consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome);
+bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome);
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);
 void releaseParsedData(PROJECT_DATA_PARSED data);
 void releaseCTData(PROJECT_DATA data);

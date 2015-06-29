@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#define getData(run, dataInject, index)	ACCESS_DATA(run == 1, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+
 void nullifyCTPointers(PROJECT_DATA * project)
 {
 	project->chapitresFull = project->chapitresInstalled = NULL;
@@ -38,9 +40,70 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
         internalDeleteTome(projectDB, selection, true);
     else
 		internalDeleteChapitre(projectDB, selection, true);
-}
 
-#define getData(run, dataInject, index)	ACCESS_DATA(run == 1, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+	//We check if we need to remove the entry (in the case of a local project
+	PROJECT_DATA_PARSED project = getParsedProjectByID(projectDB.cacheDBID);
+	if(!project.project.isInitialized)
+		return;
+
+	uint length = ACCESS_DATA(isTome, project.nombreChapitreLocal, project.nombreTomeLocal);
+	void * data = ACCESS_DATA(isTome, (void *) project.chapitresLocal, (void *) project.tomeLocal);
+
+	for(uint pos = 0; pos < length; pos++)
+	{
+		if(getData(isTome, data, pos) == selection)
+		{
+			//We need to delete this entry.
+			//However, we are super lazy, so the code is basically a C/C the code from consolidateCTLocale
+
+			if(length == 1)
+			{
+				if(isTome)
+				{
+					freeTomeList(project.tomeLocal, project.nombreTomeLocal, true);
+					project.tomeLocal = NULL;
+					project.nombreTomeLocal = 0;
+				}
+				else
+				{
+					free(project.chapitresLocal);
+					project.chapitresLocal = NULL;
+					project.nombreChapitreLocal = 0;
+				}
+			}
+			else
+			{
+				uint sizeOfData = ACCESS_DATA(isTome, sizeof(int), sizeof(META_TOME));
+				void * dataField = malloc((length - 1) * sizeOfData);
+
+				if(dataField == NULL)
+					break;
+
+				memcpy(dataField, data, pos * sizeOfData);
+
+				if(pos + 1 < length)
+					memcpy(&(dataField[pos]), data + (pos + 1) * sizeOfData, (length - pos - 1) * sizeOfData);
+
+				if(isTome)
+				{
+					project.tomeLocal = dataField;
+					project.nombreTomeLocal = length - 1;
+				}
+				else
+				{
+					project.chapitresLocal = dataField;
+					project.nombreChapitreLocal = length - 1;
+				}
+			}
+
+			generateCTUsable(&project);
+			updateCache(project, RDB_UPDATE_ID, 0);
+			notifyUpdateProject(project.project);
+		}
+	}
+
+	freeParseProjectData(&project);
+}
 
 void generateCTUsable(PROJECT_DATA_PARSED * project)
 {
@@ -219,11 +282,11 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 	}
 }
 
-void consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
+bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 {
 	uint lengthLocale = ACCESS_DATA(isTome, project->nombreChapitreLocal, project->nombreTomeLocal);
 	if(lengthLocale == 0)
-		return;
+		return false;
 
 	//First, ensure items in the local store are not in the remote list
 	//O(n^2) because I'm busy for now
@@ -270,6 +333,9 @@ void consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	}
 
 	//Okay, we now compact the list
+	if(lengthLocale == finalLength)
+		return false;
+
 	if(finalLength == 0)	//No valid element... cool?
 	{
 		if(isTome)
@@ -325,6 +391,8 @@ void consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 		memcpy(project->chapitresLocal, data, sizeof(data));
 		project->nombreChapitreLocal = finalLength;
 	}
+
+	return true;
 }
 
 //Return a list containing only installed elements
