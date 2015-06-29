@@ -331,7 +331,7 @@
 {
 	uint element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 	
-	if(element > _nbElem)
+	if(element >= _nbElem)
 		return LIST_INVALID_SELECTION;
 	
 	if(self.isTome)

@@ -98,6 +98,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 
 			generateCTUsable(&project);
 			updateCache(project, RDB_UPDATE_ID, 0);
+			syncCacheToDisk(SYNC_PROJECTS);
 			notifyUpdateProject(project.project);
 		}
 	}
@@ -279,6 +280,27 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				}
 			}
 		}
+		else
+		{
+			if(run == 0)
+			{
+				if(project->project.chapitresFull != NULL)
+				{
+					free(project->project.chapitresFull);
+					project->project.chapitresFull = NULL;
+					project->project.nombreChapitre = 0;
+				}
+			}
+			else
+			{
+				if(project->project.tomesFull != NULL)
+				{
+					freeTomeList(project->project.tomesFull, project->project.nombreTomes, true);
+					project->project.tomesFull = NULL;
+					project->project.nombreTomes = 0;
+				}
+			}
+		}
 	}
 }
 
@@ -317,12 +339,26 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	}
 
 	//Ensure everything is installed
+
+	//Load a project with the locale profile
+	PROJECT_DATA cachedProject = project->project;
+	if(isTome)
+	{
+		cachedProject.tomesFull = dataSet;
+		cachedProject.nombreTomes = lengthLocale;
+	}
+	else
+	{
+		cachedProject.chapitresFull = dataSet;
+		cachedProject.nombreChapitre = lengthLocale;
+	}
+
 	for(uint pos = 0; pos < lengthLocale; pos++)
 	{
 		//Eh, we have to delete it
 		int entry = getData(isTome, dataSet, pos);
 
-		if(entry != INVALID_SIGNED_VALUE && !checkReadable(project->project, isTome, entry))
+		if(entry != INVALID_SIGNED_VALUE && !checkReadable(cachedProject, isTome, entry))
 		{
 			if(isTome)
 				project->tomeLocal[pos].ID = INVALID_SIGNED_VALUE;

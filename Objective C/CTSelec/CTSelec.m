@@ -30,7 +30,7 @@
 			NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 			NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 			
-			if([dataState count] != 7 || ![self initCoreview : dataState])
+			if([dataState count] != 8 || ![self initCoreview : dataState])
 				[self noContent];
 		}
 		else

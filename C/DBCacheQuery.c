@@ -393,7 +393,7 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 
 PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed)
 {
-	return _getProjectFromSearch(IDRepo, projectID, installed, locale, true, false);
+	return _getProjectFromSearch(IDRepo, projectID, locale, installed, true, false);
 }
 
 PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed)

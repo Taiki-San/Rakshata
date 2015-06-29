@@ -57,7 +57,7 @@
 		NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 		NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 		
-		if([dataState count] == 7)
+		if([dataState count] == 8)
 		{
 			do
 			{

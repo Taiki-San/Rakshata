@@ -671,26 +671,26 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	output.project = shortData;
 
 	output.chapitresRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreRemote, YES, NO, NULL);
-	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
+	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_LOCAL, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
 	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
 	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
 
 	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
 	{
-		output.nombreChapitreRemote = output.project.nombreChapitre;
+		output.nombreChapitreLocal = output.project.nombreChapitre;
 
-		output.chapitresRemote = malloc(output.nombreChapitreRemote * sizeof(int));
-		if(output.chapitresRemote != NULL)
-			memcpy(output.chapitresRemote, output.project.chapitresFull, output.nombreChapitreRemote * sizeof(int));
+		output.chapitresLocal = malloc(output.nombreChapitreLocal * sizeof(int));
+		if(output.chapitresLocal != NULL)
+			memcpy(output.chapitresLocal, output.project.chapitresFull, output.nombreChapitreLocal * sizeof(int));
 	}
 
 	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.tomesFull != NULL)
 	{
-		output.nombreTomeRemote = output.project.nombreTomes;
+		output.nombreTomeLocal = output.project.nombreTomes;
 
-		output.tomeRemote = malloc(output.nombreTomeRemote * sizeof(META_TOME));
-		if(output.tomeRemote != NULL)
-			copyTomeList(output.project.tomesFull, output.nombreTomeRemote, output.tomeRemote);
+		output.tomeLocal = malloc(output.nombreTomeLocal * sizeof(META_TOME));
+		if(output.tomeLocal != NULL)
+			copyTomeList(output.project.tomesFull, output.nombreTomeLocal, output.tomeLocal);
 	}
 
 	return output;

@@ -223,6 +223,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 		
 		else						//Nouveau projet
 		{
+			generateCTUsable(&(newData[posNew]));
 			newData[posNew].project.cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
 			if(newData[posNew].project.cacheDBID != 0)
 				insertInSearch(searchData, INSERT_PROJECT, newData[posNew].project);
@@ -251,6 +252,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 	
 	while (posNew < magnitudeNewData)
 	{
+		generateCTUsable(&(newData[posNew]));
 		newData[posNew].project.cacheDBID = addToCache(request, newData[posNew], repoID, false, true);
 		if(newData[posNew].project.cacheDBID != 0)
 			insertInSearch(searchData, INSERT_PROJECT, newData[posNew].project);

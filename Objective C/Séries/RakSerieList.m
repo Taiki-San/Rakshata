@@ -70,7 +70,7 @@
 	
 	stateMainList[0] = -1;	//Selection
 	
-	if([dataState count] == 3 || [dataState count] == 5)
+	if([dataState count] == 4 || [dataState count] == 6)
 	{
 		stateSubLists[0] = [[dataState objectAtIndex:0] intValue] != 0;		//Recent read
 		stateSubLists[1] = [[dataState objectAtIndex:1] intValue] != 0;		//Recent DL
