@@ -88,9 +88,7 @@
 					break;
 				}
 				
-				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
-				
-				PROJECT_DATA * project = getProjectFromSearch(repoID, projectID, NO);
+				PROJECT_DATA * project = getProjectFromSearch(repoID, [[dataState objectAtIndex:3] longLongValue], [[dataState objectAtIndex:4] boolValue], NO);
 				
 				if(project == NULL || project->repo == NULL)
 				{
@@ -327,7 +325,7 @@
 	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
 	if(project.isInitialized)
-		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.repo->URL, project.projectID];
+		currentSelection = [NSString stringWithFormat:@"%s\n%d\n%d", project.repo->URL, project.projectID, project.locale];
 	else
 		currentSelection = @"";
 	

@@ -102,7 +102,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 		}
 	}
 
-	freeParseProjectData(&project);
+	releaseParsedData(project);
 }
 
 void generateCTUsable(PROJECT_DATA_PARSED * project)

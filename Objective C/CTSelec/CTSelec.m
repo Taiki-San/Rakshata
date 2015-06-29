@@ -91,8 +91,7 @@
 		return NO;
 	}
 	
-	uint projectID = [[dataState objectAtIndex:1] longLongValue];	//We want uint, however, only int is available, so we rather want an overflow than an overflow exception
-	PROJECT_DATA * project = getProjectFromSearch(indexTeam, projectID, false);
+	PROJECT_DATA * project = getProjectFromSearch(indexTeam, [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], false);
 	
 	if(project == NULL)
 	{
@@ -106,12 +105,12 @@
 	}
 	
 	//Perfect! now, all we have to do is to sanitize last few data :D
-	BOOL isTome = [[dataState objectAtIndex:2] boolValue] != 0;
+	BOOL isTome = [[dataState objectAtIndex:3] boolValue] != 0;
 	long context[4];
-	context[0] = [[dataState objectAtIndex:3] floatValue];		//elemSelectedChapter
-	context[1] = [[dataState objectAtIndex:4] floatValue];		//scrollerPosChapter
-	context[2] = [[dataState objectAtIndex:5] floatValue];		//elemSelectedVolume
-	context[3] = [[dataState objectAtIndex:6] floatValue];		//scrollerPosVolume
+	context[0] = [[dataState objectAtIndex:4] floatValue];		//elemSelectedChapter
+	context[1] = [[dataState objectAtIndex:5] floatValue];		//scrollerPosChapter
+	context[2] = [[dataState objectAtIndex:6] floatValue];		//elemSelectedVolume
+	context[3] = [[dataState objectAtIndex:7] floatValue];		//scrollerPosVolume
 	
 	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
 	

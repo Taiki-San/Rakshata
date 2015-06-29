@@ -70,9 +70,7 @@
 				
 				//We have a valid index, now, let's query the database to get the project
 				
-				const uint projectID = [[dataState objectAtIndex:1] longLongValue];
-				
-				PROJECT_DATA * project = getProjectFromSearch(repoID, projectID, true);
+				PROJECT_DATA * project = getProjectFromSearch(repoID, [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], true);
 				
 				if(project == NULL)
 				{
@@ -86,9 +84,9 @@
 				BOOL isTome;
 				uint page;
 				
-				elemToRead = [[dataState objectAtIndex:2] intValue];
-				isTome = [[dataState objectAtIndex:3] boolValue];
-				page = [[dataState objectAtIndex:4] longLongValue];
+				elemToRead = [[dataState objectAtIndex:3] intValue];
+				isTome = [[dataState objectAtIndex:4] boolValue];
+				page = [[dataState objectAtIndex:5] longLongValue];
 				
 				if(((RakAppDelegate*)[NSApp delegate]).CT.initWithNoContent)
 				{
@@ -99,7 +97,7 @@
 				
 				free(project);
 				
-				[self setSliderPos:NSMakePoint([[dataState objectAtIndex:5] intValue], [[dataState objectAtIndex:6] intValue])];
+				[self setSliderPos:NSMakePoint([[dataState objectAtIndex:6] intValue], [[dataState objectAtIndex:7] intValue])];
 				
 			}while (0);
 		}

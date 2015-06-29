@@ -122,8 +122,8 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID);
 void freeParseProjectData(PROJECT_DATA_PARSED * projectDB);
 void freeProjectData(PROJECT_DATA* projectDB);
 
-void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic, bool wantParsed);
-PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed);
+void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed);
+PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed);
 PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed);
 PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID);
 PROJECT_DATA getProjectByID(uint cacheID);

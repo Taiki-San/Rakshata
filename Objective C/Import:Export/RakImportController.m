@@ -310,7 +310,7 @@ enum
 				entryNumber = objectForKey(entry, RAK_STRING_METADATA_REPO_PROJID, nil, [NSNumber class]);
 				if(entryNumber != nil)
 				{
-					PROJECT_DATA_PARSED * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false, true);
+					PROJECT_DATA_PARSED * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false, false, true);
 					if(project != NULL)
 					{
 						//Oh! The project exist! This is very cool!

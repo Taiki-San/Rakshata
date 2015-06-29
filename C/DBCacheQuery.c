@@ -327,7 +327,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	return output;
 }
 
-void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, bool copyDynamic, bool wantParsed)
+void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed)
 {
 	void * output = calloc(1, wantParsed ? sizeof(PROJECT_DATA_PARSED) : sizeof(PROJECT_DATA));
 	if(output == NULL)
@@ -336,12 +336,13 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, b
 	sqlite3_stmt* request = NULL;
 
 	if(installed)
-		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isInstalled)" = 1");
+		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND "DBNAMETOID(RDB_isInstalled)" = 1");
 	else
-		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2");
+		request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3");
 
 	sqlite3_bind_int64(request, 1, (int64_t) IDRepo);
 	sqlite3_bind_int(request, 2, (int32_t) projectID);
+	sqlite3_bind_int(request, 3, (int32_t) locale);
 
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
@@ -362,6 +363,10 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, b
 
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
+#ifdef DEV_VERSION
+			printf("Project was %ls\n", wantParsed ? ((PROJECT_DATA_PARSED *) output)->project.projectName : ((PROJECT_DATA *) output)->projectName);
+#endif
+
 			if(wantParsed)
 				releaseParsedData(* (PROJECT_DATA_PARSED *) output);
 			else
@@ -370,9 +375,6 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, b
 			free(output);
 			output = NULL;
 			logR("[Error]: Too much results to request, it was supposed to be unique, someone isn't respecting the standard ><");
-#ifdef DEV_VERSION
-			printf("Project was %ls\n", wantParsed ? ((PROJECT_DATA_PARSED *) output)->project.projectName : ((PROJECT_DATA *) output)->projectName);
-#endif
 		}
 	}
 	else
@@ -389,9 +391,9 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed, b
 	return output;
 }
 
-PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool installed)
+PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed)
 {
-	return _getProjectFromSearch(IDRepo, projectID, installed, true, false);
+	return _getProjectFromSearch(IDRepo, projectID, installed, locale, true, false);
 }
 
 PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed)

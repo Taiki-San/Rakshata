@@ -41,7 +41,7 @@ sqlite3* getPtrRecentDB()
 		sqlite3_step(request);
 		destroyRequest(request);
 		
-		request = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_team)" text, "DBNAMETOID(RDB_REC_projectID)" INTEGER);");
+		request = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_team)" text, "DBNAMETOID(RDB_REC_projectID)" INTEGER, "DBNAMETOID(RDB_isLocal)" INTEGER);");
 		if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 		{
 			destroyRequest(request);
@@ -117,11 +117,13 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	destroyRequest(request);
 	
 	//We check if the element exist
-	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;");
+	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
 	if(request != NULL)
 	{
 		sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, (int32_t) data.projectID);
+		sqlite3_bind_int(request, 3, data.locale);
+
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
 			//We'll inject the data now
@@ -136,14 +138,15 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 			{
 				byte value = wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead;
 				
-				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
+				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
 
 				request = createRequest(database, requestString);
 				if(request != NULL)
 				{
 					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 					sqlite3_bind_int(request, 2, (int32_t) data.projectID);
-					
+					sqlite3_bind_int(request, 3, data.locale);
+
 					if(sqlite3_step(request) == SQLITE_ROW)
 					{
 						if(sqlite3_column_int(request, 0) == 0)
@@ -153,13 +156,14 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 						{
 							destroyRequest(request);
 							
-							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2;", value);
+							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;", value);
 
 							if((request = createRequest(database, requestString)) != NULL)
 							{
 								sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 								sqlite3_bind_int(request, 2, (int32_t) data.projectID);
-								
+								sqlite3_bind_int(request, 3, data.locale);
+
 								if(sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) == 0)
 								{
 									haveToUpdate = true;
@@ -175,9 +179,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 			//We craft the request
 			if(nbOccurence == 0)
-				snprintf(requestString, sizeof(requestString), "INSERT INTO RakHL3IsALie("DBNAMETOID(RDB_REC_lastRead)", "DBNAMETOID(RDB_REC_lastDL)", "DBNAMETOID(RDB_REC_team)", "DBNAMETOID(RDB_REC_projectID)") values(?1, ?2, ?3, ?4);");
+				snprintf(requestString, sizeof(requestString), "INSERT INTO RakHL3IsALie("DBNAMETOID(RDB_REC_lastRead)", "DBNAMETOID(RDB_REC_lastDL)", "DBNAMETOID(RDB_REC_team)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5);");
 			else
-				snprintf(requestString, sizeof(requestString), "UPDATE RakHL3IsALie SET `%d` = ?%d WHERE "DBNAMETOID(RDB_REC_team)" = ?3 AND "DBNAMETOID(RDB_REC_projectID)" = ?4;", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? 2 : 1);
+				snprintf(requestString, sizeof(requestString), "UPDATE RakHL3IsALie SET `%d` = ?%d WHERE "DBNAMETOID(RDB_REC_team)" = ?3 AND "DBNAMETOID(RDB_REC_projectID)" = ?4 AND "DBNAMETOID(RDB_isLocal)" = ?5;", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? 2 : 1);
 			
 			//Setup the handler
 			request = createRequest(database, requestString);
@@ -190,6 +194,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 				sqlite3_bind_text(request, 3, data.repo->URL, -1, SQLITE_STATIC);
 				sqlite3_bind_int(request, 4, (int32_t) data.projectID);
+				sqlite3_bind_int(request, 5, data.locale);
 
 				output = sqlite3_step(request) == SQLITE_DONE;
 			}
@@ -212,21 +217,22 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 void removeRecentEntry(PROJECT_DATA data)
 {
-	removeRecentEntryInternal(data.repo->URL, data.projectID);
+	removeRecentEntryInternal(data.repo->URL, data.projectID, data.locale);
 }
 
-void removeRecentEntryInternal(char * URLRepo, uint projectID)
+void removeRecentEntryInternal(char * URLRepo, uint projectID, bool isLocal)
 {
 	sqlite3 *database = getPtrRecentDB();
 	if(database == NULL)
 		return;
 	
-	sqlite3_stmt * request = createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2");;
+	sqlite3_stmt * request = createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3");;
 	if(request != NULL)
 	{
 		sqlite3_bind_text(request, 1, URLRepo, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, (int32_t) projectID);
-		
+		sqlite3_bind_int(request, 3, isLocal);
+
 		sqlite3_step(request);
 	}
 	
@@ -268,17 +274,19 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 	
 	char *repoURL;
 	uint projectID;
+	bool isLocale;
 	while (*nbElem < 3 && sqlite3_step(request) == SQLITE_ROW)
 	{
 		repoURL =	(char *) sqlite3_column_text(request, 2);
 		projectID = (uint) sqlite3_column_int(request, 3);
-		
+		isLocale = sqlite3_column_int(request, 4);
+
 		if(repoURL != NULL)
 		{
 			uint64_t repoID = getRepoIndexFromURL(repoURL);
 			if(repoID != UINT64_MAX)
 			{
-				output[*nbElem] = getProjectFromSearch(repoID, projectID, true);
+				output[*nbElem] = getProjectFromSearch(repoID, projectID, isLocale, true);
 				
 				if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
 					(*nbElem)++;
