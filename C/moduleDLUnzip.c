@@ -84,6 +84,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 		crashTemp(pass, sizeof(pass));
 
 		//Decompress files
+		unzGoToFirstFile(zipFile);
 		for(uint i = 0; i < nombreFichiers && ret_value; i++)
 		{
 			//Name is valid
