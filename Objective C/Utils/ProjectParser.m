@@ -528,9 +528,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	if(nbChapters == 0 && nbVolumes == 0)
 	{
 #ifdef DEV_VERSION
-		NSLog(@"Project parser error: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
+		NSLog(@"Project parser warning: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
-		goto end;
 	}
 	
 	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description", [NSString class]);
@@ -613,6 +612,10 @@ end:
 NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 {
 	if(project.project.repo == NULL)
+		return nil;
+
+	//No project remaining
+	if(project.project.locale && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
 		return nil;
 	
 	id buf;
