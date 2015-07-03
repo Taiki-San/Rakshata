@@ -46,3 +46,7 @@
 - (Reader *)	reader;
 
 @end
+
+//Extensions
+#define SOURCE_FILE_EXT 	@"rakSource"
+#define ARCHIVE_FILE_EXT	@"rak"

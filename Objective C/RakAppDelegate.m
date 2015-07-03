@@ -163,9 +163,9 @@
 	NSString * extension = [filename pathExtension];
 	byte branch;
 
-	if([extension caseInsensitiveCompare:@"rakSource"] == NSOrderedSame)
+	if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
 		branch = 1;
-	else if([extension caseInsensitiveCompare:@"rak"] == NSOrderedSame)
+	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
 		branch = 2;
 	else
 		return NO;

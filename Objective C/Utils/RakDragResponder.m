@@ -63,7 +63,7 @@
 
 + (void) registerToPasteboard : (NSPasteboard *) pboard
 {
-	[pboard declareTypes:[NSArray arrayWithObject: PROJECT_PASTEBOARD_TYPE] owner:self];
+	[pboard declareTypes:@[PROJECT_PASTEBOARD_TYPE] owner:self];
 }
 
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
