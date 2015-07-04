@@ -698,12 +698,14 @@
 	[RakDragResponder registerToPasteboard:pboard];
 	
 	RakDragItem * pbData = [[RakDragItem alloc] init];
-	
 	if(pbData == nil)
 		return NO;
 	
 	PROJECT_DATA project = [item getRawDataChild];
 	
+	if(isInstalled(project, NULL))
+		[RakDragResponder patchPasteboardForFiledrop:pboard forType:ARCHIVE_FILE_EXT];
+
 	getUpdatedChapterList(&project, true);
 	getUpdatedTomeList(&project, true);
 	

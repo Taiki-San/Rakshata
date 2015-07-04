@@ -165,6 +165,9 @@ enum
 - (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard
 {
 	[[self class] registerToPasteboard:pasteboard];
+
+	if(_dragProject.isInitialized && isInstalled(_dragProject, NULL))
+		[RakDragResponder patchPasteboardForFiledrop:pasteboard forType:ARCHIVE_FILE_EXT];
 	
 	//We create the shared item
 	RakDragItem * item = [[RakDragItem alloc] init];

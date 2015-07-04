@@ -501,49 +501,51 @@ bool isPaidProject(PROJECT_DATA projectData)
 	return projectData.repo != NULL && projectData.repo->type == TYPE_DEPOT_PAID;
 }
 
-bool isInstalled(char * basePath)
+bool isInstalled(PROJECT_DATA project, char * basePath)
 {
+	bool needFreeAtEnd = false, retValue = false;
+	struct dirent *entry;
+
+	//If we want the function to take care of the path
+	if(basePath == NULL)
+	{
+		basePath = getPathForProject(project);
+		if(basePath != NULL)
+			needFreeAtEnd = true;
+		else
+			return false;
+	}
+
 	if(!checkDirExist(basePath))
-		return false;
-	
+		goto end;
+
 	DIR * directory = opendir(basePath);
 	if(directory == NULL)
-		return false;
-	
-	bool retValue = false;
-	uint basePathLength = strlen(basePath);
-	struct dirent *entry;
-	
-	while((entry = readdir(directory)) != NULL)
+		goto end;
+
+	while(!retValue && (entry = readdir(directory)) != NULL)
 	{
-		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
-			continue;
-		
-		if(!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9)
+		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."));
+
+		else if(!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9)
 		{
-			retValue = true;
-			break;
+			if(isNbr(entry->d_name[9]))
+				retValue = checkChapterReadable(project, atoi(&(entry->d_name[9])));
 		}
 		else if(!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5)
 		{
-			char * path = malloc(basePathLength + 0x100);
-			if(path != NULL)
-			{
-				snprintf(path, basePathLength + 0x100, "%s/%s/"CONFIGFILETOME, basePath, entry->d_name);
-				if(checkFileExist(path))
-				{
-					free(path);
-					retValue = true;
-					break;
-				}
-				
-				free(path);
-			}
-			
+			if(isNbr(entry->d_name[5]))
+				retValue = checkTomeReadable(project, atoi(&(entry->d_name[5])));
 		}
 	}
 	
 	closedir(directory);
+
+end:
+
+	if(needFreeAtEnd)
+		free(basePath);
+
 	return retValue;
 }
 

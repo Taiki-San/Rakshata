@@ -58,6 +58,7 @@
 	//We initialize the pasteboard
 	NSPasteboard * pBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
 	[RakDragResponder registerToPasteboard:pBoard];
+	[RakDragResponder patchPasteboardForFiledrop:pBoard forType:ARCHIVE_FILE_EXT];
 	
 	//We create the shared item
 	RakDragItem * item = [[RakDragItem alloc] init];

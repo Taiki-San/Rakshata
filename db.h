@@ -193,7 +193,7 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 /******		DBTools.c	  ******/
 bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);
 void updateProjectImages(void * _todo);
-bool isInstalled(char * basePath);
+bool isInstalled(PROJECT_DATA project, char * basePath);
 void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);

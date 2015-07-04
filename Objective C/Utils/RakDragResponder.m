@@ -153,4 +153,16 @@
 	return earlyFrame;
 }
 
+#pragma mark - Helper API
+
++ (void) patchPasteboardForFiledrop : (NSPasteboard *) pBoard forType : (NSString *) type
+{
+	//On y croit \o/
+	NSMutableArray * array = [NSMutableArray arrayWithArray:[pBoard types]];
+	[array addObject:NSFilesPromisePboardType];
+
+	[pBoard declareTypes:array owner:self];
+	[pBoard setPropertyList:type forType:NSFilesPromisePboardType];
+}
+
 @end

@@ -80,7 +80,7 @@ void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
 
 	free(encodedHash);
 	
-    if(!isInstalled(configFilePath))
+    if(!isInstalled(*projectDB, configFilePath))
     {
 		projectDB->chapitresInstalled = NULL;
 		return;

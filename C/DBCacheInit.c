@@ -184,7 +184,7 @@ uint setupBDDCache()
 				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].project.projectID);
-					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(pathInstall), false))
+					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall), false))
 					{
 #ifdef VERBOSE_DB_MANAGEMENT
 						FILE * output = fopen("log/log.txt", "a+");
