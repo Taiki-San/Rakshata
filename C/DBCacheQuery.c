@@ -16,14 +16,14 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 {
 	void* buffer;
 
+	*output = getEmptyProject();
+
 	//Repo
 	buffer = getRepoForID((uint64_t) sqlite3_column_int64(state, RDB_repo-1));
 	if(buffer != NULL)				//Si la team est pas valable, on drop complètement le projet
 		output->repo = buffer;
 	else
 	{
-		output->isInitialized = false;
-		output->repo = NULL;	//L'appelant est signalé d'ignorer l'élément
 		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
 	}

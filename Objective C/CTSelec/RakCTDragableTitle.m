@@ -48,7 +48,7 @@
 - (void) mouseDragged:(NSEvent *)theEvent
 {
 	if(outOfArea)
-		return;
+		return [super mouseDragged:theEvent];
 	
 	//We get a copy of the project data
 	PROJECT_DATA projectData = getProjectByID(self.currentID);

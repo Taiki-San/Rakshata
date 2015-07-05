@@ -302,7 +302,8 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					strncpy(tmpRepo.URL, repoURL, lengthTeam);
 					tmpProject.repo = &tmpRepo;
 					tmpProject.projectID = projectID;
-					
+					tmpProject.locale = isLocale;
+
 					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
 					destroyRequest(request);
 					closeRecentDB(database);

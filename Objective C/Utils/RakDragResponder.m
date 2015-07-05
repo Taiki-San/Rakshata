@@ -108,7 +108,7 @@
 	
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
-									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
+									   classes:@[[NSPasteboardItem class]]
 								 searchOptions:@{}
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
@@ -158,11 +158,11 @@
 + (void) patchPasteboardForFiledrop : (NSPasteboard *) pBoard forType : (NSString *) type
 {
 	//On y croit \o/
-	NSMutableArray * array = [NSMutableArray arrayWithArray:[pBoard types]];
-	[array addObject:NSFilesPromisePboardType];
+	NSMutableArray * array = [NSMutableArray arrayWithObject:NSFilesPromisePboardType];
+	[array addObjectsFromArray:[pBoard types]];
 
-	[pBoard declareTypes:array owner:self];
-	[pBoard setPropertyList:type forType:NSFilesPromisePboardType];
+	[pBoard declareTypes:[NSArray arrayWithArray:array] owner:self];
+	[pBoard setPropertyList:@[type] forType:NSFilesPromisePboardType];
 }
 
 @end
