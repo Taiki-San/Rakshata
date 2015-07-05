@@ -13,6 +13,7 @@
 @interface RakCTDragableTitle : RakMenuText <NSDraggingSource>
 {
 	RakDragResponder * _dragResponder;
+	NSDraggingSession * currentSession;
 	
 	NSPoint mousePosition;
 	BOOL couldDL;

@@ -92,9 +92,40 @@
 
 #pragma mark - NSDraggingSource support
 
+- (void) draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint
+{
+	currentSession = session;
+}
+
+- (void) draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
+	currentSession = nil;
+}
+
 - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 {
 	return NSDragOperationCopy;
+}
+
+- (NSArray<NSString *> *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
+{
+	if(currentSession == nil)
+		return nil;
+
+	RakDragItem * item = [[RakDragItem alloc] initWithData: [[currentSession draggingPasteboard] dataForType:PROJECT_PASTEBOARD_TYPE]];
+	if(item == nil)
+		return nil;
+
+	NSString * outFile = [RakExportController craftProjectName:item.project isTome:item.isTome selection:item.selection];
+
+	FILE * file = fopen([[[dropDestination path] stringByAppendingString:[NSString stringWithFormat:@"/Desktop/test/%@", outFile]] UTF8String], "w+");
+	if(file != NULL)
+	{
+		fputs("Yay!", file);
+		fclose(file);
+	}
+
+	return @[outFile];
 }
 
 @end
