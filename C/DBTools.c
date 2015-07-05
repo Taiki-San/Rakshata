@@ -509,14 +509,22 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 	//If we want the function to take care of the path
 	if(basePath == NULL)
 	{
-		basePath = getPathForProject(project);
-		if(basePath != NULL)
-			needFreeAtEnd = true;
-		else
-			return false;
+		char * baseProjectPath = getPathForProject(project);
+		if(baseProjectPath != NULL)
+		{
+			uint pathLength = strlen(baseProjectPath) + 50;
+			basePath = malloc(pathLength);
+			if(basePath != NULL)
+			{
+				needFreeAtEnd = true;
+				snprintf(basePath, pathLength, PROJECT_ROOT"%s", baseProjectPath);
+			}
+
+			free(baseProjectPath);
+		}
 	}
 
-	if(!checkDirExist(basePath))
+	if(basePath == NULL || !checkDirExist(basePath))
 		goto end;
 
 	DIR * directory = opendir(basePath);
@@ -530,7 +538,7 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 		else if(!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9)
 		{
 			if(isNbr(entry->d_name[9]))
-				retValue = checkChapterReadable(project, atoi(&(entry->d_name[9])));
+				retValue = checkChapterReadable(project, atoi(&(entry->d_name[9])) * 10);
 		}
 		else if(!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5)
 		{
