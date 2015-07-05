@@ -189,15 +189,7 @@ enum
 
 - (NSArray<NSString *> *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes
 {
-	NSString * filename = [RakExportController craftArchiveNameFromPasteboard:[draggingSession draggingPasteboard]];
-
-	FILE * file = fopen([[[dropURL path] stringByAppendingString:filename] UTF8String], "w+");
-	if(file != NULL)
-	{
-		fputs("Yay!", file);
-		fclose(file);
-	}
-
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil];
 	return nil;
 }
 

@@ -109,16 +109,8 @@
 
 - (NSArray<NSString *> *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
 {
-	NSString * outFile =  [RakExportController craftArchiveNameFromPasteboard:[currentSession draggingPasteboard]];
-
-	FILE * file = fopen([[[dropDestination path] stringByAppendingString:outFile] UTF8String], "w+");
-	if(file != NULL)
-	{
-		fputs("Yay!", file);
-		fclose(file);
-	}
-
-	return @[outFile];
+	[RakExportController createArchiveFromPasteboard:[currentSession draggingPasteboard] toPath:nil];
+	return nil;
 }
 
 @end

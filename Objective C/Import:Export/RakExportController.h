@@ -13,6 +13,6 @@
 @interface RakExportController : NSObject
 
 + (NSString *) craftArchiveNameFromPasteboard : (NSPasteboard *) pasteboard;
-+ (NSString *) craftArchiveName : (PROJECT_DATA) project isTome : (BOOL) isTome selection : (int) selection;
++ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path;
 
 @end

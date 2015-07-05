@@ -62,7 +62,13 @@
 
 + (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path
 {
+	if(path == nil)
+	{
+		path = [self craftArchiveNameFromPasteboard:pasteboard];
 
+		if(path == nil)
+			return;
+	}
 }
 
 + (void) addProject : (PROJECT_DATA) project item : (uint) position isTome : (BOOL) isTome toArchive : (zipFile *) file
