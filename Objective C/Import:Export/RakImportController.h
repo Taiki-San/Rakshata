@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakExportController.h"
+
 @interface RakImportController : NSObject
 
 + (void) importFile : (NSString *) file : (BOOL) generatedArchive;

@@ -88,6 +88,7 @@
 		B694B8681A732F3500391B62 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B694B8671A732F3500391B62 /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = B696DDED194A7D430018CDF9 /* RakDragResponder.m */; };
 		B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976682190D9B7D00B0A266 /* RakMDLView.m */; };
+		B6978A7D1B420D34002CBB45 /* RakExportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7C1B420D34002CBB45 /* RakExportController.m */; };
 		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
 		B6993AB61B1A847700FFF894 /* RakPrefsFavoriteListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */; };
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
@@ -377,6 +378,8 @@
 		B696DDED194A7D430018CDF9 /* RakDragResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDragResponder.m; path = Utils/RakDragResponder.m; sourceTree = "<group>"; };
 		B6976681190D9B7D00B0A266 /* RakMDLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakMDLView.h; path = MDL/RakMDLView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6976682190D9B7D00B0A266 /* RakMDLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakMDLView.m; path = MDL/RakMDLView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6978A7B1B420D34002CBB45 /* RakExportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakExportController.h; path = "Import:Export/RakExportController.h"; sourceTree = "<group>"; };
+		B6978A7C1B420D34002CBB45 /* RakExportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakExportController.m; path = "Import:Export/RakExportController.m"; sourceTree = "<group>"; };
 		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
 		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
 		B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsFavoriteListView.m; path = "Divers Windows/RakPrefsFavoriteListView.m"; sourceTree = "<group>"; };
@@ -1316,6 +1319,8 @@
 		B6F131311B372E1000042F8C /* Import/Export */ = {
 			isa = PBXGroup;
 			children = (
+				B6978A7B1B420D34002CBB45 /* RakExportController.h */,
+				B6978A7C1B420D34002CBB45 /* RakExportController.m */,
 				B6F131321B372E4100042F8C /* RakImportController.h */,
 				B6F131331B372E4100042F8C /* RakImportController.m */,
 				B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */,
@@ -1599,6 +1604,7 @@
 				B6C93E411B0B5B8300E07A57 /* tagUpdate.c in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,
 				B6C655F31AC412F400AE32BA /* DBDebug.c in Sources */,
+				B6978A7D1B420D34002CBB45 /* RakExportController.m in Sources */,
 				B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */,
 				B678D034197717A600D7FE6A /* ProjectParser.m in Sources */,
 				B61585FA191280DF004F1791 /* moduleDLWorker.c in Sources */,
@@ -1872,7 +1878,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = Codesigning;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = NO;
@@ -1953,7 +1959,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_ENTITLEMENTS = Rakshata.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = Codesigning;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
