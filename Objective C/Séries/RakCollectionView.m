@@ -29,7 +29,7 @@
 		[self bind:NSContentBinding toObject:_manager withKeyPath:@"sharedReference" options:nil];
 		
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
-		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
+		[self setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 	}
 	
 	return self;

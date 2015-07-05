@@ -45,6 +45,7 @@ enum {
 	RakSerieMainList * _mainList;
 	
 	BOOL readerMode;
+	NSDraggingSession * draggingSession;
 }
 
 @property BOOL installOnly;

@@ -720,6 +720,7 @@
 		return;
 	
 	currentDraggedItem = [draggedItems objectAtIndex:0];
+	draggingSession = session;
 	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
 	[RakList propagateDragAndDropChangeState :YES : [RakDragItem canDL:[session draggingPasteboard]]];
@@ -727,8 +728,23 @@
 	currentDraggedItem = nil;
 }
 
+- (NSArray<NSString *> *)outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedItems:(NSArray *)items
+{
+	NSString * filename = [RakExportController craftArchiveNameFromPasteboard:[draggingSession draggingPasteboard]];
+
+	FILE * file = fopen([[[dropDestination path] stringByAppendingString:filename] UTF8String], "w+");
+	if(file != NULL)
+	{
+		fputs("Yay!", file);
+		fclose(file);
+	}
+
+	return nil;
+}
+
 - (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
+	draggingSession = nil;
 	[RakList propagateDragAndDropChangeState :NO : [RakDragItem canDL:[session draggingPasteboard]]];
 }
 

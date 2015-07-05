@@ -45,6 +45,7 @@ enum
 	uint _currentDragItem;
 	
 	NSTrackingArea * trackingArea;
+	NSDraggingSession * draggingSession;
 }
 
 @property (readonly) RakListScrollView * contentView;
