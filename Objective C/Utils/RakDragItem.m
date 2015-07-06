@@ -15,16 +15,18 @@ typedef struct //project_data_for_drag_drop
 	PROJECT_DATA data;
 	int selection;
 	BOOL isTome;
+	BOOL fullProject;
 	BOOL canDL;
 	uint price;
 } INTERNAL_D_AND_D;
 
 @implementation RakDragItem
 
-- (void) setDataProject : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element
+- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (int) element
 {
 	self.project = project;
 	self.isTome = isTome;
+	self.fullProject = fullProject;
 	self.selection = element;
 	
 	canDL = [[self class] canDL:project isTome:isTome element:element];
@@ -44,6 +46,7 @@ typedef struct //project_data_for_drag_drop
 		
 		self.project = structure.data;
 		self.isTome = structure.isTome;
+		self.fullProject = structure.fullProject;
 		self.selection = structure.selection;
 		self.price = structure.price;
 		canDL = structure.canDL;
@@ -58,6 +61,7 @@ typedef struct //project_data_for_drag_drop
 	
 	structure.data = self.project;
 	structure.isTome = self.isTome;
+	structure.fullProject = self.fullProject;
 	structure.selection = self.selection;
 	structure.price = self.price;
 	structure.canDL = canDL;

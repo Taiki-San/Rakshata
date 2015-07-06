@@ -1102,7 +1102,7 @@
 			item.price = chapterPrice[row];
 	}
 	
-	[item setDataProject:getCopyOfProjectData(projectData) isTome:self.isTome element:selection];
+	[item setDataProject:getCopyOfProjectData(projectData) fullProject:NO isTome:self.isTome element:selection];
 }
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row

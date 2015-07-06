@@ -216,7 +216,7 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 	if(version != -1 && downloadedProjectListSeemsLegit(bufferDL))		//On a des données à peu près valide
 	{
 		PROJECT_DATA_EXTRA * projects = parseRemoteData(globalRepo, bufferDL, &nbElem);
-		output = updateImagesForProjects(projects, nbElem);
+		output = generateIconUpdateWorkload(projects, nbElem);
 		
 		//On maintenant voir les nouveaux éléments, ceux MaJ, et les supprimés, et appliquer les changements
 		if(projects != NULL)

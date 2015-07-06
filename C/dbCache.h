@@ -85,8 +85,6 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 bool downloadedProjectListSeemsLegit(char *data);
 uint defineBoundsRepoOnProjectDB(PROJECT_DATA_PARSED * oldData, uint posBase, uint nbElem);
 
-void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
-
 void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, PROJECT_DATA_PARSED * newData, uint magnitudeNewData);
 int createCollate(sqlite3 * database);
 

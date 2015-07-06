@@ -201,18 +201,16 @@ enum
 		META_TOME * volumeData = NULL;
 		if([isTome boolValue])
 		{
-			NSArray * volDetail = objectForKey(entry, RAK_STRING_CONTENT_VOL_DETAILS, nil, [NSArray class]);
+			NSDictionary * volDetail = objectForKey(entry, RAK_STRING_CONTENT_VOL_DETAILS, nil, [NSDictionary class]);
 			if(volDetail == nil)
 				continue;
 
-			volumeData = calloc(1, sizeof(META_TOME));
-			if(volumeData == NULL)
-				continue;
-
-			volumeData->details = parseChapterStructure(volDetail, &(volumeData->lengthDetails), NO, NO, NULL);
-			if(volumeData->lengthDetails == 0)
+			uint lengthVolumeData;
+			volumeData = getVolumes(@[volDetail], &lengthVolumeData, YES);
+			if(volumeData == NULL || lengthVolumeData != 1)
 			{
-				free(volumeData);
+				freeTomeList(volumeData, lengthVolumeData, true);
+				volumeData = NULL;
 				continue;
 			}
 		}
@@ -415,7 +413,7 @@ enum
 		convertTagMask([entryNumber unsignedLongLongValue], &(currentProject->data.project.category), &(currentProject->data.project.tagMask), &(currentProject->data.project.mainTag));
 
 	//Right to Left
-	entryNumber = objectForKey(entry, RAK_STRING_METADATA_ASIANORDER, nil, [NSNumber class]);
+	entryNumber = objectForKey(entry, RAK_STRING_METADATA_RIGHT2LEFT, nil, [NSNumber class]);
 	if(entryNumber != nil)
 		currentProject->data.project.rightToLeft = [entryNumber boolValue];
 

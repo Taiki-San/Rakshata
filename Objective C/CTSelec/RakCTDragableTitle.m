@@ -66,7 +66,7 @@
 		return;
 	
 	//We initialize the item, then insert it in the pasteboard
-	[item setDataProject:projectData isTome:self.isTome element:INVALID_SIGNED_VALUE];
+	[item setDataProject:projectData fullProject:NO isTome:self.isTome element:INVALID_SIGNED_VALUE];
 	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	//We create the image for the dragging session

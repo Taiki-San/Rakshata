@@ -709,7 +709,7 @@
 	getUpdatedChapterList(&project, true);
 	getUpdatedTomeList(&project, true);
 	
-	[pbData setDataProject : project isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
+	[pbData setDataProject : project fullProject:YES isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

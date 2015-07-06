@@ -18,11 +18,11 @@
 }
 
 @property PROJECT_DATA project;
-@property BOOL isTome;
+@property BOOL isTome, fullProject;
 @property int selection;
 @property uint price;
 
-- (void) setDataProject : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
+- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (int) element;
 - (instancetype) initWithData : (NSData *) data;
 
 - (NSData *) getData;

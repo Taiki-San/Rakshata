@@ -99,8 +99,11 @@ struct icon_update_waitlist
 	char * filename;
 
 	uint64_t repoID;
+
 	char crc32[9];
 	byte updateType;
+	bool isRetina;
+
 	uint projectID;
 	
 	ICONS_UPDATE * next;
@@ -197,6 +200,7 @@ bool isInstalled(PROJECT_DATA project, char * basePath);
 void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
+void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem);
 
 /******		DBLocal.c		*******/
 uint getEmptyLocalSlot(PROJECT_DATA project);

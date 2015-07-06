@@ -268,7 +268,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 
 ICONS_UPDATE * _queue;
 
-void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
+void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 {
 	if(project == NULL || !nbElem)
 		return NULL;
@@ -358,6 +358,7 @@ void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem)
 			current->URL = project[pos].URLImages[i];
 			
 			current->updateType = imageID[i / 2];
+			current->isRetina = i % 2;
 			current->repoID = getRepoID(project[pos].data.project.repo);
 			current->projectID = project[pos].data.project.projectID;
 		}
