@@ -247,6 +247,9 @@
 
 NSString * priceString(uint price)
 {
+	if(price == INVALID_VALUE)
+		return nil;
+
 	if(price != 0)
 	{
 		NSNumberFormatter * formater = [[NSNumberFormatter alloc] init];
