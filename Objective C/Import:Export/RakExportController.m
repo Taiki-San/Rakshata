@@ -445,7 +445,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(!addFileToZip(file, pathToConfig, inzipOfConfig))
 					error = YES;
 
-				basePagePathLength = strlen(entryData.path[entryData.pathNumber[pos + 1]]);
+				if(pos + 1 != entryData.nombrePage)
+					basePagePathLength = strlen(entryData.path[entryData.pathNumber[pos + 1]]);
 
 				//Volumes use a different root than the rootInzipPath
 				if(isTome)
