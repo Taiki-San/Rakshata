@@ -21,7 +21,7 @@ zipFile * createZip(const char * outfile)
 	return zipOpen64(outfile, APPEND_STATUS_CREATE);
 }
 
-bool addFileToZip(zipFile * zipFile, const char * filename)
+bool addFileToZip(zipFile * zipFile, const char * filename, const char * inzipFilename)
 {
 	if(zipFile == NULL || filename == NULL)
 		return false;
@@ -38,7 +38,7 @@ bool addFileToZip(zipFile * zipFile, const char * filename)
 	zip_fileinfo metadata;
 	memset(&metadata, 0, sizeof(metadata));
 
-	if(zipOpenNewFileInZip3_64(zipFile, filename, &metadata, NULL, 0, NULL, 0, NULL, Z_DEFLATED, 5, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, NULL, 0, fileSize >= 0xffffffff) == ZIP_OK)
+	if(zipOpenNewFileInZip3_64(zipFile, inzipFilename, &metadata, NULL, 0, NULL, 0, NULL, Z_DEFLATED, 5, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, NULL, 0, fileSize >= 0xffffffff) == ZIP_OK)
 	{
 		if(fileSize != 0)	//Check if actual content
 		{
@@ -64,6 +64,12 @@ bool addFileToZip(zipFile * zipFile, const char * filename)
 	return ret_value;
 }
 
+void createDirInZip(zipFile * zipFile, const char * dirName)
+{
+	zipOpenNewFileInZip3_64(zipFile, dirName, NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, 5, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, NULL, 0, false);
+	zipCloseFileInZip(zipFile);
+}
+
 bool addMemToZip(zipFile * zipFile, const char * filename, const byte * memoryChunk, const uint64_t chunckSize)
 {
 	if(zipFile == NULL || filename == NULL || memoryChunk == NULL)
@@ -81,40 +87,6 @@ bool addMemToZip(zipFile * zipFile, const char * filename, const byte * memoryCh
 
 	zipCloseFileInZip(zipFile);
 	return true;
-}
-
-bool addDirToZip(zipFile * zipFile, const char * dirName)
-{
-	if(zipFile == NULL || dirName == NULL)
-		return false;
-
-	DIR *directory;           //Directory
-	struct dirent *entry;     //Directory entry
-	uint dirNameLength = strlen(dirName);
-
-	directory = opendir(dirName);
-	if(directory == NULL)
-		return false;
-
-	bool retValue = true;
-
-	while(retValue && (entry = readdir(directory)) != NULL)
-	{
-		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
-			continue;
-
-		char subdirName[dirNameLength + entry->d_namlen + 2];
-		snprintf(subdirName, sizeof(subdirName), "%s/%s", dirName, entry->d_name);
-
-		if(checkDirExist(subdirName))	//Is it a file or a directory
-			retValue &= addDirToZip(zipFile, subdirName);
-		else
-			retValue &= addFileToZip(zipFile, subdirName);
-	}
-
-	closedir(directory);
-
-	return retValue;
 }
 
 void closeZip(zipFile * zipFile)

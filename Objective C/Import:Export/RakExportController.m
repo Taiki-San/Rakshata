@@ -86,7 +86,17 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		return;
 	}
 
-	//Okay, open the zipfile, then start analysing the pasteboard
+	//UI side, we only support moving around one project, so we're going to assume that and make our lives easier
+	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
+	if(item == nil)
+		return;
+
+	NSMutableArray * content, * thumbnails;
+	NSDictionary * manifest = [self generateManifestForItem:item contentDetail:&content thumbFiles:&thumbnails];
+	if(manifest == nil)
+		return;
+
+	//Okay, open the zipfile
 	zipFile * file = zipOpen([path UTF8String], APPEND_STATUS_CREATE);
 	if(file == NULL)
 	{
@@ -94,35 +104,73 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		return;
 	}
 
-	//UI side, we only support moving around one project, so we're going to assume that and make our lives easier
-	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
-	if(item == nil)
-		return;
+	NSArray * invalidContent = [self insertContent:content ofItem:item intoZipfile:file];
+
+	//Fuck, invalid content, we need to update the manifest :X
+	if([invalidContent count])
+	{
+		for(NSDictionary * entry in invalidContent)
+			[content removeObject:entry];
+
+		if([content count])
+			manifest = @{	RAK_STRING_METADATA : [manifest objectForKey:RAK_STRING_METADATA],
+							RAK_STRING_CONTENT	: content};
+		else
+			manifest = nil;
+	}
+
+	if(manifest == nil)
+	{
+		NSLog(@"No valid selection :/");
+		closeZip(file);
+		remove([path UTF8String]);
+	}
+
+	//Good, now, we can serialize the manifest, add it to the zipfile and call it a day
+	NSError * serializationError;
+	NSData * serializedFile = [NSJSONSerialization dataWithJSONObject:manifest options:0 error:&serializationError];
+
+	if(serializedFile == nil)
+	{
+		NSLog(@"%@", serializationError);
+		closeZip(file);
+		remove([path UTF8String]);
+	}
+	else
+	{
+		if(!addMemToZip(file, METADATA_FILE, [serializedFile bytes], [serializedFile length]))
+		{
+			NSLog(@"Couln't output the manifest :/");
+			closeZip(file);
+			remove([path UTF8String]);
+		}
+		else
+		{
+			zipClose(file, "Generated using "PROJECT_NAME" v"PRINTABLE_VERSION);
+		}
+	}
 }
 
 #pragma mark - Creation of the manifest
 
-+ (NSData *) generateManifestForItem : (RakDragItem *) item contentDetail : (NSArray **) content thumbFiles : (NSArray **) imagesPath
++ (NSDictionary *) generateManifestForItem : (RakDragItem *) item contentDetail : (NSMutableArray **) content thumbFiles : (NSArray **) imagesPath
 {
 	NSDictionary * project = [self lineariseProject:item.project ofID:0 withImages:imagesPath];
 	if(project == nil)
 		return nil;
 
 	uint index = 0;
-	*content = [self lineariseContent:item.project ofProjectID:0 fullProject:item.fullProject isTome:item.isTome selection:item.selection index:&index];
+	PROJECT_DATA projectData = item.project;
+
+	*content = [self lineariseContent:&projectData ofProjectID:0 fullProject:item.fullProject isTome:item.isTome selection:item.selection index:&index];
 	if(*content == nil)
 		return nil;
 
+	item.project = projectData;
+
 	//Crafting the final file
-	NSDictionary * manifest = @{RAK_STRING_METADATA : @{RAK_STRING_METADATA_PROJECT: project},
-								RAK_STRING_CONTENT	: *content};
-	NSError * serializationError;
-	NSData * serializedFile = [NSJSONSerialization dataWithJSONObject:manifest options:0 error:&serializationError];
-
-	if(serializedFile == nil)
-		NSLog(@"%@", serializationError);
-
-	return serializedFile;
+	return @{	RAK_STRING_METADATA : @{RAK_STRING_METADATA_PROJECT: project},
+				RAK_STRING_CONTENT	: *content};
 }
 
 + (NSDictionary *) lineariseProject : (PROJECT_DATA) project ofID : (uint) allocatedID  withImages : (NSArray **) imagesPath
@@ -202,41 +250,26 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	return [NSDictionary dictionaryWithDictionary:dict];
 }
 
-+ (NSArray *) lineariseContent : (PROJECT_DATA) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (int) selection index : (uint *) index;
++ (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (int) selection index : (uint *) index;
 {
 	//Ensure we have valid data
-	void * freeTable[4] = {NULL};
-	if((fullProject || isTome) && project.tomesInstalled == NULL)
+	if((fullProject || isTome) && project->tomesInstalled == NULL)
 	{
-		if(project.tomesFull == NULL)
-		{
-			getUpdatedTomeList(&project, true);
-			freeTable[0] = project.tomesFull;
-			freeTable[1] = project.tomesInstalled;
-		}
+		if(project->tomesFull == NULL)
+			getUpdatedTomeList(project, true);
 		else
-		{
-			checkTomeValable(&project, NULL);
-			freeTable[1] = project.tomesInstalled;
-		}
+			checkTomeValable(project, NULL);
 	}
 
-	if((fullProject || !isTome) && project.chapitresInstalled == NULL)
+	if((fullProject || !isTome) && project->chapitresInstalled == NULL)
 	{
-		if(project.chapitresFull == NULL)
-		{
-			getUpdatedChapterList(&project, true);
-			freeTable[2] = project.chapitresFull;
-			freeTable[3] = project.chapitresInstalled;
-		}
+		if(project->chapitresFull == NULL)
+			getUpdatedChapterList(project, true);
 		else
-		{
-			checkChapitreValable(&project, NULL);
-			freeTable[3] = project.chapitresInstalled;
-		}
+			checkChapitreValable(project, NULL);
 	}
 
-	NSArray * output = nil;
+	NSMutableArray * output = nil;
 
 	//To insert a full project, we first inject the
 	if(fullProject)
@@ -248,42 +281,36 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	//Okay, at this point, we craft the array
 	if(selection == INVALID_SIGNED_VALUE)
 	{
-		uint length = ACCESS_DATA(isTome, project.nombreChapitreInstalled, project.nombreTomesInstalled);
+		uint length = ACCESS_DATA(isTome, project->nombreChapitreInstalled, project->nombreTomesInstalled);
 		NSMutableArray * collector = [NSMutableArray new];
 
 		for(uint i = 0; i < length; ++i)
 		{
-			NSDictionary * dict = linearizeContentLine(project, projectID, isTome, ACCESS_DATA(isTome, project.chapitresInstalled[i], project.tomesInstalled[i].ID), index);
+			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, ACCESS_DATA(isTome, project->chapitresInstalled[i], project->tomesInstalled[i].ID), index);
 			if(dict != nil)
 				[collector addObject:dict];
 		}
 
 		if(fullProject)
 		{
-			length = project.nombreTomesInstalled;
+			length = project->nombreTomesInstalled;
 			for(uint i = 0; i < length; ++i)
 			{
-				NSDictionary * dict = linearizeContentLine(project, projectID, true, project.tomesInstalled[i].ID, index);
+				NSDictionary * dict = linearizeContentLine(*project, projectID, true, project->tomesInstalled[i].ID, index);
 				if(dict != nil)
 					[collector addObject:dict];
 			}
 		}
 
 		if([collector count] > 0)
-			output = [NSArray arrayWithArray:collector];
+			output = collector;
 	}
 	else
 	{
-		NSDictionary * dict = linearizeContentLine(project, projectID, isTome, selection, index);
+		NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, selection, index);
 		if(dict != nil)
-			output = @[dict];
+			output = [NSMutableArray arrayWithObject:dict];
 	}
-
-	//Free the allocated pointers (if any)
-	freeTomeList(freeTable[0], project.nombreTomes, true);
-	freeTomeList(freeTable[1], project.nombreTomesInstalled, true);
-	free(freeTable[2]);
-	free(freeTable[3]);
 
 	return output;
 }
@@ -291,6 +318,98 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 + (void) addEntryToZip : (PROJECT_DATA) project item : (uint) position isTome : (BOOL) isTome toArchive : (zipFile *) file
 {
 
+}
+
+#pragma mark - Insertion into zip
+
++ (NSArray *) insertContent : (NSMutableArray *) content ofItem : (RakDragItem *) item intoZipfile : (zipFile *) file
+{
+	NSMutableArray * invalidContent = [NSMutableArray new];
+
+	for(NSDictionary * entry in content)
+	{
+		//Load the data so we get a list of files
+		DATA_LECTURE entryData;
+		BOOL isTome = [objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]) boolValue];
+
+		if(!configFileLoader(item.project, isTome, [objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]) intValue], &entryData))
+		{
+			[invalidContent addObject:entry];
+			continue;
+		}
+
+		//We check all files exists
+		BOOL problemDetected = NO;
+		for(uint pos = 0; pos < entryData.nombrePage; pos++)
+		{
+			if(!checkFileExist(entryData.nomPages[pos]))
+			{
+				problemDetected = YES;
+				break;
+			}
+		}
+
+		if(problemDetected || !entryData.nombrePage)
+		{
+			releaseDataReader(&entryData);
+			[invalidContent addObject:entry];
+			continue;
+		}
+
+		//Okay, all files exists, let's add them to the archive
+
+		NSString * _basePath = [objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]) stringByAppendingString:@"/"];
+		const char * basePath = [_basePath UTF8String];
+		const uint baseZipPathLength = [_basePath length];
+
+		//First, create the directory
+		createDirInZip(file, basePath);
+
+		BOOL error = NO;
+		char * outFile;
+		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]); pos < entryData.nombrePage && !error; pos++)
+		{
+			if(isTome)
+			{
+				//We must detect shared chapters
+#warning "to do"
+				outFile = NULL;
+			}
+			else
+			{
+				char inzipOfConfig[baseZipPathLength + 50];
+				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s%s", basePath, &(entryData.nomPages[pos][basePagePathLength]));
+				outFile = strdup(inzipOfConfig);
+			}
+
+			//Add the file to the zip, then cleanup
+			if(!addFileToZip(file, entryData.nomPages[pos], outFile))
+				error = YES;
+
+			free(outFile);
+
+			//If we need to insert the config.dat file
+			if(pos + 1 == entryData.nombrePage || entryData.pathNumber[pos] != entryData.pathNumber[pos + 1])
+			{
+				char pathToConfig[basePagePathLength + 50], inzipOfConfig[baseZipPathLength + 50];
+				snprintf(pathToConfig, sizeof(pathToConfig), "%s/"CONFIGFILE, entryData.path[entryData.pathNumber[pos]]);
+				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s/"CONFIGFILE, basePath);
+
+				if(!addFileToZip(file, pathToConfig, inzipOfConfig))
+					error = YES;
+
+				basePagePathLength = strlen(entryData.path[entryData.pathNumber[pos + 1]]);
+			}
+		}
+
+		if(error)
+		{
+			problemDetected = YES;
+			break;
+		}
+	}
+
+	return [NSArray arrayWithArray:invalidContent];
 }
 
 #pragma mark - Utils
