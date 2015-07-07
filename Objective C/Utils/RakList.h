@@ -127,8 +127,6 @@ typedef struct //smartReload_data
 - (void) cleanupDrag;
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation;
 
-- (NSString *) getDroppedFileNameFromPasteboard : (NSPasteboard *) pasteboard;
-
 + (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL;
 
 @end

@@ -21,7 +21,16 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID
 {
 	if(!data.project.isInitialized)
 		return 0;
-	
+
+	if(data.nombreChapitreLocal || data.nombreTomeLocal)
+	{
+		if(consolidateCTLocale(&data, false) || consolidateCTLocale(&data, true))
+		{
+			nullifyCTPointers(&data.project);
+			generateCTUsable(&data);
+		}
+	}
+
 	sqlite3_stmt * internalRequest = NULL;
 	
 	if(request != NULL)

@@ -707,13 +707,8 @@
 
 - (NSArray *) tableView:(NSTableView *)tableView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedRowsWithIndexes:(NSIndexSet *)indexSet
 {
-	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil];
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL:dropDestination];
 	return nil;
-}
-
-- (NSString *) getDroppedFileNameFromPasteboard : (NSPasteboard *) pasteboard
-{
-	return [RakExportController craftArchiveNameFromPasteboard:pasteboard];
 }
 
 - (void) tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation

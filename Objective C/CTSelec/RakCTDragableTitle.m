@@ -109,7 +109,7 @@
 
 - (NSArray<NSString *> *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
 {
-	[RakExportController createArchiveFromPasteboard:[currentSession draggingPasteboard] toPath:nil];
+	[RakExportController createArchiveFromPasteboard:[currentSession draggingPasteboard] toPath:nil withURL:dropDestination];
 	return nil;
 }
 

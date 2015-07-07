@@ -12,10 +12,6 @@
 
 #include "dbCache.h"
 
-#pragma mark - Internal tools
-
-
-
 #pragma mark - Public API
 
 //Prevent reusing ID

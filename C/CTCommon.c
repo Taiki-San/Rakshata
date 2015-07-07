@@ -156,7 +156,12 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				}
 
 				uint currentLength = nbElemBase;
-				memcpy(outputData, dataBase, nbElemBase * sizeOfType);
+
+				//chapters
+				if(run == 0)
+					memcpy(outputData, dataBase, nbElemBase * sizeOfType);
+				else
+					copyTomeList(dataBase, nbElemBase, outputData);
 
 				//We actually have something to inject, otherwise, we only had one list
 				if(nbElemToInject != 0)
@@ -309,17 +314,20 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	if(lengthLocale == 0)
 		return false;
 
-	//First, ensure items in the local store are not in the remote list
-	//O(n^2) because I'm busy for now
 	uint lengthSearch = ACCESS_DATA(isTome, project->nombreChapitreRemote, project->nombreTomeRemote), finalLength = lengthLocale;
 
 	void * dataSet = ACCESS_DATA(isTome, (void*) project->chapitresLocal, (void*) project->tomeLocal), * dataSetSearch = ACCESS_DATA(isTome, (void*) project->chapitresRemote, (void*) project->tomeRemote);
 	if(lengthSearch != 0)
 	{
+		//O(n^2) because I'm busy for now
 		for(uint pos = 0; pos < lengthLocale; pos++)
 		{
 			int value = getData(isTome, dataSet, pos);
 
+			if(value == INVALID_SIGNED_VALUE)
+				continue;
+
+			//First, ensure items in the local store are not in the remote list
 			for(uint posSearch = 0; posSearch < lengthSearch; posSearch++)
 			{
 				//And, collision
@@ -332,6 +340,23 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 
 					finalLength--;
 					break;
+				}
+			}
+
+			if(value == INVALID_SIGNED_VALUE)
+				continue;
+
+			//We also look for duplicates
+			for(uint posDuplicate = pos + 1; posDuplicate < lengthLocale; posDuplicate++)
+			{
+				if(getData(isTome, dataSet, posDuplicate) == value)
+				{
+					if(isTome)
+						project->tomeLocal[posDuplicate].ID = INVALID_SIGNED_VALUE;
+					else
+						project->chapitresLocal[posDuplicate] = INVALID_SIGNED_VALUE;
+
+					finalLength--;
 				}
 			}
 		}

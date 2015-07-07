@@ -13,6 +13,6 @@
 @interface RakExportController : NSObject
 
 + (NSString *) craftArchiveNameFromPasteboard : (NSPasteboard *) pasteboard;
-+ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path;
++ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path withURL : (NSURL *) url;
 
 @end

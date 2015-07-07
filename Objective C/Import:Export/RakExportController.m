@@ -27,7 +27,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	if(item == nil)
 		return nil;
 
-	return [@"/" stringByAppendingString:[self craftArchiveName:item.project isTome:item.isTome selection:item.selection]];
+	return [self craftArchiveName:item.project isTome:item.isTome selection:item.selection];
 }
 
 + (NSString *) craftArchiveName : (PROJECT_DATA) project isTome : (BOOL) isTome selection : (int) selection
@@ -66,7 +66,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 #pragma mark - Compression Job
 
-+ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path
++ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path withURL : (NSURL *) url
 {
 	//Ensure we get a directory to write in
 	if(path == nil)
@@ -75,13 +75,15 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 		if(path == nil)
 			return;
+
+		path = [NSString stringWithFormat:@"%@/%@", [url path], path];
 	}
 
 	//We don't want to perform the compression job in the main thread, as it may take quite some time
 	if([NSThread isMainThread])
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self createArchiveFromPasteboard:pasteboard toPath:path];
+			[self createArchiveFromPasteboard:pasteboard toPath:path withURL:url];
 		});
 		return;
 	}
@@ -113,7 +115,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			[content removeObject:entry];
 
 		if([content count])
-			manifest = @{	RAK_STRING_METADATA : [manifest objectForKey:RAK_STRING_METADATA],
+			manifest = @{	RAK_STRING_VERSION 	: @(ARCHIVE_VERSION),
+						 	RAK_STRING_METADATA : [manifest objectForKey:RAK_STRING_METADATA],
 							RAK_STRING_CONTENT	: content};
 		else
 			manifest = nil;
@@ -155,12 +158,13 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 + (NSDictionary *) generateManifestForItem : (RakDragItem *) item contentDetail : (NSMutableArray **) content thumbFiles : (NSArray **) imagesPath
 {
-	NSDictionary * project = [self lineariseProject:item.project ofID:0 withImages:imagesPath];
+	PROJECT_DATA projectData = item.project;
+
+	NSDictionary * project = [self lineariseProject:projectData ofID:0 withImages:imagesPath];
 	if(project == nil)
 		return nil;
 
 	uint index = 0;
-	PROJECT_DATA projectData = item.project;
 
 	*content = [self lineariseContent:&projectData ofProjectID:0 fullProject:item.fullProject isTome:item.isTome selection:item.selection index:&index];
 	if(*content == nil)
@@ -169,7 +173,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	item.project = projectData;
 
 	//Crafting the final file
-	return @{	RAK_STRING_METADATA : @{RAK_STRING_METADATA_PROJECT: project},
+	return @{	RAK_STRING_VERSION 	: @(ARCHIVE_VERSION),
+				RAK_STRING_METADATA : @{RAK_STRING_METADATA_PROJECT: @[project]},
 				RAK_STRING_CONTENT	: *content};
 }
 
@@ -178,22 +183,28 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	//Build the main metadata section
 	NSMutableDictionary * dict = [NSMutableDictionary new];
 
-	[dict insertValue:@(allocatedID) inPropertyWithKey:RAK_STRING_METADATA_PROJECTID];
-	[dict insertValue:getStringForWchar(project.projectName) inPropertyWithKey:RAK_STRING_METADATA_PROJECTNAME];
-	[dict insertValue:@(project.repo->type) inPropertyWithKey:RAK_STRING_METADATA_REPOTYPE];
-	[dict insertValue:[NSString stringWithUTF8String:project.repo->URL] inPropertyWithKey:RAK_STRING_METADATA_REPOURL];
-	[dict insertValue:@(project.projectID) inPropertyWithKey:RAK_STRING_METADATA_REPOURL];
+	[dict setObject:@(allocatedID) forKey:RAK_STRING_METADATA_PROJECTID];
+	[dict setObject:getStringForWchar(project.projectName) forKey:RAK_STRING_METADATA_PROJECTNAME];
+
+	if(!project.repo->locale)
+	{
+		[dict setObject:@(project.repo->type) forKey:RAK_STRING_METADATA_REPOTYPE];
+		[dict setObject:[NSString stringWithUTF8String:project.repo->URL] forKey:RAK_STRING_METADATA_REPOURL];
+
+		if(!project.locale)
+			[dict setObject:@(project.projectID) forKey:RAK_STRING_METADATA_REPO_PROJID];
+	}
 
 	if(project.description[0])
-		[dict insertValue:getStringForWchar(project.description) inPropertyWithKey:RAK_STRING_METADATA_DESCRIPTION];
+		[dict setObject:getStringForWchar(project.description) forKey:RAK_STRING_METADATA_DESCRIPTION];
 
-	[dict insertValue:getStringForWchar(project.authorName) inPropertyWithKey:RAK_STRING_METADATA_AUTHOR];
+	[dict setObject:getStringForWchar(project.authorName) forKey:RAK_STRING_METADATA_AUTHOR];
 
 	if(project.status != STATUS_INVALID)
-		[dict insertValue:@(project.status) inPropertyWithKey:RAK_STRING_METADATA_STATUS];
+		[dict setObject:@(project.status) forKey:RAK_STRING_METADATA_STATUS];
 
-	[dict insertValue:@(project.tagMask) inPropertyWithKey:RAK_STRING_METADATA_TAGMASK];
-	[dict insertValue:@(project.rightToLeft) inPropertyWithKey:RAK_STRING_METADATA_RIGHT2LEFT];
+	[dict setObject:@(project.tagMask) forKey:RAK_STRING_METADATA_TAGMASK];
+	[dict setObject:@(project.rightToLeft) forKey:RAK_STRING_METADATA_RIGHT2LEFT];
 
 	//Okay, now, we want to inser the thumbnails
 	//We ask an API to craft for us the expected filenames
@@ -231,7 +242,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 				if(sectionName != nil)
 				{
-					[dict insertValue:outputPath inPropertyWithKey:sectionName];
+					[dict setObject:outputPath forKey:sectionName];
 					[imagePathToCopy addObject:@{@"origin" : [NSString stringWithUTF8String:filesPath->filename],
 												 @"output" : outputPath}];
 				}
@@ -331,8 +342,9 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		//Load the data so we get a list of files
 		DATA_LECTURE entryData;
 		BOOL isTome = [objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]) boolValue];
+		int selection = [objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]) intValue];
 
-		if(!configFileLoader(item.project, isTome, [objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]) intValue], &entryData))
+		if(!configFileLoader(item.project, isTome, selection, &entryData))
 		{
 			[invalidContent addObject:entry];
 			continue;
@@ -356,30 +368,65 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			continue;
 		}
 
-		//Okay, all files exists, let's add them to the archive
+		//If it is a volume, we need those metadata
+		META_TOME volumeMetadata;
+		if(isTome)
+		{
+			uint posSelectionTome = getPosForID(item.project, true, selection);
+			if(posSelectionTome == INVALID_VALUE)
+			{
+				releaseDataReader(&entryData);
+				[invalidContent addObject:entry];
+				continue;
+			}
 
-		NSString * _basePath = [objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]) stringByAppendingString:@"/"];
-		const char * basePath = [_basePath UTF8String];
-		const uint baseZipPathLength = [_basePath length];
+			volumeMetadata = item.project.tomesInstalled[posSelectionTome];
+		}
+
+		//Okay, all files exists, let's add them to the archive
+		NSString * _rootPath = [objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]) stringByAppendingString:@"/"];
+		const char * rootInzipPath = [_rootPath UTF8String];
+		const uint rootZipPathLength = [_rootPath length];
 
 		//First, create the directory
-		createDirInZip(file, basePath);
+		createDirInZip(file, rootInzipPath);
 
+		//Then add those files
 		BOOL error = NO;
-		char * outFile;
-		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]); pos < entryData.nombrePage && !error; pos++)
+		char * outFile, * baseInzipPath = NULL;
+		uint baseInzipVolPathLength;
+		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nombrePage && !error; pos++)
 		{
 			if(isTome)
 			{
-				//We must detect shared chapters
-#warning "to do"
-				outFile = NULL;
+				//We must detect shared chapters and throw them into native/
+				if(baseInzipPath == NULL)
+				{
+					CONTENT_TOME volumeContent = volumeMetadata.details[chunkCount];
+					char baseInzipPathTmp[rootZipPathLength + 100], chapterID[32];
+
+					if(volumeContent.ID % 10)
+						snprintf(chapterID, sizeof(chapterID), "%d.%d", volumeContent.ID / 10, volumeContent.ID % 10);
+					else
+						snprintf(chapterID, sizeof(chapterID), "%d", volumeContent.ID / 10);
+
+					if(volumeContent.isPrivate)
+						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
+					else
+						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
+
+					baseInzipPath = strdup(baseInzipPathTmp);
+				}
+
+				char inzipOfFile[baseInzipVolPathLength + 50];
+				snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", baseInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
+				outFile = strdup(inzipOfFile);
 			}
 			else
 			{
-				char inzipOfConfig[baseZipPathLength + 50];
-				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s%s", basePath, &(entryData.nomPages[pos][basePagePathLength]));
-				outFile = strdup(inzipOfConfig);
+				char inzipOfFile[rootZipPathLength + strlen(&(entryData.nomPages[pos][basePagePathLength])) + 2];
+				snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", rootInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
+				outFile = strdup(inzipOfFile);
 			}
 
 			//Add the file to the zip, then cleanup
@@ -391,14 +438,22 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			//If we need to insert the config.dat file
 			if(pos + 1 == entryData.nombrePage || entryData.pathNumber[pos] != entryData.pathNumber[pos + 1])
 			{
-				char pathToConfig[basePagePathLength + 50], inzipOfConfig[baseZipPathLength + 50];
+				char pathToConfig[basePagePathLength + 50], inzipOfConfig[rootZipPathLength + 50];
 				snprintf(pathToConfig, sizeof(pathToConfig), "%s/"CONFIGFILE, entryData.path[entryData.pathNumber[pos]]);
-				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s/"CONFIGFILE, basePath);
+				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s"CONFIGFILE, isTome ? baseInzipPath : rootInzipPath);
 
 				if(!addFileToZip(file, pathToConfig, inzipOfConfig))
 					error = YES;
 
 				basePagePathLength = strlen(entryData.path[entryData.pathNumber[pos + 1]]);
+
+				//Volumes use a different root than the rootInzipPath
+				if(isTome)
+				{
+					chunkCount++;
+					free(baseInzipPath);
+					baseInzipPath = NULL;
+				}
 			}
 		}
 
@@ -431,10 +486,10 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 {
 	NSMutableDictionary * dict = [NSMutableDictionary new];
 
-	[dict insertValue:@(projectID) inPropertyWithKey:RAK_STRING_CONTENT_PROJECT];
-	[dict insertValue:[NSString stringWithFormat:@"%d", (*index)++] inPropertyWithKey:RAK_STRING_CONTENT_DIRECTORY];
-	[dict insertValue:@(isTome) inPropertyWithKey:RAK_STRING_CONTENT_ISTOME];
-	[dict insertValue:@(selection) inPropertyWithKey:RAK_STRING_CONTENT_ID];
+	[dict setObject:@(projectID) forKey:RAK_STRING_CONTENT_PROJECT];
+	[dict setObject:[NSString stringWithFormat:@"%d", (*index)++] forKey:RAK_STRING_CONTENT_DIRECTORY];
+	[dict setObject:@(isTome) forKey:RAK_STRING_CONTENT_ISTOME];
+	[dict setObject:@(selection) forKey:RAK_STRING_CONTENT_ID];
 
 	if(isTome)
 	{
@@ -445,7 +500,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		{
 			NSArray * volumeMetadata = recoverVolumeBloc(&(project.tomesInstalled[pos]), 1, project.isPaid);
 			if(volumeMetadata != nil && [volumeMetadata count] > 0)
-				[dict insertValue:[volumeMetadata objectAtIndex:0] inPropertyWithKey:RAK_STRING_CONTENT_VOL_DETAILS];
+				[dict setObject:[volumeMetadata objectAtIndex:0] forKey:RAK_STRING_CONTENT_VOL_DETAILS];
 		}
 	}
 

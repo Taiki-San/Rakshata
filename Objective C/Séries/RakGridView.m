@@ -189,7 +189,7 @@ enum
 
 - (NSArray<NSString *> *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes
 {
-	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil];
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL : dropURL];
 	return nil;
 }
 

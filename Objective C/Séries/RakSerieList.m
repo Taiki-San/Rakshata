@@ -730,7 +730,7 @@
 
 - (NSArray<NSString *> *)outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedItems:(NSArray *)items
 {
-	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil];
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL:dropDestination];
 	return nil;
 }
 
