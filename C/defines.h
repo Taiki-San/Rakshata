@@ -20,6 +20,11 @@
 #define REPO_REC_NAME "repo"
 #define PROJECT_REC_NAME "projects"
 #define PROJECT_ROOT "project/"
+#define CHAPTER_PREFIX "Chapitre_"
+#define VOLUME_PREFIX "Tome_"
+#define VOLUME_PRESHARED_DIR "native"
+#define VOLUME_CHAP_SHARED_TOKEN "shared"
+#define CHAPITER_INSTALLING_TOKEN "installing"
 #define CUSTOM_COLOR_FILE "theme/customTheme"
 
 #ifdef DEV_VERSION

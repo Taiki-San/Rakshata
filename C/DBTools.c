@@ -532,19 +532,20 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 	if(directory == NULL)
 		goto end;
 
+	const byte lengthChapterPrefix = strlen(CHAPTER_PREFIX), lengthVolPrefix = strlen(VOLUME_PREFIX);
 	while(!retValue && (entry = readdir(directory)) != NULL)
 	{
 		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."));
 
-		else if(!strncmp(entry->d_name, "Chapitre_", 9) && strlen(entry->d_name) > 9)
+		else if(!strncmp(entry->d_name, CHAPTER_PREFIX, lengthChapterPrefix) && strlen(entry->d_name) > lengthChapterPrefix)
 		{
-			if(isNbr(entry->d_name[9]))
-				retValue = checkChapterReadable(project, atoi(&(entry->d_name[9])) * 10);
+			if(isNbr(entry->d_name[lengthChapterPrefix]))
+				retValue = checkChapterReadable(project, atoi(&(entry->d_name[lengthChapterPrefix])) * 10);
 		}
-		else if(!strncmp(entry->d_name, "Tome_", 5) && strlen(entry->d_name) > 5)
+		else if(!strncmp(entry->d_name, VOLUME_PREFIX, lengthVolPrefix) && strlen(entry->d_name) > lengthVolPrefix)
 		{
-			if(isNbr(entry->d_name[5]))
-				retValue = checkTomeReadable(project, atoi(&(entry->d_name[5])));
+			if(isNbr(entry->d_name[lengthVolPrefix]))
+				retValue = checkTomeReadable(project, atoi(&(entry->d_name[lengthVolPrefix])));
 		}
 	}
 	

@@ -71,9 +71,9 @@
 	else
 	{
 		if(selection % 10)
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/Chapitre_%d.%d", projectPath, selection / 10, selection % 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d.%d", projectPath, selection / 10, selection % 10);
 		else
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/Chapitre_%d", projectPath, selection / 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d", projectPath, selection / 10);
 	}
 
 	free(projectPath);
@@ -115,7 +115,7 @@
 		logR("Uh? Invalid import :|");
 
 		if(_isTome)
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/Tome_%d", projectPath, _contentID);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d", projectPath, _contentID);
 
 		removeFolder(basePath);
 		return false;
