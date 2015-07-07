@@ -45,7 +45,6 @@
 		B63020E81B0FE34F00582DB7 /* rak.icns in Resources */ = {isa = PBXBuildFile; fileRef = B63020E71B0FE34F00582DB7 /* rak.icns */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
-		B63401431A96AA7A003DC56E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401411A96AA7A003DC56E /* InfoPlist.strings */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
@@ -288,7 +287,6 @@
 		B62B44FF1A8FAAEA0096FA45 /* RakCTSerieHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSerieHeader.h; path = CTSelec/RakCTSerieHeader.h; sourceTree = "<group>"; };
 		B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSerieHeader.m; path = CTSelec/RakCTSerieHeader.m; sourceTree = "<group>"; };
 		B62C9EF218BD73D500CE910F /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/DBTools.c; sourceTree = "<group>"; };
-		B62C9EF418BD742F00CE910F /* db.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = db.h; sourceTree = "<group>"; };
 		B62DBB891A118AEF007EBAC6 /* RakDRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDRM.m; path = Reader/RakDRM.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62E6E7F18F8834C006A0D5F /* RakSerieList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieList.h; path = "Séries/RakSerieList.h"; sourceTree = "<group>"; };
 		B62E6E8018F8834C006A0D5F /* RakSerieList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSerieList.m; path = "Séries/RakSerieList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -299,9 +297,7 @@
 		B63020E71B0FE34F00582DB7 /* rak.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = rak.icns; path = default/rak.icns; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		B63401421A96AA7A003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		B634014C1A96AB29003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -491,6 +487,7 @@
 		B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsGeneralView.m; path = "Divers Windows/RakPrefsGeneralView.m"; sourceTree = "<group>"; };
 		B6D904401AB8D7C7001A2D6B /* RakSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedControl.h; path = Utils/RakSegmentedControl.h; sourceTree = "<group>"; };
 		B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSegmentedControl.m; path = Utils/RakSegmentedControl.m; sourceTree = "<group>"; };
+		B6DD31191B4C022900990CCE /* db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = db.h; path = C/db.h; sourceTree = "<group>"; };
 		B6DFE1A51B1D007000D65E68 /* settings */ = {isa = PBXFileReference; lastKnownFileType = file; path = settings; sourceTree = "<group>"; };
 		B6DFE1A61B1D007000D65E68 /* backupTags.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = backupTags.db; sourceTree = "<group>"; };
 		B6E07A1A1B3575F60016C9B0 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
@@ -755,7 +752,6 @@
 		B634013A1A96AA0F003DC56E /* Localization */ = {
 			isa = PBXGroup;
 			children = (
-				B63401411A96AA7A003DC56E /* InfoPlist.strings */,
 				B63401371A96A890003DC56E /* Localizable.strings */,
 			);
 			name = Localization;
@@ -1448,7 +1444,7 @@
 			isa = PBXGroup;
 			children = (
 				B6245AD019F698A60015F11B /* configuration.h */,
-				B62C9EF418BD742F00CE910F /* db.h */,
+				B6DD31191B4C022900990CCE /* db.h */,
 				B6F6ECB118A3001400E3B55B /* defines.h */,
 				B67845A219631311007372C7 /* encoding.h */,
 				B6F6ECB718A3001400E3B55B /* fonctions.h */,
@@ -1536,7 +1532,6 @@
 				B66ED1911949B704002A333F /* dragView.xib in Resources */,
 				B6E09698197C9DCE0084873C /* theme 2 in Resources */,
 				B6EB260619841E2500D678B3 /* auth.xib in Resources */,
-				B63401431A96AA7A003DC56E /* InfoPlist.strings in Resources */,
 				B69D468F1AA8830500B471AC /* defaultRepoRoot@2x.png in Resources */,
 				B6A0EDF81B126550009DFC03 /* defaultDragImage.png in Resources */,
 				B6BD45CB1A7D602A00C2A675 /* project_large.png in Resources */,
@@ -1769,15 +1764,6 @@
 			);
 			name = Localizable.strings;
 			path = "../Objective C";
-			sourceTree = "<group>";
-		};
-		B63401411A96AA7A003DC56E /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B63401421A96AA7A003DC56E /* fr */,
-				B634014C1A96AB29003DC56E /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

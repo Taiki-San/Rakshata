@@ -19,13 +19,17 @@
 
 #define REPO_REC_NAME "repo"
 #define PROJECT_REC_NAME "projects"
+#define CUSTOM_COLOR_FILE "theme/customTheme"
+
 #define PROJECT_ROOT "project/"
 #define CHAPTER_PREFIX "Chapitre_"
 #define VOLUME_PREFIX "Tome_"
 #define VOLUME_PRESHARED_DIR "native"
 #define VOLUME_CHAP_SHARED_TOKEN "shared"
 #define CHAPITER_INSTALLING_TOKEN "installing"
-#define CUSTOM_COLOR_FILE "theme/customTheme"
+#define CONFIGFILE "config.dat"
+#define CONFIGFILETOME "config.tome.dat"
+#define LOCAL_PATH_NAME "local"
 
 #ifdef DEV_VERSION
     #define BUILD "dev"
@@ -36,9 +40,6 @@
 #endif
 
 /*Standard des dépôts*/
-#define CONFIGFILE "config.dat"
-#define CONFIGFILETOME "config.tome.dat"
-#define LOCAL_PATH_NAME "local"
 #define VERSION_REPO 3
 #define VERSION_FIRST_REPO_JSON 3
 #define VERSION_PROJECT 1
@@ -81,11 +82,7 @@ enum
 #define TAG_PAR_CAT 32
 #define TAG_NO_VALUE 0
 
-/*Check environnement*/
-#define NOMBRE_DE_FICHIER_A_CHECKER 16
-#define LONGUEUR_NOMS_DATA 100
-
-/*Ajout repo*/
+/*Repo*/
 enum
 {
 	TYPE_DEPOT_PAID 	= 1,
@@ -115,10 +112,10 @@ enum
 /*Sécurité*/
 enum
 {
-	EVERYTHING_IN_HDD,
-	INPUT_IN_MEMORY,
-	OUTPUT_IN_MEMORY,
-	EVERYTHING_IN_MEMORY
+	EVERYTHING_IN_HDD 	= 0x0,
+	INPUT_IN_MEMORY		= 0x1,
+	OUTPUT_IN_MEMORY	= 0x2,
+	EVERYTHING_IN_MEMORY = INPUT_IN_MEMORY | OUTPUT_IN_MEMORY
 };
 #define NOMBRE_CLE_MAX_ACCEPTE 10
 

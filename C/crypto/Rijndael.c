@@ -1246,24 +1246,21 @@ void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput
 	byte *password = _password, *input = _pathInput, *output = _pathOutput, key[KEYLENGTH(KEYBITS)];
 	FILE *inputFile = NULL, *outputFile = NULL;
 	
-	if(cryptIntoMemory != EVERYTHING_IN_MEMORY)
+	if((cryptIntoMemory & INPUT_IN_MEMORY) == 0)
 	{
-		if(cryptIntoMemory != INPUT_IN_MEMORY)
-		{
-			inputFile = fopen((char *) input, "rb");
-			inputMemory = false;
-			if(inputFile == NULL)
-				return;
-		}
-		if(cryptIntoMemory != OUTPUT_IN_MEMORY)
-		{
-			outputFile = fopen((char *) output, "wb");
-			outputMemory = false;
-			if(outputFile == NULL)
-				return;
-		}
+		inputFile = fopen((char *) input, "rb");
+		inputMemory = false;
+		if(inputFile == NULL)
+			return;
 	}
-	
+	if((cryptIntoMemory & OUTPUT_IN_MEMORY) == 0)
+	{
+		outputFile = fopen((char *) output, "wb");
+		outputMemory = false;
+		if(outputFile == NULL)
+			return;
+	}
+
 	if(inputMemory && lengthInput == 0)
 		return;
 	
