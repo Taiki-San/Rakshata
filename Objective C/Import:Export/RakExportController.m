@@ -13,6 +13,7 @@
 #include "JSONParser.h"
 
 #define EXPORT_GENERIC_NAME "Archive"
+#define BASE_THUMBS_PATH "thumbs/"
 
 NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL isTome, int selection, uint * index);
 
@@ -47,13 +48,18 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				META_TOME volumeData = project.tomesFull[position];
 
 				if(volumeData.readingName[0] != 0)
-					outputPath = [NSString stringWithFormat:@"%@ - %@ ", projectPath, getStringForWchar(volumeData.readingName)];
+					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForWchar(volumeData.readingName)];
 				else
 					outputPath = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), volumeData.readingID];
 			}
 
 			else
-				outputPath = [NSString stringWithFormat:@"%@ - %@ ", projectPath, [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), selection]];
+			{
+				if(selection % 10)
+					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), selection / 10, selection % 10]];
+				else
+					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), selection / 10]];
+			}
 		}
 		else
 			outputPath = projectPath;
@@ -141,6 +147,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	}
 	else
 	{
+		[self insertThumbnails:thumbnails inZip:file];
+
 		if(!addMemToZip(file, METADATA_FILE, [serializedFile bytes], [serializedFile length]))
 		{
 			NSLog(@"Couln't output the manifest :/");
@@ -148,9 +156,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			remove([path UTF8String]);
 		}
 		else
-		{
 			zipClose(file, "Generated using "PROJECT_NAME" v"PRINTABLE_VERSION);
-		}
 	}
 }
 
@@ -224,7 +230,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	{
 		if(filesPath->filename != NULL && checkFileExist(filesPath->filename))
 		{
-			NSString * outputPath = [NSString stringWithFormat:@"thumbs/%d-%d", allocatedID, count++];
+			NSString * outputPath = [NSString stringWithFormat:@BASE_THUMBS_PATH"%d-%d", allocatedID, count++];
 
 			for(byte pos = 0; pos < 4; ++pos)
 			{
@@ -324,11 +330,6 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	}
 
 	return output;
-}
-
-+ (void) addEntryToZip : (PROJECT_DATA) project item : (uint) position isTome : (BOOL) isTome toArchive : (zipFile *) file
-{
-
 }
 
 #pragma mark - Insertion into zip
@@ -466,6 +467,22 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	}
 
 	return [NSArray arrayWithArray:invalidContent];
+}
+
++ (void) insertThumbnails : (NSArray *) thumbnails inZip : (zipFile *) file
+{
+	if(file == NULL || ![thumbnails count])
+		return;
+
+	createDirInZip(file, BASE_THUMBS_PATH);
+
+	for (NSDictionary * entry in thumbnails)
+	{
+		if(ARE_CLASSES_DIFFERENT(entry, [NSDictionary class]))
+			continue;
+
+		addFileToZip(file, [[entry objectForKey:@"origin"] UTF8String], [[entry objectForKey:@"output"] UTF8String]);
+	}
 }
 
 #pragma mark - Utils
