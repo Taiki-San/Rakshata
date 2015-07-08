@@ -76,8 +76,6 @@
 			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d", projectPath, selection / 10);
 	}
 
-	free(projectPath);
-
 	//Main decompression cycle
 
 	unzGoToFirstFile(archive);
@@ -85,7 +83,10 @@
 	//We grab the number of file
 	unz_global_info64 globalMeta;
 	if(unzGetGlobalInfo64(archive, &globalMeta) != UNZ_OK)
+	{
+		free(projectPath);
 		return false;
+	}
 
 	const char * startExpectedPath = [_path UTF8String];
 	uint lengthExpected = strlen(startExpectedPath);
@@ -118,9 +119,11 @@
 			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d", projectPath, _contentID);
 
 		removeFolder(basePath);
+		free(projectPath);
 		return false;
 	}
 
+	free(projectPath);
 	return true;
 }
 

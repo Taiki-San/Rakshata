@@ -185,7 +185,7 @@
 				
 				free(cache[posFinal]);
 
-				for(uint curPos = posFinal; curPos < sizeCache - posFinal - 1; curPos++)
+				for(uint curPos = posFinal; curPos < sizeCache - 1; curPos++)
 					cache[curPos] = cache[curPos + 1];
 
 				offsetDeleted++;

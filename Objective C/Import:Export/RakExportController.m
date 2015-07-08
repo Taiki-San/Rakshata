@@ -460,10 +460,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		}
 
 		if(error)
-		{
-			problemDetected = YES;
 			break;
-		}
 	}
 
 	return [NSArray arrayWithArray:invalidContent];
