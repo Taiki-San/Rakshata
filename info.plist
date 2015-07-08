@@ -12,7 +12,7 @@
 				<string>raksource</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>rak</string>
+			<string>raksource</string>
 			<key>CFBundleTypeName</key>
 			<string>Rakshata Source File</string>
 			<key>CFBundleTypeRole</key>
@@ -27,6 +27,8 @@
 			<array>
 				<string>rak</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>rak</string>
 			<key>CFBundleTypeName</key>
 			<string>Rakshata Content File</string>
 			<key>CFBundleTypeRole</key>
