@@ -317,13 +317,14 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	uint lengthSearch = ACCESS_DATA(isTome, project->nombreChapitreRemote, project->nombreTomeRemote), finalLength = lengthLocale;
 
 	void * dataSet = ACCESS_DATA(isTome, (void*) project->chapitresLocal, (void*) project->tomeLocal), * dataSetSearch = ACCESS_DATA(isTome, (void*) project->chapitresRemote, (void*) project->tomeRemote);
-	if(lengthSearch != 0)
-	{
-		//O(n^2) because I'm busy for now
-		for(uint pos = 0; pos < lengthLocale; pos++)
-		{
-			int value = getData(isTome, dataSet, pos);
 
+	//O(n^2) because I'm busy for now
+	for(uint pos = 0; pos < lengthLocale; pos++)
+	{
+		int value = getData(isTome, dataSet, pos);
+
+		if(lengthSearch != 0)
+		{
 			if(value == INVALID_SIGNED_VALUE)
 				continue;
 
@@ -342,22 +343,22 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 					break;
 				}
 			}
+		}
 
-			if(value == INVALID_SIGNED_VALUE)
-				continue;
+		if(value == INVALID_SIGNED_VALUE)
+			continue;
 
-			//We also look for duplicates
-			for(uint posDuplicate = pos + 1; posDuplicate < lengthLocale; posDuplicate++)
+		//We also look for duplicates
+		for(uint posDuplicate = pos + 1; posDuplicate < lengthLocale; posDuplicate++)
+		{
+			if(getData(isTome, dataSet, posDuplicate) == value)
 			{
-				if(getData(isTome, dataSet, posDuplicate) == value)
-				{
-					if(isTome)
-						project->tomeLocal[posDuplicate].ID = INVALID_SIGNED_VALUE;
-					else
-						project->chapitresLocal[posDuplicate] = INVALID_SIGNED_VALUE;
+				if(isTome)
+					project->tomeLocal[posDuplicate].ID = INVALID_SIGNED_VALUE;
+				else
+					project->chapitresLocal[posDuplicate] = INVALID_SIGNED_VALUE;
 
-					finalLength--;
-				}
+				finalLength--;
 			}
 		}
 	}
