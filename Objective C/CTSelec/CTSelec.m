@@ -100,8 +100,8 @@
 	}
 	else
 	{
-		checkChapitreValable(project, NULL);
-		checkTomeValable(project, NULL);
+		getCTInstalled(project, false);
+		getCTInstalled(project, true);
 	}
 	
 	//Perfect! now, all we have to do is to sanitize last few data :D

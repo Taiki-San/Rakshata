@@ -27,6 +27,14 @@ void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
         getUpdatedChapterList(projectDB, true);
 }
 
+void getCTInstalled(PROJECT_DATA * project, bool isTome)
+{
+	if(isTome)
+		getTomeInstalled(project, NULL);
+	else
+		getChapterInstalled(project, NULL);
+}
+
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data)
 {
     if(isTome)

@@ -144,7 +144,7 @@ end:
     return retValue;
 }
 
-void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
+void getTomeInstalled(PROJECT_DATA *project, int *dernierLu)
 {
 	if(project->tomesInstalled != NULL)
 	{
@@ -202,7 +202,7 @@ void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled)
     refreshTomeList(projectDB);
 	
 	if(getInstalled)
-		checkTomeValable(projectDB, NULL);
+		getTomeInstalled(projectDB, NULL);
 }
 
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)

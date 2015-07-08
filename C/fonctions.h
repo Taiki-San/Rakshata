@@ -13,7 +13,7 @@
 /**Chapitre.c**/
 void refreshChaptersList(PROJECT_DATA *projectDB);
 bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre);
-void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu);
+void getChapterInstalled(PROJECT_DATA *projectDB, int *dernierLu);
 void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled);
 void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters);
 bool isChapterShared(char *path, PROJECT_DATA data, int ID);
@@ -26,6 +26,7 @@ bool checkNetworkState(int state);
 #define ACCESS_DATA(isTome, dataChap, dataTome) (isTome ? dataTome : dataChap)
 void nullifyCTPointers(PROJECT_DATA * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
+void getCTInstalled(PROJECT_DATA * project, bool isTome);
 void generateCTUsable(PROJECT_DATA_PARSED * project);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
@@ -135,7 +136,7 @@ uint getPosForID(PROJECT_DATA data, bool installed, int ID);
 void refreshTomeList(PROJECT_DATA *projectDB);
 void setTomeReadable(PROJECT_DATA projectDB, int ID);
 bool checkTomeReadable(PROJECT_DATA projectDB, int ID);
-void checkTomeValable(PROJECT_DATA *project, int *dernierLu);
+void getTomeInstalled(PROJECT_DATA *project, int *dernierLu);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);

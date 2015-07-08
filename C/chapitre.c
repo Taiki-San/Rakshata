@@ -57,7 +57,7 @@ bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre)
     return checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag);
 }
 
-void checkChapitreValable(PROJECT_DATA *projectDB, int *dernierLu)
+void getChapterInstalled(PROJECT_DATA *projectDB, int *dernierLu)
 {
 	if(projectDB->chapitresInstalled != NULL)
 	{
@@ -146,7 +146,7 @@ void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
     refreshChaptersList(projectDB);
 
 	if(getInstalled)
-		checkChapitreValable(projectDB, NULL);
+		getChapterInstalled(projectDB, NULL);
 }
 
 void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters)

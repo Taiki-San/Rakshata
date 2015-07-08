@@ -32,7 +32,7 @@ extern MUTEX_VAR cacheMutex, cacheParseMutex;
 /**DBCache.c**/
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID);
-void removeFromCache(PROJECT_DATA data);
+void removeFromCache(PROJECT_DATA_PARSED data);
 void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic);
 bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output);
@@ -90,6 +90,9 @@ int createCollate(sqlite3 * database);
 
 /******		DBTags.c	*******/
 void initializeTags(void * mainCache);
+
+/******		DBLocal.c	*******/
+void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject);
 
 //========= Obfuscation	==========//
 
