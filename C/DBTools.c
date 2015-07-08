@@ -178,7 +178,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
-			removeFromCache(oldData[posOld].project);
+			removeFromCache(oldData[posOld]);
 			removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT
@@ -204,6 +204,11 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 
 			if(!areProjectsIdentical(internalBufferOld, internalBufferNew))	//quelque chose à changé
 			{
+				//We need to check if installed CT were deleted
+				if(!removeProjectWithContent() && isInstalled(internalBufferOld.project, NULL))
+					migrateRemovedInstalledToLocal(internalBufferOld, &internalBufferNew);
+
+				//We craft the update PROJECT_DATA data
 				if(internalBufferNew.nombreChapitreLocal)
 					consolidateCTLocale(&internalBufferNew, false);
 
@@ -240,7 +245,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 	while (posOld < magnitudeOldData)
 	{
 #ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
-		removeFromCache(oldData[posOld].project);
+		removeFromCache(oldData[posOld]);
 		removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
 #endif
 #ifdef DELETE_REMOVED_PROJECT

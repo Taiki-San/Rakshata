@@ -118,3 +118,127 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	updateCache(cachedProject, RDB_UPDATE_ID, 0);
 	releaseParsedData(cachedProject);
 }
+
+#define getData(run, newData, index)	ACCESS_DATA(run == 1, ((int*) newData)[index], ((META_TOME*) newData)[index].ID)
+
+void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject)
+{
+#warning "Need some serious testing"
+
+	uint nbOld, nbNew, lengthCollector;
+	void * dataOld, *dataNew, * collector;
+	uint16_t sizeOfType;
+
+	//We have two passes, one for the chapters, one for the volume
+	for(byte run = 0; run < 2; run++)
+	{
+		lengthCollector = 0;
+		collector = NULL;
+
+		//Choose to inject the smallest list
+		if(run == 0)	//chapters
+		{
+			oldProject.project.nombreChapitre = nbOld = oldProject.nombreChapitreRemote;
+			oldProject.project.chapitresFull = dataOld = oldProject.chapitresRemote;
+			nbNew = newProject->nombreChapitreRemote;
+			dataNew = newProject->chapitresRemote;
+
+			sizeOfType = sizeof(int);
+		}
+		else
+		{
+			oldProject.project.nombreTomes = nbOld = oldProject.nombreTomeRemote;
+			oldProject.project.tomesFull = dataOld = oldProject.tomeRemote;
+			nbNew = newProject->nombreTomeRemote;
+			dataNew = newProject->tomeRemote;
+
+			sizeOfType = sizeof(META_TOME);
+		}
+
+		//Nothing that could even be installed, make things easier...
+		if(nbOld == 0)
+			continue;
+
+		//Nothing remaining, so anything remaining is here to stay
+		if(nbNew == 0)
+		{
+			if(run == 0)
+				oldProject.project.chapitresInstalled = NULL;
+			else
+				oldProject.project.tomesInstalled = NULL;
+
+			getCTInstalled(&oldProject.project, run != 0);
+
+			uint length = ACCESS_DATA(run != 0, oldProject.project.nombreChapitreInstalled, oldProject.project.nombreTomesInstalled);
+
+			if(length != 0)
+			{
+				collector = ACCESS_DATA(run != 0, (void*) oldProject.project.chapitresInstalled, (void*) oldProject.project.tomesInstalled);
+				lengthCollector = length;
+			}
+		}
+		else
+		{
+			//Okay, we have to perform a real diff
+			collector = malloc(nbOld * sizeOfType);
+			if(collector == NULL)
+			{
+				memoryError(nbOld * sizeOfType);
+				continue;
+			}
+
+			//O(n^2) because meh
+			for(uint posOld = 0, posNew; posOld < nbOld; ++posOld)
+			{
+				posNew = 0;
+				int oldDataForIndex = getData(run, dataOld, posOld);
+
+				for(; posNew < nbNew && getData(run, dataNew, posNew) != oldDataForIndex; ++posNew);
+
+				//The entry still exist, awesome
+				if (posNew != nbNew)
+					continue;
+
+				//Oh, is it still installed?
+				if(checkReadable(oldProject.project, run != 0, oldDataForIndex))
+				{
+					//And shit... we need to copy it to the selector :X
+					if(run == 0)
+					{
+						((int *) collector)[lengthCollector++] = oldDataForIndex;
+					}
+					else
+					{
+						copyTomeList(&(((META_TOME *) dataOld)[posOld]), 1, &(((META_TOME *) collector)[lengthCollector++]));
+					}
+				}
+			}
+		}
+
+		//Copy the collected data to the local buffer
+		if(lengthCollector != 0)
+		{
+			if(run == 0)
+			{
+				void * tmp = realloc(newProject->chapitresLocal, newProject->nombreChapitreLocal + lengthCollector);
+				if(tmp != NULL)
+				{
+					newProject->chapitresLocal = tmp;
+					memcpy(&(newProject->chapitresLocal[newProject->nombreChapitreLocal]), collector, lengthCollector * sizeOfType);
+					newProject->nombreChapitreLocal += lengthCollector;
+				}
+			}
+			else
+			{
+				void * tmp = realloc(newProject->tomeLocal, newProject->nombreTomeLocal + lengthCollector);
+				if(tmp != NULL)
+				{
+					newProject->tomeLocal = tmp;
+					memcpy(&(newProject->tomeLocal[newProject->nombreTomeLocal]), collector, lengthCollector * sizeOfType);
+					newProject->nombreTomeLocal += lengthCollector;
+				}
+			}
+			free(collector);
+		}
+	}
+}

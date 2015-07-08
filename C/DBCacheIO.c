@@ -324,17 +324,54 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	return true;
 }
 
-void removeFromCache(PROJECT_DATA data)
+void removeFromCache(PROJECT_DATA_PARSED data)
 {
 	if(cache == NULL)
 		return;
+
+	//Okay, there is one weird scenario: if there is installed content
+	if(!removeProjectWithContent() && isInstalled(data.project, NULL))
+	{
+		//Arf, we need to get the installed content, and set it as local
+
+		data.project.chapitresInstalled = NULL;
+		data.project.tomesInstalled = NULL;
+
+		if(data.project.nombreTomes)
+			getTomeInstalled(&data.project, NULL);
+
+		if(data.project.nombreChapitre)
+			getChapterInstalled(&data.project, NULL);
+
+
+		//Installed content :X
+		if(data.project.nombreChapitreInstalled || data.project.nombreTomesInstalled)
+		{
+			//Our caller is supposed to free those old pointers
+			data.chapitresRemote = NULL;								data.nombreChapitreRemote = 0;
+			data.chapitresLocal = data.project.chapitresInstalled;		data.nombreChapitreLocal = data.project.nombreChapitreInstalled;
+
+
+			data.tomeRemote = NULL;										data.nombreTomeRemote = 0;
+			data.tomeLocal = data.project.tomesInstalled;				data.nombreTomeLocal = data.project.nombreTomesInstalled;
+
+			nullifyCTPointers(&data.project);
+			generateCTUsable(&data);
+			data.project.locale = true;
+
+			updateCache(data, RDB_UPDATE_ID, 0);
+
+			releaseParsedData(data);
+			return;
+		}
+	}
 	
 	//On libère la mémoire des éléments remplacés
 	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	if(request != NULL)
 	{
-		sqlite3_bind_int(request, 1, (int32_t) data.cacheDBID);
+		sqlite3_bind_int(request, 1, (int32_t) data.project.cacheDBID);
 		
 		if(sqlite3_step(request) == SQLITE_ROW)
 		{
@@ -342,7 +379,7 @@ void removeFromCache(PROJECT_DATA data)
 			FILE * outputFile = fopen("log/log.txt", "a+");
 			if(outputFile != NULL)
 			{
-				fprintf(outputFile, "Flushing %ls: %p - %p - %p\n", data.projectName, (void*) sqlite3_column_int64(request, 0), (void*) sqlite3_column_int64(request, 1), (void*) sqlite3_column_int64(request, 2));
+				fprintf(outputFile, "Flushing %ls: %p - %p - %p\n", data.project.projectName, (void*) sqlite3_column_int64(request, 0), (void*) sqlite3_column_int64(request, 1), (void*) sqlite3_column_int64(request, 2));
 				fclose(outputFile);
 			}
 #endif
@@ -360,7 +397,7 @@ void removeFromCache(PROJECT_DATA data)
 	request = createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 	if(request != NULL)
 	{
-		sqlite3_bind_int(request, 1, (int32_t) data.cacheDBID);
+		sqlite3_bind_int(request, 1, (int32_t) data.project.cacheDBID);
 		sqlite3_step(request);
 		destroyRequest(request);
 	}
