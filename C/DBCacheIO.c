@@ -342,14 +342,12 @@ void removeFromCache(PROJECT_DATA_PARSED data)
 		if(data.project.nombreChapitre)
 			getChapterInstalled(&data.project, NULL);
 
-
 		//Installed content :X
 		if(data.project.nombreChapitreInstalled || data.project.nombreTomesInstalled)
 		{
 			//Our caller is supposed to free those old pointers
 			data.chapitresRemote = NULL;								data.nombreChapitreRemote = 0;
 			data.chapitresLocal = data.project.chapitresInstalled;		data.nombreChapitreLocal = data.project.nombreChapitreInstalled;
-
 
 			data.tomeRemote = NULL;										data.nombreTomeRemote = 0;
 			data.tomeLocal = data.project.tomesInstalled;				data.nombreTomeLocal = data.project.nombreTomesInstalled;

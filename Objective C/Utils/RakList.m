@@ -564,7 +564,7 @@
 				}
 			}
 			
-			if(!tooMuchChanges)
+			if(!tooMuchChanges && oldElem != nbElemOld)
 			{
 				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 					

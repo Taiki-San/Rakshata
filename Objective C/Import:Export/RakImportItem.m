@@ -152,7 +152,7 @@
 		if(unzLocateFile(archive, _projectData.URLImages[pos], true) != UNZ_OK)
 			continue;
 
-		extractCurrentfile(archive, NULL, imagePath, true, NULL);
+		extractCurrentfile(archive, NULL, imagePath, STRIP_TRUST_PATH_AS_FILENAME, NULL);
 	}
 }
 

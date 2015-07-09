@@ -495,9 +495,9 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 		return NULL;
 
 	uint nbElemOut = (uint32_t) sqlite3_column_int(request, 0);
-	void * output = NULL;
+	void * output = NULL, * input = (void *) sqlite3_column_int64(request, 1);
 
-	if(nbElemOut != 0)
+	if(nbElemOut != 0 && input != NULL)
 	{
 		if(wantTome)
 		{
@@ -506,7 +506,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 			if(output != NULL)
 			{
 				((META_TOME*)output)[nbElemOut].ID = INVALID_SIGNED_VALUE;		//Whatever copyTomeList may do, the array is valid by now
-				copyTomeList((META_TOME*) sqlite3_column_int64(request, 1), nbElemOut, output);
+				copyTomeList((META_TOME*) input, nbElemOut, output);
 			}
 		}
 		else
@@ -514,7 +514,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 			output = malloc((nbElemOut + 1) * sizeof(int));
 			if(output != NULL)
 			{
-				memcpy(output, (int*) sqlite3_column_int64(request, 1), nbElemOut * sizeof(int));
+				memcpy(output, (int*) input, nbElemOut * sizeof(int));
 				((int*) output)[nbElemOut] = INVALID_SIGNED_VALUE;				//In the case it was missing (kinda like a canary)
 			}
 

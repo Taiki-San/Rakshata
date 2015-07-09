@@ -72,17 +72,23 @@ int extractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPath
 	}
 
 	char* outputFilename = NULL;
-	uint32_t sizeOutputPath;
+	if(extractWithoutPath == STRIP_TRUST_PATH_AS_FILENAME)
+	{
+		outputFilename = outputPath;
+	}
+	else
+	{
+		//Craft output file
+		uint32_t sizeOutputPath;
+		const char * filenameToUse = extractWithoutPath == STRIP_PATH_ALL ? filenameWithoutPath : filenameInZip;
+		sizeOutputPath = strlen(outputPath) + strlen(filenameToUse) + 2;
+		outputFilename = calloc(1, sizeOutputPath);
 
-	//Craft output file
-	const char * filenameToUse = extractWithoutPath == STRIP_PATH_ALL ? filenameWithoutPath : filenameInZip;
-	sizeOutputPath = strlen(outputPath) + strlen(filenameToUse) + 2;
-	outputFilename = calloc(1, sizeOutputPath);
+		if(outputFilename == NULL)
+			return UNZ_INTERNALERROR;
 
-	if(outputFilename == NULL)
-		return UNZ_INTERNALERROR;
-
-	snprintf(outputFilename, sizeOutputPath, "%s/%s", outputPath, filenameToUse);
+		snprintf(outputFilename, sizeOutputPath, "%s/%s", outputPath, filenameToUse);
+	}
 
 	if((err = unzOpenCurrentFile(zipFile)) != UNZ_OK)
 	{
@@ -111,7 +117,9 @@ int extractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPath
 			return UNZ_INTERNALERROR;
 		}
 	}
-	free(outputFilename);
+
+	if(extractWithoutPath != STRIP_TRUST_PATH_AS_FILENAME)
+		free(outputFilename);
 
 	//Main decrompression part
 	rawData workingBuffer[BUFFER_SIZE];
