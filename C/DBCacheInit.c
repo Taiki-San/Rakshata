@@ -183,7 +183,8 @@ uint setupBDDCache()
 
 				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
 				{
-					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%d/", encodedRepo[posRepo], projects[pos].project.projectID);
+
+					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%s%d/", encodedRepo[posRepo], projects[pos].project.locale ? LOCAL_PATH_NAME"_" : "", projects[pos].project.projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall), false))
 					{
 #ifdef VERBOSE_DB_MANAGEMENT
