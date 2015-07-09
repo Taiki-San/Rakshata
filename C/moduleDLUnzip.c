@@ -84,6 +84,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 		crashTemp(pass, sizeof(pass));
 
 		//Decompress files
+		unzGoToFirstFile(zipFile);
 		for(uint i = 0; i < nombreFichiers && ret_value; i++)
 		{
 			//Name is valid
@@ -149,7 +150,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			}
 
 			//On va classer les fichier et les clées en ce basant sur config.dat
-			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide-2 && nombreFichierDansConfigFile != nombreFichierValide-1)) //-2 car -1 + un décallage de -1 due à l'optimisation pour le lecteur
+			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide && nombreFichierDansConfigFile != nombreFichierValide-1))
 			{
 #ifdef DEV_VERSION
 				logR("config.dat invalid: encryption aborted.\n");
@@ -179,9 +180,9 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 				minimizeString(nomPage[i]);
 
-				for(j = 0; j < nombreFichiers; j++)
+				for(j = i; j < nombreFichiers; j++)
 				{
-					if(filename[j] != NULL && strcmp(nomPage[i], filename[j]))
+					if(filename[j] != NULL && !strcmp(nomPage[i], filename[j]))
 						break;
 				}
 
@@ -256,6 +257,10 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 						_AES(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, AES_ENCRYPT, AES_ECB);
 						crashTemp(hash, SHA256_DIGEST_LENGTH);
+
+						//We want to write the end of the block
+						if(posBlob % CRYPTO_BUFFER_SIZE)
+							posBlob += CRYPTO_BUFFER_SIZE - (posBlob % CRYPTO_BUFFER_SIZE);
 
 						fwrite(hugeBuffer, posBlob, 1, output);
 						fclose(output);

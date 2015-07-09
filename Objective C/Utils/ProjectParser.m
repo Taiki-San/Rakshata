@@ -528,9 +528,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	if(nbChapters == 0 && nbVolumes == 0)
 	{
 #ifdef DEV_VERSION
-		NSLog(@"Project parser error: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
+		NSLog(@"Project parser warning: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
-		goto end;
 	}
 	
 	description = objectForKey(bloc, JSON_PROJ_DESCRIPTION, @"description", [NSString class]);
@@ -576,8 +575,8 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
 	data.chapitresPrix = chaptersPrices;
-	data.chapitresFull = chapters;		data.chapitresInstalled = NULL;		data.nombreChapitre = nbChapters;	data.nombreChapitreInstalled = 0;
-	data.tomesFull = volumes;			data.tomesInstalled = NULL;			data.nombreTomes = nbVolumes;		data.nombreTomesInstalled = 0;
+	data.chapitresFull = chapters;		data.nombreChapitre = nbChapters;
+	data.tomesFull = volumes;			data.nombreTomes = nbVolumes;
 	data.status = [status unsignedCharValue];
 	if(data.status > STATUS_MAX)	data.status = STATUS_INVALID;
 	
@@ -610,52 +609,104 @@ end:
 	return data;
 }
 
-NSDictionary * reverseParseBloc(PROJECT_DATA project)
+NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 {
-	if(project.repo == NULL)
+	if(project.project.repo == NULL)
+		return nil;
+
+	//No project remaining
+	if(project.project.locale && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
 		return nil;
 	
 	id buf;
 	NSMutableDictionary * output = [NSMutableDictionary dictionary];
 	
-	[output setObject:@(project.projectID) forKey:JSON_PROJ_ID];
-	[output setObject:getStringForWchar(project.projectName) forKey:JSON_PROJ_PROJECT_NAME];
+	[output setObject:@(project.project.projectID) forKey:JSON_PROJ_ID];
+	[output setObject:getStringForWchar(project.project.projectName) forKey:JSON_PROJ_PROJECT_NAME];
 	
-	buf = recoverChapterStructure(project.chapitresFull, YES, project.chapitresPrix, project.nombreChapitre);
+	buf = recoverChapterStructure(project.project.chapitresFull, YES, project.project.chapitresPrix, project.project.nombreChapitre);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAPTERS];
-	
-	buf = recoverVolumeBloc(project.tomesFull, project.nombreTomes, project.isPaid);
-	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOLUMES];
-	
-	if(project.description[0])
-		[output setObject:getStringForWchar(project.description) forKey:JSON_PROJ_DESCRIPTION];
-	
-	if(project.authorName[0])
-		[output setObject:getStringForWchar(project.authorName) forKey:JSON_PROJ_AUTHOR];
-	
-	[output setObject:@(project.status) forKey:JSON_PROJ_STATUS];
-	
-	[output setObject:@(project.tagMask) forKey:JSON_PROJ_TAGMASK];
-	[output setObject:@(project.rightToLeft) forKey:JSON_PROJ_ASIAN_ORDER];
-	[output setObject:@(project.haveDRM) forKey:JSON_PROJ_DRM];
 
-	if(project.locale)
+	buf = recoverChapterStructure(project.chapitresRemote, YES, NULL, project.nombreChapitreRemote);
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAP_REMOTE];
+
+	buf = recoverChapterStructure(project.chapitresLocal, YES, NULL, project.nombreChapitreLocal);
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAP_LOCAL];
+
+	buf = recoverVolumeBloc(project.project.tomesFull, project.project.nombreTomes, project.project.isPaid);
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOLUMES];
+
+	buf = recoverVolumeBloc(project.tomeRemote, project.nombreTomeRemote, NO);
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOL_REMOTE];
+
+	buf = recoverVolumeBloc(project.tomeLocal, project.nombreTomeLocal, NO);
+	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOL_LOCAL];
+
+	if(project.project.description[0])
+		[output setObject:getStringForWchar(project.project.description) forKey:JSON_PROJ_DESCRIPTION];
+	
+	if(project.project.authorName[0])
+		[output setObject:getStringForWchar(project.project.authorName) forKey:JSON_PROJ_AUTHOR];
+	
+	[output setObject:@(project.project.status) forKey:JSON_PROJ_STATUS];
+	
+	[output setObject:@(project.project.tagMask) forKey:JSON_PROJ_TAGMASK];
+	[output setObject:@(project.project.rightToLeft) forKey:JSON_PROJ_ASIAN_ORDER];
+	[output setObject:@(project.project.haveDRM) forKey:JSON_PROJ_DRM];
+
+	if(project.project.locale)
 		[output setObject:@(YES) forKey:JSON_PROJ_ISLOCAL];
 	
-	if(project.isPaid)
+	if(project.project.isPaid)
 		[output setObject:@(YES) forKey:JSON_PROJ_PRICE];
 	
 	return [NSDictionary dictionaryWithDictionary:output];
 }
 
+PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
+{
+	PROJECT_DATA_PARSED output = getEmptyParsedProject();
+	PROJECT_DATA shortData = parseBloc(bloc);
+
+	if(!shortData.isInitialized)
+		return output;
+
+	output.project = shortData;
+
+	output.chapitresRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreRemote, YES, NO, NULL);
+	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_LOCAL, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
+	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
+	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
+
+	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
+	{
+		output.nombreChapitreLocal = output.project.nombreChapitre;
+
+		output.chapitresLocal = malloc(output.nombreChapitreLocal * sizeof(int));
+		if(output.chapitresLocal != NULL)
+			memcpy(output.chapitresLocal, output.project.chapitresFull, output.nombreChapitreLocal * sizeof(int));
+	}
+
+	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.tomesFull != NULL)
+	{
+		output.nombreTomeLocal = output.project.nombreTomes;
+
+		output.tomeLocal = malloc(output.nombreTomeLocal * sizeof(META_TOME));
+		if(output.tomeLocal != NULL)
+			copyTomeList(output.project.tomesFull, output.nombreTomeLocal, output.tomeLocal);
+	}
+
+	return output;
+}
+
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 {
-	PROJECT_DATA_EXTRA output;
+	PROJECT_DATA_EXTRA output = getEmptyExtraProject();
 	PROJECT_DATA shortData = parseBloc(bloc);
 	
 	if(shortData.isInitialized)
 	{
-		output.data = shortData;
+		output.data.project = shortData;
 
 		NSString * URL, * CRC;
 		NSArray * IDURL = @[JSON_PROJ_URL_SRGRID, JSON_PROJ_URL_SRGRID_2X, JSON_PROJ_URL_HEAD, JSON_PROJ_URL_HEAD_2X, JSON_PROJ_URL_CT, JSON_PROJ_URL_CT_2X, JSON_PROJ_URL_DD, JSON_PROJ_URL_DD_2X], * IDHash = @[JSON_PROJ_HASH_SRGRID, JSON_PROJ_HASH_SRGRID_2X, JSON_PROJ_HASH_HEAD, JSON_PROJ_HASH_HEAD_2X, JSON_PROJ_HASH_CT, JSON_PROJ_HASH_CT_2X, JSON_PROJ_HASH_DD, JSON_PROJ_HASH_DD_2X];
@@ -684,9 +735,7 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 			}
 		}
 	}
-	else
-		output.data.isInitialized = false;
-	
+
 	return output;
 }
 
@@ -705,7 +754,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 	}
 	
 	size_t size = [projects count];
-	outputData = malloc(size * (parseExtra ? sizeof(PROJECT_DATA_EXTRA) : sizeof(PROJECT_DATA)));
+	outputData = malloc(size * (parseExtra ? sizeof(PROJECT_DATA_EXTRA) : sizeof(PROJECT_DATA_PARSED)));
 	
 	if(outputData != NULL)
 	{
@@ -726,13 +775,13 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 			if(parseExtra)
 			{
 				((PROJECT_DATA_EXTRA*)outputData)[validElements] = parseBlocExtra(remoteData);
-				((PROJECT_DATA_EXTRA*)outputData)[validElements].data.locale = false;
-				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].data.isInitialized;
+				((PROJECT_DATA_EXTRA*)outputData)[validElements].data.project.locale = false;
+				isInit = ((PROJECT_DATA_EXTRA*)outputData)[validElements].data.project.isInitialized;
 			}
 			else
 			{
-				((PROJECT_DATA*)outputData)[validElements] = parseBloc(remoteData);
-				isInit = ((PROJECT_DATA*)outputData)[validElements].isInitialized;
+				((PROJECT_DATA_PARSED*)outputData)[validElements] = parseDataLocal(remoteData);
+				isInit = ((PROJECT_DATA_PARSED*)outputData)[validElements].project.isInitialized;
 			}
 		
 			if(isInit)
@@ -740,9 +789,9 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 				PROJECT_DATA * project;
 				
 				if(parseExtra)
-					project = &(((PROJECT_DATA_EXTRA*) outputData)[validElements++].data);
+					project = &(((PROJECT_DATA_EXTRA*) outputData)[validElements++].data.project);
 				else
-					project = &((PROJECT_DATA*)outputData)[validElements++];
+					project = &((PROJECT_DATA_PARSED*)outputData)[validElements++].project;
 				
 				project->repo = repo;
 			}
@@ -769,10 +818,28 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 		return NULL;
 	}
 		
-	return parseProjectJSON(repo, remoteData, nbElem, true);
+	PROJECT_DATA_EXTRA * output = parseProjectJSON(repo, remoteData, nbElem, true);
+
+	if(output != NULL)
+	{
+		for(uint pos = 0; pos < *nbElem; pos++)
+		{
+			output[pos].data.chapitresRemote = output[pos].data.project.chapitresFull;
+			output[pos].data.nombreChapitreRemote = output[pos].data.project.nombreChapitre;
+			output[pos].data.tomeRemote = output[pos].data.project.tomesFull;
+			output[pos].data.nombreTomeRemote = output[pos].data.project.nombreTomes;
+
+			output[pos].data.project.chapitresFull = NULL;
+			output[pos].data.project.nombreChapitre = 0;
+			output[pos].data.project.tomesFull = NULL;
+			output[pos].data.project.nombreTomes = 0;
+		}
+	}
+
+	return output;
 }
 
-PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem)
+PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem)
 {
 	if(repo == NULL || nbElem == NULL)
 		return NULL;
@@ -789,7 +856,7 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 	}
 	
 	uint nbElemPart, posRepo;
-	PROJECT_DATA *output = NULL, *currentPart;
+	PROJECT_DATA_PARSED *output = NULL, *currentPart;
 	id repoID;
 	
 	for(NSDictionary * remoteDataPart in remoteData)
@@ -797,7 +864,7 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 		if(ARE_CLASSES_DIFFERENT(remoteDataPart, [NSDictionary class]))
 			continue;
 		
-		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, @"authorID", [NSNumber class]);
+		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, nil, [NSNumber class]);
 		if(repoID == nil)
 		{
 #ifdef DEV_VERSION
@@ -814,15 +881,15 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 			if([(NSNumber*) repoID unsignedLongLongValue] == getRepoID(repo[posRepo]))
 			{
 				nbElemPart = 0;
-				currentPart = (PROJECT_DATA*) parseProjectJSON(repo[posRepo], remoteDataPart, &nbElemPart, false);
-				
+				currentPart = (PROJECT_DATA_PARSED*) parseProjectJSON(repo[posRepo], remoteDataPart, &nbElemPart, false);
+
 				if(nbElemPart)
 				{
-					void * buf = realloc(output, (*nbElem + nbElemPart) * sizeof(PROJECT_DATA));
+					void * buf = realloc(output, (*nbElem + nbElemPart) * sizeof(PROJECT_DATA_PARSED));
 					if(buf != NULL)
 					{
 						output = buf;
-						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA));
+						memcpy(&output[*nbElem], currentPart, nbElemPart * sizeof(PROJECT_DATA_PARSED));
 						*nbElem += nbElemPart;
 					}
 				}
@@ -835,7 +902,7 @@ PROJECT_DATA * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * re
 	return output;
 }
 
-char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput)
+char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput)
 {
 	if(data == NULL || repo == NULL || !nbElem || !nbRepo)
 		return NULL;
@@ -848,7 +915,7 @@ char * reversedParseData(PROJECT_DATA * data, uint nbElem, REPO_DATA ** repo, ui
 	//Create a table linking projects to a repo
 	for(uint pos = 0, posRepo; pos < nbElem; pos++)
 	{
-		uint64_t repoID = getRepoID(data[pos].repo);
+		uint64_t repoID = getRepoID(data[pos].project.repo);
 		
 		for(posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
@@ -927,9 +994,9 @@ id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class e
 	return value;
 }
 
-void moveProjectExtraToStandard(const PROJECT_DATA_EXTRA input, PROJECT_DATA * output)
+void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSED * output)
 {
-	if(!input.data.isInitialized || output == NULL)
+	if(!input.data.project.isInitialized || output == NULL)
 		return;
 
 	*output = input.data;

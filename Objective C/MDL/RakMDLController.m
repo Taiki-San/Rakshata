@@ -184,8 +184,10 @@
 				}
 				
 				free(cache[posFinal]);
-				
-				memcpy(&(cache[posFinal]), &(cache[posFinal + 1]), (sizeCache - posFinal - 1) * sizeof(PROJECT_DATA *));
+
+				for(uint curPos = posFinal; curPos < sizeCache - 1; curPos++)
+					cache[curPos] = cache[curPos + 1];
+
 				offsetDeleted++;
 				sizeCache--;
 			}
@@ -468,10 +470,17 @@
 		memcpy(movingPart, &IDToPosition[posStart], size * sizeof(uint));
 	
 	if(isMovingPartBeforeInsertion)
-		memcpy(&IDToPosition[posStart], &IDToPosition[posStart + size], (--injectionPoint - posStart) * sizeof(uint));
+	{
+		for(uint pos = posStart, length = --injectionPoint - posStart; pos < length; pos++)
+			IDToPosition[pos] = IDToPosition[pos + size];
+	}
 	else
-		memcpy(&IDToPosition[injectionPoint + size], &IDToPosition[injectionPoint], (posStart - injectionPoint) * sizeof(uint));
-	
+	{
+		for(uint pos = injectionPoint, length = posStart - injectionPoint; pos < length; pos++)
+			IDToPosition[pos + size] = IDToPosition[pos];
+
+	}
+
 	memcpy(&IDToPosition[injectionPoint], movingPart, size * sizeof(uint));
 	free(movingPart);
 }
@@ -501,7 +510,7 @@
 		}
 		else
 		{
-			for(uint base = element, max = --discardedCount - element; base < max; base++)
+			for(uint base = element, max = --discardedCount; base < max; base++)
 				IDToPosition[base] = IDToPosition[base + 1];
 
 			[_list deleteElements : &element : 1];

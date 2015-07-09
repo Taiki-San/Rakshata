@@ -27,6 +27,7 @@
 	MUTEX_VAR loginMutex;
 }
 
+@property BOOL initialized;
 @property (weak) IBOutlet RakWindow *window;
 @property BOOL haveDistractionFree;
 @property BOOL hasFocus;
@@ -45,3 +46,7 @@
 - (Reader *)	reader;
 
 @end
+
+//Extensions
+#define SOURCE_FILE_EXT 	@"rakSource"
+#define ARCHIVE_FILE_EXT	@"rak"

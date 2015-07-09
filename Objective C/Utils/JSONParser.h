@@ -13,6 +13,8 @@
 id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class expectedClass);
 
 //Project parser
+META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent);
+NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent);
 void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapter, BOOL paidContent, uint ** chaptersPrice);
 PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
@@ -49,6 +51,10 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_ISLOCAL @"18"
 #define JSON_PROJ_PRICE @"19"
 #define JSON_PROJ_DRM @"4.2"
+#define JSON_PROJ_CHAP_REMOTE @"20"
+#define JSON_PROJ_CHAP_LOCAL @"21"
+#define JSON_PROJ_VOL_REMOTE @"22"
+#define JSON_PROJ_VOL_LOCAL @"23"
 
 #define JSON_PROJ_URL_SRGRID @"20"
 #define JSON_PROJ_HASH_SRGRID @"21"

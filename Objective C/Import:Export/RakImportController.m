@@ -14,7 +14,8 @@
 
 enum
 {
-	PROBLEM_DUPLICATE
+	PROBLEM_DUPLICATE,
+	PROBLEM_METADATA
 };
 
 @implementation RakImportController
@@ -63,6 +64,12 @@ enum
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
+		if([item needMoreData])	//We need to ask extra details to the user
+		{
+			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_METADATA)}];
+			continue;
+		}
+
 		if([item isReadable])
 		{
 			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_DUPLICATE)}];
@@ -70,10 +77,17 @@ enum
 		}
 
 		//Well, I guess we can carry on
-		[item install:file];
+		if([item install:file])
+		{
+			[item processThumbs:file];
+			[item registerProject];
+		}
 	}
 
 	unzClose(file);
+
+	syncCacheToDisk(SYNC_PROJECTS);
+	notifyFullUpdate();
 }
 
 + (NSArray *) analyzeManifest : (NSData *) data
@@ -138,13 +152,14 @@ enum
 		if(currentProject == NULL)
 			continue;
 
-		wcsncpy(currentProject->data.projectName, (charType*) [entryName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
+		wcsncpy(currentProject->data.project.projectName, (charType*) [entryName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
 
 		if([self analyseRepo:currentProject :entry :entryName :&projectNames])
 			[self analyseMetadata:currentProject :entry];
 
-		if(currentProject->data.locale || currentProject->data.repo->locale)
-			currentProject->data.projectID = getEmptyLocalSlot(currentProject->data);
+		//Not a known project in a known repo
+		if(currentProject->data.project.cacheDBID == 0 && (currentProject->data.project.locale || currentProject->data.project.repo->locale))
+			currentProject->data.project.projectID = getEmptyLocalSlot(currentProject->data.project);
 
 		[self analyseImages:currentProject :entry];
 
@@ -153,7 +168,6 @@ enum
 	}
 
 	//Okay! Catalog is built, we can start crawling the directory
-
 	NSMutableArray * output = [NSMutableArray array];
 	if(output == nil)
 		return nil;
@@ -187,18 +201,16 @@ enum
 		META_TOME * volumeData = NULL;
 		if([isTome boolValue])
 		{
-			NSArray * volDetail = objectForKey(entry, RAK_STRING_CONTENT_VOL_DETAILS, nil, [NSArray class]);
+			NSDictionary * volDetail = objectForKey(entry, RAK_STRING_CONTENT_VOL_DETAILS, nil, [NSDictionary class]);
 			if(volDetail == nil)
 				continue;
 
-			volumeData = calloc(1, sizeof(META_TOME));
-			if(volumeData == NULL)
-				continue;
-
-			volumeData->details = parseChapterStructure(volDetail, &(volumeData->lengthDetails), NO, NO, NULL);
-			if(volumeData->lengthDetails == 0)
+			uint lengthVolumeData;
+			volumeData = getVolumes(@[volDetail], &lengthVolumeData, YES);
+			if(volumeData == NULL || lengthVolumeData != 1)
 			{
-				free(volumeData);
+				freeTomeList(volumeData, lengthVolumeData, true);
+				volumeData = NULL;
 				continue;
 			}
 		}
@@ -220,8 +232,17 @@ enum
 		if([isTome boolValue])
 		{
 			volumeData->ID = item.contentID;
-			projectData.data.tomesFull = projectData.data.tomesInstalled = volumeData;
-			projectData.data.nombreTomes = projectData.data.nombreTomesInstalled = 1;
+			projectData.data.tomeLocal = volumeData;
+			projectData.data.nombreTomeLocal = 1;
+		}
+		else
+		{
+			projectData.data.chapitresLocal = malloc(sizeof(int));
+			if(projectData.data.chapitresLocal != NULL)
+			{
+				*projectData.data.chapitresLocal = item.contentID;
+				projectData.data.nombreChapitreLocal = 1;
+			}
 		}
 
 		//Duplicate images URL, so they can be freeed later
@@ -258,7 +279,7 @@ enum
 	if(currentProject == NULL)
 		return NO;
 
-	currentProject->data.locale = true;	//Unless we overwrite it, this is a locale project
+	currentProject->data.project.locale = true;	//Unless we overwrite it, this is a locale project
 
 	NSNumber * entryNumber = objectForKey(entry, RAK_STRING_METADATA_REPOTYPE, nil, [NSNumber class]);
 	NSString * entryString = objectForKey(entry, RAK_STRING_METADATA_REPOURL, nil, [NSString class]);
@@ -287,7 +308,7 @@ enum
 				entryNumber = objectForKey(entry, RAK_STRING_METADATA_REPO_PROJID, nil, [NSNumber class]);
 				if(entryNumber != nil)
 				{
-					PROJECT_DATA * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false);
+					PROJECT_DATA_PARSED * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false, false, true);
 					if(project != NULL)
 					{
 						//Oh! The project exist! This is very cool!
@@ -316,7 +337,7 @@ enum
 
 						if(projectID != nil)	//Found something, probably that
 						{
-							currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false);
+							currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true);
 							return false;
 						}
 					}
@@ -324,7 +345,38 @@ enum
 			}
 		}
 
-		currentProject->data.repo = repo;
+		currentProject->data.project.repo = repo;
+	}
+	else if(entryName != nil)
+	{
+		//We try to find a project that could be related
+		if(*projectNames == nil)
+			*projectNames = [self buildProjectNamesList];
+
+		if(projectNames != nil)
+		{
+			__block NSNumber * projectID = nil;
+
+			[*projectNames enumerateObjectsUsingBlock:^(id  __nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
+				if([entryName caseInsensitiveCompare:[obj objectForKey:@"name"]] == NSOrderedSame)
+				{
+					if(projectID == nil)
+						projectID = [obj objectForKey:@"ID"];
+					else
+					{
+						//Several matches
+						projectID = nil;
+						*stop = true;
+					}
+				}
+			}];
+
+			if(projectID != nil)	//Found something, probably that
+			{
+				currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true);
+				return false;
+			}
+		}
 	}
 
 	return true;
@@ -336,34 +388,36 @@ enum
 	NSString * entryString = objectForKey(entry, RAK_STRING_METADATA_DESCRIPTION, nil, [NSString class]);
 	if(entryString != nil)
 	{
-		wcsncpy(currentProject->data.description, (charType *) [entryString cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION - 1);
-		currentProject->data.description[LENGTH_DESCRIPTION - 1] = 0;
+		wcsncpy(currentProject->data.project.description, (charType *) [entryString cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION - 1);
+		currentProject->data.project.description[LENGTH_DESCRIPTION - 1] = 0;
 	}
 
 	//Author
 	entryString = objectForKey(entry, RAK_STRING_METADATA_AUTHOR, nil, [NSString class]);
 	if(entryString != nil)
 	{
-		wcsncpy(currentProject->data.authorName, (charType *) [entryString cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS - 1);
-		currentProject->data.authorName[LENGTH_AUTHORS - 1] = 0;
+		wcsncpy(currentProject->data.project.authorName, (charType *) [entryString cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS - 1);
+		currentProject->data.project.authorName[LENGTH_AUTHORS - 1] = 0;
 	}
 
 	//Status
 	NSNumber * entryNumber = objectForKey(entry, RAK_STRING_METADATA_STATUS, nil, [NSNumber class]);
 	if(entryNumber != nil)
-		currentProject->data.status = [entryNumber unsignedCharValue];
+		currentProject->data.project.status = [entryNumber unsignedCharValue];
+	else
+		currentProject->data.project.status = STATUS_INVALID;
 
 	//TagMask
 	entryNumber = objectForKey(entry, RAK_STRING_METADATA_TAGMASK, nil, [NSNumber class]);
 	if(entryNumber != nil)
-		convertTagMask([entryNumber unsignedLongLongValue], &(currentProject->data.category), &(currentProject->data.tagMask), &(currentProject->data.mainTag));
+		convertTagMask([entryNumber unsignedLongLongValue], &(currentProject->data.project.category), &(currentProject->data.project.tagMask), &(currentProject->data.project.mainTag));
 
 	//Right to Left
-	entryNumber = objectForKey(entry, RAK_STRING_METADATA_ASIANORDER, nil, [NSNumber class]);
+	entryNumber = objectForKey(entry, RAK_STRING_METADATA_RIGHT2LEFT, nil, [NSNumber class]);
 	if(entryNumber != nil)
-		currentProject->data.rightToLeft = [entryNumber boolValue];
+		currentProject->data.project.rightToLeft = [entryNumber boolValue];
 
-	currentProject->data.locale = true;
+	currentProject->data.project.locale = true;
 }
 
 + (void) analyseImages : (PROJECT_DATA_EXTRA *) currentProject : (NSDictionary *) entry
@@ -414,7 +468,7 @@ enum
 + (NSArray *) buildProjectNamesList
 {
 	uint nbElem;
-	PROJECT_DATA * projects = getCopyCache(RDB_EXCLUDE_DYNAMIC, &nbElem);
+	PROJECT_DATA * projects = getCopyCache(RDB_EXCLUDE_DYNAMIC | RDB_INCLUDE_LOCAL, &nbElem);
 
 	if(projects == NULL)
 		return nil;

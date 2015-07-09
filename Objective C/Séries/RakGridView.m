@@ -165,6 +165,9 @@ enum
 - (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard
 {
 	[[self class] registerToPasteboard:pasteboard];
+
+	if(_dragProject.isInitialized && isInstalled(_dragProject, NULL))
+		[RakDragResponder patchPasteboardForFiledrop:pasteboard forType:ARCHIVE_FILE_EXT];
 	
 	//We create the shared item
 	RakDragItem * item = [[RakDragItem alloc] init];
@@ -172,7 +175,7 @@ enum
 		return NO;
 	
 	//We initialize the item, then insert it in the pasteboard
-	[item setDataProject:_dragProject isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:INVALID_SIGNED_VALUE];
+	[item setDataProject:_dragProject fullProject:YES isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:INVALID_SIGNED_VALUE];
 	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	return YES;
@@ -180,11 +183,19 @@ enum
 
 - (void) collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItemsAtIndexes:(NSIndexSet *)indexes
 {
+	draggingSession = session;
 	[RakList propagateDragAndDropChangeState : YES : lastDragCouldDL];
+}
+
+- (NSArray<NSString *> *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes
+{
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL : dropURL];
+	return nil;
 }
 
 - (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint dragOperation:(NSDragOperation)operation
 {
+	draggingSession = nil;
 	[RakList propagateDragAndDropChangeState : NO : lastDragCouldDL];
 }
 

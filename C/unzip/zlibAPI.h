@@ -33,7 +33,7 @@ bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput);
 
 //zip
 zipFile * createZip(const char * outfile);
-bool addFileToZip(zipFile * zipFile, const char * filename);
+bool addFileToZip(zipFile * zipFile, const char * filename, const char * inzipFilename);
+void createDirInZip(zipFile * zipFile, const char * dirName);
 bool addMemToZip(zipFile * zipFile, const char * filename, const byte * memoryChunk, const uint64_t chunckSize);
-bool addDirToZip(zipFile * zipFile, const char * dirName);
 void closeZip(zipFile * zipFile);

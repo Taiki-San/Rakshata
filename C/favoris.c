@@ -127,16 +127,14 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	//Nothing to write
 	else
 		removeFromPref(SETTINGS_FAVORITE_FLAG);
-	
-	PROJECT_DATA cacheCopy = getProjectByID(projectDB->cacheDBID);
+
+	projectDB->favoris = !projectDB->favoris;
+	setFavoriteForID(projectDB->cacheDBID, projectDB->favoris);
+
+	PROJECT_DATA cacheCopy = getProjectByIDHelper(projectDB->cacheDBID, false, false).project;
 	if(cacheCopy.isInitialized)
 	{
-		cacheCopy.favoris = projectDB->favoris = !projectDB->favoris;
-		updateCache(cacheCopy, RDB_UPDATE_ID, cacheCopy.cacheDBID);
 		updateProjectSearch(NULL, cacheCopy);
-		
-		releaseCTData(cacheCopy);	//updateCache en fait une copie
-
 		notifyUpdateProject(*projectDB);
 	}
 

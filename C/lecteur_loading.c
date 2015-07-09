@@ -66,25 +66,25 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 			if(localBuffer[nombreTours].isPrivate)
 			{
 				if(chapterRequestedForVolume % 10)
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 				else
-					snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/Chapitre_%d", IDRequested, chapterRequestedForVolume / 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d", IDRequested, chapterRequestedForVolume / 10);
 			}
 			else
 			{
 				if(isChapterShared(NULL, projectDB, chapterRequestedForVolume))
 				{
 					if(chapterRequestedForVolume % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d.%d", chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", chapterRequestedForVolume / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d", chapterRequestedForVolume / 10);
 				}
 				else
 				{
 					if(chapterRequestedForVolume % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, "Tome_%d/native/Chapitre_%d", IDRequested, chapterRequestedForVolume / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d", IDRequested, chapterRequestedForVolume / 10);
 				}
 				
 			}
@@ -92,9 +92,9 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 		else
 		{
 			if(IDRequested % 10)
-				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d.%d", IDRequested / 10, IDRequested % 10);
+				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d.%d", IDRequested / 10, IDRequested % 10);
 			else
-				snprintf(name, LONGUEUR_NOM_PAGE, "Chapitre_%d", IDRequested / 10);
+				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d", IDRequested / 10);
 		}
 		
         snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/%s", encodedPath, name, CONFIGFILE);

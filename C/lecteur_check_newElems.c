@@ -14,8 +14,11 @@
 
 uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {
+	if(projectDB->locale || projectDB->repo->locale)
+		return false;
+
 	uint posStart, posEnd, nbElemFullData;
-	PROJECT_DATA * fullData = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY, &nbElemFullData);
+	PROJECT_DATA_PARSED * fullData = getCopyCache(SORT_REPO | RDB_REMOTE_ONLY | RDB_PARSED_OUTPUT, &nbElemFullData);
 	
 	if(fullData == NULL)
 		return 0;
@@ -23,21 +26,21 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	//Find the beginning of the repo area
 	for (posStart = 0; posStart < nbElemFullData; posStart++)
 	{
-		if(fullData[posStart].repo != NULL && projectDB->repo->parentRepoID == fullData[posStart].repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].repo->repoID)
+		if(fullData[posStart].project.repo != NULL && projectDB->repo->parentRepoID == fullData[posStart].project.repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].project.repo->repoID)
 			break;
 	}
 	
 	//Couldn't find it
 	if(posStart == nbElemFullData)
 	{
-		freeProjectData(fullData);
+		freeParseProjectData(fullData);
 		return false;
 	}
 	
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if(fullData[posEnd].repo == NULL || projectDB->repo->parentRepoID != fullData[posEnd].repo->parentRepoID || projectDB->repo->repoID != fullData[posEnd].repo->repoID)
+		if(fullData[posEnd].project.repo == NULL || projectDB->repo->parentRepoID != fullData[posEnd].project.repo->parentRepoID || projectDB->repo->repoID != fullData[posEnd].project.repo->repoID)
 			break;
 	}
 	
@@ -53,7 +56,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 	
 	MUTEX_UNLOCK(DBRefreshMutex);
 	
-	freeProjectData(fullData);
+	freeParseProjectData(fullData);
 	
     uint firstNewElem;
     if(isTome)

@@ -51,6 +51,7 @@ enum
 	
 	if(self != nil)
 	{
+		isListOfRepo = YES;
 		_nbData = [_responder sizeForMode:_rootMode];
 		
 		[self applyContext:frame : selectedRowIndex : -1];

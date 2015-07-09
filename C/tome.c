@@ -41,8 +41,8 @@ void setTomeReadable(PROJECT_DATA projectDB, int ID)
 	
 	if(encodedPath != NULL)
 	{
-		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/Tome_%d/"CONFIGFILETOME".tmp", encodedPath, ID);
-		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/Tome_%d/"CONFIGFILETOME, encodedPath, ID);
+		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CONFIGFILETOME".tmp", encodedPath, ID);
+		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CONFIGFILETOME, encodedPath, ID);
 		rename(pathWithTemp, pathWithoutTemp);
 		
 		projectDB.tomesFull = projectDB.tomesInstalled = NULL;
@@ -92,28 +92,28 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		if(cache[posDetails].isPrivate)
 		{
 			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/Chapitre_%d", ID, cache[posDetails].ID / 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d", ID, cache[posDetails].ID / 10);
 		}
 		else
 		{
 			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Chapitre_%d", cache[posDetails].ID / 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%d", cache[posDetails].ID / 10);
 			
 			snprintf(fullPath, sizeof(fullPath), "%s/%s/%s", basePath, intermediaryDirectory, CONFIGFILE);
 			if(!checkFileExist(fullPath))
 			{
 				if(cache[posDetails].ID % 10)
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/native/Chapitre_%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 				else
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), "Tome_%d/native/Chapitre_%d", ID, cache[posDetails].ID / 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d", ID, cache[posDetails].ID / 10);
 			}
 			else
 			{
-				snprintf(fullPath, sizeof(fullPath), "%s/%s/shared", basePath, intermediaryDirectory);
+				snprintf(fullPath, sizeof(fullPath), "%s/%s/"VOLUME_CHAP_SHARED_TOKEN, basePath, intermediaryDirectory);
 				if(!checkFileExist(fullPath))
 				{
 					MDL_createSharedFile(projectDB, cache[posDetails].ID, pos);
@@ -128,7 +128,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 			break;
 		}
 
-		snprintf(fullPath, sizeof(fullPath), "%s/%s/installing", basePath, intermediaryDirectory);
+		snprintf(fullPath, sizeof(fullPath), "%s/%s/"CHAPITER_INSTALLING_TOKEN, basePath, intermediaryDirectory);
         if(checkFileExist(fullPath))
 		{
 			retValue = false;
@@ -144,7 +144,7 @@ end:
     return retValue;
 }
 
-void checkTomeValable(PROJECT_DATA *project, int *dernierLu)
+void getTomeInstalled(PROJECT_DATA *project, int *dernierLu)
 {
 	if(project->tomesInstalled != NULL)
 	{
@@ -202,7 +202,7 @@ void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled)
     refreshTomeList(projectDB);
 	
 	if(getInstalled)
-		checkTomeValable(projectDB, NULL);
+		getTomeInstalled(projectDB, NULL);
 }
 
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
@@ -272,9 +272,9 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 			{
 				curID = details[posDetails].ID;
 				if(curID % 10)
-					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d.%d/shared", basePath, curID / 10, curID % 10);
+					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%d.%d/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10, curID % 10);
 				else
-					snprintf(dirToChap, sizeof(dirToChap), "%s/Chapitre_%d/shared", basePath, curID / 10);
+					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%d/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10);
 				
 				if(checkFileExist(dirToChap))
 					remove(dirToChap);
@@ -282,7 +282,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		}
 	}
 	
-    snprintf(dir, length, PROJECT_ROOT"%s/Tome_%d/", encodedPath, tomeDelete);
+    snprintf(dir, length, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/", encodedPath, tomeDelete);
 	removeFolder(dir);
 	free(encodedPath);
 }

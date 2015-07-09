@@ -44,6 +44,7 @@ bool shouldDownloadFavorite();
 void sendToLog(char * string);
 void notifyEmailUpdate();
 void restorePrefsFile();
+bool removeProjectWithContent();
 
 #ifdef VERBOSE_DB_MANAGEMENT
 void logStack(void * address);

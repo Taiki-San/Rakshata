@@ -58,14 +58,16 @@ typedef struct //smartReload_data
 	uint selectedColumnIndex;
 	uint _nbElemPerCouple;
 	uint _nbCoupleColumn;
-	
+
+	BOOL isListOfRepo;
 	CGFloat _scrollerWidth;
 	
 	//Color cache
 	NSColor * normal;
 	NSColor * highlight;
 	NSColor * _tmpColor;
-	
+
+	NSDraggingSession * draggingSession;
 	NSString * _identifier;
 }
 

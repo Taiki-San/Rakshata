@@ -29,7 +29,7 @@
 		[self bind:NSContentBinding toObject:_manager withKeyPath:@"sharedReference" options:nil];
 		
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
-		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
+		[self setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 	}
 	
 	return self;
@@ -197,40 +197,51 @@
 		
 		return;
 	}
-	
-	int64_t rowMin = 0, rowMax = nbElem / nbColumn, currentRow = rowMax / 2;
+
+	int64_t rowMin = 0, rowMax = nbElem / nbColumn, currentRow;
 	RakCollectionViewItem * item;
-	
-	//Every cell touch each other, so we must be over a cell
-	while (rowMin <= rowMax)
+
+	if(nbElem != nbColumn)
 	{
-		item = (id) [self itemAtIndex: ((uint64_t) currentRow) * nbColumn].view;
-		if(item.frame.origin.y > pointInDocument.y)		//The goal is higher than this cell
-		{
-			rowMax = currentRow - 1;
-#ifdef VERBOSE_HACK
-			NSLog(@"Element %lld (row %lld) too high", currentRow * nbColumn, currentRow);
-#endif
-		}
+		currentRow = rowMax / 2;
 		
-		else if(NSMaxY(item.frame) > pointInDocument.y)	//We found the row
+		//Every cell touch each other, so we must be over a cell
+		while (rowMin <= rowMax)
 		{
+			if(![self isValidIndex:((uint64_t) currentRow) * nbColumn])
+				return;
+
+			item = (id) [self itemAtIndex: ((uint64_t) currentRow) * nbColumn].view;
+			if(item.frame.origin.y > pointInDocument.y)		//The goal is higher than this cell
+			{
+				rowMax = currentRow - 1;
 #ifdef VERBOSE_HACK
-			NSLog(@"Element %lld (row %lld) seems okay", currentRow * nbColumn, currentRow);
+				NSLog(@"Element %lld (row %lld) too high", currentRow * nbColumn, currentRow);
 #endif
-			break;
-		}
-		
-		else											//The goal is lower than this cell
-		{
-			rowMin = currentRow + 1;
+			}
+
+			else if(NSMaxY(item.frame) > pointInDocument.y)	//We found the row
+			{
 #ifdef VERBOSE_HACK
-			NSLog(@"Element %lld (row %lld) too low", currentRow * nbColumn, currentRow);
+				NSLog(@"Element %lld (row %lld) seems okay", currentRow * nbColumn, currentRow);
 #endif
+				break;
+			}
+
+			else											//The goal is lower than this cell
+			{
+				rowMin = currentRow + 1;
+#ifdef VERBOSE_HACK
+				NSLog(@"Element %lld (row %lld) too low", currentRow * nbColumn, currentRow);
+#endif
+			}
+
+			currentRow = (rowMin + rowMax) / 2;
 		}
-		
-		currentRow = (rowMin + rowMax) / 2;
 	}
+	else
+		currentRow = 0;
+
 	
 	if(rowMin <= rowMax)
 	{

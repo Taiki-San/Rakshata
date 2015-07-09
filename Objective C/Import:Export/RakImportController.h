@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakExportController.h"
+
 @interface RakImportController : NSObject
 
 + (void) importFile : (NSString *) file : (BOOL) generatedArchive;
@@ -24,7 +26,11 @@
 @property BOOL isTome;
 
 - (BOOL) isReadable;
-- (void) install : (unzFile *) archive;
+- (BOOL) needMoreData;
+
+- (BOOL) install : (unzFile *) archive;
+- (void) processThumbs : (unzFile *) archive;
+- (void) registerProject;
 
 @end
 
@@ -45,7 +51,7 @@
 #define RAK_STRING_METADATA_AUTHOR		@"author"
 #define RAK_STRING_METADATA_STATUS		@"status"
 #define RAK_STRING_METADATA_TAGMASK		@"tagMask"
-#define RAK_STRING_METADATA_ASIANORDER	@"rightToLeft"
+#define RAK_STRING_METADATA_RIGHT2LEFT	@"rightToLeft"
 #define RAK_STRING_METADATA_IMG_GRID	@"imgGrid"
 #define RAK_STRING_METADATA_IMG_GRID_2X	@"imgGrid@2x"
 #define RAK_STRING_METADATA_IMG_CT		@"imgCT"

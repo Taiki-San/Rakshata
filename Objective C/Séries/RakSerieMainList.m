@@ -469,7 +469,7 @@
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, NO);
 	
-	[item setDataProject:project isTome:isTome element:INVALID_SIGNED_VALUE];
+	[item setDataProject:project fullProject:YES isTome:isTome element:INVALID_SIGNED_VALUE];
 }
 
 @end

@@ -118,8 +118,9 @@ enum
 	{
 		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreChapitre > 1 ? @"PROJ-DETAILS-%zu-CHAPTERS" : @"PROJ-DETAILS-%zu-CHAPTER", nil), project.nombreChapitre];
 	}
-	
-	output = [output stringByAppendingString:current];
+
+	if(current != nil)
+		output = [output stringByAppendingString:current];
 	
 	BOOL DRM = project.haveDRM;
 	

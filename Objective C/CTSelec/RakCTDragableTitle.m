@@ -48,7 +48,7 @@
 - (void) mouseDragged:(NSEvent *)theEvent
 {
 	if(outOfArea)
-		return;
+		return [super mouseDragged:theEvent];
 	
 	//We get a copy of the project data
 	PROJECT_DATA projectData = getProjectByID(self.currentID);
@@ -58,6 +58,7 @@
 	//We initialize the pasteboard
 	NSPasteboard * pBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
 	[RakDragResponder registerToPasteboard:pBoard];
+	[RakDragResponder patchPasteboardForFiledrop:pBoard forType:ARCHIVE_FILE_EXT];
 	
 	//We create the shared item
 	RakDragItem * item = [[RakDragItem alloc] init];
@@ -65,7 +66,7 @@
 		return;
 	
 	//We initialize the item, then insert it in the pasteboard
-	[item setDataProject:projectData isTome:self.isTome element:INVALID_SIGNED_VALUE];
+	[item setDataProject:projectData fullProject:NO isTome:self.isTome element:INVALID_SIGNED_VALUE];
 	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	//We create the image for the dragging session
@@ -91,9 +92,25 @@
 
 #pragma mark - NSDraggingSource support
 
+- (void) draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint
+{
+	currentSession = session;
+}
+
+- (void) draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
+	currentSession = nil;
+}
+
 - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 {
 	return NSDragOperationCopy;
+}
+
+- (NSArray<NSString *> *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
+{
+	[RakExportController createArchiveFromPasteboard:[currentSession draggingPasteboard] toPath:nil withURL:dropDestination];
+	return nil;
 }
 
 @end

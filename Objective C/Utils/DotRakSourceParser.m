@@ -82,7 +82,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 			continue;
 		
 		preselection = objectForKey(entry, JSON_RAK_PRESELECTION, @"preselection", [NSArray class]);
-		if(preselection != nil || ![preselection count])
+		if(preselection != nil && ![preselection count])
 			continue;
 		
 		//Craft a structure to send to the update routine in order to gather the data

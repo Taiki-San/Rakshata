@@ -213,6 +213,11 @@ void restorePrefsFile()
 		[[NSData dataWithContentsOfFile:settings] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
 }
 
+bool removeProjectWithContent()
+{
+	return false;
+}
+
 /*****************************************
  **										**
  **				 DB update				**

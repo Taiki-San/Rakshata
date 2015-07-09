@@ -211,7 +211,7 @@ int extractCurrentfile(unzFile zipFile, char* filenameExpected, char* outputPath
 	return err;
 }
 
-int extractFileInArchive(char * inputFile, char *outputPath, bool extractWithoutPath)
+int extractArchive(char * inputFile, char *outputPath, bool extractWithoutPath)
 {
 	unzFile * zipFile = unzOpen64(inputFile);
 	if(zipFile == NULL)

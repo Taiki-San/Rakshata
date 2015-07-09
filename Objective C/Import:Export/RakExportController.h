@@ -10,27 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PROJECT_PASTEBOARD_TYPE @"PasteboardTypeRakshataProject"
+@interface RakExportController : NSObject
 
-@interface RakDragItem : NSObject
-{
-	BOOL canDL;
-}
-
-@property PROJECT_DATA project;
-@property BOOL isTome, fullProject;
-@property int selection;
-@property uint price;
-
-- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (int) element;
-- (instancetype) initWithData : (NSData *) data;
-
-- (NSData *) getData;
-- (BOOL) isFavorite;
-+ (BOOL) isFavorite : (NSPasteboard*) pasteboard;
-- (BOOL) canDL;
-+ (BOOL) canDL : (NSPasteboard*) pasteboard;
-+ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
-+ (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
++ (NSString *) craftArchiveNameFromPasteboard : (NSPasteboard *) pasteboard;
++ (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path withURL : (NSURL *) url;
 
 @end

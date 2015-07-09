@@ -70,7 +70,7 @@
 	
 	stateMainList[0] = -1;	//Selection
 	
-	if([dataState count] == 3 || [dataState count] == 5)
+	if([dataState count] == 4 || [dataState count] == 6)
 	{
 		stateSubLists[0] = [[dataState objectAtIndex:0] intValue] != 0;		//Recent read
 		stateSubLists[1] = [[dataState objectAtIndex:1] intValue] != 0;		//Recent DL
@@ -88,9 +88,7 @@
 					break;
 				}
 				
-				const uint projectID = [[dataState objectAtIndex:3] longLongValue];
-				
-				PROJECT_DATA * project = getProjectFromSearch(repoID, projectID, NO);
+				PROJECT_DATA * project = getProjectFromSearch(repoID, [[dataState objectAtIndex:3] longLongValue], [[dataState objectAtIndex:4] boolValue], NO);
 				
 				if(project == NULL || project->repo == NULL)
 				{
@@ -327,7 +325,7 @@
 	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
 	if(project.isInitialized)
-		currentSelection = [NSString stringWithFormat:@"%s\n%d", project.repo->URL, project.projectID];
+		currentSelection = [NSString stringWithFormat:@"%s\n%d\n%d", project.repo->URL, project.projectID, project.locale];
 	else
 		currentSelection = @"";
 	
@@ -700,16 +698,18 @@
 	[RakDragResponder registerToPasteboard:pboard];
 	
 	RakDragItem * pbData = [[RakDragItem alloc] init];
-	
 	if(pbData == nil)
 		return NO;
 	
 	PROJECT_DATA project = [item getRawDataChild];
 	
+	if(isInstalled(project, NULL))
+		[RakDragResponder patchPasteboardForFiledrop:pboard forType:ARCHIVE_FILE_EXT];
+
 	getUpdatedChapterList(&project, true);
 	getUpdatedTomeList(&project, true);
 	
-	[pbData setDataProject : project isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
+	[pbData setDataProject : project fullProject:YES isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
@@ -720,6 +720,7 @@
 		return;
 	
 	currentDraggedItem = [draggedItems objectAtIndex:0];
+	draggingSession = session;
 	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
 	[RakList propagateDragAndDropChangeState :YES : [RakDragItem canDL:[session draggingPasteboard]]];
@@ -727,8 +728,15 @@
 	currentDraggedItem = nil;
 }
 
+- (NSArray<NSString *> *)outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedItems:(NSArray *)items
+{
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL:dropDestination];
+	return nil;
+}
+
 - (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
+	draggingSession = nil;
 	[RakList propagateDragAndDropChangeState :NO : [RakDragItem canDL:[session draggingPasteboard]]];
 }
 

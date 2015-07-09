@@ -93,7 +93,7 @@ void networkAndVersionTest()
         if(hostNotReached == 2 || bufferDL == NULL || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
-            NETWORK_ACCESS = CONNEXION_SERVEUR_DOWN;
+            NETWORK_ACCESS = CONNEXION_IDENTIFIED_DOWN;
         MUTEX_UNLOCK(networkMutex);
 		
 		free(bufferDL);

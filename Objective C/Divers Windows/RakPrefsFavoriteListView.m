@@ -38,7 +38,6 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChanges:self];
 	[RakDBUpdate unRegister:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }

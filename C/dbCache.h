@@ -31,10 +31,11 @@ extern MUTEX_VAR cacheMutex, cacheParseMutex;
 
 /**DBCache.c**/
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
-uint addToCache(sqlite3_stmt* request, PROJECT_DATA data, uint64_t repoID, bool isInstalled, bool wantID);
-void removeFromCache(PROJECT_DATA data);
+uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID);
+void removeFromCache(PROJECT_DATA_PARSED data);
 void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic);
+bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output);
 
 //Repository
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
@@ -71,7 +72,7 @@ bool checkRecentDBValid(sqlite3 * DB);
 
 bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
-void removeRecentEntryInternal(char * URLRepo, uint projectID);
+void removeRecentEntryInternal(char * URLRepo, uint projectID, bool isLocal);
 
 /**DBRefresh.c**/
 void updateRepo();
@@ -82,39 +83,49 @@ void updateProjects();
 /******		DBTools.c	  ******/
 bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA **output);
 bool downloadedProjectListSeemsLegit(char *data);
-uint defineBoundsRepoOnProjectDB(PROJECT_DATA * oldData, uint posBase, uint nbElem);
+uint defineBoundsRepoOnProjectDB(PROJECT_DATA_PARSED * oldData, uint posBase, uint nbElem);
 
-void * updateImagesForProjects(PROJECT_DATA_EXTRA * project, uint nbElem);
-void applyChangesProject(PROJECT_DATA * oldData, uint magnitudeOldData, PROJECT_DATA * newData, uint magnitudeNewData);
+void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, PROJECT_DATA_PARSED * newData, uint magnitudeNewData);
 int createCollate(sqlite3 * database);
 
 /******		DBTags.c	*******/
 void initializeTags(void * mainCache);
 
+/******		DBLocal.c	*******/
+void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject);
+
 //========= Obfuscation	==========//
 
 //An enum won't be expanded by STRINGIZE, so we must use define
-#define RDB_ID 				1
-#define RDB_repo 			2
-#define RDB_projectID		3
-#define RDB_isInstalled		4
-#define RDB_projectName		5
-#define RDB_description		6
-#define RDB_authors			7
-#define RDB_status			8
-#define RDB_category		9
-#define RDB_asianOrder		10
-#define RDB_isPaid			11
-#define RDB_mainTagID		12
-#define RDB_tagMask			13
-#define RDB_nombreChapitre	14
-#define RDB_chapitres		15
-#define RDB_chapitresPrice	16
-#define RDB_nombreTomes		17
-#define RDB_DRM				18
-#define RDB_tomes			19
-#define RDB_favoris			20
-#define RDB_isLocal			21
+#define RDB_ID 						1
+#define RDB_repo 					2
+#define RDB_projectID				3
+#define RDB_isInstalled				4
+#define RDB_projectName				5
+#define RDB_description				6
+#define RDB_authors					7
+#define RDB_status					8
+#define RDB_category				9
+#define RDB_asianOrder				10
+#define RDB_isPaid					11
+#define RDB_mainTagID				12
+#define RDB_tagMask					13
+#define RDB_nombreChapitre			14
+#define RDB_chapitres				15
+#define RDB_chapitreRemote			16
+#define RDB_chapitreRemoteLength	17
+#define RDB_chapitreLocal			18
+#define RDB_chapitreLocalLength		19
+#define RDB_chapitresPrice			20
+#define RDB_nombreTomes				21
+#define RDB_DRM						22
+#define RDB_tomes					23
+#define RDB_tomeRemote				24
+#define RDB_tomeRemoteLength		25
+#define RDB_tomeLocal				26
+#define RDB_tomeLocalLength			27
+#define RDB_favoris					28
+#define RDB_isLocal					29
 
 #define RDBS_dataID			21
 #define RDBS_dataType		22

@@ -40,7 +40,7 @@
 	if(_scrollView != nil)
 		sliders = [_scrollView contentView].bounds.origin;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.repo->URL, _project.projectID, _currentElem, self.isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
+	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%d\n%d\n%.0f\n%.0f", _project.repo->URL, _project.projectID, _project.locale, _currentElem, self.isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -325,10 +325,15 @@
 		if(image != nil)
 		{
 			image.page = page;
-			
-			dispatch_sync(dispatch_get_main_queue(), ^{
+
+			if(![NSThread isMainThread])
+			{
+				dispatch_sync(dispatch_get_main_queue(), ^{
+					[self updatePCState : page : cacheSession : image];
+				});
+			}
+			else
 				[self updatePCState : page : cacheSession : image];
-			});
 		}
 	}
 	
@@ -951,7 +956,7 @@
 	
 	deleteProject(_project, _currentElem, self.isTome);
 	
-	if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
+	if(_posElemInStructure != INVALID_VALUE && _posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 	{
 		if(_posElemInStructure > 0)
 		{
@@ -964,14 +969,17 @@
 			[self prevChapter];
 		}
 	}
-	else if(_posElemInStructure > 0)
+	else if(_posElemInStructure != INVALID_VALUE && _posElemInStructure > 0)
+	{
 		[self prevChapter];
+	}
 	else
 	{
 		_data.pageCourante = 0;
 		_data.nombrePage = 1;
 		[self failure : 0];
 		mainScroller.selectedIndex = 1;
+		[[[NSApp delegate] CT] ownFocus];
 	}
 }
 

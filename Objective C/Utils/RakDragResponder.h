@@ -31,6 +31,8 @@
 - (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
 - (NSImage*) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing;
 
++ (void) patchPasteboardForFiledrop : (NSPasteboard *) pBoard forType : (NSString *) type;
+
 //Customisation
 - (void) additionalDrawing : (RakDragView *) draggedView : (uint) row;
 - (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame;

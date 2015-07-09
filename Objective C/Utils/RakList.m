@@ -215,7 +215,7 @@
 {
 	[_tableView registerForDraggedTypes:@[PROJECT_PASTEBOARD_TYPE]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
-	[_tableView setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:NO];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 }
 
 #pragma mark - Backup routine
@@ -670,13 +670,14 @@
 		return NO;
 	
 	[RakDragResponder registerToPasteboard:pboard];
+	[RakDragResponder patchPasteboardForFiledrop:pboard forType:isListOfRepo ? SOURCE_FILE_EXT : ARCHIVE_FILE_EXT];
 	RakDragItem * item = [[RakDragItem alloc] init];
 	
 	if(item == nil)
 		return NO;
 	
 	[self fillDragItemWithData : item : [rowIndexes firstIndex]];
-	
+
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
 
@@ -700,12 +701,20 @@
 - (void) tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
 {
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:rowIndexes withParent:tableView];
+	draggingSession = session;
 	[RakList propagateDragAndDropChangeState : YES : [RakDragItem canDL:[session draggingPasteboard]]];
+}
+
+- (NSArray *) tableView:(NSTableView *)tableView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedRowsWithIndexes:(NSIndexSet *)indexSet
+{
+	[RakExportController createArchiveFromPasteboard:[draggingSession draggingPasteboard] toPath:nil withURL:dropDestination];
+	return nil;
 }
 
 - (void) tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
 	//Need to cleanup once the drag is over
+	draggingSession = nil;
 	[RakList propagateDragAndDropChangeState : NO : [RakDragItem canDL:[session draggingPasteboard]]];
 	[self cleanupDrag];
 }
@@ -751,6 +760,11 @@
 		operation = NSTableViewDropAbove;
 	
 	[super setDropRow:row dropOperation:operation];
+}
+
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
+{
+	return NSDragOperationCopy;
 }
 
 #pragma mark - Selection

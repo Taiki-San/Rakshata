@@ -63,7 +63,7 @@
 
 + (void) registerToPasteboard : (NSPasteboard *) pboard
 {
-	[pboard declareTypes:[NSArray arrayWithObject: PROJECT_PASTEBOARD_TYPE] owner:self];
+	[pboard declareTypes:@[PROJECT_PASTEBOARD_TYPE] owner:self];
 }
 
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
@@ -108,7 +108,7 @@
 	
 	[session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
 									   forView:view
-									   classes:@[[NSPasteboardItem class], [NSStringPboardType class]]
+									   classes:@[[NSPasteboardItem class]]
 								 searchOptions:@{}
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
@@ -151,6 +151,18 @@
 - (NSRect) updateFrameBeforeDrag : (NSRect) earlyFrame
 {
 	return earlyFrame;
+}
+
+#pragma mark - Helper API
+
++ (void) patchPasteboardForFiledrop : (NSPasteboard *) pBoard forType : (NSString *) type
+{
+	//On y croit \o/
+	NSMutableArray * array = [NSMutableArray arrayWithObject:NSFilesPromisePboardType];
+	[array addObjectsFromArray:[pBoard types]];
+
+	[pBoard declareTypes:[NSArray arrayWithArray:array] owner:self];
+	[pBoard setPropertyList:@[type] forType:NSFilesPromisePboardType];
 }
 
 @end

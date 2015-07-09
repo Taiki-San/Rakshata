@@ -17,16 +17,16 @@ int sortNumbers(const void *a, const void *b)
 
 int sortProjects(const void *a, const void *b)
 {
-    const PROJECT_DATA *struc1 = a;
-    const PROJECT_DATA *struc2 = b;
+    const PROJECT_DATA_PARSED *struc1 = a;
+    const PROJECT_DATA_PARSED *struc2 = b;
 
-    if(struc1->repo == NULL || struc1->projectName[0] == 0)
+    if(struc1->project.repo == NULL || struc1->project.projectName[0] == 0)
         return 1;
-    else if(struc2->repo == NULL || struc2->projectName[0] == 0)
+    else if(struc2->project.repo == NULL || struc2->project.projectName[0] == 0)
         return -1;
-	else if(!strcmp(struc1->repo->URL, struc2->repo->URL))
-		return sortNumbers(&(struc1->projectID), &(struc2->projectID));
-    return wcscmp(struc1->projectName, struc2->projectName);
+	else if(!strcmp(struc1->project.repo->URL, struc2->project.repo->URL))
+		return sortNumbers(&(struc1->project.projectID), &(struc2->project.projectID));
+    return wcscmp(struc1->project.projectName, struc2->project.projectName);
 }
 
 int sortRepo(const void *a, const void *b)
@@ -39,69 +39,108 @@ int sortRootRepo(const void *a, const void *b)
 	return wstrcmp((*((ROOT_REPO_DATA**) a))->name, (*((ROOT_REPO_DATA**) b))->name);
 }
 
-bool areProjectsIdentical(PROJECT_DATA a, PROJECT_DATA b)
+bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 {
-	if(a.projectID != b.projectID)
+	if(a.project.projectID != b.project.projectID)
 		return false;
-	
-	if(a.nombreChapitre != b.nombreChapitre)
-		return false;
-	
-	if(a.chapitresFull == NULL ^ b.chapitresFull == NULL)
-		return false;
-	
-	if(a.chapitresFull != NULL && memcmp(a.chapitresFull, b.chapitresFull, a.nombreChapitre * sizeof(int)))
-		return false;
-	
-	if(a.nombreTomes != b.nombreTomes)
-		return false;
-	
-	if(a.tomesFull == NULL ^ b.tomesFull == NULL)
-		return false;
-	
-	if(a.tomesFull != NULL && b.tomesFull != NULL)
-	{
-		for(uint i = 0; i < a.nombreTomes; i++)
-		{
-			if(a.tomesFull[i].price != b.tomesFull[i].price)
-				return false;
-			
-			if(a.tomesFull[i].ID != b.tomesFull[i].ID || a.tomesFull[i].readingID != b.tomesFull[i].readingID || wcscmp(a.tomesFull[i].description, b.tomesFull[i].description) || wcscmp(a.tomesFull[i].readingName, b.tomesFull[i].readingName))
-				return false;
-			
-			if(a.tomesFull[i].details == NULL ^ b.tomesFull[i].details == NULL)
-				return false;
 
-			if(a.tomesFull[i].details != NULL)
+	for(byte count = 0; count < 2; count++)
+	{
+		uint lengthA, lengthB;
+		int * aChap, * bChap;
+
+		if(count == 0)
+		{
+			lengthA = a.nombreChapitreLocal;
+			aChap = a.chapitresLocal;
+			lengthB = b.nombreChapitreLocal;
+			bChap = b.chapitresLocal;
+		}
+		else
+		{
+			lengthA = a.nombreChapitreRemote;
+			aChap = a.chapitresRemote;
+			lengthB = b.nombreChapitreRemote;
+			bChap = b.chapitresRemote;
+		}
+
+		if(lengthA != lengthB)
+			return false;
+
+		if(aChap == NULL ^ bChap == NULL)
+			return false;
+
+		if(aChap != NULL && memcmp(aChap, bChap, lengthA * sizeof(int)))
+			return false;
+
+
+		META_TOME * aTome, * bTome;
+
+		if(count == 0)
+		{
+			lengthA = a.nombreTomeLocal;
+			aTome = a.tomeLocal;
+			lengthB = b.nombreTomeLocal;
+			bTome = b.tomeLocal;
+		}
+		else
+		{
+			lengthA = a.nombreTomeRemote;
+			aTome = a.tomeRemote;
+			lengthB = b.nombreTomeRemote;
+			bTome = b.tomeRemote;
+		}
+
+		if(lengthA != lengthB)
+			return false;
+		
+		if(aTome == NULL ^ bTome == NULL)
+			return false;
+
+		if(aTome != NULL && bTome != NULL)
+		{
+			for(uint i = 0; i < a.project.nombreTomes; i++)
 			{
-				if(a.tomesFull[i].lengthDetails != b.tomesFull[i].lengthDetails)
+				if(aTome[i].price != bTome[i].price)
 					return false;
-				
-				for(uint pos = 0, max = a.tomesFull[i].lengthDetails; pos < max; pos++)
+
+				if(aTome[i].ID != bTome[i].ID || aTome[i].readingID != bTome[i].readingID || wcscmp(aTome[i].description, bTome[i].description) || wcscmp(aTome[i].readingName, bTome[i].readingName))
+					return false;
+
+				if(aTome[i].details == NULL ^ bTome[i].details == NULL)
+					return false;
+
+				if(aTome[i].details != NULL)
 				{
-					if(a.tomesFull[i].details[pos].ID != b.tomesFull[i].details[pos].ID || a.tomesFull[i].details[pos].isPrivate != b.tomesFull[i].details[pos].isPrivate)
+					if(aTome[i].lengthDetails != bTome[i].lengthDetails)
 						return false;
+
+					for(uint pos = 0, max = aTome[i].lengthDetails; pos < max; pos++)
+					{
+						if(aTome[i].details[pos].ID != bTome[i].details[pos].ID || aTome[i].details[pos].isPrivate != bTome[i].details[pos].isPrivate)
+							return false;
+					}
 				}
 			}
 		}
 	}
-	
-	if(a.status != b.status)
+
+	if(a.project.status != b.project.status)
 		return false;
 	
-	if(a.tagMask != b.tagMask)
+	if(a.project.tagMask != b.project.tagMask)
 		return false;
 	
-	if(a.rightToLeft != b.rightToLeft)
+	if(a.project.rightToLeft != b.project.rightToLeft)
 		return false;
 	
-	if(a.isPaid != b.isPaid)
+	if(a.project.isPaid != b.project.isPaid)
 		return false;
 	
-	if(a.chapitresPrix == NULL ^ b.chapitresPrix == NULL)
+	if(a.project.chapitresPrix == NULL ^ b.project.chapitresPrix == NULL)
 		return false;
 
-	if(wcscmp(a.projectName, b.projectName) || wcscmp(a.authorName, b.authorName) || wcscmp(a.description, b.description))
+	if(wcscmp(a.project.projectName, b.project.projectName) || wcscmp(a.project.authorName, b.project.authorName) || wcscmp(a.project.description, b.project.description))
 		return false;
 	
 	return true;

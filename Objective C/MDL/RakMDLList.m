@@ -248,7 +248,7 @@ enum
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, false);
 	
-	[item setDataProject : project isTome: isTome element: (*dataProject)->identifier];
+	[item setDataProject : project fullProject:NO isTome: isTome element: (*dataProject)->identifier];
 	
 	dragInProgress = YES;		draggedElement = row;
 }

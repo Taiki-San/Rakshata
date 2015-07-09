@@ -331,7 +331,7 @@
 {
 	uint element = [self rowFromCoordinates:selectedRowIndex :selectedColumnIndex];
 	
-	if(element > _nbElem)
+	if(element >= _nbElem)
 		return LIST_INVALID_SELECTION;
 	
 	if(self.isTome)
@@ -1102,7 +1102,7 @@
 			item.price = chapterPrice[row];
 	}
 	
-	[item setDataProject:getCopyOfProjectData(projectData) isTome:self.isTome element:selection];
+	[item setDataProject:getCopyOfProjectData(projectData) fullProject:NO isTome:self.isTome element:selection];
 }
 
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
