@@ -88,7 +88,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 				//We check there isn't something already downloading, as I caught a race condition that would duplicated downloader
 				//This doesn't cause any significant problem but I want to keep control on it
 				uint seekDL = dataPos;
-				for(; seekDL < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_DL; seekDL++);
+				for(; seekDL < *nbElemTotal && *((*status)[(*IDToPosition)[seekDL]]) != MDL_CODE_DL; seekDL++);
 				
 				if(dataPos < *nbElemTotal && seekDL == *nbElemTotal)
 				{

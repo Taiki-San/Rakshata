@@ -180,9 +180,9 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 				minimizeString(nomPage[i]);
 
-				for(j = 0; j < nombreFichiers; j++)
+				for(j = i; j < nombreFichiers; j++)
 				{
-					if(filename[j] != NULL && strcmp(nomPage[i], filename[j]))
+					if(filename[j] != NULL && !strcmp(nomPage[i], filename[j]))
 						break;
 				}
 
@@ -257,6 +257,10 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 						_AES(hash, hugeBuffer, posBlob, hugeBuffer, EVERYTHING_IN_MEMORY, AES_ENCRYPT, AES_ECB);
 						crashTemp(hash, SHA256_DIGEST_LENGTH);
+
+						//We want to write the end of the block
+						if(posBlob % CRYPTO_BUFFER_SIZE)
+							posBlob += CRYPTO_BUFFER_SIZE - (posBlob % CRYPTO_BUFFER_SIZE);
 
 						fwrite(hugeBuffer, posBlob, 1, output);
 						fclose(output);

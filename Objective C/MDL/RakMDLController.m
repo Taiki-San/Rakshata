@@ -510,7 +510,7 @@
 		}
 		else
 		{
-			for(uint base = element, max = --discardedCount - element; base < max; base++)
+			for(uint base = element, max = --discardedCount; base < max; base++)
 				IDToPosition[base] = IDToPosition[base + 1];
 
 			[_list deleteElements : &element : 1];
