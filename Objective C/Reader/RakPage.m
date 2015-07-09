@@ -19,6 +19,8 @@
 	
 	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
 		return NO;
+
+	addRecentEntry(dataRequest, false);
 	
 	if(mainScroller == nil)
 	{
