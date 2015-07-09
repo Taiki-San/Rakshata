@@ -333,7 +333,6 @@ void removeFromCache(PROJECT_DATA_PARSED data)
 	if(!removeProjectWithContent() && isInstalled(data.project, NULL))
 	{
 		//Arf, we need to get the installed content, and set it as local
-
 		data.project.chapitresInstalled = NULL;
 		data.project.tomesInstalled = NULL;
 

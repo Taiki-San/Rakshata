@@ -20,7 +20,9 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection,
     {
         if(projectDB.chapitresInstalled == NULL)
         {
+#ifdef DEV_VERSION
 			logR("Error: failed at loading available content for the project");
+#endif
 			return INVALID_VALUE;
         }
         for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreChapitreInstalled && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
@@ -32,7 +34,9 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection,
     {
         if(projectDB.tomesInstalled == NULL)
         {
+#ifdef DEV_VERSION
 			logR("Error: failed at loading available content for the project");
+#endif
 			return INVALID_VALUE;
 		}
         for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);

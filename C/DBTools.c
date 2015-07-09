@@ -177,19 +177,8 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 		
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
-#ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 			removeFromCache(oldData[posOld]);
 			removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
-#endif
-#ifdef DELETE_REMOVED_PROJECT
-			char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
-			if(encodedPath != NULL)
-			{
-				snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedPath);
-				removeFolder(path);
-				free(encodedPath);
-			}
-#endif
 			posOld++;
 		}
 		else if(outputSort == 0)	//On a trouvé une version mise à jour
@@ -244,19 +233,8 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 	
 	while (posOld < magnitudeOldData)
 	{
-#ifdef DISCARD_FROM_CACHE_REMOVED_PROJECTS
 		removeFromCache(oldData[posOld]);
 		removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
-#endif
-#ifdef DELETE_REMOVED_PROJECT
-		char path[LENGTH_PROJECT_NAME * 2 + 10], *encodedPath = getPathForProject(oldData[posOld]);
-		if(encodedPath != NULL)
-		{
-			snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedPath);
-			removeFolder(path);
-			free(encodedPath);
-		}
-#endif
 		posOld++;
 	}
 	

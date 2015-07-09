@@ -123,8 +123,6 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 
 void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject)
 {
-#warning "Need some serious testing"
-
 	uint nbOld, nbNew, lengthCollector;
 	void * dataOld, *dataNew, * collector;
 	uint16_t sizeOfType;
@@ -135,7 +133,6 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		lengthCollector = 0;
 		collector = NULL;
 
-		//Choose to inject the smallest list
 		if(run == 0)	//chapters
 		{
 			oldProject.project.nombreChapitre = nbOld = oldProject.nombreChapitreRemote;
@@ -204,13 +201,9 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 				{
 					//And shit... we need to copy it to the selector :X
 					if(run == 0)
-					{
 						((int *) collector)[lengthCollector++] = oldDataForIndex;
-					}
 					else
-					{
 						copyTomeList(&(((META_TOME *) dataOld)[posOld]), 1, &(((META_TOME *) collector)[lengthCollector++]));
-					}
 				}
 			}
 		}
