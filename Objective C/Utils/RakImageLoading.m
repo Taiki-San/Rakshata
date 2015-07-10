@@ -67,9 +67,33 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 	return image != nil ? image : (defaultName != nil ? [NSImage imageNamed:defaultName] : nil);
 }
 
+NSImage * enforceImageSize(NSImage * image, NSSize standard, NSSize retina)
+{
+	if(image == nil)
+		return nil;
+
+	if(NSEqualSizes(retina, NSZeroSize))
+	{
+		retina.height = standard.height * 2;
+		retina.width = standard.width * 2;
+	}
+
+	for(NSImageRep * representation in image.representations)
+	{
+		NSInteger repBackingScaleRounded = floor(representation.pixelsWide / representation.size.width);
+		if(repBackingScaleRounded >= 2)
+			[representation setSize:retina];
+		else
+			[representation setSize:standard];
+
+	}
+
+	return image;
+}
+
 NSImage * loadCTHeader(const PROJECT_DATA project)
 {
-	return loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large");
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large"), NSMakeSize(1000, 563), NSMakeSize(2000, 1125));
 }
 
 NSImage * loadCTThumb(const PROJECT_DATA project)
@@ -81,10 +105,10 @@ NSImage * loadCTThumb(const PROJECT_DATA project)
 
 NSImage * loadDDThumbnail(const PROJECT_DATA project)
 {
-	return loadProjectImage(project, PROJ_IMG_SUFFIX_DD, @"defaultDragImage");
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_DD, @"defaultDragImage"), NSMakeSize(50, 50), NSZeroSize);
 }
 
 NSImage * loadImageGrid(const PROJECT_DATA project)
 {
-	return loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, @"defaultSRImage");
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, @"defaultSRImage"), NSMakeSize(150, 150), NSZeroSize);
 }
