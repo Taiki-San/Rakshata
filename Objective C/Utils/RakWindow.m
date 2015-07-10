@@ -128,6 +128,44 @@
 	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ - %@ - %@", [self getProjectName], getStringForWchar(project.projectName), element];
 }
 
+#pragma mark - Sheet management
+
+//Because our title bar is a bit hacky, sheets stick at the top of our content view, and it seems it cause issues
+//in its internal logic as it'll stick at the top of the window, instead of below the title bar. To fix this,
+//we detect whenever the code managing the sheet will read our frame, and then tweak it to move the top of the window
+//below the title bar. It seems it make the window a bit jumpy if you move the window before discarding but hey, good enough
+
+- (void) beginCriticalSheet:(nonnull NSWindow *)sheetWindow completionHandler:(void (^ __nullable)(NSModalResponse))handler
+{
+	_sheetManipulation = YES;
+	[super beginCriticalSheet:sheetWindow completionHandler:handler];
+	_sheetManipulation = NO;
+}
+
+- (void)beginSheet:(NSWindow *)sheetWindow completionHandler:(void (^ __nullable)(NSModalResponse returnCode))handler
+{
+	_sheetManipulation = YES;
+	[super beginSheet:sheetWindow completionHandler:handler];
+	_sheetManipulation = NO;
+}
+
+- (void)endSheet:(NSWindow *)sheetWindow returnCode:(NSModalResponse)returnCode
+{
+	_sheetManipulation = YES;
+	[super endSheet:sheetWindow returnCode:returnCode];
+	_sheetManipulation = NO;
+}
+
+- (NSRect) frame
+{
+	NSRect frame = _frame;
+
+	if(_sheetManipulation)
+		frame.origin.y -= TITLE_BAR_HEIGHT;
+
+	return frame;
+}
+
 #pragma mark - Delegate
 
 - (BOOL) makeFirstResponder:(NSResponder *)aResponder

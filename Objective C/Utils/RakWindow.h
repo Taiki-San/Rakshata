@@ -13,6 +13,9 @@
 #define TITLE_BAR_HEIGHT 22
 
 @interface RakWindow : NSWindow
+{
+	BOOL _sheetManipulation;
+}
 
 @property (getter=isMainWindow) BOOL isMainWindow;
 
