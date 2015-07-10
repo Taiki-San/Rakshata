@@ -697,17 +697,16 @@
 	
 	[RakDragResponder registerToPasteboard:pboard];
 	
-	RakDragItem * pbData = [[RakDragItem alloc] init];
-	if(pbData == nil)
-		return NO;
-	
 	PROJECT_DATA project = [item getRawDataChild];
-	
+	getUpdatedChapterList(&project, true);
+	getUpdatedTomeList(&project, true);
+
 	if(isInstalled(project, NULL))
 		[RakDragResponder patchPasteboardForFiledrop:pboard forType:ARCHIVE_FILE_EXT];
 
-	getUpdatedChapterList(&project, true);
-	getUpdatedTomeList(&project, true);
+	RakDragItem * pbData = [[RakDragItem alloc] init];
+	if(pbData == nil)
+		return NO;
 	
 	[pbData setDataProject : project fullProject:YES isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
 	

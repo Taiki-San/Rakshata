@@ -1105,6 +1105,11 @@
 	[item setDataProject:getCopyOfProjectData(projectData) fullProject:NO isTome:self.isTome element:selection];
 }
 
+- (BOOL) shouldPromiseFile : (RakDragItem *) item
+{
+	return !item.canDL;
+}
+
 - (void) additionalDrawing : (RakDragView *) _draggedView : (uint) row
 {
 	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];

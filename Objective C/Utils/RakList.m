@@ -664,19 +664,26 @@
 
 #pragma mark - Drag'n drop support
 
+- (BOOL) shouldPromiseFile : (RakDragItem *) item
+{
+	return NO;
+}
+
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	if(rowIndexes == nil || [rowIndexes count] != 1)
 		return NO;
 	
 	[RakDragResponder registerToPasteboard:pboard];
-	[RakDragResponder patchPasteboardForFiledrop:pboard forType:isListOfRepo ? SOURCE_FILE_EXT : ARCHIVE_FILE_EXT];
 	RakDragItem * item = [[RakDragItem alloc] init];
 	
 	if(item == nil)
 		return NO;
 	
 	[self fillDragItemWithData : item : [rowIndexes firstIndex]];
+
+	if([self shouldPromiseFile : item])
+		[RakDragResponder patchPasteboardForFiledrop:pboard forType:isListOfRepo ? SOURCE_FILE_EXT : ARCHIVE_FILE_EXT];
 
 	return [pboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 }
@@ -773,20 +780,9 @@
 {
 	NSPoint localLocation = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	
-	_preCommitedLastClickedRow = [self rowAtPoint:localLocation];
-	self.preCommitedLastClickedColumn = [self columnAtPoint:localLocation];
-	
-	if(self.wantVerboseClick && _preCommitedLastClickedRow == self.selectedRow)
-	{
-		if([self.delegate tableView:self shouldSelectRow:_preCommitedLastClickedRow])
-		{
-			if([self.delegate isKindOfClass:[RakList class]])
-				((RakList*) self.delegate)._selectionChangeComeFromClic = YES;
-			
-			[self.delegate tableViewSelectionDidChange:nil];
-		}
-	}
-	
+	_preCommitedLastClickedRow		=	[self rowAtPoint:localLocation];
+	_preCommitedLastClickedColumn	=	[self columnAtPoint:localLocation];
+
 	[super mouseDown : theEvent];
 }
 

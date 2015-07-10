@@ -29,6 +29,7 @@
 - (BOOL) isFavorite;
 + (BOOL) isFavorite : (NSPasteboard*) pasteboard;
 - (BOOL) canDL;
+- (BOOL) canDLRefreshed;
 + (BOOL) canDL : (NSPasteboard*) pasteboard;
 + (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
 + (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;

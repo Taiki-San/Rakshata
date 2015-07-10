@@ -92,6 +92,11 @@ typedef struct //project_data_for_drag_drop
 	return canDL;
 }
 
+- (BOOL) canDLRefreshed
+{
+	return (canDL = [[self class] canDL:_project isTome:_isTome element:_selection]);
+}
+
 + (BOOL) canDL : (NSPasteboard*) pasteboard
 {
 	if(pasteboard != nil)

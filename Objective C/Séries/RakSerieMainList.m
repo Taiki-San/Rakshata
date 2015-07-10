@@ -472,4 +472,9 @@
 	[item setDataProject:project fullProject:YES isTome:isTome element:INVALID_SIGNED_VALUE];
 }
 
+- (BOOL) shouldPromiseFile : (RakDragItem *) item
+{
+	return isInstalled(item.project, NULL);
+}
+
 @end

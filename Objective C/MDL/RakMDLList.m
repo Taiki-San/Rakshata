@@ -253,6 +253,11 @@ enum
 	dragInProgress = YES;		draggedElement = row;
 }
 
+- (BOOL) shouldPromiseFile : (RakDragItem *) item
+{
+	return !item.canDLRefreshed;
+}
+
 - (void) cleanupDrag
 {
 	dragInProgress = NO;
