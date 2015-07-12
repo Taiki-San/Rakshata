@@ -56,6 +56,7 @@ void flushBundleCache(NSBundle *bundle);
 void invalidateCacheForRepoID(uint64_t repoID);
 
 //Image loading
+NSSize getThumbSize(NSImage * image);
 NSImage * loadImageForRepo(BOOL isRoot, void* repo);
 NSImage * loadCTHeader(const PROJECT_DATA project);
 NSImage * loadCTThumb(const PROJECT_DATA project);

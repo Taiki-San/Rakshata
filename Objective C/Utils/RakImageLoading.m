@@ -91,6 +91,18 @@ NSImage * enforceImageSize(NSImage * image, NSSize standard, NSSize retina)
 	return image;
 }
 
+NSSize getThumbSize(NSImage * image)
+{
+	NSSize smallestSize = [[[image representations] objectAtIndex:0] size];
+	for(NSImageRep * rep in [image representations])
+	{
+		if(rep.size.width < smallestSize.width)
+			smallestSize = rep.size;
+	}
+
+	return smallestSize;
+}
+
 NSImage * loadCTHeader(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large"), NSMakeSize(1000, 563), NSMakeSize(2000, 1125));

@@ -162,7 +162,7 @@ enum
 	if(image != nil)
 	{
 		thumb.image = image;
-		[thumb setFrameSize:image.size];
+		[thumb setFrameSize:getThumbSize(image)];
 		
 		infos.stringValue = [self getString:project];
 		[infos sizeToFit];
@@ -198,7 +198,7 @@ enum
 		if(image != nil)
 		{
 			thumb.image = image;
-			[thumb setFrameSize:image.size];
+			[thumb setFrameSize:getThumbSize(image)];
 			
 			[self setFrame:_frame];
 			[self setNeedsDisplay:YES];
