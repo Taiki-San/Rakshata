@@ -479,7 +479,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 	return [NSArray arrayWithArray:output];
 }
 
-NSDictionary * reverseTag(PROJECT_DATA project)
+NSArray * reverseTag(PROJECT_DATA project)
 {
 	NSMutableArray * tagArray = [NSMutableArray array];
 	if(tagArray != nil)
@@ -490,14 +490,12 @@ NSDictionary * reverseTag(PROJECT_DATA project)
 			[tagArray addObject:@(tags[i].ID)];
 		}
 
-		return @{JSON_PROJ_TAG_CATEGORY	: @(project.category),
-				 JSON_PROJ_TAG_DATA		: tagArray};
+		return [NSArray arrayWithArray: tagArray];
 	}
 
 	//Backup solution!
 
-	return @{JSON_PROJ_TAG_CATEGORY	: @(project.category),
-			 JSON_PROJ_TAG_DATA		: @[@(project.mainTag)]};
+	return @[@(project.mainTag)];
 }
 
 PROJECT_DATA parseBloc(NSDictionary * bloc)
@@ -510,9 +508,9 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *rightToLeft = nil, *paidContent = nil, *DRM = nil, * isLocale;
+	NSNumber *ID, *status = nil, *rightToLeft = nil, *paidContent = nil, *DRM = nil, * isLocale = nil, * category = nil;
 	NSString * projectName = nil, *description = nil, *authors = nil;
-	NSDictionary *tagData = nil;
+	NSArray *tagData = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID", [NSNumber class]);
 	if(ID == nil)
@@ -584,8 +582,16 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 
-	
-	tagData = objectForKey(bloc, JSON_PROJ_TAG_DATA , @"tagData", [NSDictionary class]);
+	category = objectForKey(bloc, JSON_PROJ_TAG_CATEGORY, @"category", [NSNumber class]);
+	if(category == nil)
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: invalid category for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
+
+	tagData = objectForKey(bloc, JSON_PROJ_TAG_DATA , @"tagData", [NSArray class]);
 	if(tagData == nil)
 	{
 #ifdef DEV_VERSION
@@ -602,8 +608,17 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.status = [status unsignedCharValue];
 	if(data.status > STATUS_MAX)	data.status = STATUS_INVALID;
 
+	data.category = [category unsignedIntValue];
+	if(!doesCatOfIDExist(data.category))
+	{
+#ifdef DEV_VERSION
+		NSLog(@"Project parser error: valid category formating but still unknown for project of ID %@ (%@) in %@", ID, projectName, bloc);
+#endif
+		goto end;
+	}
+
 	//Failure at loading tags
-	if(!convertTagMask(tagData, &(data.category), &(data.tags), &(data.nbTags), &(data.mainTag)))
+	if(!convertTagMask(tagData, &(data.tags), &(data.nbTags), &(data.mainTag)))
 		goto end;
 
 	data.locale = isLocale != nil && [isLocale boolValue];
@@ -673,6 +688,8 @@ NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 		[output setObject:getStringForWchar(project.project.authorName) forKey:JSON_PROJ_AUTHOR];
 	
 	[output setObject:@(project.project.status) forKey:JSON_PROJ_STATUS];
+
+	[output setObject:@(project.project.category) forKey:JSON_PROJ_TAG_CATEGORY];
 
 	[output setObject:reverseTag(project.project) forKey:JSON_PROJ_TAG_DATA];
 
@@ -1027,28 +1044,19 @@ void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSE
 	*output = input.data;
 }
 
-bool convertTagMask(NSDictionary * input, uint32_t * category, TAG ** tagData, uint32_t * nbTags, uint32_t * mainTag)
+bool convertTagMask(NSArray * input, TAG ** tagData, uint32_t * nbTags, uint32_t * mainTag)
 {
-	//Extract categorys
-	NSNumber * _category = objectForKey(input, JSON_PROJ_TAG_CATEGORY, @"category", [NSNumber class]);
-	if(_category == nil || !doesCatOfIDExist([_category unsignedIntValue]))
-		return false;
-
-	*category = [_category unsignedIntValue];
-
-	//Extract the main tag array
-	NSArray * _tagData = objectForKey(input, JSON_PROJ_TAG_DATA, @"tags", [NSArray class]);
-	if(_tagData == nil || [_tagData count] == 0 || [_tagData count] > UINT_MAX)
+	if(input == nil || [input count] == 0 || [input count] > UINT_MAX)
 		return false;
 
 	//We allocate enough memory to load everything
 	uint validCount = 0;
-	TAG * tmpTag = malloc([_tagData count] * sizeof(TAG));
+	TAG * tmpTag = malloc([input count] * sizeof(TAG));
 
 	if(tmpTag == NULL)
 		return false;
 
-	for(NSNumber * tagEntry in _tagData)
+	for(NSNumber * tagEntry in input)
 	{
 		//Ensure tag is valid
 		if(ARE_CLASSES_DIFFERENT(tagEntry, [NSNumber class]))
@@ -1073,7 +1081,7 @@ bool convertTagMask(NSDictionary * input, uint32_t * category, TAG ** tagData, u
 	}
 
 	//Less data than expected, let's not waste memory
-	if(validCount < [_tagData count])
+	if(validCount < [input count])
 	{
 		void * tmp = realloc(tmpTag, validCount * sizeof(TAG));
 		if(tmp != NULL)

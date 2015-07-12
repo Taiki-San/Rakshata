@@ -407,10 +407,17 @@ enum
 	else
 		currentProject->data.project.status = STATUS_INVALID;
 
-	//TagMask
-	NSDictionary * dict = objectForKey(entry, RAK_STRING_METADATA_TAG_DATA, nil, [NSDictionary class]);
+	//Category
+	entryNumber = objectForKey(entry, RAK_STRING_METADATA_CATEGORY, nil, [NSNumber class]);
 	if(entryNumber != nil)
-		convertTagMask(dict, &(currentProject->data.project.category), &(currentProject->data.project.tags), &(currentProject->data.project.nbTags), &(currentProject->data.project.mainTag));
+		currentProject->data.project.category = [entryNumber unsignedIntValue];
+	else
+		currentProject->data.project.category = CAT_NO_VALUE;
+
+	//TagMask
+	NSArray * array = objectForKey(entry, RAK_STRING_METADATA_TAG_DATA, nil, [NSArray class]);
+	if(entryNumber != nil)
+		convertTagMask(array, &(currentProject->data.project.tags), &(currentProject->data.project.nbTags), &(currentProject->data.project.mainTag));
 
 	//Right to Left
 	entryNumber = objectForKey(entry, RAK_STRING_METADATA_RIGHT2LEFT, nil, [NSNumber class]);

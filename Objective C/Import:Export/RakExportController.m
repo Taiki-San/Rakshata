@@ -209,6 +209,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	if(project.status != STATUS_INVALID)
 		[dict setObject:@(project.status) forKey:RAK_STRING_METADATA_STATUS];
 
+	[dict setObject:@(project.category) forKey:RAK_STRING_METADATA_CATEGORY];
 	[dict setObject:reverseTag(project) forKey:RAK_STRING_METADATA_TAG_DATA];
 	[dict setObject:@(project.rightToLeft) forKey:RAK_STRING_METADATA_RIGHT2LEFT];
 

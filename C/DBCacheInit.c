@@ -253,7 +253,7 @@ void syncCacheToDisk(byte syncCode)
 	ROOT_REPO_DATA **rootRepoDB = (ROOT_REPO_DATA **) getCopyKnownRepo(&nbRepo, true);
 
 	if(syncCode & SYNC_PROJECTS)
-		projectDB = getCopyCache(RDB_LOADALL | SORT_REPO | RDB_PARSED_OUTPUT, &nbProject);
+		projectDB = getCopyCache(RDB_LOADALL | SORT_REPO | RDB_PARSED_OUTPUT | RDB_INCLUDE_TAGS, &nbProject);
 	else
 		nbProject = 0;
 
@@ -316,7 +316,7 @@ void flushDB()
 
 	MUTEX_LOCK(cacheMutex);
 
-	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)" FROM "MAIN_CACHE);
+	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tagData)" FROM "MAIN_CACHE);
 
 	if(request != NULL)
 	{
@@ -329,6 +329,7 @@ void flushDB()
 			freeTomeList((void*) sqlite3_column_int64(request, 4), (uint32_t) sqlite3_column_int(request, 5), true);
 			freeTomeList((void*) sqlite3_column_int64(request, 6), (uint32_t) sqlite3_column_int(request, 7), true);
 			freeTomeList((void*) sqlite3_column_int64(request, 8), (uint32_t) sqlite3_column_int(request, 9), true);
+			free((void*) sqlite3_column_int64(request, 10));
 		}
 
 		destroyRequest(request);
