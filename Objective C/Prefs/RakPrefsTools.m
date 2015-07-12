@@ -97,11 +97,48 @@ NSArray * loadCustomColor(const char * file)
 		}
 		
 		//Load the color
-		NSColor * newColor = [NSColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
-												 green:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f
-												  blue:[[currentEntry objectAtIndex:2] unsignedCharValue] / 255.0f
-												 alpha:[[currentEntry objectAtIndex:3] unsignedCharValue] / 255.0f];
-		
+
+		NSColor * newColor = nil;
+		switch ([currentEntry count])
+		{
+			case 1:
+			{
+				newColor = [NSColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f alpha:1];
+				break;
+			}
+
+			case 2:
+			{
+				newColor = [NSColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+												   alpha:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f];
+				break;
+			}
+
+			case 3:
+			{
+				newColor = [NSColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+												green:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f
+												 blue:[[currentEntry objectAtIndex:2] unsignedCharValue] / 255.0f
+												alpha:1];
+				break;
+			}
+
+			case 4:
+			{
+				newColor = [NSColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+											   green:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f
+												blue:[[currentEntry objectAtIndex:2] unsignedCharValue] / 255.0f
+											   alpha:[[currentEntry objectAtIndex:3] unsignedCharValue] / 255.0f];
+				break;
+			}
+		}
+
+		if(newColor == nil)
+		{
+			NSLog(@"Invalid content for key `%s`", names[pos]);
+			return nil;
+		}
+
 		if(ID[pos] >= [mutableOutput count])
 			[mutableOutput insertObject:newColor atIndex:ID[pos]];
 		else
