@@ -131,7 +131,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	projectDB->favoris = !projectDB->favoris;
 	setFavoriteForID(projectDB->cacheDBID, projectDB->favoris);
 
-	PROJECT_DATA cacheCopy = getProjectByIDHelper(projectDB->cacheDBID, false, false).project;
+	PROJECT_DATA cacheCopy = getProjectByIDHelper(projectDB->cacheDBID, false, false, true).project;
 	if(cacheCopy.isInitialized)
 	{
 		updateProjectSearch(NULL, cacheCopy);

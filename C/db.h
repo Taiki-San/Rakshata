@@ -23,25 +23,22 @@ enum getCopyDBCodes
 	RDB_LOADALL				= 0x0,
 	RDB_LOADINSTALLED		= 0x1,
 	RDB_LOAD_FAVORITE		= 0x2,
-	RDB_LOADMASK			= RDB_LOADINSTALLED | RDB_LOAD_FAVORITE,
 	
 	//Sorting type
 	SORT_NAME				= 0x0,
 	SORT_REPO				= 0x4,
 	SORT_ID					= 0x8,
-	RDB_SORTMASK			= SORT_REPO | SORT_ID,
 	SORT_DEFAULT			= SORT_ID,
 	
 	//Amount of detail
 	RDB_COPY_ALL			= 0x0,
 	RDB_EXCLUDE_DYNAMIC		= 0x10,
-	RDB_COPY_MASK			= RDB_EXCLUDE_DYNAMIC,
 
 	//Want only remote or also the locally imported data
+	RDB_INCLUDE_LOCAL		= 0x0,
 	RDB_REMOTE_ONLY			= 0x20,
 	RDB_PARSED_OUTPUT		= 0x40,
-	RDB_INCLUDE_LOCAL		= 0x0,
-	RDB_REMOTE_MASK			= RDB_REMOTE_ONLY | RDB_PARSED_OUTPUT
+	RDB_INCLUDE_TAGS		= 0x80
 };
 
 enum
@@ -125,9 +122,9 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID);
 void freeParseProjectData(PROJECT_DATA_PARSED * projectDB);
 void freeProjectData(PROJECT_DATA* projectDB);
 
-void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed);
+void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed, bool wantTags);
 PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed);
-PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed);
+PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed, bool wantTags);
 PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID);
 PROJECT_DATA getProjectByID(uint cacheID);
 
@@ -207,11 +204,13 @@ uint getEmptyLocalSlot(PROJECT_DATA project);
 void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome);
 
 /**tagManagement.c**/
-CATEGORY getCategoryForID(uint32_t categoryID);
 uint getRootCategoryIDForID(uint32_t categoryID);
 
 charType * getCatNameForCode(uint32_t catID);
 charType * getTagNameForCode(uint tagID);
+
+bool doesCatOfIDExist(uint32_t catID);
+bool doesTagOfIDExist(uint32_t tagID);
 
 /**		TagUpdate.c		**/
 void checkIfRefreshTag();

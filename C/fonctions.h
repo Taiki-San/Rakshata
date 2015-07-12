@@ -59,8 +59,6 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput);
 void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSED * output);
 
-void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag);
-
 ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw);
 ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem);
 char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeOutput);

@@ -70,16 +70,12 @@ typedef struct
 	uint rootID;
 	
 	charType * name;
-	
-	TAG tags[TAG_PAR_CAT];
-	
+
 } CATEGORY_VERBOSE;
 
 typedef struct
 {
-	TAG tags[TAG_PAR_CAT];
 	uint ID;
-	bool haveData;
 
 } CATEGORY;
 
@@ -245,19 +241,22 @@ typedef struct
 	charType authorName[LENGTH_AUTHORS];
 	bool rightToLeft;
 	
-	//Deux blocs de 64b complets
-	uint32_t category;
-	uint32_t mainTag;
-	uint64_t tagMask;
-	
 	//Un bloc de 64b
 	uint32_t projectID;
 	uint32_t cacheDBID;
-	
+
+	//Deux blocs de 64b complets
+	uint32_t category;
+	uint32_t mainTag;
+	TAG *tags;
+
+	//64 bit
+	uint32_t nbTags;
 	uint8_t status;
 	bool isPaid;
 	bool locale;
 	bool haveDRM;
+
 	bool isInitialized;
 	
 } PROJECT_DATA;

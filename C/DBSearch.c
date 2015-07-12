@@ -451,7 +451,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 		}
 		
 		//Insert the catID and its parents
-		while (!fail && catID != TAG_NO_VALUE)
+		while (!fail && catID != CAT_NO_VALUE)
 		{
 			sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
 			sqlite3_bind_int(request, 2, (int32_t) catID);

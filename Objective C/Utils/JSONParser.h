@@ -20,6 +20,9 @@ PROJECT_DATA parseBloc(NSDictionary * bloc);
 PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc);
 void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem, bool parseExtra);
 
+bool convertTagMask(NSDictionary * input, uint32_t * category, TAG ** tagData, uint32_t * nbTags, uint32_t * mainTag);
+NSDictionary * reverseTag(PROJECT_DATA project);
+
 //Repo parser
 NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root);
 
@@ -46,8 +49,9 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem);
 #define JSON_PROJ_DESCRIPTION @"13"
 #define JSON_PROJ_AUTHOR @"14"
 #define JSON_PROJ_STATUS @"15"
-#define JSON_PROJ_TAGMASK @"16"
-#define JSON_PROJ_ASIAN_ORDER @"17"
+#define JSON_PROJ_TAG_DATA @"16"
+#define JSON_PROJ_RIGHT_TO_LEFT @"17"
+#define JSON_PROJ_TAG_CATEGORY @"18"
 #define JSON_PROJ_ISLOCAL @"18"
 #define JSON_PROJ_PRICE @"19"
 #define JSON_PROJ_DRM @"4.2"

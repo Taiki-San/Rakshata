@@ -68,7 +68,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 			continue;
 		
 		NSNumber * ID = objectForKey(currentTag, JSON_TAG_ID, @"id", [NSNumber class]);
-		if(ID == nil || [ID unsignedIntValue] == TAG_NO_VALUE)
+		if(ID == nil || [ID unsignedIntValue] == CAT_NO_VALUE)
 			continue;
 		
 		NSString * name = objectForKey(currentTag, JSON_TAG_NAME, @"name", [NSString class]);
@@ -105,7 +105,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	for(NSDictionary * currentCat in mainCats)
 	{
 		NSNumber * ID = objectForKey(currentCat, JSON_TAG_ID, @"id", [NSNumber class]);
-		if(ID == nil || [ID unsignedIntValue] == TAG_NO_VALUE)
+		if(ID == nil || [ID unsignedIntValue] == CAT_NO_VALUE)
 			continue;
 		
 		NSNumber * master = objectForKey(currentCat, JSON_TAG_MASTER, @"master", [NSNumber class]);
@@ -116,10 +116,6 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 		if(name == nil || [name length] == 0)
 			continue;
 		
-		NSArray * tagsOfCat = objectForKey(currentCat, JSON_TAG_TAGS, @"tags", [NSArray class]);
-		if(tagsOfCat == nil || [tagsOfCat count] == 0 || [tagsOfCat count] > TAG_PAR_CAT)
-			continue;
-		
 		//Data sanitized, copy them
 		categories[currentPosCat].name = wstrdup((charType *) [name cStringUsingEncoding:NSUTF32StringEncoding]);
 		if(categories[currentPosCat].name == NULL)
@@ -127,30 +123,6 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 		
 		categories[currentPosCat].ID = [ID unsignedIntValue];
 		categories[currentPosCat].rootID = [master unsignedIntValue];
-
-		//We copy the ID of our tags
-		BOOL haveOneValid = NO;
-		uint posInTags = 0;
-		for(NSNumber * currentTag in tagsOfCat)
-		{
-			if(currentTag != nil && !ARE_CLASSES_DIFFERENT(currentTag, [NSNumber class]))
-			{
-				haveOneValid = YES;
-				categories[currentPosCat].tags[posInTags].ID = [currentTag unsignedIntValue];
-			}
-			else
-				categories[currentPosCat].tags[posInTags].ID = TAG_NO_VALUE;
-			
-			posInTags++;
-		}
-		
-		for(; posInTags < TAG_PAR_CAT; categories[currentPosCat].tags[posInTags++].ID = TAG_NO_VALUE);
-		
-		//We validate of not the final payload
-		if(haveOneValid)
-			currentPosCat++;
-		else
-			free(categories[currentPosCat].name);
 	}
 	
 	//We reduce the size of the allocated memory if needed

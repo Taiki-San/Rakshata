@@ -42,12 +42,6 @@
 	if(project.authorName[0] == 0)
 		return true;
 
-	if(project.description[0] == 0)
-		return true;
-
-	if(project.tagMask == 0)
-		return true;
-
 	if(project.status == STATUS_INVALID)
 		return true;
 

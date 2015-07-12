@@ -308,7 +308,7 @@ enum
 				entryNumber = objectForKey(entry, RAK_STRING_METADATA_REPO_PROJID, nil, [NSNumber class]);
 				if(entryNumber != nil)
 				{
-					PROJECT_DATA_PARSED * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false, false, true);
+					PROJECT_DATA_PARSED * project = _getProjectFromSearch(repoID, [entryNumber unsignedIntValue], false, false, false, true, false);
 					if(project != NULL)
 					{
 						//Oh! The project exist! This is very cool!
@@ -337,7 +337,7 @@ enum
 
 						if(projectID != nil)	//Found something, probably that
 						{
-							currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true);
+							currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true, false);
 							return false;
 						}
 					}
@@ -373,7 +373,7 @@ enum
 
 			if(projectID != nil)	//Found something, probably that
 			{
-				currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true);
+				currentProject->data = getProjectByIDHelper([projectID unsignedLongLongValue], false, true, false);
 				return false;
 			}
 		}
@@ -408,9 +408,9 @@ enum
 		currentProject->data.project.status = STATUS_INVALID;
 
 	//TagMask
-	entryNumber = objectForKey(entry, RAK_STRING_METADATA_TAGMASK, nil, [NSNumber class]);
+	NSDictionary * dict = objectForKey(entry, RAK_STRING_METADATA_TAG_DATA, nil, [NSDictionary class]);
 	if(entryNumber != nil)
-		convertTagMask([entryNumber unsignedLongLongValue], &(currentProject->data.project.category), &(currentProject->data.project.tagMask), &(currentProject->data.project.mainTag));
+		convertTagMask(dict, &(currentProject->data.project.category), &(currentProject->data.project.tags), &(currentProject->data.project.nbTags), &(currentProject->data.project.mainTag));
 
 	//Right to Left
 	entryNumber = objectForKey(entry, RAK_STRING_METADATA_RIGHT2LEFT, nil, [NSNumber class]);

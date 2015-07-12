@@ -73,7 +73,6 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 		if(aChap != NULL && memcmp(aChap, bChap, lengthA * sizeof(int)))
 			return false;
 
-
 		META_TOME * aTome, * bTome;
 
 		if(count == 0)
@@ -127,8 +126,14 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 
 	if(a.project.status != b.project.status)
 		return false;
-	
-	if(a.project.tagMask != b.project.tagMask)
+
+	if(a.project.nbTags != b.project.nbTags)
+		return false;
+
+	if((a.project.tags != NULL) ^ (b.project.tags != NULL))
+		return false;
+
+	if(memcmp(a.project.tags, b.project.tags, a.project.nbTags * sizeof(TAG)))
 		return false;
 	
 	if(a.project.rightToLeft != b.project.rightToLeft)

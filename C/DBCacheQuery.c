@@ -12,7 +12,7 @@
 
 #include "dbCache.h"
 
-bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic)
+bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic, bool evenWantTags)
 {
 	void* buffer;
 
@@ -81,7 +81,18 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	output->rightToLeft = sqlite3_column_int(state, RDB_asianOrder-1);
 	output->isPaid = sqlite3_column_int(state, RDB_isPaid-1);
 	output->mainTag = (uint32_t) sqlite3_column_int(state, RDB_mainTagID-1);
-	output->tagMask = (uint64_t) sqlite3_column_int64(state, RDB_tagMask-1);
+
+	if(evenWantTags)
+	{
+		output->nbTags = (uint32_t) sqlite3_column_int(state, RDB_nbTagData-1);
+		output->tags = duplicateTag((void *) sqlite3_column_int64(state, RDB_tagData-1), output->nbTags);
+	}
+	else
+	{
+		output->nbTags = 0;
+		output->tags = NULL;
+	}
+
 	output->nombreChapitre = (uint32_t) sqlite3_column_int(state, RDB_nombreChapitre-1);
 	output->locale = (bool) sqlite3_column_int(state, RDB_isLocal-1);
 	
@@ -167,15 +178,16 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	return true;
 }
 
-bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
+bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bool copyDynamic)
 {
 	if(state == NULL || output == NULL)
 		return false;
 
 	//Copy chapitreLocal
 	output->nombreChapitreLocal = (uint32_t) sqlite3_column_int(state, RDB_chapitreLocalLength-1);
+
 	void * buffer = (void*) sqlite3_column_int64(state, RDB_chapitreLocal-1);
-	if(buffer != NULL)
+	if(copyDynamic && buffer != NULL)
 	{
 		output->chapitresLocal = malloc(output->nombreChapitreLocal * sizeof(int));
 		if(output->chapitresLocal != NULL)
@@ -184,13 +196,15 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
 	else
 	{
 		output->chapitresLocal = NULL;
-		output->nombreChapitreLocal = 0;
+
+		if(copyDynamic)
+			output->nombreChapitreLocal = 0;
 	}
 
 	//Copy chapitreRemote
 	output->nombreChapitreRemote = (uint32_t) sqlite3_column_int(state, RDB_chapitreRemoteLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitreRemote-1);
-	if(buffer != NULL)
+	if(copyDynamic && buffer != NULL)
 	{
 		output->chapitresRemote = malloc(output->nombreChapitreRemote * sizeof(int));
 		if(output->chapitresRemote != NULL)
@@ -199,13 +213,15 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
 	else
 	{
 		output->chapitresRemote = NULL;
-		output->nombreChapitreRemote = 0;
+
+		if(copyDynamic)
+			output->nombreChapitreRemote = 0;
 	}
 
 	//Copy tomeLocal
 	output->nombreTomeLocal = (uint32_t) sqlite3_column_int(state, RDB_tomeLocalLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_tomeLocal-1);
-	if(buffer != NULL)
+	if(copyDynamic && buffer != NULL)
 	{
 		output->tomeLocal = malloc(output->nombreTomeLocal * sizeof(META_TOME));
 		if(output->tomeLocal != NULL)
@@ -216,13 +232,15 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
 	else
 	{
 		output->tomeLocal = NULL;
-		output->nombreTomeLocal = 0;
+
+		if(copyDynamic)
+			output->nombreTomeLocal = 0;
 	}
 
 	//And, finally, tomeRemote
 	output->nombreTomeRemote = (uint32_t) sqlite3_column_int(state, RDB_tomeRemoteLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_tomeRemote-1);
-	if(buffer != NULL)
+	if(copyDynamic && buffer != NULL)
 	{
 		output->tomeRemote = malloc(output->nombreTomeRemote * sizeof(META_TOME));
 		if(output->tomeRemote != NULL)
@@ -233,7 +251,9 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output)
 	else
 	{
 		output->tomeRemote = NULL;
-		output->nombreTomeRemote = 0;
+
+		if(copyDynamic)
+			output->nombreTomeRemote = 0;
 	}
 
 	return true;
@@ -243,7 +263,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 {
 	uint pos = 0;
 	void * output = NULL;
-	bool wantParsedOutput = (maskRequest & RDB_REMOTE_MASK) & RDB_PARSED_OUTPUT, copyDynamic = (maskRequest & RDB_COPY_MASK) != RDB_EXCLUDE_DYNAMIC;
+	bool wantParsedOutput = maskRequest & RDB_PARSED_OUTPUT, copyDynamic = !(maskRequest & RDB_EXCLUDE_DYNAMIC), wantTags = maskRequest & RDB_INCLUDE_TAGS;
 	
 	if(nbElemCopied != NULL)
 		*nbElemCopied = 0;
@@ -258,21 +278,21 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		int lengthWritten = 0;
 
 		//Sort requirement
-		if((maskRequest & RDB_SORTMASK) == SORT_NAME)
+		if(maskRequest & SORT_NAME)
 			strncpy(sortRequest, DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC, 50);
-		else if((maskRequest & RDB_SORTMASK) == SORT_REPO)
+		else if(maskRequest & SORT_REPO)
 			strncpy(sortRequest, DBNAMETOID(RDB_repo), 50);
 		else
 			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
 
 		//Type of data we look for
-		if((maskRequest & RDB_LOADMASK) == RDB_LOADINSTALLED)
+		if(maskRequest & RDB_LOADINSTALLED)
 			lengthWritten += snprintf(searchCond, 200, DBNAMETOID(RDB_isInstalled)" = 1");
-		else if((maskRequest & RDB_LOADMASK) == RDB_LOAD_FAVORITE)
+		else if(maskRequest & RDB_LOAD_FAVORITE)
 			lengthWritten += snprintf(searchCond, 200, DBNAMETOID(RDB_favoris)" = 1");
 
 		//Don't want local data
-		if((maskRequest & RDB_REMOTE_MASK) & RDB_REMOTE_ONLY)
+		if(maskRequest & RDB_REMOTE_ONLY)
 		{
 			if(lengthWritten)
 				lengthWritten += snprintf(&(searchCond[lengthWritten]), 200 - (uint) lengthWritten, " AND "DBNAMETOID(RDB_isLocal)" = 0");
@@ -294,8 +314,8 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		{
 			if(wantParsedOutput)
 			{
-				if(!copyOutputDBToStruct(request, &(((PROJECT_DATA_PARSED *) output)[pos].project), copyDynamic)
-				   || (copyDynamic && !copyParsedDBToStruct(request, &(((PROJECT_DATA_PARSED *) output)[pos]))))
+				if(!copyOutputDBToStruct(request, &(((PROJECT_DATA_PARSED *) output)[pos].project), copyDynamic, wantTags)
+				   || !copyParsedDBToStruct(request, &(((PROJECT_DATA_PARSED *) output)[pos]), copyDynamic))
 					continue;
 
 				if(((PROJECT_DATA_PARSED *) output)[pos].project.isInitialized)
@@ -303,7 +323,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 			}
 			else
 			{
-				if(!copyOutputDBToStruct(request, &((PROJECT_DATA *) output)[pos], copyDynamic))
+				if(!copyOutputDBToStruct(request, &((PROJECT_DATA *) output)[pos], copyDynamic, wantTags))
 					continue;
 
 				if(((PROJECT_DATA *) output)[pos].isInitialized)
@@ -327,7 +347,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	return output;
 }
 
-void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed)
+void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed, bool copyDynamic, bool wantParsed, bool wantTags)
 {
 	void * output = calloc(1, wantParsed ? sizeof(PROJECT_DATA_PARSED) : sizeof(PROJECT_DATA));
 	if(output == NULL)
@@ -348,14 +368,14 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 	{
 		if(wantParsed)
 		{
-			if(!copyOutputDBToStruct(request, &((PROJECT_DATA_PARSED *) output)->project, copyDynamic)
-			   || (copyDynamic && !copyParsedDBToStruct(request, (PROJECT_DATA_PARSED *) output)))
+			if(!copyOutputDBToStruct(request, &((PROJECT_DATA_PARSED *) output)->project, copyDynamic, wantTags)
+			   || (copyDynamic && !copyParsedDBToStruct(request, (PROJECT_DATA_PARSED *) output, copyDynamic)))
 			{
 				free(output);
 				output = NULL;
 			}
 		}
-		else if(!copyOutputDBToStruct(request, output, copyDynamic))
+		else if(!copyOutputDBToStruct(request, output, copyDynamic, wantTags))
 		{
 			free(output);
 			output = NULL;
@@ -393,10 +413,10 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 
 PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool installed)
 {
-	return _getProjectFromSearch(IDRepo, projectID, locale, installed, true, false);
+	return _getProjectFromSearch(IDRepo, projectID, locale, installed, true, false, false);
 }
 
-PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed)
+PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed, bool wantTags)
 {
 	PROJECT_DATA_PARSED output = getEmptyParsedProject();
 
@@ -407,9 +427,9 @@ PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wa
 
 		MUTEX_LOCK(cacheParseMutex);
 
-		if(sqlite3_step(request) == SQLITE_ROW && copyOutputDBToStruct(request, &output.project, copyDynamic) && wantParsed)
+		if(sqlite3_step(request) == SQLITE_ROW && copyOutputDBToStruct(request, &output.project, copyDynamic, wantTags) && wantParsed)
 		{
-			copyParsedDBToStruct(request, &output);
+			copyParsedDBToStruct(request, &output, copyDynamic);
 		}
 
 		MUTEX_UNLOCK(cacheParseMutex);
@@ -422,12 +442,12 @@ PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wa
 
 PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID)
 {
-	return getProjectByIDHelper(cacheID, true, true);
+	return getProjectByIDHelper(cacheID, true, true, false);
 }
 
 PROJECT_DATA getProjectByID(uint cacheID)
 {
-	return getProjectByIDHelper(cacheID, true, false).project;
+	return getProjectByIDHelper(cacheID, true, false, false).project;
 }
 
 uint * getFavoritesID(uint * nbFavorites)

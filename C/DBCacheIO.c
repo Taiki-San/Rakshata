@@ -14,7 +14,7 @@
 
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db)
 {
-	return createRequest(db, "INSERT INTO "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_mainTagID)", "DBNAMETOID(RDB_tagMask)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreRemoteLength)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitreLocalLength)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_favoris)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28);");
+	return createRequest(db, "INSERT INTO "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_mainTagID)", "DBNAMETOID(RDB_tagData)", "DBNAMETOID(RDB_nbTagData)", "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreRemoteLength)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitreLocalLength)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_favoris)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29);");
 }
 
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID)
@@ -57,23 +57,24 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID
 	sqlite3_bind_int(internalRequest, 9, data.project.rightToLeft);
 	sqlite3_bind_int(internalRequest, 10, data.project.isPaid);
 	sqlite3_bind_int(internalRequest, 11, (int32_t) data.project.mainTag);
-	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.project.tagMask);
-	sqlite3_bind_int(internalRequest, 13, data.project.nombreChapitre);
-	sqlite3_bind_int64(internalRequest, 14, (int64_t) data.project.chapitresFull);
-	sqlite3_bind_int(internalRequest, 15, (int32_t) data.nombreChapitreRemote);
-	sqlite3_bind_int64(internalRequest, 16, (int64_t) data.chapitresRemote);
-	sqlite3_bind_int(internalRequest, 17, (int32_t) data.nombreChapitreLocal);
-	sqlite3_bind_int64(internalRequest, 18, (int64_t) data.chapitresLocal);
-	sqlite3_bind_int64(internalRequest, 19, (int64_t) data.project.chapitresPrix);
-	sqlite3_bind_int(internalRequest, 20, data.project.nombreTomes);
-	sqlite3_bind_int(internalRequest, 21, data.project.haveDRM);
-	sqlite3_bind_int64(internalRequest, 22, (int64_t) data.project.tomesFull);
-	sqlite3_bind_int(internalRequest, 23, (int32_t) data.nombreTomeRemote);
-	sqlite3_bind_int64(internalRequest, 24, (int64_t) data.tomeRemote);
-	sqlite3_bind_int(internalRequest, 25, (int32_t) data.nombreTomeLocal);
-	sqlite3_bind_int64(internalRequest, 26, (int64_t) data.tomeLocal);
-	sqlite3_bind_int(internalRequest, 27, data.project.favoris);
-	sqlite3_bind_int(internalRequest, 28, data.project.locale);
+	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.project.tags);
+	sqlite3_bind_int(internalRequest, 13, (int32_t) data.project.nbTags);
+	sqlite3_bind_int(internalRequest, 14, data.project.nombreChapitre);
+	sqlite3_bind_int64(internalRequest, 15, (int64_t) data.project.chapitresFull);
+	sqlite3_bind_int(internalRequest, 16, (int32_t) data.nombreChapitreRemote);
+	sqlite3_bind_int64(internalRequest, 17, (int64_t) data.chapitresRemote);
+	sqlite3_bind_int(internalRequest, 18, (int32_t) data.nombreChapitreLocal);
+	sqlite3_bind_int64(internalRequest, 19, (int64_t) data.chapitresLocal);
+	sqlite3_bind_int64(internalRequest, 20, (int64_t) data.project.chapitresPrix);
+	sqlite3_bind_int(internalRequest, 21, data.project.nombreTomes);
+	sqlite3_bind_int(internalRequest, 22, data.project.haveDRM);
+	sqlite3_bind_int64(internalRequest, 23, (int64_t) data.project.tomesFull);
+	sqlite3_bind_int(internalRequest, 24, (int32_t) data.nombreTomeRemote);
+	sqlite3_bind_int64(internalRequest, 25, (int64_t) data.tomeRemote);
+	sqlite3_bind_int(internalRequest, 26, (int32_t) data.nombreTomeLocal);
+	sqlite3_bind_int64(internalRequest, 27, (int64_t) data.tomeLocal);
+	sqlite3_bind_int(internalRequest, 28, data.project.favoris);
+	sqlite3_bind_int(internalRequest, 29, data.project.locale);
 	
 	bool output = sqlite3_step(internalRequest) == SQLITE_DONE;
 	
@@ -184,7 +185,7 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	lengthA = wchar_to_utf8(data.project.authorName, lengthA, utf8Author, sizeof(utf8Author), 0);				utf8Author[lengthA] = 0;
 	
 	//On pratique le remplacement effectif
-	request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_category)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_mainTagID)" = ?8, "DBNAMETOID(RDB_tagMask)" = ?9, "DBNAMETOID(RDB_nombreChapitre)" = ?10, "DBNAMETOID(RDB_chapitres)" = ?11, "DBNAMETOID(RDB_chapitreRemoteLength)" = ?12, "DBNAMETOID(RDB_chapitreRemote)" = ?13, "DBNAMETOID(RDB_chapitreLocalLength)" = ?14, "DBNAMETOID(RDB_chapitreLocal)" = ?15, "DBNAMETOID(RDB_chapitresPrice)" = ?16, "DBNAMETOID(RDB_nombreTomes)" = ?17, "DBNAMETOID(RDB_DRM)" = ?18, "DBNAMETOID(RDB_tomes)" = ?19, "DBNAMETOID(RDB_tomeRemoteLength)" = ?20, "DBNAMETOID(RDB_tomeRemote)" = ?21, "DBNAMETOID(RDB_tomeLocalLength)" = ?22, "DBNAMETOID(RDB_tomeLocal)" = ?23, "DBNAMETOID(RDB_favoris)" = ?24, "DBNAMETOID(RDB_isLocal)" = ?25 WHERE "DBNAMETOID(RDB_ID)" = ?26");
+	request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_category)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_mainTagID)" = ?8, "DBNAMETOID(RDB_tagData)" = ?9, "DBNAMETOID(RDB_nbTagData)" = ?27, "DBNAMETOID(RDB_nombreChapitre)" = ?10, "DBNAMETOID(RDB_chapitres)" = ?11, "DBNAMETOID(RDB_chapitreRemoteLength)" = ?12, "DBNAMETOID(RDB_chapitreRemote)" = ?13, "DBNAMETOID(RDB_chapitreLocalLength)" = ?14, "DBNAMETOID(RDB_chapitreLocal)" = ?15, "DBNAMETOID(RDB_chapitresPrice)" = ?16, "DBNAMETOID(RDB_nombreTomes)" = ?17, "DBNAMETOID(RDB_DRM)" = ?18, "DBNAMETOID(RDB_tomes)" = ?19, "DBNAMETOID(RDB_tomeRemoteLength)" = ?20, "DBNAMETOID(RDB_tomeRemote)" = ?21, "DBNAMETOID(RDB_tomeLocalLength)" = ?22, "DBNAMETOID(RDB_tomeLocal)" = ?23, "DBNAMETOID(RDB_favoris)" = ?24, "DBNAMETOID(RDB_isLocal)" = ?25 WHERE "DBNAMETOID(RDB_ID)" = ?26");
 	
 	sqlite3_bind_text(request, 1, utf8Project, lengthP, SQLITE_STATIC);
 	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);
@@ -194,7 +195,8 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 6, data.project.rightToLeft);
 	sqlite3_bind_int(request, 7, data.project.isPaid);
 	sqlite3_bind_int(request, 8, (int32_t) data.project.mainTag);
-	sqlite3_bind_int64(request, 9, (int64_t) data.project.tagMask);
+	sqlite3_bind_int64(request, 9, (int64_t) duplicateTag(data.project.tags, data.project.nbTags));
+	sqlite3_bind_int(request, 27, (int32_t) data.project.nbTags);
 	sqlite3_bind_int(request, 10, data.project.nombreChapitre);
 	sqlite3_bind_int(request, 12, (int32_t) data.nombreChapitreRemote);
 	sqlite3_bind_int(request, 14, (int32_t) data.nombreChapitreLocal);

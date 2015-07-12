@@ -519,7 +519,8 @@ void releaseCTData(PROJECT_DATA data)
 			fclose(output);
 		}
 #endif
-		
+
+		free(data.tags);
 		free(data.chapitresFull);
 		free(data.chapitresInstalled);
 		free(data.chapitresPrix);

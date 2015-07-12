@@ -209,7 +209,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	if(project.status != STATUS_INVALID)
 		[dict setObject:@(project.status) forKey:RAK_STRING_METADATA_STATUS];
 
-	[dict setObject:@(project.tagMask) forKey:RAK_STRING_METADATA_TAGMASK];
+	[dict setObject:reverseTag(project) forKey:RAK_STRING_METADATA_TAG_DATA];
 	[dict setObject:@(project.rightToLeft) forKey:RAK_STRING_METADATA_RIGHT2LEFT];
 
 	//Okay, now, we want to inser the thumbnails

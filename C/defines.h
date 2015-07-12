@@ -79,8 +79,7 @@ enum
 #define TOME_DESCRIPTION_LENGTH 256
 
 /*Tags*/
-#define TAG_PAR_CAT 32
-#define TAG_NO_VALUE 0
+#define CAT_NO_VALUE 0
 
 /*Repo*/
 enum

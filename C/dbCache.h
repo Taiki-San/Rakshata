@@ -34,8 +34,8 @@ sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID);
 void removeFromCache(PROJECT_DATA_PARSED data);
 void consolidateCache();
-bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic);
-bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output);
+bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic, bool evenWantTags);
+bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bool copyDynamic);
 
 //Repository
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
@@ -90,6 +90,7 @@ int createCollate(sqlite3 * database);
 
 /******		DBTags.c	*******/
 void initializeTags(void * mainCache);
+TAG * duplicateTag(TAG * tagToDuplicate, uint32_t nbTag);
 
 /******		DBLocal.c	*******/
 void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject);
@@ -109,23 +110,24 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_asianOrder				10
 #define RDB_isPaid					11
 #define RDB_mainTagID				12
-#define RDB_tagMask					13
-#define RDB_nombreChapitre			14
-#define RDB_chapitres				15
-#define RDB_chapitreRemote			16
-#define RDB_chapitreRemoteLength	17
-#define RDB_chapitreLocal			18
-#define RDB_chapitreLocalLength		19
-#define RDB_chapitresPrice			20
-#define RDB_nombreTomes				21
-#define RDB_DRM						22
-#define RDB_tomes					23
-#define RDB_tomeRemote				24
-#define RDB_tomeRemoteLength		25
-#define RDB_tomeLocal				26
-#define RDB_tomeLocalLength			27
-#define RDB_favoris					28
-#define RDB_isLocal					29
+#define RDB_tagData					13
+#define RDB_nbTagData				14
+#define RDB_nombreChapitre			15
+#define RDB_chapitres				16
+#define RDB_chapitreRemote			17
+#define RDB_chapitreRemoteLength	18
+#define RDB_chapitreLocal			19
+#define RDB_chapitreLocalLength		20
+#define RDB_chapitresPrice			21
+#define RDB_nombreTomes				22
+#define RDB_DRM						23
+#define RDB_tomes					24
+#define RDB_tomeRemote				25
+#define RDB_tomeRemoteLength		26
+#define RDB_tomeLocal				27
+#define RDB_tomeLocalLength			28
+#define RDB_favoris					29
+#define RDB_isLocal					30
 
 #define RDBS_dataID			21
 #define RDBS_dataType		22
@@ -136,38 +138,6 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_CAT_ID			26
 #define RDB_CAT_rootID		27
 #define RDB_CAT_name		28
-#define RDB_CAT_tag1		29
-#define RDB_CAT_tag2		30
-#define RDB_CAT_tag3		31
-#define RDB_CAT_tag4		32
-#define RDB_CAT_tag5		33
-#define RDB_CAT_tag6		34
-#define RDB_CAT_tag7		35
-#define RDB_CAT_tag8		36
-#define RDB_CAT_tag9		37
-#define RDB_CAT_tag10		38
-#define RDB_CAT_tag11		39
-#define RDB_CAT_tag12		40
-#define RDB_CAT_tag13		41
-#define RDB_CAT_tag14		42
-#define RDB_CAT_tag15		43
-#define RDB_CAT_tag16		44
-#define RDB_CAT_tag17		45
-#define RDB_CAT_tag18		46
-#define RDB_CAT_tag19		47
-#define RDB_CAT_tag20		48
-#define RDB_CAT_tag21		49
-#define RDB_CAT_tag22		50
-#define RDB_CAT_tag23		51
-#define RDB_CAT_tag24		52
-#define RDB_CAT_tag25		53
-#define RDB_CAT_tag26		54
-#define RDB_CAT_tag27		55
-#define RDB_CAT_tag28		56
-#define RDB_CAT_tag29		57
-#define RDB_CAT_tag30		58
-#define RDB_CAT_tag31		59
-#define RDB_CAT_tag32		60
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2

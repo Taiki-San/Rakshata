@@ -479,6 +479,27 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 	return [NSArray arrayWithArray:output];
 }
 
+NSDictionary * reverseTag(PROJECT_DATA project)
+{
+	NSMutableArray * tagArray = [NSMutableArray array];
+	if(tagArray != nil)
+	{
+		TAG * tags = project.tags;
+		for(uint i = 0; i < project.nbTags; i++)
+		{
+			[tagArray addObject:@(tags[i].ID)];
+		}
+
+		return @{JSON_PROJ_TAG_CATEGORY	: @(project.category),
+				 JSON_PROJ_TAG_DATA		: tagArray};
+	}
+
+	//Backup solution!
+
+	return @{JSON_PROJ_TAG_CATEGORY	: @(project.category),
+			 JSON_PROJ_TAG_DATA		: @[@(project.mainTag)]};
+}
+
 PROJECT_DATA parseBloc(NSDictionary * bloc)
 {
 	PROJECT_DATA data = getEmptyProject();
@@ -489,8 +510,9 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	META_TOME * volumes = NULL;
 	
 	//We create all variable first, otherwise ARC complain
-	NSNumber *ID, *status = nil, *rightToLeft = nil, *tagMask = nil, *paidContent = nil, *DRM = nil, * isLocale;
+	NSNumber *ID, *status = nil, *rightToLeft = nil, *paidContent = nil, *DRM = nil, * isLocale;
 	NSString * projectName = nil, *description = nil, *authors = nil;
+	NSDictionary *tagData = nil;
 	
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID", [NSNumber class]);
 	if(ID == nil)
@@ -553,7 +575,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 		goto end;
 	}
 	
-	rightToLeft = objectForKey(bloc, JSON_PROJ_ASIAN_ORDER , @"asian_order_of_reading", [NSNumber class]);
+	rightToLeft = objectForKey(bloc, JSON_PROJ_RIGHT_TO_LEFT , @"asian_order_of_reading", [NSNumber class]);
 	if(rightToLeft == nil)
 	{
 #ifdef DEV_VERSION
@@ -563,11 +585,11 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	}
 
 	
-	tagMask = objectForKey(bloc, JSON_PROJ_TAGMASK , @"tagMask", [NSNumber class]);
-	if(tagMask == nil)
+	tagData = objectForKey(bloc, JSON_PROJ_TAG_DATA , @"tagData", [NSDictionary class]);
+	if(tagData == nil)
 	{
 #ifdef DEV_VERSION
-		NSLog(@"Project parser error: invalid tagMask for project of ID %@ (%@) in %@", ID, projectName, bloc);
+		NSLog(@"Project parser error: invalid tag data for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
 	}
@@ -579,8 +601,10 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.tomesFull = volumes;			data.nombreTomes = nbVolumes;
 	data.status = [status unsignedCharValue];
 	if(data.status > STATUS_MAX)	data.status = STATUS_INVALID;
-	
-	convertTagMask([tagMask unsignedLongLongValue], &(data.category), &(data.tagMask), &(data.mainTag));
+
+	//Failure at loading tags
+	if(!convertTagMask(tagData, &(data.category), &(data.tags), &(data.nbTags), &(data.mainTag)))
+		goto end;
 
 	data.locale = isLocale != nil && [isLocale boolValue];
 	data.haveDRM = (DRM != nil && [DRM boolValue]) | (DRM == nil && isPaidContent);
@@ -649,9 +673,10 @@ NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 		[output setObject:getStringForWchar(project.project.authorName) forKey:JSON_PROJ_AUTHOR];
 	
 	[output setObject:@(project.project.status) forKey:JSON_PROJ_STATUS];
-	
-	[output setObject:@(project.project.tagMask) forKey:JSON_PROJ_TAGMASK];
-	[output setObject:@(project.project.rightToLeft) forKey:JSON_PROJ_ASIAN_ORDER];
+
+	[output setObject:reverseTag(project.project) forKey:JSON_PROJ_TAG_DATA];
+
+	[output setObject:@(project.project.rightToLeft) forKey:JSON_PROJ_RIGHT_TO_LEFT];
 	[output setObject:@(project.project.haveDRM) forKey:JSON_PROJ_DRM];
 
 	if(project.project.locale)
@@ -1002,25 +1027,61 @@ void moveProjectExtraToParsed(const PROJECT_DATA_EXTRA input, PROJECT_DATA_PARSE
 	*output = input.data;
 }
 
-void convertTagMask(uint64_t input, uint32_t * category, uint64_t * tagMask, uint32_t * mainTag)
+bool convertTagMask(NSDictionary * input, uint32_t * category, TAG ** tagData, uint32_t * nbTags, uint32_t * mainTag)
 {
-	*category = input >> (32 + 5);
-	*tagMask = input;
-	
-#ifdef DEV_VERSION
-	//Legacy support, should get rid of it asa repo are updated
-	if(*category == 0)
+	//Extract categorys
+	NSNumber * _category = objectForKey(input, JSON_PROJ_TAG_CATEGORY, @"category", [NSNumber class]);
+	if(_category == nil || !doesCatOfIDExist([_category unsignedIntValue]))
+		return false;
+
+	*category = [_category unsignedIntValue];
+
+	//Extract the main tag array
+	NSArray * _tagData = objectForKey(input, JSON_PROJ_TAG_DATA, @"tags", [NSArray class]);
+	if(_tagData == nil || [_tagData count] == 0 || [_tagData count] > UINT_MAX)
+		return false;
+
+	//We allocate enough memory to load everything
+	uint validCount = 0;
+	TAG * tmpTag = malloc([_tagData count] * sizeof(TAG));
+
+	if(tmpTag == NULL)
+		return false;
+
+	for(NSNumber * tagEntry in _tagData)
 	{
-		*category = 1;
-		*tagMask |= ((uint64_t) *category) << (32 + 5);
+		//Ensure tag is valid
+		if(ARE_CLASSES_DIFFERENT(tagEntry, [NSNumber class]))
+			continue;
+
+		uint32_t tag = [tagEntry unsignedIntValue];
+		if(!doesTagOfIDExist(tag))
+			continue;
+
+		//The first tag is the main tag
+		if(validCount == 0)
+			*mainTag = tag;
+
+		tmpTag[validCount++].ID = tag;
 	}
-#endif
-	
-	CATEGORY catData = getCategoryForID(*category);
-	if(catData.haveData)
+
+	//No data
+	if(validCount == 0)
 	{
-		*mainTag = catData.tags[(input >> 32) & 0x1f].ID;
+		free(tmpTag);
+		return false;
 	}
-	else
-		*mainTag = TAG_NO_VALUE;
+
+	//Less data than expected, let's not waste memory
+	if(validCount < [_tagData count])
+	{
+		void * tmp = realloc(tmpTag, validCount * sizeof(TAG));
+		if(tmp != NULL)
+			tmpTag = tmp;
+	}
+
+	*nbTags = validCount;
+	*tagData = tmpTag;
+
+	return true;
 }
