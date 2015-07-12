@@ -19,7 +19,7 @@
 
 #define REPO_REC_NAME "repo"
 #define PROJECT_REC_NAME "projects"
-#define CUSTOM_COLOR_FILE "theme/customTheme"
+#define CUSTOM_COLOR_FILE "customTheme"
 
 #define PROJECT_ROOT "project/"
 #define CHAPTER_PREFIX "Chapitre_"
