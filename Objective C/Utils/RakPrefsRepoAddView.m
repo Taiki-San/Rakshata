@@ -224,7 +224,7 @@ enum
 	}
 	
 	//Buttons
-	cancelButton = [RakButton allocWithText:NSLocalizedString(@"PREFS-CANCEL", nil)];
+	cancelButton = [RakButton allocWithText:NSLocalizedString(@"CANCEL", nil)];
 	if(cancelButton != nil)
 	{
 		cancelButton.target = self;

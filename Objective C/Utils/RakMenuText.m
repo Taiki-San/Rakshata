@@ -25,6 +25,7 @@
 		[Prefs getCurrentTheme:self];	//Register for changes
 		[self setFont:[[self class] getFont : [self getFontSize]]];
 		[self defineBackgroundColor];
+		[self sizeToFit];
 	}
 	
 	return self;

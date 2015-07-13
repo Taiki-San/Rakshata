@@ -408,7 +408,7 @@ enum
 		alert.alertStyle = NSCriticalAlertStyle;
 		alert.messageText = NSLocalizedString(@"PREFS-DELETE-CONTENT-TITLE", nil);
 		alert.informativeText = NSLocalizedString(@"PREFS-DELETE-CONTENT-MESSAGE", nil);
-		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-CANCEL", nil)];
+		[alert addButtonWithTitle:NSLocalizedString(@"CANCEL", nil)];
 		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-GO-FOR-IT", nil)];
 		
 		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
@@ -432,7 +432,7 @@ enum
 		alert.alertStyle = NSCriticalAlertStyle;
 		alert.messageText = NSLocalizedString(@"PREFS-DELETE-SOURCE-TITLE", nil);
 		alert.informativeText = NSLocalizedString(@"PREFS-DELETE-SOURCE-MESSAGE", nil);
-		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-CANCEL", nil)];
+		[alert addButtonWithTitle:NSLocalizedString(@"CANCEL", nil)];
 		[alert addButtonWithTitle:NSLocalizedString(@"PREFS-DELETE-GO-FOR-IT", nil)];
 		
 		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {

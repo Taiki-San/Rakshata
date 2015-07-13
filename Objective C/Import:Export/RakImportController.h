@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakExportController.h"
-
 @interface RakImportController : NSObject
 
 + (void) importFile : (NSString *) file : (BOOL) generatedArchive;
@@ -50,7 +48,8 @@
 #define RAK_STRING_METADATA_DESCRIPTION	@"description"
 #define RAK_STRING_METADATA_AUTHOR		@"author"
 #define RAK_STRING_METADATA_STATUS		@"status"
-#define RAK_STRING_METADATA_TAGMASK		@"tagMask"
+#define RAK_STRING_METADATA_CATEGORY	@"category"
+#define RAK_STRING_METADATA_TAG_DATA	@"tagData"
 #define RAK_STRING_METADATA_RIGHT2LEFT	@"rightToLeft"
 #define RAK_STRING_METADATA_IMG_GRID	@"imgGrid"
 #define RAK_STRING_METADATA_IMG_GRID_2X	@"imgGrid@2x"

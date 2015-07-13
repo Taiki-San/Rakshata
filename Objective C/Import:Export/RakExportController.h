@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakExportStatusController.h"
+
 @interface RakExportController : NSObject
 
 + (NSString *) craftArchiveNameFromPasteboard : (NSPasteboard *) pasteboard;

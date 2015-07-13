@@ -1,13 +1,185 @@
-//
-//  RakExportStatusController.m
-//  Rakshata
-//
-//  Created by Taiki on 10/07/2015.
-//  Copyright © 2015 Taiki. All rights reserved.
-//
+/*********************************************************************************************
+ **	__________         __           .__            __                 ________   _______   	**
+ **	\______   \_____  |  | __  _____|  |__ _____ _/  |______   	___  _\_____  \  \   _  \  	**
+ **	 |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \  	\  \/ //  ____/  /  /_\  \ 	**
+ **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
+ **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
+ **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
+ **                                                                                         **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
+ **                                                                                         **
+ *********************************************************************************************/
 
-#import "RakExportStatusController.h"
+enum
+{
+	WINDOW_WIDTH = 350,
+	WINDOW_HEIGHT = 150,
+
+	BORDER_TOP = 10,
+	BORDER_BUTTON = 15,
+
+	PROGRESS_BASEX = 25,
+	PROGRESS_WIDTH = 300,
+	PROGRESS_HEIGHT = 20
+
+};
 
 @implementation RakExportStatusController
+
+- (id) init
+{
+	self = [super init];
+	if(self != nil)
+	{
+		[self startUI];
+	}
+
+	return self;
+}
+
+- (void) startUI
+{
+	NSView * mainView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
+
+	if(mainView != nil)
+	{
+		[self setupBaseView:mainView];
+
+		queryWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(200, 200, mainView.bounds.size.width, mainView.bounds.size.height) styleMask:0 backing:NSBackingStoreBuffered defer:YES];
+		if(queryWindow != nil)
+		{
+			queryWindow.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :self];
+			queryWindow.contentView = mainView;
+
+			[[[NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
+			return;
+		}
+	}
+}
+
+- (void) closeUI
+{
+	[[[NSApp delegate] window] endSheet:queryWindow];
+}
+
+- (void) setupBaseView : (NSView *) superview
+{
+	NSSize superviewSize = superview.bounds.size;
+	CGFloat currentY = superviewSize.height;
+
+	title = [[RakMenuText alloc] initWithText:NSZeroRect :NSLocalizedString(@"EXPORTING", nil)];
+	if(title != nil)
+	{
+		title.barWidth = 0;
+		title.haveBackgroundColor = NO;
+		
+		[title setFrameOrigin:NSMakePoint(superviewSize.width / 2 - title.bounds.size.width / 2, (currentY -= title.bounds.size.height + BORDER_TOP))];
+		[superview addSubview:title];
+	}
+
+	progressBar = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(PROGRESS_BASEX, (currentY -= PROGRESS_HEIGHT + BORDER_TOP), PROGRESS_WIDTH, PROGRESS_HEIGHT)];
+	if(progressBar != nil)
+	{
+//		CIFilter * colorTweak = [CIFilter filterWithName:@"CIHueAdjust"];
+//		[colorTweak setDefaults];
+//		[colorTweak setValue:@(180) forKey:@"inputAngle"];
+//		[progressBar.layer setFilters:@[colorTweak]];
+
+		progressBar.usesThreadedAnimation = YES;
+		progressBar.indeterminate = YES;
+
+		[superview addSubview:progressBar];
+	}
+
+	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil]];
+	if(percentage != nil)
+	{
+		percentage.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:20];
+		[percentage sizeToFit];
+		percentage.alignment = NSTextAlignmentCenter;
+
+		[percentage setFrameOrigin:NSMakePoint(superviewSize.width / 2 - percentage.bounds.size.width / 2, (currentY -= percentage.bounds.size.height + BORDER_TOP))];
+		[superview addSubview:percentage];
+	}
+
+	cancel = [RakButton allocWithText:NSLocalizedString(@"CANCEL", nil)];
+	if(cancel != nil)
+	{
+		cancel.target = self;
+		cancel.action = @selector(cancel);
+
+		[cancel setFrameOrigin:NSMakePoint(superviewSize.width / 2 - cancel.bounds.size.width / 2, (currentY -= cancel.bounds.size.height + BORDER_BUTTON))];
+		[superview addSubview:cancel];
+	}
+}
+
+#pragma mark - Refresh the status
+
+- (void) setPosInEntry:(CGFloat)posInEntry
+{
+	_posInEntry = posInEntry;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self refreshUI];
+	});
+}
+
+- (void) setPosInExport:(CGFloat)posInExport
+{
+	_posInExport = posInExport;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self refreshUI];
+	});
+}
+
+- (void) setNbElementToExport:(CGFloat)nbElementToExport
+{
+	_nbElementToExport = nbElementToExport;
+	dispatch_async(dispatch_get_main_queue(), ^{	progressBar.indeterminate = NO;		});
+}
+
+- (void) refreshUI
+{
+	if(cachedPosInExport == _posInExport || cachedPosInEntry == _posInEntry)
+		return;
+
+	cachedPosInEntry = _posInEntry;
+	cachedPosInExport = _posInExport;
+
+	CGFloat percentageNumber = (_posInExport + _posInEntry / _nbElementInEntry) / _nbElementToExport;
+
+	percentageNumber = round(percentageNumber * 1000) / 10.0f;
+	progressBar.doubleValue = percentageNumber;
+	percentage.stringValue = [NSString stringWithFormat:@"%.1f %%", percentageNumber];
+
+	[progressBar display];
+	[percentage display];
+}
+
+- (void) finishing
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+
+		percentage.stringValue = NSLocalizedString(@"PROCESSING", nil);
+		[percentage sizeToFit];
+
+		[percentage setFrameOrigin:NSMakePoint(percentage.superview.bounds.size.width / 2 - percentage.bounds.size.width / 2, percentage.frame.origin.y)];
+
+		[percentage display];
+	});
+}
+
+- (void) cancel
+{
+	_haveCanceled = YES;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	queryWindow.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
+	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+}
 
 @end

@@ -74,6 +74,19 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 + (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path withURL : (NSURL *) url
 {
+	if([NSThread isMainThread])
+	{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self createArchiveFromPasteboard:pasteboard toPath:path withURL:url];
+		});
+		return;
+	}
+
+	__block RakExportStatusController * UI = nil;
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		UI = [[RakExportStatusController alloc] init];
+	});
+
 	//Ensure we get a directory to write in
 	if(path == nil)
 	{
@@ -112,7 +125,17 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		return;
 	}
 
-	NSArray * invalidContent = [self insertContent:content ofItem:item intoZipfile:file];
+	NSArray * invalidContent = [self insertContent:content ofItem:item intoZipfile:file withUIQuery:UI];
+
+	if([UI haveCanceled])
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
+		closeZip(file);
+		remove([path UTF8String]);
+		return;
+	}
+	else
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI finishing];		});
 
 	//Fuck, invalid content, we need to update the manifest :X
 	if([invalidContent count])
@@ -158,6 +181,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		else
 			zipClose(file, "Generated using "PROJECT_NAME" v"PRINTABLE_VERSION);
 	}
+
+	[UI closeUI];
 }
 
 #pragma mark - Creation of the manifest
@@ -268,7 +293,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	return [NSDictionary dictionaryWithDictionary:dict];
 }
 
-+ (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (int) selection index : (uint *) index;
++ (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (int) selection index : (uint *) index
 {
 	//Ensure we have valid data
 	if((fullProject || isTome) && project->tomesInstalled == NULL)
@@ -335,12 +360,24 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 #pragma mark - Insertion into zip
 
-+ (NSArray *) insertContent : (NSMutableArray *) content ofItem : (RakDragItem *) item intoZipfile : (zipFile *) file
++ (NSArray *) insertContent : (NSMutableArray *) content ofItem : (RakDragItem *) item intoZipfile : (zipFile *) file withUIQuery : (RakExportStatusController *) controller
 {
 	NSMutableArray * invalidContent = [NSMutableArray new];
 
+	BOOL firstRound = YES;
+	controller.nbElementToExport = [content count];
+	controller.posInExport = 0;
+
 	for(NSDictionary * entry in content)
 	{
+		if(controller.haveCanceled)
+			break;
+
+		if(firstRound)
+			firstRound = NO;
+		else
+			controller.posInExport++;
+
 		//Load the data so we get a list of files
 		DATA_LECTURE entryData;
 		BOOL isTome = [objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]) boolValue];
@@ -393,12 +430,17 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		//First, create the directory
 		createDirInZip(file, rootInzipPath);
 
+		//Initialize the UI
+		controller.nbElementInEntry = entryData.nombrePage;
+
 		//Then add those files
 		BOOL error = NO;
 		char * outFile, * baseInzipPath = NULL;
 		uint baseInzipVolPathLength;
 		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nombrePage && !error; pos++)
 		{
+			controller.posInEntry = pos;
+
 			if(isTome)
 			{
 				//We must detect shared chapters and throw them into native/

@@ -55,6 +55,7 @@
 		B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65BC54419071BE4006DA59F /* RakSerieListItem.m */; };
 		B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */ = {isa = PBXBuildFile; fileRef = B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */; };
 		B660542D1B0A3295003CC79E /* DBTags.c in Sources */ = {isa = PBXBuildFile; fileRef = B660542C1B0A3295003CC79E /* DBTags.c */; };
+		B661042A1B5046930079924E /* RakExportStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66104291B5046930079924E /* RakExportStatusController.m */; };
 		B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */; };
 		B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
 		B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */; };
@@ -317,6 +318,8 @@
 		B65D6CCB1B11424900DAC30C /* RakPrefsFavoriteView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsFavoriteView.h; path = "Divers Windows/RakPrefsFavoriteView.h"; sourceTree = "<group>"; };
 		B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsFavoriteView.m; path = "Divers Windows/RakPrefsFavoriteView.m"; sourceTree = "<group>"; };
 		B660542C1B0A3295003CC79E /* DBTags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTags.c; path = C/DBTags.c; sourceTree = "<group>"; };
+		B66104281B5046930079924E /* RakExportStatusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakExportStatusController.h; path = "Import:Export/RakExportStatusController.h"; sourceTree = "<group>"; };
+		B66104291B5046930079924E /* RakExportStatusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakExportStatusController.m; path = "Import:Export/RakExportStatusController.m"; sourceTree = "<group>"; };
 		B668D6AE1953A1B000E3127D /* RakReaderControllerUIQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakReaderControllerUIQuery.h; path = Reader/RakReaderControllerUIQuery.h; sourceTree = "<group>"; };
 		B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakReaderControllerUIQuery.m; path = Reader/RakReaderControllerUIQuery.m; sourceTree = "<group>"; };
 		B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsDeepData.h; path = Prefs/tools/RakPrefsDeepData.h; sourceTree = "<group>"; };
@@ -660,6 +663,7 @@
 			children = (
 				B69D467D1AA7C5D300B471AC /* About */,
 				B69D467C1AA7C5C600B471AC /* Preferences */,
+				B6F228EC1B50161700D7B9CB /* Import/Export Status */,
 			);
 			name = Subwindows;
 			sourceTree = "<group>";
@@ -1327,6 +1331,15 @@
 			name = Import/Export;
 			sourceTree = "<group>";
 		};
+		B6F228EC1B50161700D7B9CB /* Import/Export Status */ = {
+			isa = PBXGroup;
+			children = (
+				B66104281B5046930079924E /* RakExportStatusController.h */,
+				B66104291B5046930079924E /* RakExportStatusController.m */,
+			);
+			name = "Import/Export Status";
+			sourceTree = "<group>";
+		};
 		B6F2F7B319CE2C830044A69C /* RakAuth */ = {
 			isa = PBXGroup;
 			children = (
@@ -1749,6 +1762,7 @@
 				B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,
+				B661042A1B5046930079924E /* RakExportStatusController.m in Sources */,
 				B6F6ECF118A3001400E3B55B /* Twofish.c in Sources */,
 				B6A1E36818F9E92F001D1F8E /* RakWindow.m in Sources */,
 				B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */,

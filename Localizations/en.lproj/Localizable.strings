@@ -15,6 +15,7 @@
 "FREE" = "Free";
 "REMIND" = "Remind";
 "CONFIRM" = "Confirm";
+"CANCEL" = "Cancel";
 "YES" = "Yes";
 "NO" = "No";
 "OK" = "Ok";
@@ -135,7 +136,6 @@
 "PREFS-DELETE-CONTENT-MESSAGE" = "This option will delete every series distributed by this source that you may have downloaded. If you want to read it again, you will have to download them again.";
 "PREFS-DELETE-SOURCE-TITLE" = "Disable the source will delete its local content";
 "PREFS-DELETE-SOURCE-MESSAGE" = "Disable the source will make its catalog diseapear and delete every series you may have downloaded from the source. You may activate the source afain from its group. If you want to read again series from this source, you will have to download them again.";
-"PREFS-CANCEL" = "Cancel";
 "PREFS-DELETE-GO-FOR-IT" = "Ok";
 
 "PREFS-REPO-PLACEHOLDER-TUTORIAL" = "You can control from here the sources you are suscribed to.\n\nYou may delete the installed content or delete from Rakshata any source.\n\nYou may also control sources via the group from which they come from (activate and disable sources from the group).\n\nClick one line to get started.";
@@ -161,6 +161,11 @@
 
 "PREFS-FAVORITE-HEADER" = "Favorite a series will make sure you have the lastest releases each time you launch Rakshata";
 "PREFS-FAVORITE-AUTODL" = "Enable the automatic download of new releases when Rakshata is launched";
+
+//Export
+"EXPORTING" = "Export in progress";
+"INITIALIZATION" = "Initialization";
+"PROCESSING" = "Finishing up";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
