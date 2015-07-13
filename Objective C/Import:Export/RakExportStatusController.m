@@ -24,10 +24,6 @@ enum
 
 };
 
-@interface RakExportStatusView : NSView
-
-@end
-
 @implementation RakExportStatusController
 
 - (id) init
@@ -43,10 +39,11 @@ enum
 
 - (void) startUI
 {
-	RakExportStatusView * mainView = [[RakExportStatusView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
+	RakSheetView * mainView = [[RakSheetView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
 
 	if(mainView != nil)
 	{
+		mainView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :self];
 		[self setupBaseView:mainView];
 
 		queryWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(200, 200, mainView.bounds.size.width, mainView.bounds.size.height) styleMask:0 backing:NSBackingStoreBuffered defer:YES];
@@ -90,7 +87,7 @@ enum
 		[superview addSubview:progressBar];
 	}
 
-	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:self]];
+	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil]];
 	if(percentage != nil)
 	{
 		percentage.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:20];
@@ -177,32 +174,8 @@ enum
 	if([object class] != [Prefs class])
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
+	mainView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
 	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
-}
-
-@end
-
-@implementation RakExportStatusView
-
-- (void) drawRect:(NSRect)dirtyRect
-{
-	[[Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil] setFill];
-
-	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
-
-	NSSize currentSize = _bounds.size;
-	const CGFloat radius = 2;
-
-	CGContextBeginPath(contextBorder);
-	CGContextMoveToPoint(contextBorder, 0, currentSize.height);
-	CGContextAddLineToPoint(contextBorder, currentSize.width, currentSize.height);
-	CGContextAddLineToPoint(contextBorder, currentSize.width, radius);
-	CGContextAddArc(contextBorder, currentSize.width - radius, radius, radius, 0, -M_PI_2, 1);
-	CGContextAddLineToPoint(contextBorder, radius, 0);
-	CGContextAddArc(contextBorder, radius, radius, radius, M_PI_2, M_PI, 1);
-	CGContextAddLineToPoint(contextBorder, 0, currentSize.height);
-
-	CGContextFillPath(contextBorder);
 }
 
 @end

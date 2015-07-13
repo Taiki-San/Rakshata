@@ -16,6 +16,7 @@ NSString * getStringForWchar(const charType * string);
 @end
 
 #import "RakWindow.h"
+#import "RakSheetView.h"
 #import "RakAnimationController.h"
 
 #import "RakTextCell.h"
