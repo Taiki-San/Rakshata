@@ -161,7 +161,7 @@
 	NSRect frame = _frame;
 
 	if(_sheetManipulation)
-		frame.origin.y -= TITLE_BAR_HEIGHT;
+		frame.origin.y -= TITLE_BAR_HEIGHT + WIDTH_BORDER_ALL;
 
 	return frame;
 }

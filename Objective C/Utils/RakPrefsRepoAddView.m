@@ -20,8 +20,6 @@
 	uint _nbRepo;
 	
 	//UI elements
-	CGContextRef contextBorder;
-	
 	RakText * title;
 	RakListScrollView * scrollview;
 	RakAddRepoList * subrepoList;
@@ -34,8 +32,6 @@ enum
 {
 	WIDTH = 400,
 	HEIGHT = 300,
-	
-	TOP_DARK_BORDER = 2,	//Dark window border have to be drawn at the top of the modal window
 	
 	TOP_BORDER_TITLE = 12,	//Border at the top of the title text
 	
@@ -60,7 +56,6 @@ enum
 	if(self != nil)
 	{
 		_root = root;
-		contextBorder = nil;
 		
 		//We craft a linearized list of repos
 		for(_nbRoot = _nbRepo = 0; _nbRoot < nbRoot; _nbRoot++)
@@ -251,19 +246,19 @@ enum
 {
 	[[self backgroundColor] setFill];
 	
-	contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	
 	NSSize currentSize = _bounds.size;
 	const CGFloat radius = 2;
 	
 	CGContextBeginPath(contextBorder);
-	CGContextMoveToPoint(contextBorder, 0, TOP_DARK_BORDER);
-	CGContextAddLineToPoint(contextBorder, currentSize.width, TOP_DARK_BORDER);
+	CGContextMoveToPoint(contextBorder, 0, 0);
+	CGContextAddLineToPoint(contextBorder, currentSize.width, 0);
 	CGContextAddLineToPoint(contextBorder, currentSize.width, currentSize.height - radius);
 	CGContextAddArc(contextBorder, currentSize.width - radius, currentSize.height - radius, radius, 0, M_PI_2, 0);
 	CGContextAddLineToPoint(contextBorder, radius, currentSize.height);
 	CGContextAddArc(contextBorder, radius, currentSize.height - radius, radius, M_PI_2, M_PI, 0);
-	CGContextAddLineToPoint(contextBorder, 0, TOP_DARK_BORDER);
+	CGContextAddLineToPoint(contextBorder, 0, 0);
 	
 	CGContextFillPath(contextBorder);
 }
@@ -274,9 +269,6 @@ enum
 	
 	[[self listBackgroundColor] setFill];
 	[[NSBezierPath bezierPathWithRoundedRect:scrollview.frame xRadius:SCROLL_VIEW_RADIUS yRadius:SCROLL_VIEW_RADIUS] fill];
-	
-	[[Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST : nil] setFill];
-	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, TOP_DARK_BORDER));
 }
 
 - (BOOL) isFlipped

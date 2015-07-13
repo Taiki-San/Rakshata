@@ -24,6 +24,10 @@ enum
 
 };
 
+@interface RakExportStatusView : NSView
+
+@end
+
 @implementation RakExportStatusController
 
 - (id) init
@@ -39,7 +43,7 @@ enum
 
 - (void) startUI
 {
-	NSView * mainView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
+	RakExportStatusView * mainView = [[RakExportStatusView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
 
 	if(mainView != nil)
 	{
@@ -48,8 +52,8 @@ enum
 		queryWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(200, 200, mainView.bounds.size.width, mainView.bounds.size.height) styleMask:0 backing:NSBackingStoreBuffered defer:YES];
 		if(queryWindow != nil)
 		{
-			queryWindow.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :self];
 			queryWindow.contentView = mainView;
+			queryWindow.backgroundColor = [NSColor clearColor];
 
 			[[[NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
 			return;
@@ -80,18 +84,13 @@ enum
 	progressBar = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(PROGRESS_BASEX, (currentY -= PROGRESS_HEIGHT + BORDER_TOP), PROGRESS_WIDTH, PROGRESS_HEIGHT)];
 	if(progressBar != nil)
 	{
-//		CIFilter * colorTweak = [CIFilter filterWithName:@"CIHueAdjust"];
-//		[colorTweak setDefaults];
-//		[colorTweak setValue:@(180) forKey:@"inputAngle"];
-//		[progressBar.layer setFilters:@[colorTweak]];
-
 		progressBar.usesThreadedAnimation = YES;
 		progressBar.indeterminate = YES;
 
 		[superview addSubview:progressBar];
 	}
 
-	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil]];
+	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:self]];
 	if(percentage != nil)
 	{
 		percentage.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:20];
@@ -178,8 +177,32 @@ enum
 	if([object class] != [Prefs class])
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	queryWindow.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
 	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+}
+
+@end
+
+@implementation RakExportStatusView
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[[Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil] setFill];
+
+	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+
+	NSSize currentSize = _bounds.size;
+	const CGFloat radius = 2;
+
+	CGContextBeginPath(contextBorder);
+	CGContextMoveToPoint(contextBorder, 0, currentSize.height);
+	CGContextAddLineToPoint(contextBorder, currentSize.width, currentSize.height);
+	CGContextAddLineToPoint(contextBorder, currentSize.width, radius);
+	CGContextAddArc(contextBorder, currentSize.width - radius, radius, radius, 0, -M_PI_2, 1);
+	CGContextAddLineToPoint(contextBorder, radius, 0);
+	CGContextAddArc(contextBorder, radius, radius, radius, M_PI_2, M_PI, 1);
+	CGContextAddLineToPoint(contextBorder, 0, currentSize.height);
+
+	CGContextFillPath(contextBorder);
 }
 
 @end
