@@ -148,8 +148,6 @@ enum FONT_REQUEST {
 + (void) setCurrentTheme : (uint) newTheme;
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;
-+ (NSColor*) getColorDarkTheme : (byte) context;
-+ (NSColor*) getColorLightTheme : (byte) context;
 
 + (NSString *) getFontName : (byte) context;
 

@@ -98,13 +98,22 @@ enum
 	switch ([self getCurrentTheme : senderToRegister])
 	{
 		case THEME_CODE_DARK:
+		{
 			themeData = [prefsCache darkColorArray];
-			
+			break;
+		}
+
 		case THEME_CODE_LIGHT:
+		{
 			themeData = [prefsCache lightColorArray];
+			break;
+		}
 
 		case THEME_CODE_CUSTOM:
+		{
 			themeData = [prefsCache customColorArray];
+			break;
+		}
 	}
 
 	if(themeData == nil || [themeData count] <= context)

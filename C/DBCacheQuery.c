@@ -278,12 +278,12 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		int lengthWritten = 0;
 
 		//Sort requirement
-		if(maskRequest & SORT_NAME)
-			strncpy(sortRequest, DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC, 50);
+		if(maskRequest & SORT_ID)
+			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
 		else if(maskRequest & SORT_REPO)
 			strncpy(sortRequest, DBNAMETOID(RDB_repo), 50);
 		else
-			strncpy(sortRequest, DBNAMETOID(RDB_ID), 50);
+			strncpy(sortRequest, DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC, 50);
 
 		//Type of data we look for
 		if(maskRequest & RDB_LOADINSTALLED)
