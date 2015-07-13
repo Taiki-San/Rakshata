@@ -174,7 +174,7 @@ enum
 	if([object class] != [Prefs class])
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	mainView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
+	((RakSheetView *) queryWindow.contentView).backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
 	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
 }
 
