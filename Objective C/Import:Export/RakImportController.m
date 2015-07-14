@@ -25,15 +25,43 @@ enum
 	if(filename == nil || !generatedArchive)
 		return;
 
+	if([NSThread isMainThread])
+	{
+		RakImportStatusController * UI = [[RakImportStatusController alloc] init];
+
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self importFile:filename :generatedArchive withUI:UI];
+		});
+	}
+	else
+	{
+		__block RakImportStatusController * UI;
+
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			UI = [[RakImportStatusController alloc] init];
+		});
+
+		[self importFile:filename :generatedArchive withUI:UI];
+	}
+}
+
++ (void) importFile : (NSString *) filename : (BOOL) generatedArchive withUI : (RakImportStatusController *) UI
+{
 	//We first try to open the file, so we can eventually start working with it
 	unzFile * file = unzOpen64([filename UTF8String]);
 	if(file == NULL)
+	{
+		NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
+	}
 
 	//Locate the metadata
 	if(unzLocateFile(file, METADATA_FILE, true) != UNZ_OK)
 	{
 		unzClose(file);
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
+		NSLog(@"Couldn't locate metadata in %@ :/", filename);
 		return;
 	}
 
@@ -43,6 +71,7 @@ enum
 	if(!extractToMem(file, &contentFile, &contentSize) || contentFile == NULL || contentSize == 0)
 	{
 		unzClose(file);
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
 	}
 
@@ -52,13 +81,23 @@ enum
 	if(manifest == nil || [manifest count] == 0)
 	{
 		unzClose(file);
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
 	}
+
+	//We finish setting up the UI
+	BOOL firstPass = YES;
+	UI.nbElementToExport = [manifest count];
 
 	//Okay, we iterate through
 	NSMutableArray * problems = [NSMutableArray array];
 	for(RakImportItem * item in manifest)
 	{
+		if(firstPass)
+			firstPass = NO;
+		else
+			UI.posInExport++;
+
 		//First, check the file exist in the archive
 		if(unzLocateFile(file, [item.path UTF8String], true) != UNZ_OK)
 			continue;
@@ -77,17 +116,26 @@ enum
 		}
 
 		//Well, I guess we can carry on
-		if([item install:file])
+		if([item install:file withUI:UI])
 		{
 			[item processThumbs:file];
 			[item registerProject];
 		}
+		else if([UI haveCanceled])
+		{
+
+		}
 	}
+
+	dispatch_sync(dispatch_get_main_queue(), ^{	[UI finishing];	});
 
 	unzClose(file);
 
 	syncCacheToDisk(SYNC_PROJECTS);
 	notifyFullUpdate();
+
+	if(![problems count])
+		dispatch_sync(dispatch_get_main_queue(), ^{	[UI closeUI];	});
 }
 
 + (NSArray *) analyzeManifest : (NSData *) data
@@ -494,5 +542,9 @@ enum
 
 	return [NSArray arrayWithArray:output];
 }
+
+#pragma mark - Handle missing data
+
+
 
 @end

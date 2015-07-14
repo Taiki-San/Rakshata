@@ -162,8 +162,9 @@
 "PREFS-FAVORITE-HEADER" = "Favorite a series will make sure you have the lastest releases each time you launch Rakshata";
 "PREFS-FAVORITE-AUTODL" = "Enable the automatic download of new releases when Rakshata is launched";
 
-//Export
+//Export/Import
 "EXPORTING" = "Export in progress";
+"IMPORTING" = "Import in progress";
 "INITIALIZATION" = "Initialization";
 "PROCESSING" = "Finishing up";
 

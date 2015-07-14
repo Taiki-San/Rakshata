@@ -48,7 +48,7 @@
 	return false;
 }
 
-- (BOOL) install : (unzFile *) archive
+- (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI
 {
 	char * projectPath = getPathForProject(_projectData.data.project);
 	if(projectPath == NULL)
@@ -86,8 +86,12 @@
 	uint lengthExpected = strlen(startExpectedPath);
 	bool foundOneThing = false;
 
-	for (uint pos = 0; pos < globalMeta.number_entry; pos++)
+	UI.nbElementInEntry = globalMeta.number_entry;
+
+	for (uint pos = 0; pos < globalMeta.number_entry && ![UI haveCanceled]; pos++)
 	{
+		UI.posInEntry = pos;
+		
 		//Get current item filename
 		char filename[1024] = {0};
 		if((unzGetCurrentFileInfo64(archive, NULL, filename, sizeof(filename), NULL, 0, NULL, 0)) == UNZ_OK)
@@ -104,10 +108,11 @@
 	}
 
 	//Decompression is over, now, we need to ensure everything is fine
-	if(!foundOneThing || ![self isReadable])
+	if([UI haveCanceled] || !foundOneThing || ![self isReadable])
 	{
 		//Oh, the entry was not valid 😱
-		logR("Uh? Invalid import :|");
+		if(![UI haveCanceled])
+			logR("Uh? Invalid import :|");
 
 		if(_isTome)
 			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d", projectPath, _contentID);

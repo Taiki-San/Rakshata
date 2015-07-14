@@ -164,6 +164,7 @@
 
 //Export
 "EXPORTING" = "Export en cours";
+"IMPORTING" = "Import en cours";
 "INITIALIZATION" = "Initialisation";
 "PROCESSING" = "Post-traitement";
 

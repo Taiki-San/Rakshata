@@ -10,26 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakImportStatusController.h"
+@implementation RakImportStatusController
 
-@interface RakImportController : NSObject
-
-+ (void) importFile : (NSString *) file : (BOOL) generatedArchive;
-
-@end
-
-@interface RakImportItem : NSObject
-
-@property NSString * path;
-@property PROJECT_DATA_EXTRA projectData;
-@property int contentID;
-@property BOOL isTome;
-
-- (BOOL) isReadable;
-- (BOOL) needMoreData;
-
-- (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
-- (void) processThumbs : (unzFile *) archive;
-- (void) registerProject;
+- (NSString *) headerText
+{
+	return NSLocalizedString(@"IMPORTING", nil);
+}
 
 @end
