@@ -10,31 +10,26 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAnimationController : NSObject <NSAnimationDelegate>
+@interface RakStatusButton : NSView
 {
-	id postAnimationTarget;
-	
-	NSAnimation * _animation;
-	
-	CGFloat _animationDiff;
-	NSInteger _initialState;
+	NSColor * cachedColor;
+
+	RakAnimationController * _animation;
+
+	BOOL cursorOver, clickingInside;
 }
 
-@property (nonatomic) CGFloat animationDuration;
-@property uint stage;
-@property uint animationFrame;
-@property NSView * viewToRefresh;
+@property (nonatomic) byte status;
+@property id target;
+@property SEL action;
 
-- (void) addAction : (id) target;
-- (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
-
-- (void) startAnimation;
-- (void) abortAnimation;
-
-- (void) initiateCustomAnimation : (CGFloat) stepsRemaining;
-
-- (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress;
-- (void) animationDidEnd:(NSAnimation *)animation;
-- (void) postProcessingBeforeAction;
+- (instancetype) initWithStatus : (byte) status;
 
 @end
+
+enum
+{
+	STATUS_BUTTON_OK,
+	STATUS_BUTTON_WARN,
+	STATUS_BUTTON_ERROR,
+};

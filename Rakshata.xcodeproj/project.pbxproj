@@ -128,6 +128,7 @@
 		B6B46DB318FB3D7400EB1FE6 /* RakSerieMainList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DB218FB3D7400EB1FE6 /* RakSerieMainList.m */; };
 		B6B870BB1981D5E1005D705E /* RakDeleteConfirm.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */; };
 		B6BBEA101B554DD800127628 /* RakEIStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBEA0F1B554DD800127628 /* RakEIStatusController.m */; };
+		B6BBEA261B55C73300127628 /* RakStatusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBEA251B55C73300127628 /* RakStatusButton.m */; };
 		B6BC73051A90015300018BE9 /* RakSRProjectView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC73041A90015300018BE9 /* RakSRProjectView.m */; };
 		B6BC730B1A90093000018BE9 /* RakSRSuggestions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC730A1A90093000018BE9 /* RakSRSuggestions.m */; };
 		B6BC730E1A90143A00018BE9 /* RakCTFocusSRItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BC730D1A90143A00018BE9 /* RakCTFocusSRItem.m */; };
@@ -445,6 +446,8 @@
 		B6B870BA1981D5E1005D705E /* RakDeleteConfirm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDeleteConfirm.m; path = Reader/RakDeleteConfirm.m; sourceTree = "<group>"; };
 		B6BBEA0E1B554DD800127628 /* RakEIStatusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakEIStatusController.h; path = "Import:Export/RakEIStatusController.h"; sourceTree = "<group>"; };
 		B6BBEA0F1B554DD800127628 /* RakEIStatusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakEIStatusController.m; path = "Import:Export/RakEIStatusController.m"; sourceTree = "<group>"; };
+		B6BBEA241B55C73300127628 /* RakStatusButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakStatusButton.h; path = Utils/RakStatusButton.h; sourceTree = "<group>"; };
+		B6BBEA251B55C73300127628 /* RakStatusButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakStatusButton.m; path = Utils/RakStatusButton.m; sourceTree = "<group>"; };
 		B6BC73031A90015300018BE9 /* RakSRProjectView.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = RakSRProjectView.h; path = "Séries/RakSRProjectView.h"; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
 		B6BC73041A90015300018BE9 /* RakSRProjectView.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRProjectView.m; path = "Séries/RakSRProjectView.m"; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
 		B6BC73091A90093000018BE9 /* RakSRSuggestions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSuggestions.h; path = CTSelec/RakSRSuggestions.h; sourceTree = "<group>"; };
@@ -742,6 +745,8 @@
 				B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */,
 				B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */,
 				B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */,
+				B6BBEA241B55C73300127628 /* RakStatusButton.h */,
+				B6BBEA251B55C73300127628 /* RakStatusButton.m */,
 				B6A6ACE61AAED60700CAF51E /* RakSwitchButton.h */,
 				B6A6ACE71AAED60700CAF51E /* RakSwitchButton.m */,
 			);
@@ -1677,6 +1682,7 @@
 				B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */,
 				B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */,
 				B6F6ED1818A3001400E3B55B /* moduleDLUnzip.c in Sources */,
+				B6BBEA261B55C73300127628 /* RakStatusButton.m in Sources */,
 				B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */,
 				B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */,
 				B6BD45C11A7D240400C2A675 /* RakGridView.m in Sources */,

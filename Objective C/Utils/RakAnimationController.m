@@ -92,6 +92,7 @@
 
 - (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
 {
+	[_viewToRefresh display];
 	_stage++;
 }
 
@@ -104,7 +105,12 @@
 			_stage = _animationFrame;
 			
 			[self postProcessingBeforeAction];
-			[postAnimationTarget performSelector:@selector(animationOver)];
+
+			if([postAnimationTarget respondsToSelector:@selector(animationOver)])
+				[postAnimationTarget performSelector:@selector(animationOver)];
+
+			else if([postAnimationTarget isKindOfClass:[NSView class]])
+				[postAnimationTarget display];
 		}
 		
 		_animation = nil;

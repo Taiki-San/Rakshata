@@ -26,12 +26,3 @@
 - (void) animationOver;
 
 @end
-
-@interface RakButtonAnimationController : RakAnimationController
-{
-	NSButtonCell * _cell;
-}
-
-- (instancetype) initWithCell : (NSButtonCell *) cell;
-
-@end

@@ -74,9 +74,10 @@
 	{
 		if(_animation == nil)
 		{
-			_animation = [[RakButtonAnimationController alloc] initWithCell:self];
+			_animation = [[RakAnimationController alloc] init];
 			if(_animation != nil)
 			{
+				_animation.viewToRefresh = self.controlView;
 				[_animation addAction:self];
 				_animation.stage = _animation.animationFrame;
 			}
@@ -92,28 +93,6 @@
 {
 	_animation = nil;
 	[self.controlView display];
-}
-
-@end
-
-@implementation RakButtonAnimationController
-
-- (instancetype) initWithCell : (NSButtonCell *) cell
-{
-	self = [super init];
-	
-	if(self != nil)
-	{
-		_cell = cell;
-	}
-	
-	return self;
-}
-
-- (void) animation : (NSAnimation *) animation didReachProgressMark : (NSAnimationProgress) progress
-{
-	[_cell.controlView display];
-	[super animation:animation didReachProgressMark:progress];
 }
 
 @end
