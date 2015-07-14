@@ -42,6 +42,19 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 	}
 
 	destroyRequest(request);
+
+	//We ensure the directory is clean
+	project.projectID = baseID;
+	char * path = getPathForProject(project);
+	if(path != NULL)
+	{
+		char pathFinal[strlen(path) + 100];
+		snprintf(pathFinal, sizeof(pathFinal), PROJECT_ROOT"%s/", path);
+		free(path);
+
+		removeFolder(pathFinal);
+	}
+
 	return baseID;
 }
 
