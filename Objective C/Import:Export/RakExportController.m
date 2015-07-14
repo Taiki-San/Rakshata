@@ -74,6 +74,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 + (void) createArchiveFromPasteboard : (NSPasteboard *) pasteboard toPath : (NSString *) path withURL : (NSURL *) url
 {
+	//We don't want to perform the compression job in the main thread, as it may take quite some time
 	if([NSThread isMainThread])
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -93,35 +94,36 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		path = [self craftArchiveNameFromPasteboard:pasteboard];
 
 		if(path == nil)
+		{
+			dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 			return;
+		}
 
 		path = [NSString stringWithFormat:@"%@/%@", [url path], path];
-	}
-
-	//We don't want to perform the compression job in the main thread, as it may take quite some time
-	if([NSThread isMainThread])
-	{
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self createArchiveFromPasteboard:pasteboard toPath:path withURL:url];
-		});
-		return;
 	}
 
 	//UI side, we only support moving around one project, so we're going to assume that and make our lives easier
 	RakDragItem * item = [[RakDragItem alloc] initWithData: [pasteboard dataForType:PROJECT_PASTEBOARD_TYPE]];
 	if(item == nil)
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
+	}
 
 	NSMutableArray * content, * thumbnails;
 	NSDictionary * manifest = [self generateManifestForItem:item contentDetail:&content thumbFiles:&thumbnails];
 	if(manifest == nil)
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
+	}
 
 	//Okay, open the zipfile
 	zipFile * file = zipOpen([path UTF8String], APPEND_STATUS_CREATE);
 	if(file == NULL)
 	{
 		NSLog(@"Couldn't create the file D:");
+		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
 	}
 

@@ -10,6 +10,30 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakExportStatusController : RakEIStatusController
+@interface RakEIStatusController : NSObject
+{
+	CGFloat cachedPosInExport, cachedPosInEntry;
+
+	NSWindow * queryWindow;
+
+	RakMenuText * title;
+	NSProgressIndicator * progressBar;
+	RakText * percentage;
+	RakButton * cancel;
+}
+
+@property BOOL haveCanceled;
+
+@property (nonatomic) CGFloat nbElementToExport, posInExport;
+@property (nonatomic) CGFloat nbElementInEntry, posInEntry;
+
+- (void) startUI;
+- (void) refreshUI;
+- (void) closeUI;
+
+- (void) finishing;
+
+- (NSString *) headerText;
+- (NSColor *) backgroundColor;
 
 @end
