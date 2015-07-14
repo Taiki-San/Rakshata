@@ -156,32 +156,45 @@ enum
 	cachedPosInEntry = _posInEntry;
 	cachedPosInExport = _posInExport;
 
-	CGFloat percentageNumber = (_posInExport + _posInEntry / _nbElementInEntry) / _nbElementToExport;
+	CGFloat percentageNumber = (_posInExport + _posInEntry / _nbElementInEntry) / _nbElementToExport, intermediaryPerc = round(percentageNumber * 1000);
 
-	percentageNumber = round(percentageNumber * 1000) / 10.0f;
-	progressBar.doubleValue = percentageNumber;
-	percentage.stringValue = [NSString stringWithFormat:@"%.1f %%", percentageNumber];
+	progressBar.doubleValue = intermediaryPerc / 10.0f;
+
+	if(!_haveCanceled)
+	{
+		if(fmod(intermediaryPerc, 10.0f))
+			percentage.stringValue = [NSString stringWithFormat:@"%.1f %%", intermediaryPerc / 10.0f];
+		else
+			percentage.stringValue = [NSString stringWithFormat:@"%d %%", (int) intermediaryPerc / 10];
+
+		[percentage display];
+	}
 
 	[progressBar display];
-	[percentage display];
 }
 
 - (void) finishing
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
-
-		percentage.stringValue = NSLocalizedString(@"PROCESSING", nil);
-		[percentage sizeToFit];
-
-		[percentage setFrameOrigin:NSMakePoint(percentage.superview.bounds.size.width / 2 - percentage.bounds.size.width / 2, percentage.frame.origin.y)];
-
-		[percentage display];
-	});
+	percentage.stringValue = NSLocalizedString(@"PROCESSING", nil);
+	[self centeringPercentage];
 }
 
 - (void) cancel
 {
 	_haveCanceled = YES;
+
+	progressBar.indeterminate = YES;
+	percentage.stringValue = NSLocalizedString(@"CANCELED", nil);
+	[self centeringPercentage];
+}
+
+#pragma mark UI
+
+- (void) centeringPercentage
+{
+	[percentage sizeToFit];
+	[percentage setFrameOrigin:NSMakePoint(percentage.superview.bounds.size.width / 2 - percentage.bounds.size.width / 2, percentage.frame.origin.y)];
+	[percentage display];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

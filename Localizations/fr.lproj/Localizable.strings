@@ -167,6 +167,8 @@
 "IMPORTING" = "Import en cours";
 "INITIALIZATION" = "Initialisation";
 "PROCESSING" = "Post-traitement";
+"CANCELED" = "Nettoyage";
+
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

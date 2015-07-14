@@ -126,6 +126,24 @@
 	return true;
 }
 
+- (void) deleteData
+{
+	if(!_isTome)
+		return	internalDeleteCT(_projectData.data.project, false, _contentID);
+
+	//The volume must be in the list
+	META_TOME * tomeFull = _projectData.data.project.tomesFull;
+	uint lengthTomeFull = _projectData.data.project.nombreTomes;
+
+	_projectData.data.project.tomesFull = _projectData.data.tomeLocal;
+	_projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
+
+	internalDeleteCT(_projectData.data.project, true, _contentID);
+
+	_projectData.data.project.tomesFull = tomeFull;
+	_projectData.data.project.nombreTomes = lengthTomeFull;
+}
+
 - (void) processThumbs : (unzFile *) archive
 {
 	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};

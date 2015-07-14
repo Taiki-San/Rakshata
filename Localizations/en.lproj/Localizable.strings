@@ -167,6 +167,7 @@
 "IMPORTING" = "Import in progress";
 "INITIALIZATION" = "Initialization";
 "PROCESSING" = "Finishing up";
+"CANCELED" = "Cleaning up";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";

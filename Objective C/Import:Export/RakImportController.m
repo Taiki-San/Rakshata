@@ -121,13 +121,25 @@ enum
 			[item processThumbs:file];
 			[item registerProject];
 		}
-		else if([UI haveCanceled])
-		{
 
+		if([UI haveCanceled])
+		{
+			//Urk, we have to delete everything...
+			for(RakImportItem * itemToDelete in manifest)
+			{
+				if(UI.posInExport)
+					UI.posInExport--;
+
+				[itemToDelete deleteData];
+
+				if(itemToDelete == item)
+					break;
+			}
 		}
 	}
 
-	dispatch_sync(dispatch_get_main_queue(), ^{	[UI finishing];	});
+	if(![UI haveCanceled])
+		dispatch_sync(dispatch_get_main_queue(), ^{	[UI finishing];	});
 
 	unzClose(file);
 

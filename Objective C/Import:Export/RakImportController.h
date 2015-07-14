@@ -29,6 +29,7 @@
 - (BOOL) needMoreData;
 
 - (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
+- (void) deleteData;
 - (void) processThumbs : (unzFile *) archive;
 - (void) registerProject;
 
