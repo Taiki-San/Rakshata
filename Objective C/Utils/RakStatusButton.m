@@ -12,11 +12,8 @@
 
 enum
 {
-	STATUS_BUTTON_HEIGHT = 24,
-	STATUS_BUTTON_WIDTH = 100,
-	STATUS_BUTTON_COMPACT_MIN_X = (STATUS_BUTTON_WIDTH - STATUS_BUTTON_HEIGHT),
-	STATUS_BUTTON_RAIL_LENGTH = STATUS_BUTTON_COMPACT_MIN_X,
-	STATUS_BUTTON_RADIUS = (STATUS_BUTTON_HEIGHT / 2) - 1,
+	STATUS_BUTTON_DIAMETER = 24,
+	STATUS_BUTTON_RADIUS = (STATUS_BUTTON_DIAMETER / 2) - 1,
 
 	STATUS_BUTTON_DRAWING_WIDTH = 2 * STATUS_BUTTON_RADIUS
 };
@@ -25,7 +22,7 @@ enum
 
 - (instancetype) initWithStatus : (byte) status
 {
-	self = [super initWithFrame:NSMakeRect(0, 0, STATUS_BUTTON_WIDTH, STATUS_BUTTON_HEIGHT)];
+	self = [super initWithFrame:NSMakeRect(100, 5, STATUS_BUTTON_DIAMETER, STATUS_BUTTON_DIAMETER)];
 
 	if(self != nil)
 	{
@@ -59,6 +56,9 @@ enum
 {
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	text.textColor = [self fontColor];
+	[self setNeedsDisplay:YES];
 }
 
 #pragma mark - Over
@@ -73,22 +73,75 @@ enum
 {
 	cursorOver = NO;
 	clickingInside = NO;
+
 	[self focusChanged];
+
+	text.textColor = [self fontColor];
 }
 
 - (void) mouseDown:(nonnull NSEvent *)theEvent
 {
 	clickingInside = YES;
+	text.textColor = [self fontPressedColor];
 }
 
 - (void) mouseUp:(nonnull NSEvent *)theEvent
 {
+	text.textColor = [self fontColor];
+
 	if(!clickingInside || _target == nil || ![_target respondsToSelector:_action])
 		return [super mouseUp:theEvent];
 
 	IMP imp = [_target methodForSelector:_action];
 	void (*func)(id, SEL, id) = (void *)imp;
 	func(_target, _action, nil);
+}
+
+#pragma mark - Text management
+
+- (void) setStringValue:(NSString *)stringValue
+{
+	_stringValue = stringValue;
+
+	if(text == nil)
+	{
+		text = [[RakText alloc] initWithText:stringValue :[self fontColor]];
+		[self addSubview:text];
+	}
+	else
+	{
+		text.stringValue = stringValue;
+		[text sizeToFit];
+	}
+
+	textWidth = text.bounds.size.width + 6;
+	[self updateFrame];
+	[self updateTextOrigin];
+}
+
+- (void) updateFrame
+{
+	NSRect frame = _frame;
+	CGFloat diff = STATUS_BUTTON_DIAMETER + textWidth - frame.size.width;
+
+	frame.size.width += diff;
+	frame.origin.x -= diff;
+
+	self.frame = frame;
+}
+
+- (void) updateTextOrigin
+{
+	CGFloat minX = STATUS_BUTTON_DIAMETER;
+	if(_animation != nil)
+	{
+		CGFloat progress = cursorOver ? _animation.animationFrame - _animation.stage : _animation.stage;
+		minX += progress / _animation.animationFrame * textWidth;
+	}
+	else
+		minX += cursorOver ? 0 : textWidth;
+
+	[text setFrameOrigin:NSMakePoint(minX, _bounds.size.height / 2 - text.bounds.size.height / 2 - 1)];
 }
 
 #pragma mark - Drawing
@@ -102,22 +155,22 @@ enum
 	if(_animation != nil)
 	{
 		CGFloat progress = cursorOver ? _animation.animationFrame - _animation.stage : _animation.stage;
-		minX += progress / _animation.animationFrame * STATUS_BUTTON_RAIL_LENGTH;
+		minX += progress / _animation.animationFrame * textWidth;
 	}
 	else
-		minX += cursorOver ? 0 : STATUS_BUTTON_COMPACT_MIN_X;
+		minX += cursorOver ? 0 : textWidth;
 
 	[cachedColor setStroke];
 
 	//First, draw the circle
 	CGContextBeginPath(contextBorder);
-	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_HEIGHT / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
+	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
 
 	//Line to the other side is implied when drawing the other half of the circle
-	CGContextAddArc(contextBorder, STATUS_BUTTON_WIDTH - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_HEIGHT / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
 
 	//And back
-	if(minX < STATUS_BUTTON_COMPACT_MIN_X)
+	if(minX < textWidth)
 		CGContextClosePath(contextBorder);
 
 	//Now, draw the shape within
@@ -174,8 +227,10 @@ enum
 		_animation = [[RakAnimationController alloc] init];
 		if(_animation != nil)
 		{
-			_animation.viewToRefresh = self;
 			[_animation addAction:self];
+
+			_animation.viewToRefresh = self;
+			_animation.selectorToPing = @selector(animationProgressed);
 			_animation.animationDuration = 0.1;
 			_animation.stage = _animation.animationFrame;
 		}
@@ -184,10 +239,25 @@ enum
 	[_animation startAnimation];
 }
 
+- (void) animationProgressed
+{
+	[self updateTextOrigin];
+}
+
 - (void) animationOver
 {
 	_animation = nil;
 	[self display];
+}
+
+- (NSColor *) fontColor
+{
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+}
+
+- (NSColor *) fontPressedColor
+{
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
 }
 
 @end

@@ -13,15 +13,19 @@
 @interface RakStatusButton : NSView
 {
 	NSColor * cachedColor;
+	RakText * text;
 
 	RakAnimationController * _animation;
 
 	BOOL cursorOver, clickingInside;
+	CGFloat textWidth;
 }
 
 @property (nonatomic) byte status;
 @property id target;
 @property SEL action;
+
+@property (nonatomic) NSString * stringValue;
 
 - (instancetype) initWithStatus : (byte) status;
 

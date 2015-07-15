@@ -37,6 +37,14 @@
 	postAnimationTarget = target;
 }
 
+- (void) setSelectorToPing:(SEL)selectorToPing
+{
+	if([postAnimationTarget respondsToSelector:selectorToPing])
+		haveSelectorToPing = YES;
+
+	_selectorToPing = selectorToPing;
+}
+
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff
 {
 	_initialState = initialPos;
@@ -93,6 +101,14 @@
 - (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
 {
 	[_viewToRefresh display];
+
+	if(haveSelectorToPing)
+	{
+		IMP imp = [postAnimationTarget methodForSelector:_selectorToPing];
+		void (*func)(id, SEL, id) = (void *)imp;
+		func(postAnimationTarget, _selectorToPing, nil);
+	}
+
 	_stage++;
 }
 

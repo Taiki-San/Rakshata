@@ -13,6 +13,7 @@
 @interface RakAnimationController : NSObject <NSAnimationDelegate>
 {
 	id postAnimationTarget;
+	BOOL haveSelectorToPing;
 	
 	NSAnimation * _animation;
 	
@@ -23,6 +24,8 @@
 @property (nonatomic) CGFloat animationDuration;
 @property uint stage;
 @property uint animationFrame;
+
+@property (nonatomic) SEL selectorToPing;
 @property NSView * viewToRefresh;
 
 - (void) addAction : (id) target;

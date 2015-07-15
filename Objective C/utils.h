@@ -20,10 +20,10 @@ NSString * getStringForWchar(const charType * string);
 #import "RakAnimationController.h"
 
 #import "RakTextCell.h"
+#import "RakText.h"
 #import "RakButton.h"
 #import "RakScroller.h"
 #import "RakBorder.h"
-#import "RakText.h"
 #import "RakSegmentedButtonCell.h"
 #import "RakMenuText.h"
 #import "RakProgressBar.h"
