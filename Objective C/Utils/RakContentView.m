@@ -328,6 +328,9 @@
 	if(self != nil)
 	{
 		[self setAutoresizesSubviews:NO];
+#ifdef HIDE_EVERYTHING
+		self.hidden = YES;
+#endif
 	}
 	
 	return self;

@@ -31,3 +31,7 @@
 #define LEAVE_DISTRACTION_FREE_AT_END
 
 //#define FLUSH_UNUSED_REPO
+
+#ifdef DEV_VERSION
+//#define HIDE_EVERYTHING
+#endif
