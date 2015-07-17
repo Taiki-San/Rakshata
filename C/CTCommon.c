@@ -207,7 +207,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						}
 
 						//We have the position of the element to inject in posLowestDiff
-						int nextValue = getData(run, outputData, (posLowestDiff + 1 == currentLength ? posLowestDiff : posLowestDiff + 1));
+						int nextValue = getData(run, outputData, (posLowestDiff + 1 >= currentLength ? posLowestDiff : posLowestDiff + 1));
 						int previousValue = getData(run, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
 						bool increasing = nextValue >= previousValue;	//increasing, we got after the value
 						bool goNext = increasing == (getData(run, outputData, posLowestDiff) < dataToInject);
