@@ -33,6 +33,8 @@
 
 - (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
 - (void) deleteData;
+- (BOOL) overrideDuplicate : (unzFile *) archive;
+
 - (void) processThumbs : (unzFile *) archive;
 - (void) registerProject;
 

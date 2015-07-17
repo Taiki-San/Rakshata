@@ -32,5 +32,6 @@
 @property BOOL haveDuplicate;
 
 - (instancetype) initWithImportList : (NSArray *) dataset;
+- (void) refreshAfterPass;
 
 @end

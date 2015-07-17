@@ -12,6 +12,8 @@
 
 @interface RakImportStatusListRowView : NSView
 {
+	RakImportStatusListItem * listItem;
+
 	RakImportItem * _item;
 	BOOL isRoot;
 
@@ -30,10 +32,32 @@ enum
 	ROW_HEIGHT = 30
 };
 
+#define NOTIFICATION_CHILD	@"RakImportStatusUpdateChild"
+#define NOTIFICATION_ROOT	@"RakImportStatusUpdateRoot"
+#define NOTIFICATION_UI	@"RakImportStatusUpdateUI"
+
 @implementation RakImportStatusListRowView
+
+- (instancetype) initWithFrame : (NSRect) frame
+{
+	self = [super initWithFrame : frame];
+
+	if(self != nil)
+	{
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatus) name:NOTIFICATION_UI object:nil];
+	}
+
+	return self;
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void) updateWithItem : (RakImportStatusListItem *) item
 {
+	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
 
@@ -80,7 +104,6 @@ enum
 
 	NSSize itemSize = button.bounds.size;
 	[button setFrameOrigin:NSMakePoint(newSize.width - itemSize.width - (isRoot ? 18 : 20), newSize.height / 2 - itemSize.height / 2)];
-
 }
 
 #pragma mark - Logic
@@ -125,6 +148,12 @@ enum
 		return @"Duplicat detecté 😱";
 
 	return @"Données incomplètes 😱";
+}
+
+- (void) checkRefreshStatus
+{
+	button.status = listItem.status;
+	button.stringValue = [self determineMessageForStatus : button.status andItem:listItem];
 }
 
 @end
@@ -238,6 +267,13 @@ enum
 	return NO;
 }
 
+- (void) refreshAfterPass
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_UI object:nil];
+}
+
 @end
 
 @implementation RakImportStatusListItem
@@ -253,6 +289,8 @@ enum
 		_projectForRoot = project;
 
 		children = [NSMutableArray new];
+
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatusRoot) name:NOTIFICATION_ROOT object:nil];
 	}
 
 	return self;
@@ -267,6 +305,8 @@ enum
 		_isRootItem = NO;
 		_itemForChild = item;
 		_status = self.itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
+
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatusChild) name:NOTIFICATION_CHILD object:nil];
 	}
 
 	return self;
@@ -305,6 +345,18 @@ enum
 	}
 
 	return anythingWrong ? (everythingWrong ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;
+}
+
+#pragma mark - Content update
+
+- (void) checkRefreshStatusChild
+{
+	_status = _itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
+}
+
+- (void) checkRefreshStatusRoot
+{
+	_status = [self checkStatusFromChildren];
 }
 
 @end

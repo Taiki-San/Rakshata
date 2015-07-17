@@ -86,11 +86,13 @@
 	uint lengthExpected = strlen(startExpectedPath);
 	bool foundOneThing = false;
 
-	UI.nbElementInEntry = globalMeta.number_entry;
+	if(UI != nil)
+		UI.nbElementInEntry = globalMeta.number_entry;
 
-	for (uint pos = 0; pos < globalMeta.number_entry && ![UI haveCanceled]; pos++)
+	for (uint pos = 0; pos < globalMeta.number_entry && (UI == nil || ![UI haveCanceled]); pos++)
 	{
-		UI.posInEntry = pos;
+		if(UI != nil)
+			UI.posInEntry = pos;
 		
 		//Get current item filename
 		char filename[1024] = {0};
@@ -108,10 +110,10 @@
 	}
 
 	//Decompression is over, now, we need to ensure everything is fine
-	if([UI haveCanceled] || !foundOneThing || ![self isReadable])
+	if((UI != nil && [UI haveCanceled]) || !foundOneThing || ![self isReadable])
 	{
 		//Oh, the entry was not valid 😱
-		if(![UI haveCanceled])
+		if(UI != nil && ![UI haveCanceled])
 			logR("Uh? Invalid import :|");
 
 		if(_isTome)
@@ -126,6 +128,22 @@
 	return true;
 }
 
+- (BOOL) overrideDuplicate : (unzFile *) archive
+{
+	if(_issue != IMPORT_PROBLEM_DUPLICATE)
+		return NO;
+
+	[self deleteData];
+	if(![self install:archive withUI:nil])
+		return NO;
+
+	[self processThumbs:archive];
+	[self registerProject];
+	_issue = IMPORT_PROBLEM_NONE;
+
+	return YES;
+}
+
 - (void) deleteData
 {
 	if(!_isTome)
@@ -135,10 +153,10 @@
 	META_TOME * tomeFull = _projectData.data.project.tomesFull;
 	uint lengthTomeFull = _projectData.data.project.nombreTomes;
 
-	_projectData.data.project.tomesFull = _projectData.data.tomeLocal;
-	_projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
+	_projectData.data.project.tomesInstalled = _projectData.data.project.tomesFull = _projectData.data.tomeLocal;
+	_projectData.data.project.nombreTomesInstalled = _projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
 
-	internalDeleteCT(_projectData.data.project, true, _contentID);
+	internalDeleteTome(_projectData.data.project, _contentID, true);
 
 	_projectData.data.project.tomesFull = tomeFull;
 	_projectData.data.project.nombreTomes = lengthTomeFull;

@@ -193,7 +193,20 @@ enum
 
 - (void) replaceAll
 {
+	BOOL stillHaveAnError = NO;
 
+	for(RakImportItem * item in _dataSet)
+	{
+		//If not a duplicate issue, we check if it's okay if we haven't anything
+		//that would prevent us from getting away (missing metadata)
+		if(![item overrideDuplicate:file] && !stillHaveAnError)
+			stillHaveAnError |= item.issue != IMPORT_PROBLEM_NONE;
+	}
+
+	[outlineList refreshAfterPass];
+
+	if(!stillHaveAnError)
+		[self close];
 }
 
 - (void) close
