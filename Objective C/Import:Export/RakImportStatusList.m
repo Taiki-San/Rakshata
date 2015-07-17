@@ -231,6 +231,14 @@ enum
 
 		[self initializeMain:NSMakeRect(0, 0, LIST_WIDTH, 200)];
 		[content setHeaderView:nil];
+
+		//Expand what have to be
+		[rootCollector enumerateObjectsUsingBlock:^(RakImportStatusListItem * obj, NSUInteger idx, BOOL * stop) {
+
+			if(obj.status != STATUS_BUTTON_OK && [obj getNbChildren] < 10)
+				[content expandItem:obj];
+
+		}];
 	}
 
 	return self;
