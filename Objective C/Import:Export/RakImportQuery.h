@@ -10,42 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakImportStatusController.h"
+@interface RakImportQuery : RakPopoverView
 
-@interface RakImportController : NSObject
-
-+ (void) importFile : (NSString *) file : (BOOL) generatedArchive;
-+ (void) postProcessing : (unzFile *) file withUI : (RakImportStatusController *) UI;
+- (instancetype) autoInitWithItem : (RakImportItem *) item;
+- (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver;
 
 @end
-
-@interface RakImportItem : NSObject
-
-@property NSString * path;
-@property PROJECT_DATA_EXTRA projectData;
-@property int contentID;
-@property BOOL isTome;
-
-@property byte issue;
-
-- (BOOL) isReadable;
-- (BOOL) needMoreData;
-
-- (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
-- (void) deleteData;
-- (BOOL) overrideDuplicate : (unzFile *) archive;
-
-- (void) processThumbs : (unzFile *) archive;
-- (void) registerProject;
-
-@end
-
-#import "RakImportStatusList.h"
-#import "RakImportQuery.h"
-
-enum
-{
-	IMPORT_PROBLEM_NONE,
-	IMPORT_PROBLEM_DUPLICATE,
-	IMPORT_PROBLEM_METADATA
-};

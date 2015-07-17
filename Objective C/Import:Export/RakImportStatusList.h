@@ -37,3 +37,7 @@
 - (void) refreshAfterPass;
 
 @end
+
+@interface RakImportStatusListRowView : NSView
+
+@end

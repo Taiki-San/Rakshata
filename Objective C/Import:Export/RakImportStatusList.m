@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakImportStatusListRowView : NSView
+@interface RakImportStatusListRowView()
 {
 	RakImportStatusListItem * listItem;
 
@@ -19,6 +19,8 @@
 
 	RakText * projectName;
 	RakStatusButton * button;
+
+	RakImportQuery * alert;
 }
 
 - (void) updateWithItem : (RakImportStatusListItem *) item;
@@ -56,6 +58,12 @@ enum
 
 - (void) updateWithItem : (RakImportStatusListItem *) item
 {
+	if(alert != nil)
+	{
+		[alert closePopover];
+		alert = nil;
+	}
+
 	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
@@ -76,7 +84,11 @@ enum
 	{
 		button = [[RakStatusButton alloc] initWithStatus:item.status];
 		if(button != nil)
+		{
+			button.target = self;
+			button.action = @selector(getDetails);
 			[self addSubview:button];
+		}
 	}
 	else
 		button.status = item.status;
@@ -153,6 +165,18 @@ enum
 {
 	button.status = listItem.status;
 	button.stringValue = [self determineMessageForStatus : button.status andItem:listItem];
+}
+
+- (void) getDetails
+{
+	if(isRoot)
+		return;
+
+	if(alert != nil)
+		[alert closePopover];
+
+	alert = [[RakImportQuery alloc] autoInitWithItem:_item];
+	[alert launchPopover:button :self];
 }
 
 @end

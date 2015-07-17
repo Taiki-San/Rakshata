@@ -27,6 +27,7 @@
 		B61AF83E1B4D4D3E0016A691 /* raksource.icns in Resources */ = {isa = PBXBuildFile; fileRef = B61AF83D1B4D4D3E0016A691 /* raksource.icns */; };
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
 		B61EBE7319EC699400EE6837 /* RakCTSelectionListContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */; };
+		B62044E01B596AFB00B8244C /* RakImportQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = B62044DF1B596AFB00B8244C /* RakImportQuery.m */; };
 		B621824118732CB0008AC5DD /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B621824018732CB0008AC5DD /* RakTabView.m */; };
 		B62182471873527A008AC5DD /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
 		B621988D19D16BC800001092 /* RakCTSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = B621988C19D16BC800001092 /* RakCTSelection.m */; };
@@ -274,6 +275,8 @@
 		B61DD14C18E23915009D51E3 /* RakBorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBorder.m; path = Utils/RakBorder.m; sourceTree = "<group>"; };
 		B61EBE7119EC699400EE6837 /* RakCTSelectionListContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSelectionListContainer.h; path = CTSelec/RakCTSelectionListContainer.h; sourceTree = "<group>"; };
 		B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSelectionListContainer.m; path = CTSelec/RakCTSelectionListContainer.m; sourceTree = "<group>"; };
+		B62044DE1B596AFB00B8244C /* RakImportQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImportQuery.h; path = "Import:Export/RakImportQuery.h"; sourceTree = "<group>"; };
+		B62044DF1B596AFB00B8244C /* RakImportQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportQuery.m; path = "Import:Export/RakImportQuery.m"; sourceTree = "<group>"; };
 		B621824018732CB0008AC5DD /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakTabView.m; path = Utils/RakTabView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62182451873527A008AC5DD /* Prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefs.h; path = Prefs/Prefs.h; sourceTree = "<group>"; };
 		B62182461873527A008AC5DD /* Prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Prefs.m; path = Prefs/Prefs.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1357,6 +1360,8 @@
 				B6BBEA0F1B554DD800127628 /* RakEIStatusController.m */,
 				B66104281B5046930079924E /* RakExportStatusController.h */,
 				B66104291B5046930079924E /* RakExportStatusController.m */,
+				B62044DE1B596AFB00B8244C /* RakImportQuery.h */,
+				B62044DF1B596AFB00B8244C /* RakImportQuery.m */,
 				B6C9F12E1B5420B6008DF724 /* RakImportStatusController.h */,
 				B6C9F12F1B5420B6008DF724 /* RakImportStatusController.m */,
 				B6B93D8A1B580C2B00F7DE42 /* RakImportStatusList.h */,
@@ -1673,6 +1678,7 @@
 				B6C9F12D1B541D2C008DF724 /* RakSheetView.m in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,
+				B62044E01B596AFB00B8244C /* RakImportQuery.m in Sources */,
 				B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */,
 				B68B522B191AE38D0057F35A /* RakProgressBar.m in Sources */,
 				B6F6ECFB18A3001400E3B55B /* keys.c in Sources */,
