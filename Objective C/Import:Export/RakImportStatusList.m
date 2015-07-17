@@ -34,7 +34,6 @@ enum
 
 #define NOTIFICATION_CHILD	@"RakImportStatusUpdateChild"
 #define NOTIFICATION_ROOT	@"RakImportStatusUpdateRoot"
-#define NOTIFICATION_UI	@"RakImportStatusUpdateUI"
 
 @implementation RakImportStatusListRowView
 
@@ -44,7 +43,7 @@ enum
 
 	if(self != nil)
 	{
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatus) name:NOTIFICATION_UI object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatus) name:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 	}
 
 	return self;
@@ -271,7 +270,7 @@ enum
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_UI object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 }
 
 @end

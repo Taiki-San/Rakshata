@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define NOTIFICATION_IMPORT_STATUS_UI	@"RakImportStatusUpdateUI"
+
 @interface RakImportStatusListItem : RakOutlineListItem
 
 @property PROJECT_DATA projectForRoot;

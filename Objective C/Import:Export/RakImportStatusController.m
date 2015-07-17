@@ -39,9 +39,9 @@ enum
 	file = unzipFile;
 }
 
-- (NSString *) headerText
+- (void) dealloc
 {
-	return NSLocalizedString(@"IMPORTING", nil);
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Issue UI initialization
@@ -49,6 +49,7 @@ enum
 - (void) switchToIssueUI : (NSArray *) dataSet
 {
 	_dataSet = dataSet;
+
 	[self setupIssueUI : dataSet];
 	[self transition];
 }
@@ -68,25 +69,17 @@ enum
 		[superview addSubview:issueTitle];
 	}
 
-	//Header, explaining what is going on
-	NSString * headerText;
-	uint nbIssues = 0;
 
-	//We count the number of issues to show them in the UI
-	for(RakImportItem * item in dataSet)
+	if(issueHeader == nil)
 	{
-		if(item.issue != IMPORT_PROBLEM_NONE)
-			nbIssues++;
+		issueHeader = [[RakText alloc] initWithText:[self secondaryHeaderText] :[self textColor]];
+		if(issueHeader != nil)
+			[superview addSubview:issueHeader];
+
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshHeaderText) name:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 	}
-
-	if(nbIssues > 1)
-		headerText = [NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-%zu-PBM", nil), nbIssues];
 	else
-		headerText = NSLocalizedString(@"IMPORT-ONE-PBM", nil);
-
-	issueHeader = [[RakText alloc] initWithText:headerText :[self textColor]];
-	if(issueHeader != nil)
-		[superview addSubview:issueHeader];
+		[self refreshHeaderText];
 
 	outlineList = [[RakImportStatusList alloc] initWithImportList:dataSet];
 	if(outlineList != nil)
@@ -96,7 +89,7 @@ enum
 		if(scrollview != nil)
 		{
 			scrollview.drawsBackground = YES;
-			scrollview.backgroundColor = [[NSColor blackColor] colorWithAlphaComponent:0.3];
+			scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW :nil];
 			scrollview.documentView = view;
 			[superview addSubview:scrollview];
 		}
@@ -182,6 +175,46 @@ enum
 
 		[NSAnimationContext endGrouping];
 	}];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+
+	scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW :nil];
+}
+
+#pragma mark - Text management
+
+- (NSString *) headerText
+{
+	return NSLocalizedString(@"IMPORTING", nil);
+}
+
+- (NSString *) secondaryHeaderText
+{
+	//Header, explaining what is going on
+	uint nbIssues = 0;
+
+	//We count the number of issues to show them in the UI
+	for(RakImportItem * item in _dataSet)
+	{
+		if(item.issue != IMPORT_PROBLEM_NONE)
+			nbIssues++;
+	}
+
+	if(nbIssues > 1)
+		return [NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-%zu-PBM", nil), nbIssues];
+	else if(nbIssues == 1)
+		return NSLocalizedString(@"IMPORT-ONE-PBM", nil);
+
+	return @"Yay, everything is okay (shouldn't appear)";
+}
+
+- (void) refreshHeaderText
+{
+	issueHeader.stringValue = [self secondaryHeaderText];
 }
 
 - (NSColor *) textColor
