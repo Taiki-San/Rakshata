@@ -16,6 +16,8 @@
 "REMIND" = "S'en souvenir";
 "CONFIRM" = "Confirmer";
 "CANCEL" = "Annuler";
+"REPLACE-ALL" = "Tout remplacer";
+"CLOSE" = "Fermer";
 "YES" = "Oui";
 "NO" = "Non";
 "OK" = "Ok";
@@ -162,13 +164,15 @@
 "PREFS-FAVORITE-HEADER" = "Mettre une série en favoris vous permet de rester à jour à chaque lancement";
 "PREFS-FAVORITE-AUTODL" = "Activer le téléchargement automatique des nouvelles sorties de vos séries favorites au démarage";
 
-//Export
+//Export/Import
 "EXPORTING" = "Export en cours";
 "IMPORTING" = "Import en cours";
 "INITIALIZATION" = "Initialisation";
 "PROCESSING" = "Post-traitement";
 "CANCELED" = "Nettoyage";
-
+"IMPORT-REPORT" = "Rapport d'import";
+"IMPORT-ONE-PBM" = "1 problème détecté, cliquez sur le symbole pour le résoudre";
+"IMPORT-%zu-PBM" = "%1$zu problèmes détectés, cliquez sur les symboles pour les résoudres";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

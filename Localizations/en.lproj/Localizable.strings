@@ -16,6 +16,8 @@
 "REMIND" = "Remind";
 "CONFIRM" = "Confirm";
 "CANCEL" = "Cancel";
+"REPLACE-ALL" = "Replace all";
+"CLOSE" = "Close";
 "YES" = "Yes";
 "NO" = "No";
 "OK" = "Ok";
@@ -168,6 +170,9 @@
 "INITIALIZATION" = "Initialization";
 "PROCESSING" = "Finishing up";
 "CANCELED" = "Cleaning up";
+"IMPORT-REPORT" = "Import report";
+"IMPORT-ONE-PBM" = "1 problem detected, click on the symbol to fix it";
+"IMPORT-%zu-PBM" = "%1$zu problems detected, click on the symbols to fix them";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";

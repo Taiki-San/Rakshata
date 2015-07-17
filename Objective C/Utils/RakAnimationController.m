@@ -59,8 +59,8 @@
 	{
 		[self abortAnimation];
 	}
-	
-	_stage = _animationFrame - _stage;
+
+	_stage = _animationFrame - MIN(_stage, _animationFrame);
 	
 	CGFloat duration = _animationDuration - _stage / _animationFrame;
 	uint steps = _animationFrame - _stage;
@@ -93,6 +93,7 @@
 - (void) abortAnimation
 {
 	[_animation stopAnimation];
+	[self animationDidEnd:_animation];
 	_animation = nil;
 }
 

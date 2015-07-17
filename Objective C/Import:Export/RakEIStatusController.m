@@ -74,6 +74,7 @@ enum
 	title = [[RakMenuText alloc] initWithText:NSZeroRect :[self headerText]];
 	if(title != nil)
 	{
+		title.ignoreInternalFrameMagic = YES;
 		title.barWidth = 0;
 		title.haveBackgroundColor = NO;
 

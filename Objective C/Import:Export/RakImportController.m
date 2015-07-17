@@ -12,12 +12,6 @@
 
 #include "JSONParser.h"
 
-enum
-{
-	PROBLEM_DUPLICATE,
-	PROBLEM_METADATA
-};
-
 @implementation RakImportController
 
 + (void) importFile : (NSString *) filename : (BOOL) generatedArchive
@@ -90,7 +84,7 @@ enum
 	UI.nbElementToExport = [manifest count];
 
 	//Okay, we iterate through
-	NSMutableArray * problems = [NSMutableArray array];
+	BOOL haveFoundProblems = NO;
 	for(RakImportItem * item in manifest)
 	{
 		if(firstPass)
@@ -105,13 +99,15 @@ enum
 		//At this point, we know two things: the project is valid, exist in the archive
 		if([item needMoreData])	//We need to ask extra details to the user
 		{
-			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_METADATA)}];
+			haveFoundProblems = YES;
+			item.issue = IMPORT_PROBLEM_METADATA;
 			continue;
 		}
 
 		if([item isReadable])
 		{
-			[problems addObject:@{@"obj" : item, @"reason" : @(PROBLEM_DUPLICATE)}];
+			haveFoundProblems = YES;
+			item.issue = IMPORT_PROBLEM_DUPLICATE;
 			continue;
 		}
 
@@ -139,14 +135,32 @@ enum
 	}
 
 	if(![UI haveCanceled])
-		dispatch_sync(dispatch_get_main_queue(), ^{	[UI finishing];	});
+	{
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			if(haveFoundProblems)
+			{
+				UI.posInExport = UI.nbElementToExport;
+				[UI addUnzFile:file];
+				[UI switchToIssueUI:manifest];
+			}
+			else
+				[UI finishing];
+		});
+	}
+	else
+		[self postProcessing:file withUI:UI];
+}
 
++ (void) postProcessing : (unzFile *) file withUI : (RakImportStatusController *) UI
+{
 	unzClose(file);
 
-	syncCacheToDisk(SYNC_PROJECTS);
+//	syncCacheToDisk(SYNC_PROJECTS);
 	notifyFullUpdate();
 
-	if(![problems count])
+	if([NSThread isMainThread])
+		[UI closeUI];
+	else
 		dispatch_sync(dispatch_get_main_queue(), ^{	[UI closeUI];	});
 }
 
@@ -283,6 +297,7 @@ enum
 			continue;
 		}
 
+		item.issue = IMPORT_PROBLEM_NONE;
 		item.path = [dirName stringByAppendingString:@"/"];
 		item.isTome = [isTome boolValue];
 		item.contentID = [entityID intValue];
@@ -557,6 +572,9 @@ enum
 
 #pragma mark - Handle missing data
 
++ (void) daaaaaammmnnn : (NSArray *) problems : (RakImportStatusController *) UI
+{
 
+}
 
 @end

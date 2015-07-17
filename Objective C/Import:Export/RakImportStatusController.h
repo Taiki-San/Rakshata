@@ -11,5 +11,11 @@
  *********************************************************************************************/
 
 @interface RakImportStatusController : RakEIStatusController
+{
+	unzFile * file;
+}
+
+- (void) addUnzFile : (unzFile *) unzipFile;
+- (void) switchToIssueUI : (NSArray *) dataSet;
 
 @end

@@ -15,6 +15,7 @@
 @interface RakImportController : NSObject
 
 + (void) importFile : (NSString *) file : (BOOL) generatedArchive;
++ (void) postProcessing : (unzFile *) file withUI : (RakImportStatusController *) UI;
 
 @end
 
@@ -25,6 +26,8 @@
 @property int contentID;
 @property BOOL isTome;
 
+@property byte issue;
+
 - (BOOL) isReadable;
 - (BOOL) needMoreData;
 
@@ -34,3 +37,12 @@
 - (void) registerProject;
 
 @end
+
+#import "RakImportStatusList.h"
+
+enum
+{
+	IMPORT_PROBLEM_NONE,
+	IMPORT_PROBLEM_DUPLICATE,
+	IMPORT_PROBLEM_METADATA
+};

@@ -28,7 +28,7 @@ enum
 	{
 		self.status = status;
 
-		[self addTrackingRect:_bounds owner:self userData:nil assumeInside:NO];
+		trackingRect = [self addTrackingRect:_bounds owner:self userData:nil assumeInside:NO];
 		[Prefs getCurrentTheme:self];
 	}
 
@@ -99,6 +99,14 @@ enum
 
 #pragma mark - Text management
 
+- (void) updateTrackingAreas
+{
+	[super updateTrackingAreas];
+
+	[self removeTrackingRect:trackingRect];
+	trackingRect = [self addTrackingRect:_bounds owner:self userData:nil assumeInside:NO];
+}
+
 - (void) setStringValue:(NSString *)stringValue
 {
 	_stringValue = stringValue;
@@ -156,6 +164,7 @@ enum
 	{
 		CGFloat progress = cursorOver ? _animation.animationFrame - _animation.stage : _animation.stage;
 		minX += progress / _animation.animationFrame * textWidth;
+		minX = MIN(minX, textWidth);	//Floating points...
 	}
 	else
 		minX += cursorOver ? 0 : textWidth;
@@ -168,10 +177,7 @@ enum
 
 	//Line to the other side is implied when drawing the other half of the circle
 	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
-
-	//And back
-	if(minX < textWidth)
-		CGContextClosePath(contextBorder);
+	CGContextClosePath(contextBorder);
 
 	//Now, draw the shape within
 	switch(_status)
@@ -222,18 +228,30 @@ enum
 
 - (void) focusChanged
 {
-	if(_animation == nil)
-	{
-		_animation = [[RakAnimationController alloc] init];
-		if(_animation != nil)
-		{
-			[_animation addAction:self];
+	BOOL oldAnimationData = NO;
+	CGFloat stage;
 
-			_animation.viewToRefresh = self;
-			_animation.selectorToPing = @selector(animationProgressed);
-			_animation.animationDuration = 0.1;
+	if(_animation != nil)
+	{
+		oldAnimationData = YES;
+		stage = _animation.stage;
+		[_animation abortAnimation];
+		_animation = nil;
+	}
+
+	_animation = [[RakAnimationController alloc] init];
+	if(_animation != nil)
+	{
+		[_animation addAction:self];
+
+		_animation.viewToRefresh = self;
+		_animation.selectorToPing = @selector(animationProgressed);
+		_animation.animationDuration = 0.1;
+
+		if(oldAnimationData)
+			_animation.stage = stage;
+		else
 			_animation.stage = _animation.animationFrame;
-		}
 	}
 
 	[_animation startAnimation];
