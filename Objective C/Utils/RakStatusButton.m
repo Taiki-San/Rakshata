@@ -28,7 +28,10 @@ enum
 	{
 		self.status = status;
 
-		trackingRect = [self addTrackingRect:_bounds owner:self userData:nil assumeInside:NO];
+		trackingArea = [[NSTrackingArea alloc] initWithRect:_bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
+		if(trackingArea != nil)
+			[self addTrackingArea:trackingArea];
+
 		[Prefs getCurrentTheme:self];
 	}
 
@@ -65,12 +68,29 @@ enum
 
 - (void) mouseEntered:(nonnull NSEvent *)theEvent
 {
+	if([self convertPoint:theEvent.locationInWindow fromView:nil].x < [self getMinX])
+		return;
+
 	cursorOver = YES;
 	[self focusChanged];
 }
 
+- (void) mouseMoved:(nonnull NSEvent *)theEvent
+{
+	if(([self convertPoint:theEvent.locationInWindow fromView:nil].x < [self getMinX]) != cursorOver)
+		return;
+
+	if(cursorOver)
+		[self mouseExited:theEvent];
+	else
+		[self mouseEntered:theEvent];
+}
+
 - (void) mouseExited:(nonnull NSEvent *)theEvent
 {
+	if(!cursorOver)
+		return;
+
 	cursorOver = NO;
 	clickingInside = NO;
 
@@ -103,8 +123,10 @@ enum
 {
 	[super updateTrackingAreas];
 
-	[self removeTrackingRect:trackingRect];
-	trackingRect = [self addTrackingRect:_bounds owner:self userData:nil assumeInside:NO];
+	[self removeTrackingArea:trackingArea];
+	trackingArea = [[NSTrackingArea alloc] initWithRect:_bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
+	if(trackingArea != nil)
+		[self addTrackingArea:trackingArea];
 }
 
 - (void) setStringValue:(NSString *)stringValue
@@ -154,12 +176,10 @@ enum
 
 #pragma mark - Drawing
 
-- (void) drawRect:(NSRect)dirtyRect
+- (CGFloat) getMinX
 {
-	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
-	CGFloat minX = 1, middle = STATUS_BUTTON_DRAWING_WIDTH / 2;
+	CGFloat minX = 1;
 
-	//Find our origin
 	if(_animation != nil)
 	{
 		CGFloat progress = cursorOver ? _animation.animationFrame - _animation.stage : _animation.stage;
@@ -168,6 +188,16 @@ enum
 	}
 	else
 		minX += cursorOver ? 0 : textWidth;
+
+	return minX;
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
+	CGFloat minX = [self getMinX], middle = STATUS_BUTTON_DRAWING_WIDTH / 2;
+
+	//Find our origin
 
 	[cachedColor setStroke];
 
@@ -249,7 +279,7 @@ enum
 		_animation.animationDuration = 0.1;
 
 		if(oldAnimationData)
-			_animation.stage = stage;
+			_animation.stage = _animation.animationFrame - stage;
 		else
 			_animation.stage = _animation.animationFrame;
 	}

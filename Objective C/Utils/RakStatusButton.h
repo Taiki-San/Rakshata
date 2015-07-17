@@ -16,7 +16,7 @@
 	RakText * text;
 
 	RakAnimationController * _animation;
-	NSTrackingRectTag trackingRect;
+	NSTrackingArea * trackingArea;
 
 	BOOL cursorOver, clickingInside;
 	CGFloat textWidth;
