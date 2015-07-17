@@ -102,12 +102,15 @@ enum
 		}
 	}
 
-	replaceAll = [RakButton allocWithText:NSLocalizedString(@"REPLACE-ALL", nil)];
-	if(replaceAll != nil)
+	if(outlineList.haveDuplicate)
 	{
-		replaceAll.target = self;
-		replaceAll.action = @selector(replaceAll);
-		[superview addSubview:replaceAll];
+		replaceAll = [RakButton allocWithText:NSLocalizedString(@"REPLACE-ALL", nil)];
+		if(replaceAll != nil)
+		{
+			replaceAll.target = self;
+			replaceAll.action = @selector(replaceAll);
+			[superview addSubview:replaceAll];
+		}
 	}
 
 	close = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
@@ -126,14 +129,19 @@ enum
 	NSSize oldSize = queryWindow.contentView.bounds.size;
 	CGFloat halfWidth = (oldSize.width + DELTA_WIDTH) / 2.0f, oldHeight = oldSize.height, currentY = oldHeight + DELTA_HEIGHT;
 
-	[issueTitle setFrameOrigin:NSMakePoint(halfWidth - issueTitle.bounds.size.width / 2, oldHeight + (currentY -= issueTitle.bounds.size.height + 10))];
+	[issueTitle setFrameOrigin:NSMakePoint(halfWidth - issueTitle.bounds.size.width / 2, oldHeight + (currentY -= issueTitle.bounds.size.height + 5))];
 	[issueHeader setFrameOrigin:NSMakePoint(halfWidth - issueHeader.bounds.size.width / 2, oldHeight + (currentY -= issueHeader.bounds.size.height + 5))];
 	[scrollview setFrameOrigin:NSMakePoint(halfWidth - scrollview.bounds.size.width / 2, oldHeight + (currentY -= scrollview.bounds.size.height + 10))];
 
-	currentY /= 2;
+	if(replaceAll != nil)
+	{
+		currentY /= 2;
 
-	[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, oldHeight + currentY - replaceAll.bounds.size.height / 2)];
-	[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
+		[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, oldHeight + currentY - replaceAll.bounds.size.height / 2)];
+		[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
+	}
+	else
+		[close setFrameOrigin:NSMakePoint(halfWidth - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
 }
 
 - (void) transition

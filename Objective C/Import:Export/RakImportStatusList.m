@@ -20,6 +20,7 @@
 }
 
 - (void) updateWithItem : (RakImportStatusListItem *) item;
+- (byte) status;
 
 @end
 
@@ -50,18 +51,23 @@ enum
 
 	if(button == nil)
 	{
-		button = [[RakStatusButton alloc] initWithStatus:[self determineStatus : item]];
+		button = [[RakStatusButton alloc] initWithStatus:item.status];
 		if(button != nil)
 			[self addSubview:button];
 	}
 	else
-		button.status = [self determineStatus : item];
+		button.status = item.status;
 
 	button.stringValue = [self determineMessageForStatus : button.status andItem:item];
 
 	//Refresh everything's position
 	if(!NSEqualSizes(_bounds.size, NSZeroSize))
 		[self setFrameSize:_bounds.size];
+}
+
+- (byte) status
+{
+	return button.status;
 }
 
 - (void) setFrameSize:(NSSize)newSize
@@ -106,20 +112,19 @@ enum
 	return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), content / 10];
 }
 
-- (byte) determineStatus : (RakImportStatusListItem *) item
-{
-	if(!isRoot)
-		return _item.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
-
-	return [item checkStatusFromChildren];
-}
-
 - (NSString *) determineMessageForStatus : (byte) status andItem : (RakImportStatusListItem *) item
 {
-	if(status == STATUS_BUTTON_OK || rand() % 2)
-		return @"Tout est bon :)";
+	if(status == STATUS_BUTTON_OK)
+		return @"Tout est bon 😊";
 
-	return @"Meh";
+	else if(status == STATUS_BUTTON_WARN || item.isRootItem)
+		return @"Problèmes detectés 😕";
+
+	//Ok, error
+	else if(item.itemForChild.issue == IMPORT_PROBLEM_DUPLICATE)
+		return @"Duplicat detecté 😱";
+
+	return @"Données incomplètes 😱";
 }
 
 @end
@@ -163,6 +168,8 @@ enum
 			}
 
 			[currentRoot addItemAsChild:item];
+
+			_haveDuplicate |= item.issue == IMPORT_PROBLEM_DUPLICATE;
 		}
 
 		[rootCollector enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL * stop) {	[obj commitFinalList];	}];
@@ -226,6 +233,11 @@ enum
 	return rowView;
 }
 
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
+{
+	return NO;
+}
+
 @end
 
 @implementation RakImportStatusListItem
@@ -254,6 +266,7 @@ enum
 	{
 		_isRootItem = NO;
 		_itemForChild = item;
+		_status = self.itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
 	}
 
 	return self;
@@ -277,6 +290,7 @@ enum
 	}];
 
 	_nbChildren = [children count];
+	_status = [self checkStatusFromChildren];
 }
 
 - (byte) checkStatusFromChildren
@@ -284,10 +298,10 @@ enum
 	BOOL anythingWrong = NO, everythingWrong = YES;
 	for(RakImportStatusListItem * item in children)
 	{
-		BOOL status = item.itemForChild.issue != IMPORT_PROBLEM_NONE;
+		BOOL itemStatus = item.itemForChild.issue != IMPORT_PROBLEM_NONE;
 
-		anythingWrong |= status;
-		everythingWrong &= status;
+		anythingWrong |= itemStatus;
+		everythingWrong &= itemStatus;
 	}
 
 	return anythingWrong ? (everythingWrong ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;

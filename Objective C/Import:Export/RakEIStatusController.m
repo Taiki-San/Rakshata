@@ -38,12 +38,18 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
+}
+
 - (void) startUI
 {
 	RakSheetView * mainView = [[RakSheetView alloc] initWithFrame:NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)];
 
 	if(mainView != nil)
 	{
+		mainView.anchor = self;
 		[Prefs getCurrentTheme:self];
 
 		mainView.backgroundColor = [self backgroundColor];

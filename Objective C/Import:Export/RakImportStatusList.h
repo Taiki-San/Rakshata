@@ -14,6 +14,7 @@
 
 @property PROJECT_DATA projectForRoot;
 @property RakImportItem * itemForChild;
+@property byte status;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 - (void) addItemAsChild : (RakImportItem *) item;
@@ -27,6 +28,8 @@
 	NSArray * _dataSet;
 	NSArray * rootItems;
 }
+
+@property BOOL haveDuplicate;
 
 - (instancetype) initWithImportList : (NSArray *) dataset;
 
