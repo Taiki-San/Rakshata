@@ -512,6 +512,13 @@
 				{
 					if(oldData[posOld].data != current)
 					{
+						//New entry
+						if(_nbCoupleColumn == 1)
+						{
+							[new addIndex:posNew];
+							continue;
+						}
+
 						if(posOld < [_tableView numberOfRows])
 						{
 							for(uint max = MIN(nbElemOld, [_tableView numberOfRows]); posOld < max && oldData[posOld].data != current; oldElem++)
