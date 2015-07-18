@@ -110,21 +110,6 @@
 	return [Prefs getSystemColor: COLOR_DANGER_POPOVER_BORDER :nil];
 }
 
-- (NSColor *) popoverArrowColor
-{
-	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS:nil];
-}
-
-- (NSColor *) borderColor
-{
-	return [Prefs getSystemColor:COLOR_BORDER_TABS:nil];
-}
-
-- (NSColor *) backgroundColor
-{
-	return 	[Prefs getSystemColor:COLOR_BACKGROUND_TABS:nil];
-}
-
 //Toolbox
 
 - (void) locationUpdated : (NSRect) frame : (BOOL) animated
