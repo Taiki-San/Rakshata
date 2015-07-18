@@ -19,12 +19,19 @@
 
 	RakText * projectName;
 	RakStatusButton * button;
-
-	RakImportQuery * alert;
 }
+
+@property RakImportStatusList * list;
 
 - (void) updateWithItem : (RakImportStatusListItem *) item;
 - (byte) status;
+
+@end
+
+@interface RakImportStatusList()
+{
+	RakImportQuery * query;
+}
 
 @end
 
@@ -58,12 +65,6 @@ enum
 
 - (void) updateWithItem : (RakImportStatusListItem *) item
 {
-	if(alert != nil)
-	{
-		[alert closePopover];
-		alert = nil;
-	}
-
 	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
@@ -172,10 +173,9 @@ enum
 	if(isRoot)
 		return;
 
-	if(alert != nil)
-		[alert closePopover];
+	RakImportQuery * alert = [[RakImportQuery alloc] autoInitWithItem:_item];
 
-	alert = [[RakImportQuery alloc] autoInitWithItem:_item];
+	[_list registerQuery : alert];
 	[alert launchPopover:button :self];
 }
 
@@ -286,6 +286,7 @@ enum
 	{
 		rowView = [[RakImportStatusListRowView alloc] initWithFrame:NSZeroRect];
 		rowView.identifier = @"Itis37COutsideImDying";
+		rowView.list = self;
 	}
 
 	[rowView updateWithItem :item];
@@ -303,6 +304,14 @@ enum
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+}
+
+- (void) registerQuery : (RakImportQuery *) newQuery
+{
+	if(query != nil)
+		[query closePopover];
+
+	query = newQuery;
 }
 
 @end

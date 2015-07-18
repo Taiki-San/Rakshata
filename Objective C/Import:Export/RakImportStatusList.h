@@ -36,6 +36,8 @@
 - (instancetype) initWithImportList : (NSArray *) dataset;
 - (void) refreshAfterPass;
 
+- (void) registerQuery : (RakImportQuery *) newQuery;
+
 @end
 
 @interface RakImportStatusListRowView : NSView

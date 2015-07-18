@@ -244,7 +244,9 @@ enum
 
 - (void) close
 {
+	[outlineList registerQuery:nil];
 	[RakImportController postProcessing:file withUI:self];
+	file = NULL;
 }
 
 @end

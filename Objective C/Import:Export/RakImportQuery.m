@@ -32,7 +32,7 @@
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
 {
-	[self internalInit:anchor :NSZeroRect :YES];
+	[self internalInit:anchor :NSZeroRect :NO];
 	return YES;
 }
 
@@ -53,7 +53,7 @@
 
 - (void) setupUIDuplicate
 {
-	NSSize selfSize = _bounds.size;
+	NSSize selfSize = self.frame.size;
 	CGFloat currentY = selfSize.height;
 
 	header = [[RakText alloc] initWithText:@"CT déjà existant, souhaitez vous le remplacer?" :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
@@ -74,14 +74,6 @@
 - (INPopoverArrowDirection) arrowDirection
 {
 	return INPopoverArrowDirectionLeft;
-}
-
-- (void) configurePopover:(INPopoverController *)internalPopover
-{
-	[super configurePopover:internalPopover];
-
-	internalPopover.closesWhenApplicationBecomesInactive = NO;
-	internalPopover.closesWhenPopoverResignsKey = NO;
 }
 
 - (void) additionalUpdateOnThemeChange

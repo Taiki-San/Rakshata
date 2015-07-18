@@ -40,6 +40,8 @@
 
 @end
 
+@class RakImportQuery;
+
 #import "RakImportStatusList.h"
 #import "RakImportQuery.h"
 
