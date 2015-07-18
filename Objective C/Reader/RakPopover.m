@@ -47,7 +47,12 @@
 
 - (void) additionalConfiguration : (id) target
 {
-	[target performSelector:@selector(configurePopover:) withObject:_popover];
+	[target configurePopover:_popover];
+}
+
+- (void) justCallSuperConfigure : (RakPopoverView *) view
+{
+	[view directConfiguration:_popover];
 }
 
 - (void) updatePosition : (NSPoint) origin : (BOOL) animated
@@ -107,9 +112,16 @@
 		additionalConfigRequired = YES;
 		[popover additionalConfiguration : self];
 	}
-	
+	else
+		[popover justCallSuperConfigure : self];
+
 	[popover togglePopover : baseFrame];
 	[popover setDelegate : self];
+}
+
+- (void) setFrame:(NSRect)frame
+{
+	[self setFrameOrigin:frame.origin];
 }
 
 - (void) dealloc
@@ -130,11 +142,16 @@
 	
 }
 
-- (void) configurePopover : (INPopoverController*) internalPopover
+- (void) directConfiguration : (INPopoverController*) internalPopover
 {
 	internalPopover.borderColor = [[self popoverBorderColor] colorWithAlphaComponent:0.8];
 	internalPopover.color = [self popoverArrowColor];
 	internalPopover.borderWidth = 4;
+}
+
+- (void) configurePopover : (INPopoverController*) internalPopover
+{
+	[self directConfiguration:internalPopover];
 }
 
 #pragma mark - Colors
@@ -180,6 +197,8 @@
 	
 	if(additionalConfigRequired)
 		[popover additionalConfiguration:self];
+	else
+		[popover justCallSuperConfigure : self];
 }
 
 - (void) additionalUpdateOnThemeChange

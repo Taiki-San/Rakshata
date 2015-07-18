@@ -10,6 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@class RakPopoverView;
+
 @interface RakPopoverWrapper : NSObject
 {
 	INPopoverController * _popover;
@@ -21,7 +23,10 @@
 
 - (instancetype) init : (NSView *) contentView;
 - (void) togglePopover : (NSRect) frame;
+
 - (void) additionalConfiguration : (id) target;
+- (void) justCallSuperConfigure : (RakPopoverView *) view;
+
 - (void) updatePosition : (NSPoint) origin : (BOOL) animated;
 - (void) setDelegate:(id <INPopoverControllerDelegate>) delegate;
 - (void) closePopover;
@@ -44,6 +49,7 @@
 
 - (void) setupView;
 - (void) configurePopover : (INPopoverController*) internalPopover;
+- (void) directConfiguration : (INPopoverController*) internalPopover;
 
 - (NSColor *) popoverBorderColor;
 - (NSColor *) popoverArrowColor;
