@@ -100,7 +100,7 @@
 {
 	NSPoint origin = [_anchor convertPoint:NSMakePoint([((RakAppDelegate *) [NSApp delegate]) window].isFullscreen ? 85 : 0, NSMaxY(MDLFrame)) toView:nil];
 	origin = [_anchor.window convertRectToScreen: (NSRect) {origin, NSZeroSize}].origin;
-	
+
 	if(_tabReader != nil)
 		origin.x += [_tabReader createFrame].origin.x / 2;
 	else

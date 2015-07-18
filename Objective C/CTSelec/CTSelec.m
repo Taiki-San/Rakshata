@@ -295,6 +295,8 @@
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
+	frame.origin = NSZeroPoint;
+
 	if(animated)
 	{
 		[backButton resizeAnimation:frame];

@@ -230,8 +230,8 @@
 - (void) setFrame:(NSRect)frameRect
 {
 	if(![self wouldFrameChange:frameRect])
-		return;
-	
+		return [self resizingCanceled];
+
 	[self _resize:frameRect :NO];
 }
 
@@ -240,9 +240,14 @@
 	NSRect frame = [self createFrame];
 	
 	if(![self wouldFrameChange:frame])
-		return;
+		return [self resizingCanceled];
 	
 	[self _resize:frame :YES];
+}
+
+- (void) resizingCanceled
+{
+
 }
 
 - (void) _resize : (NSRect) frame : (BOOL) animated
@@ -250,18 +255,12 @@
 	if(animated)
 	{
 		[self.animator setFrame : frame];
-		
-		frame.origin = NSZeroPoint;
-		
-		[foregroundView resizeAnimation:frame];
+		[foregroundView resizeAnimation:(NSRect) {NSZeroPoint, frame.size}];
 	}
 	else
 	{
 		[super setFrame:frame];
-		
-		frame.origin = NSZeroPoint;
-		
-		[foregroundView setFrame:frame];
+		[foregroundView setFrame:(NSRect) {NSZeroPoint, frame.size}];
 	}
 	
 	[self resize:frame :animated];

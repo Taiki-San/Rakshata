@@ -171,21 +171,32 @@ enum
 	return [super lastFrame];
 }
 
+- (void) resizingCanceled
+{
+	//The MDL is used as an anchor from time to time
+	if(_popover != nil)
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[_popover locationUpdated:_lastFrame:YES];
+		});
+	}
+}
+
 - (void) resizeAnimation
 {
 	[super resizeAnimation];
 	
 	if(_popover != nil && ![self isDisplayed])
-	{
 		[_popover locationUpdated :[self createFrame] :YES];
-	}
 }
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
+	NSRect bounds = frame;		bounds.origin = NSZeroPoint;
+
 	if(coreView != nil)
 	{
-		NSRect coreFrame = [self getCoreviewFrame : frame];
+		NSRect coreFrame = [self getCoreviewFrame : bounds];
 		
 		if(animated)
 			[coreView resizeAnimation:coreFrame];
@@ -195,7 +206,7 @@ enum
 	
 	if(footer != nil)
 	{
-		NSRect footerFrame = [self getFooterFrame:frame];
+		NSRect footerFrame = [self getFooterFrame:bounds];
 		
 		if(animated)
 			[footer resizeAnimation : footerFrame];

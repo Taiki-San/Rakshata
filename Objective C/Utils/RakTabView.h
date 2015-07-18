@@ -90,6 +90,7 @@ enum {
 - (void) rejectedMouseExited;
 
 - (void) resizeAnimation;
+- (void) resizingCanceled;
 - (NSRect) createFrame;
 - (BOOL) needToConsiderMDL;
 - (void) setLastFrame : (NSRect) frame;

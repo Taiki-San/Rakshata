@@ -171,6 +171,7 @@
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
+	frame.origin = NSZeroPoint;
 	if(header != nil)
 	{
 		if(animated)

@@ -203,6 +203,7 @@
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
+	frame.origin = NSZeroPoint;
 	[self setFrameInternal: frame : animated];
 	
 	if(animated)
