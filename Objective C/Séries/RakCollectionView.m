@@ -328,7 +328,7 @@
 		return nbCol;
 	
 	//We validate the number of columns
-	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:nbCol - 1].view;
+	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:MIN(nbCol - 1, nbCol)].view;
 	if(first.frame.origin.y == lastOfFirstLine.frame.origin.y && first.frame.origin.y != nextLine.frame.origin.y)
 		return nbCol;
 	
