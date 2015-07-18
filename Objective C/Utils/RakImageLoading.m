@@ -110,7 +110,7 @@ NSImage * loadCTHeader(const PROJECT_DATA project)
 
 NSImage * loadCTThumb(const PROJECT_DATA project)
 {
-	NSImage * image = loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil);
+	NSImage * image = enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil), NSMakeSize(100, CT_READERMODE_HEIGHT_PROJECT_IMAGE), NSZeroSize);
 	
 	return image != nil ? image : loadImageGrid(project);
 }

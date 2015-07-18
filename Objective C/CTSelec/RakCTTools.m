@@ -117,18 +117,7 @@
 	
 	if(projectImageBase != nil)
 	{
-		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
-		{
-			NSSize imageSize = projectImageBase.size;
-			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
-			
-			imageSize.height *= ratio;
-			imageSize.width *= ratio;
-			
-			[projectImageBase setSize:imageSize];
-		}
-		
-		self = [super initWithFrame:[self getProjectImageSize: superviewFrame : [projectImageBase size] ] ];
+		self = [super initWithFrame:[self getProjectImageSize: superviewFrame : getThumbSize(projectImageBase)]];
 		
 		if(self != nil)
 		{
@@ -157,18 +146,8 @@
 	NSImage * projectImageBase = loadCTThumb(project);
 	if(projectImageBase != nil)
 	{
-		if(projectImageBase.size.height != CT_READERMODE_HEIGHT_PROJECT_IMAGE)
-		{
-			NSSize imageSize = projectImageBase.size;
-			CGFloat ratio = imageSize.height / CT_READERMODE_HEIGHT_PROJECT_IMAGE;
-			
-			imageSize.height *= ratio;
-			imageSize.width *= ratio;
-			
-			[projectImageBase setSize:imageSize];
-		}
-		
 		[self setImage:projectImageBase];
+
 		[self registerProject:project];
 	}
 }
@@ -217,12 +196,12 @@
 
 - (void) setFrame:(NSRect)frameRect
 {
-	[super setFrame:[self getProjectImageSize:frameRect :[self image].size]];
+	[super setFrame:[self getProjectImageSize:frameRect :getThumbSize(self.image)]];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : [self getProjectImageSize: frameRect :[self image].size]];
+	[self.animator setFrame : [self getProjectImageSize: frameRect :getThumbSize(self.image)]];
 }
 
 @end
