@@ -25,7 +25,9 @@
 	if(item == nil || item.issue == IMPORT_PROBLEM_NONE)
 		return nil;
 
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithItem:item];
+	BOOL promptMeta = _item.issue == IMPORT_PROBLEM_METADATA;
+
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, promptMeta ? 400 : 64)] _autoInitWithItem:item];
 }
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver

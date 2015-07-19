@@ -15,7 +15,7 @@
 	RakImportStatusListItem * listItem;
 
 	RakImportItem * _item;
-	BOOL isRoot;
+	BOOL isRoot, metadataProblem;
 
 	RakText * projectName;
 	RakStatusButton * button;
@@ -67,6 +67,7 @@ enum
 	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
+	metadataProblem = item.metadataProblem;
 
 	if(projectName == nil)
 	{
@@ -151,7 +152,10 @@ enum
 	if(status == STATUS_BUTTON_OK)
 		return @"Tout est bon 😊";
 
-	else if(status == STATUS_BUTTON_WARN || (item.isRootItem && item.itemForChild.issue != IMPORT_PROBLEM_METADATA))
+	if(item.isRootItem && item.metadataProblem)
+		return @"Données incomplètes 😱";
+
+	else if(status == STATUS_BUTTON_WARN || item.isRootItem)
 		return @"Problèmes detectés 😕";
 
 	//Ok, error
@@ -180,7 +184,7 @@ enum
 
 - (void) getDetails
 {
-	if(isRoot)
+	if(isRoot && !metadataProblem)
 		return;
 
 	_list.query = alert = [[RakImportQuery alloc] autoInitWithItem:_item];
@@ -207,10 +211,7 @@ enum
 			char * pathToProject = getPathForProject(item.projectData.data.project);
 
 			if(pathToProject == NULL)
-			{
-				NSLog(@"WTF?");
 				continue;
-			}
 
 			NSString * string = [NSString stringWithUTF8String:pathToProject];
 			free(pathToProject);
@@ -243,8 +244,10 @@ enum
 		//Expand what have to be
 		[rootCollector enumerateObjectsUsingBlock:^(RakImportStatusListItem * obj, NSUInteger idx, BOOL * stop) {
 
-			if(obj.status != STATUS_BUTTON_OK && [obj getNbChildren] < 10)
+			if(obj.status != STATUS_BUTTON_OK && !obj.metadataProblem && [obj getNbChildren] < 10)
+			{
 				[content expandItem:obj];
+			}
 
 		}];
 	}
@@ -336,6 +339,8 @@ enum
 		nullifyCTPointers(&project);
 		_projectForRoot = project;
 
+
+
 		children = [NSMutableArray new];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatusRoot) name:NOTIFICATION_ROOT object:nil];
@@ -390,6 +395,9 @@ enum
 
 		anythingWrong |= itemStatus;
 		everythingWrong &= itemStatus;
+
+		if(itemStatus && item.itemForChild.issue == IMPORT_PROBLEM_METADATA)
+			_metadataProblem = YES;
 	}
 
 	return anythingWrong ? (everythingWrong ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;

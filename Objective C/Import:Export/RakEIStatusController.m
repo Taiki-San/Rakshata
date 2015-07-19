@@ -31,9 +31,7 @@ enum
 	self = [super init];
 
 	if(self != nil)
-	{
 		[self startUI];
-	}
 
 	return self;
 }

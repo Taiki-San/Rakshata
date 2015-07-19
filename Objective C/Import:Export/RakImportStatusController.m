@@ -129,10 +129,10 @@ enum
 	[issueHeader setFrameOrigin:NSMakePoint(halfWidth - issueHeader.bounds.size.width / 2, oldHeight + (currentY -= issueHeader.bounds.size.height + 5))];
 	[scrollview setFrameOrigin:NSMakePoint(halfWidth - scrollview.bounds.size.width / 2, oldHeight + (currentY -= scrollview.bounds.size.height + 10))];
 
+	currentY /= 2;
+
 	if(replaceAll != nil)
 	{
-		currentY /= 2;
-
 		[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, oldHeight + currentY - replaceAll.bounds.size.height / 2)];
 		[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
 	}
@@ -168,12 +168,14 @@ enum
 
 		[NSAnimationContext beginGrouping];
 
+		NSView * views[] = {title, progressBar, percentage, cancel, issueTitle, issueHeader, replaceAll, close, scrollview};
+
 		//Animate the old entities
-		for(NSView * view in @[title, progressBar, percentage, cancel, issueTitle, issueHeader, replaceAll, close, scrollview])
+		for(uint i = 0; i < 9; i++)
 		{
-			frame = view.frame;
+			frame = views[i].frame;
 			frame.origin.y -= oldWindowSize.height;
-			view.animator.frame = frame;
+			views[i].animator.frame = frame;
 		}
 
 		[NSAnimationContext endGrouping];

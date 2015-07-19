@@ -17,6 +17,7 @@
 @property PROJECT_DATA projectForRoot;
 @property RakImportItem * itemForChild;
 @property byte status;
+@property BOOL metadataProblem;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 - (void) addItemAsChild : (RakImportItem *) item;
