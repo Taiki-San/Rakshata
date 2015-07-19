@@ -23,6 +23,10 @@ enum
 	
 	if(self != nil)
 	{
+		//≥ 10.10.3
+		if([self respondsToSelector:@selector(setSpringLoaded:)])
+			self.springLoaded = YES;
+
 		__block uint oldWidthButton = 0;
 		
 		[self setSegmentCount:(NSInteger)[buttonMessages count]];
