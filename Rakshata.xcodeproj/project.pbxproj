@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		B6002C31189EF15E00466654 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6002C30189EF15E00466654 /* window.xib */; };
 		B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6012BBA19D41AA000E12BED /* RakCTHContainer.m */; };
+		B6013F491B5C4C5A0007F864 /* RakImportStatusListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F481B5C4C5A0007F864 /* RakImportStatusListRowView.m */; };
+		B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */; };
+		B6013F4E1B5C4E4F0007F864 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */; };
 		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
 		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
@@ -222,7 +225,6 @@
 		B6F6ED1A18A3001400E3B55B /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE918A3001400E3B55B /* utilitaires.c */; };
 		B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */; };
 		B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */; };
-		B6FBD5ED1AD87BAE00304FE9 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBD5EC1AD87BAE00304FE9 /* RakPrefsAddRepoList.m */; };
 		B6FBE6CF1B385D3D005D2CC6 /* RakImportItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */; };
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 		B6FD250918B1537E0025FE74 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6FD250818B1537E0025FE74 /* whirlpool.c */; };
@@ -247,6 +249,10 @@
 		B6002C30189EF15E00466654 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = Ressources/window.xib; sourceTree = "<group>"; };
 		B6012BB919D41AA000E12BED /* RakCTHContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHContainer.h; path = CTSelec/RakCTHContainer.h; sourceTree = "<group>"; };
 		B6012BBA19D41AA000E12BED /* RakCTHContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHContainer.m; path = CTSelec/RakCTHContainer.m; sourceTree = "<group>"; };
+		B6013F481B5C4C5A0007F864 /* RakImportStatusListRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportStatusListRowView.m; path = "Import:Export/RakImportStatusListRowView.m"; sourceTree = "<group>"; };
+		B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportStatusListItem.m; path = "Import:Export/RakImportStatusListItem.m"; sourceTree = "<group>"; };
+		B6013F4C1B5C4E4F0007F864 /* RakPrefsAddRepoList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsAddRepoList.h; path = "Divers Windows/RakPrefsAddRepoList.h"; sourceTree = "<group>"; };
+		B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsAddRepoList.m; path = "Divers Windows/RakPrefsAddRepoList.m"; sourceTree = "<group>"; };
 		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
 		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
@@ -605,8 +611,6 @@
 		B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagRail.m; path = "Séries/RakSRTagRail.m"; sourceTree = "<group>"; };
 		B6FB5C081A79958E00EF99E6 /* RakSRTagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagItem.h; path = "Séries/RakSRTagItem.h"; sourceTree = "<group>"; };
 		B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagItem.m; path = "Séries/RakSRTagItem.m"; sourceTree = "<group>"; };
-		B6FBD5EB1AD87BAE00304FE9 /* RakPrefsAddRepoList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakPrefsAddRepoList.h; sourceTree = "<group>"; };
-		B6FBD5EC1AD87BAE00304FE9 /* RakPrefsAddRepoList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakPrefsAddRepoList.m; sourceTree = "<group>"; };
 		B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportItem.m; path = "Import:Export/RakImportItem.m"; sourceTree = "<group>"; };
 		B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTProjectSynopsis.h; path = CTSelec/RakCTProjectSynopsis.h; sourceTree = "<group>"; };
 		B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTProjectSynopsis.m; path = CTSelec/RakCTProjectSynopsis.m; sourceTree = "<group>"; };
@@ -1291,8 +1295,8 @@
 			children = (
 				B6D126FF1AC713F7003FFEC6 /* RakAddRepoController.h */,
 				B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */,
-				B6FBD5EB1AD87BAE00304FE9 /* RakPrefsAddRepoList.h */,
-				B6FBD5EC1AD87BAE00304FE9 /* RakPrefsAddRepoList.m */,
+				B6013F4C1B5C4E4F0007F864 /* RakPrefsAddRepoList.h */,
+				B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */,
 				B6E8B9671AE026E7008C11EC /* RakPrefsAddTools.h */,
 				B6E8B9681AE026E7008C11EC /* RakPrefsAddTools.m */,
 				B6D126FB1AC71353003FFEC6 /* RakPrefsRepoAddView.h */,
@@ -1366,6 +1370,8 @@
 				B6C9F12F1B5420B6008DF724 /* RakImportStatusController.m */,
 				B6B93D8A1B580C2B00F7DE42 /* RakImportStatusList.h */,
 				B6B93D8B1B580C2B00F7DE42 /* RakImportStatusList.m */,
+				B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */,
+				B6013F481B5C4C5A0007F864 /* RakImportStatusListRowView.m */,
 			);
 			name = Status;
 			sourceTree = "<group>";
@@ -1629,6 +1635,7 @@
 				B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */,
 				B678866C1A82552800774431 /* RakSRContentManager.m in Sources */,
 				B6F6ED0918A3001400E3B55B /* moduleDL2.c in Sources */,
+				B6013F4E1B5C4E4F0007F864 /* RakPrefsAddRepoList.m in Sources */,
 				B6F6ED0C18A3001400E3B55B /* repo.c in Sources */,
 				B6F6ECFF18A3001400E3B55B /* lecteur_tool.c in Sources */,
 				B6EA520718A4111000A9B16E /* interface.m in Sources */,
@@ -1659,7 +1666,6 @@
 				B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */,
 				B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */,
 				B6A6ACF11AAEEE0100CAF51E /* DBCacheQuery.c in Sources */,
-				B6FBD5ED1AD87BAE00304FE9 /* RakPrefsAddRepoList.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
 				B6F6ED1118A3001400E3B55B /* tome.c in Sources */,
 				B67845A519634C83007372C7 /* crc32.c in Sources */,
@@ -1673,6 +1679,7 @@
 				B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */,
 				B6E8E1B219ABAE6200930E6D /* RakPrefsRemindPopover.m in Sources */,
 				B6F6ED1718A3001400E3B55B /* unzip.c in Sources */,
+				B6013F491B5C4C5A0007F864 /* RakImportStatusListRowView.m in Sources */,
 				B6A6ACF51AAEEF4D00CAF51E /* DBCacheRepo.c in Sources */,
 				B6E07A1C1B3575F60016C9B0 /* zip.c in Sources */,
 				B6C9F12D1B541D2C008DF724 /* RakSheetView.m in Sources */,
@@ -1715,6 +1722,7 @@
 				B6C8C87418DF7BCE004316A5 /* RakContextRestoration.m in Sources */,
 				B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */,
 				B6A6ACEF1AAEED3A00CAF51E /* DBCacheIO.c in Sources */,
+				B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */,
 				B69FBE921A756472009ACBEF /* RakSRHeader.m in Sources */,
 				B642480B19D57DF000679D78 /* RakGradientView.m in Sources */,
 				B62C9EF318BD73D500CE910F /* DBTools.c in Sources */,

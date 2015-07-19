@@ -11,6 +11,8 @@
  *********************************************************************************************/
 
 #define NOTIFICATION_IMPORT_STATUS_UI	@"RakImportStatusUpdateUI"
+#define NOTIFICATION_CHILD	@"RakImportStatusUpdateChild"
+#define NOTIFICATION_ROOT	@"RakImportStatusUpdateRoot"
 
 @interface RakImportStatusListItem : RakOutlineListItem
 
@@ -41,5 +43,21 @@
 @end
 
 @interface RakImportStatusListRowView : NSView
+{
+	RakImportStatusListItem * listItem;
+
+	RakImportItem * _item;
+	BOOL isRoot, metadataProblem;
+
+	RakText * projectName;
+	RakStatusButton * button;
+
+	__weak RakImportQuery * alert;
+}
+
+@property RakImportStatusList * list;
+
+- (void) updateWithItem : (RakImportStatusListItem *) item;
+- (byte) status;
 
 @end
