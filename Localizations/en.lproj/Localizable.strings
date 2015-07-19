@@ -1,6 +1,7 @@
 //Generals
 "CHAPTER%c" = "Chapter%1$c";
 "%u-CHAPTER%c" = "%1$zu Chapter%2$c";
+"CHAPTER" = "Chapter";
 "CHAPTERS" = "Chapters";
 "CHAPTER-NO-CAP" = "chapter";
 "CHAPTER-%d" = "Chapter %1$d";
@@ -8,6 +9,7 @@
 
 "VOLUME%c" = "Volume%1$c";
 "%u-VOLUME%c" = "%1$zu Volume%2$c";
+"VOLUME" = "Volume";
 "VOLUMES" = "Volumes";
 "VOLUME-NO-CAP" = "volume";
 "VOLUME-%d" = "Volume %1$d";

@@ -19,6 +19,8 @@
 
 	RakText * projectName;
 	RakStatusButton * button;
+
+	__weak RakImportQuery * alert;
 }
 
 @property RakImportStatusList * list;
@@ -29,9 +31,6 @@
 @end
 
 @interface RakImportStatusList()
-{
-	RakImportQuery * query;
-}
 
 @end
 
@@ -152,20 +151,31 @@ enum
 	if(status == STATUS_BUTTON_OK)
 		return @"Tout est bon 😊";
 
-	else if(status == STATUS_BUTTON_WARN || item.isRootItem)
+	else if(status == STATUS_BUTTON_WARN || (item.isRootItem && item.itemForChild.issue != IMPORT_PROBLEM_METADATA))
 		return @"Problèmes detectés 😕";
 
 	//Ok, error
 	else if(item.itemForChild.issue == IMPORT_PROBLEM_DUPLICATE)
 		return @"Duplicat detecté 😱";
 
+	else if(item.itemForChild.issue == IMPORT_PROBLEM_INSTALL_ERROR)
+		return [NSString stringWithFormat:@"%@ corrompu 😡", NSLocalizedString(_item.isTome ? @"VOLUME" : @"CHAPTER", nil)];
+
 	return @"Données incomplètes 😱";
 }
 
 - (void) checkRefreshStatus
 {
+	byte oldStatus = button.status;
 	button.status = listItem.status;
+
 	button.stringValue = [self determineMessageForStatus : button.status andItem:listItem];
+
+	if(oldStatus != button.status)
+		[self setNeedsDisplay:YES];
+
+	if(button.status != STATUS_BUTTON_ERROR && _list.query == alert)
+		_list.query = alert = nil;
 }
 
 - (void) getDetails
@@ -173,9 +183,7 @@ enum
 	if(isRoot)
 		return;
 
-	RakImportQuery * alert = [[RakImportQuery alloc] autoInitWithItem:_item];
-
-	[_list registerQuery : alert];
+	_list.query = alert = [[RakImportQuery alloc] autoInitWithItem:_item];
 	[alert launchPopover:button :self];
 }
 
@@ -299,19 +307,19 @@ enum
 	return NO;
 }
 
-- (void) refreshAfterPass
++ (void) refreshAfterPass
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 }
 
-- (void) registerQuery : (RakImportQuery *) newQuery
+- (void) setQuery : (RakImportQuery *) newQuery
 {
-	if(query != nil)
-		[query closePopover];
+	if(_query != nil && _query != newQuery)
+		[_query closePopover];
 
-	query = newQuery;
+	_query = newQuery;
 }
 
 @end

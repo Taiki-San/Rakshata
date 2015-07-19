@@ -92,6 +92,9 @@ enum
 			scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW :nil];
 			scrollview.documentView = view;
 			[superview addSubview:scrollview];
+
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(replaceItem:) name:NOTIFICATION_IMPORT_REPLACE_ONE object:nil];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(replaceRootWithChild:) name:NOTIFICATION_IMPORT_REPLACE_ALL object:nil];
 		}
 	}
 
@@ -236,15 +239,80 @@ enum
 			stillHaveAnError |= item.issue != IMPORT_PROBLEM_NONE;
 	}
 
-	[outlineList refreshAfterPass];
+	[RakImportStatusList refreshAfterPass];
 
+	if(!stillHaveAnError)
+		[self close];
+}
+
+- (void) replaceRootWithChild : (NSNotification *) notification
+{
+	RakImportItem * item = notification.object;
+	if(![item isKindOfClass:[RakImportItem class]])
+		return;
+
+	char * referencePath = getPathForProject(item.projectData.data.project);
+	if(referencePath == NULL)
+		return;
+
+	BOOL updatedOne = NO;
+	for(RakImportItem * currentItem in _dataSet)
+	{
+		if(currentItem.issue != IMPORT_PROBLEM_DUPLICATE)
+			continue;
+
+		char * currentPath = getPathForProject(currentItem.projectData.data.project);
+		if(currentPath == NULL)
+			continue;
+
+		if(!strcmp(referencePath, currentPath))
+		{
+			updatedOne |= [currentItem overrideDuplicate:file];
+		}
+
+		free(currentPath);
+	}
+
+	free(referencePath);
+
+	if(updatedOne)
+	{
+		[RakImportStatusList refreshAfterPass];
+		[self checkIfStillHaveError];
+	}
+}
+
+- (void) replaceItem : (NSNotification *) notification
+{
+	RakImportItem * item = notification.object;
+	if(![item isKindOfClass:[RakImportItem class]])
+		return;
+
+	[item overrideDuplicate:file];
+
+	[RakImportStatusList refreshAfterPass];
+
+	[self checkIfStillHaveError];
+}
+
+- (void) checkIfStillHaveError
+{
+	BOOL stillHaveAnError = NO;
+
+	for(RakImportItem * itemIter in _dataSet)
+	{
+		stillHaveAnError |= itemIter.issue != IMPORT_PROBLEM_NONE;
+
+		if(stillHaveAnError)
+			break;
+	}
 	if(!stillHaveAnError)
 		[self close];
 }
 
 - (void) close
 {
-	[outlineList registerQuery:nil];
+	outlineList.query = nil;
 	[RakImportController postProcessing:file withUI:self];
 	file = NULL;
 }

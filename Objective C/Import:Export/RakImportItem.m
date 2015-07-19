@@ -135,7 +135,10 @@
 
 	[self deleteData];
 	if(![self install:archive withUI:nil])
+	{
+		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 		return NO;
+	}
 
 	[self processThumbs:archive];
 	[self registerProject];

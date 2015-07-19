@@ -19,3 +19,6 @@
 - (void) switchToIssueUI : (NSArray *) dataSet;
 
 @end
+
+#define NOTIFICATION_IMPORT_REPLACE_ONE	@"RakImportReplaceOne"
+#define NOTIFICATION_IMPORT_REPLACE_ALL	@"RakImportReplaceAll"

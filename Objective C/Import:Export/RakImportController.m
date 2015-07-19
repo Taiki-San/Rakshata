@@ -112,11 +112,15 @@
 		}
 
 		//Well, I guess we can carry on
-		if([item install:file withUI:UI])
+		if(![item install:file withUI:UI])
 		{
-			[item processThumbs:file];
-			[item registerProject];
+			haveFoundProblems = YES;
+			item.issue = IMPORT_PROBLEM_INSTALL_ERROR;
+			continue;
 		}
+
+		[item processThumbs:file];
+		[item registerProject];
 
 		if([UI haveCanceled])
 		{
@@ -568,13 +572,6 @@
 	freeProjectData(projects);
 
 	return [NSArray arrayWithArray:output];
-}
-
-#pragma mark - Handle missing data
-
-+ (void) daaaaaammmnnn : (NSArray *) problems : (RakImportStatusController *) UI
-{
-
 }
 
 @end

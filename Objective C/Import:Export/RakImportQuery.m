@@ -14,8 +14,6 @@
 {
 	RakImportItem * _item;
 	BOOL requestingMetadata;
-
-	RakText * header;
 }
 
 @end
@@ -27,7 +25,7 @@
 	if(item == nil || item.issue == IMPORT_PROBLEM_NONE)
 		return nil;
 
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, 50)] _autoInitWithItem:item];
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithItem:item];
 }
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
@@ -56,11 +54,32 @@
 	NSSize selfSize = self.frame.size;
 	CGFloat currentY = selfSize.height;
 
-	header = [[RakText alloc] initWithText:@"CT déjà existant, souhaitez vous le remplacer?" :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
+	RakText * header = [[RakText alloc] initWithText:@"CT déjà existant, souhaitez vous le remplacer?" :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
 	if(header != nil)
 	{
+		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + 8))];
 		[self addSubview:header];
-		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + 5))];
+	}
+
+	RakButton * discard = [RakButton allocWithText:@"Conserver"], * replace = [RakButton allocWithText:@"Remplacer"], * replaceAll = [RakButton allocWithText:@"Remplacer série"];
+
+	if(discard != nil && replace != nil && replaceAll != nil)
+	{
+		CGFloat totalWidth = discard.bounds.size.width + 5 + replace.bounds.size.width + 5 + replaceAll.bounds.size.width, baseWidth = _bounds.size.width / 2 - totalWidth / 2, height = currentY / 2;
+
+		discard.action = @selector(discard);
+		replace.action = @selector(replace);
+		replaceAll.action = @selector(replaceAll);
+
+		for(RakButton * button in @[discard, replace, replaceAll])
+		{
+			[button setFrameOrigin:NSMakePoint(baseWidth, height - button.bounds.size.height / 2)];
+			baseWidth += 5 + button.bounds.size.width;
+
+			button.target = self;
+
+			[self addSubview:button];
+		}
 	}
 }
 
@@ -79,6 +98,24 @@
 - (void) additionalUpdateOnThemeChange
 {
 	[super additionalUpdateOnThemeChange];
+}
+
+#pragma mark - Button responder
+
+- (void) replaceAll
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_REPLACE_ALL object:_item];
+}
+
+- (void) replace
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_REPLACE_ONE object:_item];
+}
+
+- (void) discard
+{
+	_item.issue = IMPORT_PROBLEM_NONE;
+	[RakImportStatusList refreshAfterPass];
 }
 
 @end

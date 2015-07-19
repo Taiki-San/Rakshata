@@ -32,11 +32,10 @@
 }
 
 @property BOOL haveDuplicate;
+@property (nonatomic) RakImportQuery * query;
 
 - (instancetype) initWithImportList : (NSArray *) dataset;
-- (void) refreshAfterPass;
-
-- (void) registerQuery : (RakImportQuery *) newQuery;
++ (void) refreshAfterPass;
 
 @end
 
