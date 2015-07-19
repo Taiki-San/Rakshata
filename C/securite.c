@@ -360,7 +360,9 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uin
     curPosInConfigEnc += 1 + page * (SHA256_DIGEST_LENGTH+1);
 
 	//Là, decryptedPass[curPosInConfigEnc] est la première lettre de la clé. On la parse
-	for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && decryptedPass[curPosInConfigEnc]; encryptionKey[posInKeyOut++] = decryptedPass[curPosInConfigEnc++]);
+	for(posInKeyOut = 0; posInKeyOut < SHA256_DIGEST_LENGTH && decryptedPass[curPosInConfigEnc]; ++posInKeyOut, ++curPosInConfigEnc)
+		encryptionKey[posInKeyOut] = decryptedPass[curPosInConfigEnc];
+
     if(curPosInConfigEnc < sizeDBPass && decryptedPass[curPosInConfigEnc] != '\0' && decryptedPass[curPosInConfigEnc] != ' ')
     {
 #ifdef DEV_VERSION
@@ -370,8 +372,8 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uin
 		free(decryptedPass);
 		return IMGLOAD_INCORRECT_DECRYPTION;
     }
-	
-	for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass; decryptedPass[curPosInConfigEnc++] = 0);	//On écrase le cache
+
+	bzero(decryptedPass, sizeDBPass);
     free(decryptedPass);
 	
 	//On fait les allocations finales
