@@ -68,6 +68,7 @@ enum
 - (void) closeUI
 {
 	[[[NSApp delegate] window] endSheet:queryWindow];
+	queryWindow = nil;
 }
 
 - (void) setupBaseView : (NSView *) superview
