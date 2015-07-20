@@ -20,7 +20,7 @@
 	{
 		_isRootItem = YES;
 		nullifyCTPointers(&project);
-		_projectForRoot = project;
+		_projectData = project;
 
 		children = [NSMutableArray new];
 
@@ -38,7 +38,9 @@
 	{
 		_isRootItem = NO;
 		_itemForChild = item;
+		_projectData = _itemForChild.projectData.data.project;
 		_status = self.itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
+		_metadataProblem = _status == IMPORT_PROBLEM_METADATA;
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatusChild) name:NOTIFICATION_CHILD object:nil];
 	}

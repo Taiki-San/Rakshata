@@ -12,7 +12,9 @@
 
 @interface RakImportQuery : RakPopoverView
 
-- (instancetype) autoInitWithItem : (RakImportItem *) item;
+- (instancetype) autoInitWithDuplicate : (RakImportItem *) item;
+- (instancetype) autoInitWithMetadata : (PROJECT_DATA) project;
+
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver;
 
 @end

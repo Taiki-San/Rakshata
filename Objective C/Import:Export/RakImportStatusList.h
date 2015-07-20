@@ -16,7 +16,7 @@
 
 @interface RakImportStatusListItem : RakOutlineListItem
 
-@property PROJECT_DATA projectForRoot;
+@property PROJECT_DATA projectData;
 @property RakImportItem * itemForChild;
 @property byte status;
 @property BOOL metadataProblem;

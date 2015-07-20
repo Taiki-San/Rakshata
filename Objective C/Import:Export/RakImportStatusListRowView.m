@@ -90,7 +90,7 @@
 - (NSString *) getLineName : (RakImportStatusListItem *) item
 {
 	if(isRoot)
-		return getStringForWchar(item.projectForRoot.projectName);
+		return getStringForWchar(item.projectData.projectName);
 
 	if(_item.isTome)
 	{
@@ -154,7 +154,11 @@
 	if(isRoot && !metadataProblem)
 		return;
 
-	_list.query = alert = [[RakImportQuery alloc] autoInitWithItem:_item];
+	if(metadataProblem)
+		_list.query = alert = [[RakImportQuery alloc] autoInitWithMetadata:listItem.projectData];
+	else
+		_list.query = alert = [[RakImportQuery alloc] autoInitWithDuplicate:_item];
+
 	[alert launchPopover:button :self];
 }
 

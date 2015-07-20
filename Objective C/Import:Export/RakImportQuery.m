@@ -13,6 +13,7 @@
 @interface RakImportQuery()
 {
 	RakImportItem * _item;
+	PROJECT_DATA _project;
 	BOOL requestingMetadata;
 }
 
@@ -20,14 +21,31 @@
 
 @implementation RakImportQuery
 
-- (instancetype) autoInitWithItem : (RakImportItem *) item
+- (instancetype) autoInitWithDuplicate : (RakImportItem *) item
 {
-	if(item == nil || item.issue == IMPORT_PROBLEM_NONE)
+	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA)
 		return nil;
 
-	BOOL promptMeta = _item.issue == IMPORT_PROBLEM_METADATA;
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithDuplicate:item];
+}
 
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, promptMeta ? 400 : 64)] _autoInitWithItem:item];
+- (instancetype) _autoInitWithDuplicate : (RakImportItem *) item
+{
+	_item = item;
+	requestingMetadata = NO;
+	return self;
+}
+
+- (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
+{
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 400)] _autoInitWithMetadata:project];
+}
+
+- (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
+{
+	_project = project;
+	requestingMetadata = YES;
+	return self;
 }
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
@@ -42,13 +60,6 @@
 		[self setupUIMetadata];
 	else
 		[self setupUIDuplicate];
-}
-
-- (instancetype) _autoInitWithItem : (RakImportItem *) item
-{
-	_item = item;
-	requestingMetadata = _item.issue == IMPORT_PROBLEM_METADATA;
-	return self;
 }
 
 - (void) setupUIDuplicate

@@ -257,6 +257,7 @@ enum
 	if(referencePath == NULL)
 		return;
 
+	//We look for items from the same project
 	BOOL updatedOne = NO;
 	for(RakImportItem * currentItem in _dataSet)
 	{
