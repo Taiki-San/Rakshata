@@ -175,6 +175,24 @@
 "IMPORT-REPORT" = "Rapport d'import";
 "IMPORT-ONE-PBM" = "1 problème détecté, cliquez sur le symbole pour le résoudre";
 "IMPORT-%zu-PBM" = "%1$zu problèmes détectés, cliquez sur les symboles pour les résoudres";
+"IMPORT-CHAP-OVERRIDE" = "Chapitre déjà existant, souhaitez vous le remplacer?";
+"IMPORT-VOL-OVERRIDE" = "Tome déjà existant, souhaitez vous le remplacer?";
+"IMPORT-KEEP" = "Conserver";
+"IMPORT-REPLACE" = "Remplacer";
+"IMPORT-REPLACE-ALL" = "Remplacer série";
+"IMPORT-META-HEAD" = "Veuillez compléter les informations de la série";
+"IMPORT-META-TITLE" = "Titre :";
+"IMPORT-META-TITLE-PH" = "Titre de la série";
+"IMPORT-META-AUTHOR" = "Auteur :";
+"IMPORT-META-AUTHOR-PH" = "Auteur de la série";
+"IMPORT-META-DESCRIPTION" = "Synopsis:";
+"IMPORT-META-DESCRIPTION-PH" = "Synopsis de la série";
+"IMPORT-META-READ-ORDER" = "Lecture de droite à gauche :";
+"IMPORT-META-STATUS" = "Status :";
+"IMPORT-META-TAG" = "Tags :";
+"IMPORT-META-IMG-GRID" = "Image pour la grille :";
+"IMPORT-META-IMG-DD" = "Image pour le glissé-déposé :";
+"IMPORT-META-IMG-CT" = "Image de fiche série :";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

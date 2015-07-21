@@ -175,6 +175,25 @@
 "IMPORT-REPORT" = "Import report";
 "IMPORT-ONE-PBM" = "1 problem detected, click on the symbol to fix it";
 "IMPORT-%zu-PBM" = "%1$zu problems detected, click on the symbols to fix them";
+"IMPORT-CHAP-OVERRIDE" = "Chapitre already installed, should we replace it?";
+"IMPORT-VOL-OVERRIDE" = "Volume already installed, should we replace it?";
+"IMPORT-KEEP" = "Keep existing";
+"IMPORT-REPLACE" = "Replace";
+"IMPORT-REPLACE-ALL" = "Replace all";
+"IMPORT-META-HEAD" = "Please provide the details on the serie";
+"IMPORT-META-TITLE" = "Name :";
+"IMPORT-META-TITLE-PH" = "Name of the serie";
+"IMPORT-META-AUTHOR" = "Author :";
+"IMPORT-META-AUTHOR-PH" = "Author of the serie";
+"IMPORT-META-DESCRIPTION" = "Synopsis:";
+"IMPORT-META-DESCRIPTION-PH" = "Synopsis of the serie";
+"IMPORT-META-READ-ORDER" = "Right to left reading :";
+"IMPORT-META-STATUS" = "Status :";
+"IMPORT-META-TAG" = "Tags :";
+"IMPORT-META-IMG-GRID" = "Grid image :";
+"IMPORT-META-IMG-DD" = "Drag & Drop image :";
+"IMPORT-META-IMG-CT" = "Serie's page image :";
+
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
