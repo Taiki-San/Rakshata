@@ -45,8 +45,9 @@
 	if(self != nil)
 	{
 		[self internalInit];
-		
-		self.stringValue = text;
+
+		if(text != nil)
+			self.stringValue = text;
 		
 		[self sizeToFit];
 		
@@ -181,6 +182,8 @@
 {
 	if(self.superview != nil)
 		[self removeFromSuperview];
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Handle wrap lines properly
@@ -218,9 +221,75 @@
 	
 	// Make the frame very high, while keeping the width
 	frame.size.height = CGFLOAT_MAX;
-	
+
 	// Calculate new height within the frame with practically infinite height.
 	return NSMakeSize(frame.size.width, [self.cell cellSizeForBounds: frame].height);
+}
+
+- (void) setEnableMultiLine:(BOOL)enableMultiLine
+{
+	_enableMultiLine = enableMultiLine;
+
+	if(!self.cell.wraps)
+		NSLog(@"Eh, I need a max width :/");
+
+	self.delegate = self;
+}
+
+- (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector;
+{
+	BOOL result = NO;
+
+	if(_enableMultiLine)
+	{
+		if (commandSelector == @selector(insertNewline:))
+		{
+			// new line action:
+			// always insert a line-break character and don’t cause the receiver to end editing
+			[textView insertNewlineIgnoringFieldEditor:self];
+			result = YES;
+		}
+		else if (commandSelector == @selector(insertTab:))
+		{
+			// tab action:
+			// always insert a tab character and don’t cause the receiver to end editing
+			[textView insertTabIgnoringFieldEditor:self];
+			result = YES;
+		}
+
+		if(result)
+			[self updateMultilineHeight];
+	}
+
+	return result;
+}
+
+- (void)controlTextDidChange:(NSNotification *)notification
+{
+	if(_enableMultiLine)
+		[self updateMultilineHeight];
+}
+
+- (void) updateMultilineHeight
+{
+	[self validateEditing];
+
+	NSSize size = [self intrinsicContentSize];
+	NSRect frame = _frame;
+
+	if(!NSEqualSizes(size, frame.size))
+	{
+		CGFloat delta = size.height - frame.size.height;
+
+		if(self.superview.isFlipped)
+			frame.origin.y += delta;
+		else
+			frame.origin.y -= delta;
+
+		frame.size = size;
+
+		[self setFrame:frame];
+	}
 }
 
 #pragma mark - Handle clic

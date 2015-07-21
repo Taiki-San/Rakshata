@@ -19,6 +19,7 @@
 
 @property BOOL wantCustomBorder;
 @property CGFloat forcedOffsetY;
+@property (nonatomic) BOOL enableMultiLine;
 
 @property CGFloat fixedWidth;
 @property BOOL discardHeight;
