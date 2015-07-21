@@ -45,7 +45,11 @@
 	if(project.status == STATUS_INVALID)
 		return true;
 
+#ifdef DEV_VERSION
+	return true;
+#else
 	return false;
+#endif
 }
 
 - (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI

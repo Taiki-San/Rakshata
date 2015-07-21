@@ -187,7 +187,7 @@
 "IMPORT-META-AUTHOR-PH" = "Author of the serie";
 "IMPORT-META-DESCRIPTION" = "Synopsis:";
 "IMPORT-META-DESCRIPTION-PH" = "Synopsis of the serie";
-"IMPORT-META-READ-ORDER" = "Right to left reading :";
+"IMPORT-META-READ-ORDER" = "Reading direction :";
 "IMPORT-META-STATUS" = "Status :";
 "IMPORT-META-TAG" = "Tags :";
 "IMPORT-META-IMG-GRID" = "Grid image :";

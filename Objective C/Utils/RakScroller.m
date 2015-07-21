@@ -94,11 +94,14 @@
 
 - (void)drawKnob
 {
-	NSRect knobRect = [self rectForPart:NSScrollerKnob];
-	[self setupPath : knobRect : 2 * _radiusBorders : _radiusBorders];
-	[[self getColorBar] setFill];
-	CGContextFillPath(contextBorder);
-	
+	if(!_hideScroller)
+	{
+		NSRect knobRect = [self rectForPart:NSScrollerKnob];
+		[self setupPath : knobRect : 2 * _radiusBorders : _radiusBorders];
+		[[self getColorBar] setFill];
+		CGContextFillPath(contextBorder);
+	}
+
 	incompleteDrawing = !incompleteDrawing;
 }
 
@@ -120,6 +123,12 @@
 			else if(self == [view verticalScroller])
 				[view setHasVerticalScroller:NO];
 		}
+	}
+
+	if(_hideScroller)
+	{
+		[_backgroundColorToReplicate setFill];
+		NSRectFill(dirtyRect);
 	}
 }
 

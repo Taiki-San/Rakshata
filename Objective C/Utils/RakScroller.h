@@ -25,6 +25,9 @@
 	BOOL incompleteDrawing;
 }
 
+@property BOOL hideScroller;
+@property NSColor * backgroundColorToReplicate;
+
 + (void) updateScrollers : (NSScrollView *) view;
 + (CGFloat) width;
 

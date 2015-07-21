@@ -280,15 +280,32 @@
 	if(!NSEqualSizes(size, frame.size))
 	{
 		CGFloat delta = size.height - frame.size.height;
-
-		if(self.superview.isFlipped)
-			frame.origin.y += delta;
-		else
-			frame.origin.y -= delta;
-
 		frame.size = size;
 
-		[self setFrame:frame];
+		[self setFrameSize:size];
+
+
+		NSScrollView * scrollview = (id) self.superview.superview;
+		if([scrollview isKindOfClass:[NSScrollView class]])
+		{
+			frame.origin = [[scrollview contentView] bounds].origin;
+
+			if(self.superview.isFlipped)
+				frame.origin.y += delta;
+			else
+				frame.origin.y -= delta;
+
+			[[scrollview documentView] scrollPoint:frame.origin];
+		}
+		else
+		{
+			if(self.superview.isFlipped)
+				frame.origin.y += delta;
+			else
+				frame.origin.y -= delta;
+
+			[self setFrameOrigin:frame.origin];
+		}
 	}
 }
 

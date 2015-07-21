@@ -25,7 +25,7 @@ enum
 {
 	META_TOP_BORDER = 8,
 	META_BORDER_WIDTH = 8,
-	META_TOP_FORM_BORDER = 15,
+	META_TOP_FORM_BORDER = 10,
 	META_INTERLINE_BORDER = 12
 };
 
@@ -48,7 +48,7 @@ enum
 
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
 {
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, 400)] _autoInitWithMetadata:project];
+	return [[self initWithFrame:NSMakeRect(0, 0, 350, 500)] _autoInitWithMetadata:project];
 }
 
 - (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
@@ -117,7 +117,7 @@ enum
 	NSSize selfSize = self.frame.size, titleSize, inputSize;
 	CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 7 / 10, currentHeight;
 
-	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title, * inputField;
+	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title;
 	if(header != nil)
 	{
 		header.cell.wraps = YES;
@@ -128,27 +128,134 @@ enum
 		[self addSubview:header];
 	}
 
-	bordersY[0] = selfSize.height - META_TOP_FORM_BORDER;
+	bordersY[0] = (selfSize.height -= META_TOP_FORM_BORDER);
 
-	selfSize.height = [self insertTopThreeTextOnly : selfSize.height - META_TOP_FORM_BORDER : maxWidthTitles : maxWidthContent];
+	selfSize.height = [self insertTopThreeTextOnly : selfSize.height - META_TOP_FORM_BORDER + META_INTERLINE_BORDER : maxWidthTitles : maxWidthContent];
+
+	bordersY[1] = (selfSize.height -= META_TOP_FORM_BORDER);
 
 	//Right to left or left to right?
-//	title = [self getTextForLocalizationString:@"IMPORT-META-READ-ORDER" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-READ-ORDER" :maxWidthTitles];
+	RakSegmentedControl * switchButton = [[RakSegmentedControl alloc] initWithFrame:NSZeroRect :@[@"A → B", @"B ← A"]];
+	if(title != nil && switchButton != nil)
+	{
+		[switchButton setEnabled:YES forSegment:0];
+		[switchButton setEnabled:YES forSegment:1];
+
+		[switchButton setSelected:YES forSegment:_project.rightToLeft];
+
+		titleSize = title.bounds.size;
+		inputSize = switchButton.bounds.size;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[switchButton setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH + (maxWidthContent / 2 - switchButton.bounds.size.width / 2), selfSize.height + currentHeight / 2 - inputSize.height / 2)];
+
+		[self addSubview:title];
+		[self addSubview:switchButton];
+	}
 
 	//Status of the project
-//	title = [self getTextForLocalizationString:@"IMPORT-META-STATUS" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-STATUS" :maxWidthTitles];
+	if(title != nil)
+	{
+		titleSize = title.bounds.size;
+		inputSize = NSZeroSize;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[self addSubview:title];
+	}
 
 	//Tagging of the project
-//	title = [self getTextForLocalizationString:@"IMPORT-META-TAG" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-TAG" :maxWidthTitles];
+	if(title != nil)
+	{
+		titleSize = title.bounds.size;
+		inputSize = NSZeroSize;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[self addSubview:title];
+	}
+
+	bordersY[2] = (selfSize.height -= META_TOP_FORM_BORDER);
 
 	//Image for the grid of the project
-//	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-GRID" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-GRID" :maxWidthTitles];
+	if(title != nil)
+	{
+		titleSize = title.bounds.size;
+		inputSize = NSZeroSize;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[self addSubview:title];
+	}
 
 	//Image for D&D of the project
-//	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-DD" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-DD" :maxWidthTitles];
+	if(title != nil)
+	{
+		titleSize = title.bounds.size;
+		inputSize = NSZeroSize;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[self addSubview:title];
+	}
 
 	//Image for CT of the project
-//	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-CT" :maxWidthTitles];
+	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-CT" :maxWidthTitles];
+	if(title != nil)
+	{
+		titleSize = title.bounds.size;
+		inputSize = NSZeroSize;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[self addSubview:title];
+	}
+
+	selfSize.height -= 2 * META_TOP_FORM_BORDER;
+
+	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
+	if(button != nil)
+	{
+		button.target = self;
+		button.action = @selector(close);
+
+		titleSize = button.bounds.size;
+
+		[button setFrameOrigin:NSMakePoint(selfSize.width / 4 - titleSize.width / 2, selfSize.height - titleSize.height)];
+
+		[self addSubview:button];
+	}
+
+	button = [RakButton allocWithText:NSLocalizedString(@"CONFIRM", nil)];
+	if(button != nil)
+	{
+		button.target = self;
+		button.action = @selector(validateField);
+
+		titleSize = button.bounds.size;
+
+		[button setFrameOrigin:NSMakePoint(3 * selfSize.width / 4 - titleSize.width / 2, selfSize.height - titleSize.height)];
+
+		[self addSubview:button];
+	}
 }
 
 - (CGFloat) insertTopThreeTextOnly : (CGFloat) currentY : (CGFloat) maxWidthTitles : (CGFloat) maxWidthContent
@@ -174,11 +281,24 @@ enum
 				inputField.fixedWidth = inputSize.width;
 				inputField.enableMultiLine = YES;
 
-				[inputField setFrameSize: inputSize = [inputField intrinsicContentSize]];
+				[inputField setFrameSize: [inputField intrinsicContentSize]];
+
+				inputSize.height *= 5;
+
+				RakListScrollView * view = [[RakListScrollView alloc] initWithFrame:NSMakeRect(0, 0, inputSize.width + [RakScroller width], inputSize.height)];
+
+				view.drawsBackground = YES;
+				view.backgroundColor = inputField.backgroundColor;
+				view.documentView = inputField;
+
+				((RakScroller *) view.verticalScroller).hideScroller = YES;
+				((RakScroller *) view.verticalScroller).backgroundColorToReplicate = [self backgroundColor];
+
+				inputField = (id) view;
 			}
 
 			CGFloat currentHeight = MAX(titleSize.height, inputSize.height);
-			currentY -= currentHeight + META_TOP_FORM_BORDER;
+			currentY -= currentHeight + META_INTERLINE_BORDER;
 
 			if(i == 2)
 				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, currentY + currentHeight - titleSize.height)];
@@ -234,6 +354,33 @@ enum
 	return text;
 }
 
+- (void) feedAnimationController : (RakCTAnimationController *) animationController
+{
+}
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+	[super drawRect:dirtyRect];
+
+	if(!requestingMetadata)
+		return;
+
+	[[[NSColor whiteColor] colorWithAlphaComponent:0.3] setFill];
+
+	dirtyRect.origin.x = dirtyRect.size.width / 6;
+	dirtyRect.size.width = 4 * dirtyRect.origin.x;
+	dirtyRect.size.height = 1;
+
+	for(byte i = 0; i < 3; ++i)
+	{
+		if(bordersY[i] == 0)
+			continue;
+
+		dirtyRect.origin.y = bordersY[i];
+		NSRectFill(dirtyRect);
+	}
+}
+
 #pragma mark - Popover interaction
 
 - (INPopoverArrowDirection) arrowDirection
@@ -262,6 +409,16 @@ enum
 {
 	_item.issue = IMPORT_PROBLEM_NONE;
 	[RakImportStatusList refreshAfterPass];
+}
+
+- (void) validateField
+{
+
+}
+
+- (void) close
+{
+
 }
 
 @end
