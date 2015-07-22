@@ -17,6 +17,11 @@
 	BOOL requestingMetadata;
 
 	CGFloat bordersY[3];	//Y pos of borders to draw
+
+	//Fields to recover metadata data
+	RakText * name, * author, * description;
+	RakSegmentedControl * rightToLeft;
+	RakList * tagList;
 }
 
 @end
@@ -26,7 +31,7 @@ enum
 	META_TOP_BORDER = 8,
 	META_BORDER_WIDTH = 8,
 	META_TOP_FORM_BORDER = 10,
-	META_INTERLINE_BORDER = 12
+	META_INTERLINE_BORDER = 10
 };
 
 @implementation RakImportQuery
@@ -48,7 +53,7 @@ enum
 
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
 {
-	return [[self initWithFrame:NSMakeRect(0, 0, 350, 500)] _autoInitWithMetadata:project];
+	return [[self initWithFrame:NSMakeRect(0, 0, 350, 600)] _autoInitWithMetadata:project];
 }
 
 - (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
@@ -115,7 +120,7 @@ enum
 - (void) setupUIMetadata
 {
 	NSSize selfSize = self.frame.size, titleSize, inputSize;
-	CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 7 / 10, currentHeight;
+	CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 7 / 10, currentHeight = 0;
 
 	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title;
 	if(header != nil)
@@ -136,53 +141,86 @@ enum
 
 	//Right to left or left to right?
 	title = [self getTextForLocalizationString:@"IMPORT-META-READ-ORDER" :maxWidthTitles];
-	RakSegmentedControl * switchButton = [[RakSegmentedControl alloc] initWithFrame:NSZeroRect :@[@"A → B", @"B ← A"]];
-	if(title != nil && switchButton != nil)
+	rightToLeft = [[RakSegmentedControl alloc] initWithFrame:NSZeroRect :@[@"A → B", @"B ← A"]];
+	if(title != nil && rightToLeft != nil)
 	{
-		[switchButton setEnabled:YES forSegment:0];
-		[switchButton setEnabled:YES forSegment:1];
+		[rightToLeft setEnabled:YES forSegment:0];
+		[rightToLeft setEnabled:YES forSegment:1];
 
-		[switchButton setSelected:YES forSegment:_project.rightToLeft];
+		[rightToLeft setSelected:YES forSegment:_project.rightToLeft];
 
 		titleSize = title.bounds.size;
-		inputSize = switchButton.bounds.size;
+		inputSize = rightToLeft.bounds.size;
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
-		[switchButton setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH + (maxWidthContent / 2 - switchButton.bounds.size.width / 2), selfSize.height + currentHeight / 2 - inputSize.height / 2)];
+		[rightToLeft setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH + (maxWidthContent / 2 - inputSize.width / 2), selfSize.height + currentHeight / 2 - inputSize.height / 2)];
 
 		[self addSubview:title];
-		[self addSubview:switchButton];
+		[self addSubview:rightToLeft];
 	}
 
 	//Status of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-STATUS" :maxWidthTitles];
+	NSPopUpButton * popupButton = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, maxWidthContent, currentHeight) pullsDown:NO];
 	if(title != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = NSZeroSize;
+		inputSize = popupButton.bounds.size;
+
+		[popupButton addItemsWithTitles:@[@"––",
+										  NSLocalizedString(@"CT-STATUS-OVER", nil),
+										  NSLocalizedString(@"CT-STATUS-CANCELLED", nil),
+										  NSLocalizedString(@"CT-STATUS-PAUSE", nil),
+										  NSLocalizedString(@"CT-STATUS-WIP", nil),
+										  NSLocalizedString(@"CT-STATUS-ANNOUNCED", nil)]];
+
+		[popupButton selectItemAtIndex:_project.status < STATUS_INVALID ? _project.status : 0];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[popupButton setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + currentHeight / 2 - inputSize.height / 2)];
+
 		[self addSubview:title];
+		[self addSubview:popupButton];
 	}
 
 	//Tagging of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-TAG" :maxWidthTitles];
-	if(title != nil)
+	tagList = [[RakList alloc] init];
+	if(title != nil && tagList != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = NSZeroSize;
 
-		currentHeight = MAX(titleSize.height, inputSize.height);
-		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+		//List initialization
+		tagList.defaultDataField = @[@"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1"];
+		tagList.defaultResponder = self;
+		tagList.action = @selector(tagClicked:);
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[tagList applyContext:NSMakeRect(0, 0, maxWidthContent, 5 * titleSize.height) :LIST_INVALID_SELECTION :-1];
+
+		RakListScrollView * scrollview = [tagList getContent];
+
+		scrollview.wantsLayer = YES;
+		scrollview.layer.cornerRadius = 2;
+		scrollview.drawsBackground = YES;
+		scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :self];
+
+		//Finish putting things where they need to go
+		inputSize = scrollview.bounds.size;
+		selfSize.height -= META_INTERLINE_BORDER;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height - titleSize.height)];
+		[scrollview setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height - inputSize.height)];
+
+		selfSize.height -= MAX(titleSize.height, inputSize.height);
+
 		[self addSubview:title];
+		[self addSubview:scrollview];
 	}
 
 	bordersY[2] = (selfSize.height -= META_TOP_FORM_BORDER);
@@ -194,7 +232,7 @@ enum
 		titleSize = title.bounds.size;
 		inputSize = NSZeroSize;
 
-		currentHeight = MAX(titleSize.height, inputSize.height);
+		currentHeight = titleSize.height;
 		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
@@ -208,7 +246,7 @@ enum
 		titleSize = title.bounds.size;
 		inputSize = NSZeroSize;
 
-		currentHeight = MAX(titleSize.height, inputSize.height);
+		currentHeight = titleSize.height;
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
@@ -222,7 +260,7 @@ enum
 		titleSize = title.bounds.size;
 		inputSize = NSZeroSize;
 
-		currentHeight = MAX(titleSize.height, inputSize.height);
+		currentHeight = titleSize.height;
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
@@ -274,9 +312,15 @@ enum
 			if(collector[i][0])
 				inputField.stringValue = getStringForWchar(collector[i]);
 
+			if(i == 0)
+				name = inputField;
+			else if(i == 1)
+				author = inputField;
 			//Synopsis, this one is slightly different
-			if(i == 2)
+			else if(i == 2)
 			{
+				description = inputField;
+
 				inputField.cell.wraps = YES;
 				inputField.fixedWidth = inputSize.width;
 				inputField.enableMultiLine = YES;
@@ -411,6 +455,11 @@ enum
 	[RakImportStatusList refreshAfterPass];
 }
 
+- (void) tagClicked : (NSNumber *) row
+{
+	NSLog(@"%@!", row);
+}
+
 - (void) validateField
 {
 
@@ -418,7 +467,7 @@ enum
 
 - (void) close
 {
-
+	[self closePopover];
 }
 
 @end

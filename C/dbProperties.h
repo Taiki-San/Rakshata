@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 /*Status*/
+//This order + initial value is assumed not to change by RakImportQuery
 enum
 {
 	STATUS_OVER = 1,

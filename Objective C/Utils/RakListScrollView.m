@@ -110,6 +110,14 @@
 #endif
 }
 
+- (void) setBackgroundColor:(NSColor *)backgroundColor
+{
+	[super setBackgroundColor:backgroundColor];
+
+	((RakScroller *) self.verticalScroller).backgroundColorToReplicate = backgroundColor;
+	((RakScroller *) self.horizontalScroller).backgroundColorToReplicate = backgroundColor;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if([object class] != [Prefs class])

@@ -90,7 +90,7 @@
 #endif
 }
 
-- (NSScrollView*) getContent
+- (RakListScrollView *) getContent
 {
 	return scrollView;
 }
@@ -314,7 +314,7 @@
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
-	return _data == NULL ? 0 : (_nbData / _nbCoupleColumn + (_nbData % _nbCoupleColumn != 0));
+	return _data == NULL ? (_defaultDataField == nil ? 0 : (NSInteger) (_nbData = [_defaultDataField count])) : (_nbData / _nbCoupleColumn + (_nbData % _nbCoupleColumn != 0));
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
@@ -325,6 +325,14 @@
 	output.wantsLayer = NO;
 	
 	return output;
+}
+
+- (id) tableView:(nonnull NSTableView *)tableView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
+{
+	if(_defaultDataField == nil || row < 0 || (NSUInteger) row >= [_defaultDataField count])
+		return nil;
+
+	return [_defaultDataField objectAtIndex: (NSUInteger) row];
 }
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
@@ -388,6 +396,16 @@
 	
 	[self postProcessingSelection : rowIndex];
 	return YES;
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification;
+{
+	if(_defaultResponder != nil && [_defaultResponder respondsToSelector:_action])
+	{
+		IMP imp = [_defaultResponder methodForSelector:_action];
+		void (*func)(id, SEL, id) = (void *)imp;
+		func(_defaultResponder, _action, @([self rowFromCoordinates : selectedRowIndex : selectedColumnIndex]));
+	}
 }
 
 - (void) graphicSelection : (NSView *) view : (BOOL) select

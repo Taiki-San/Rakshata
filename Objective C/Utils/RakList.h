@@ -76,13 +76,19 @@ typedef struct //smartReload_data
 @property (weak, getter=superview, setter=setSuperview:)	NSView * superview;
 @property BOOL _selectionChangeComeFromClic;
 
+//Simplify the interface for simple use
+@property NSArray * defaultDataField;
+@property id defaultResponder;
+@property SEL action;
+
+
 - (void) applyContext : (NSRect) frame : (uint) activeRow : (long) scrollerPosition;
 - (void) failure;
 
 - (void) setFrameOrigin : (NSPoint) origin;
 - (void) setAlphaValue : (CGFloat) alphaValue : (BOOL) animated;
 
-- (NSScrollView*) getContent;
+- (RakListScrollView*) getContent;
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) reloadSize;
 

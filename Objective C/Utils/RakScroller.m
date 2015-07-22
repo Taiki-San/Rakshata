@@ -107,8 +107,17 @@
 
 - (void) drawRect:(NSRect)dirtyRect
 {
+	if(_backgroundColorToReplicate && ![_backgroundColorToReplicate isEqual:[NSColor clearColor]])
+	{
+		[_backgroundColorToReplicate setFill];
+		NSRectFill(dirtyRect);
+	}
+
+	if(_hideScroller)
+		return;
+
 	[super drawRect:dirtyRect];
-	
+
 	//Fix a weird bug, when the slot would be drawn, but not the knob
 	if(incompleteDrawing)
 	{
@@ -123,12 +132,6 @@
 			else if(self == [view verticalScroller])
 				[view setHasVerticalScroller:NO];
 		}
-	}
-
-	if(_hideScroller)
-	{
-		[_backgroundColorToReplicate setFill];
-		NSRectFill(dirtyRect);
 	}
 }
 
