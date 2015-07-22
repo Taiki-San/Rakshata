@@ -653,6 +653,25 @@ void freeRepo(REPO_DATA ** repos)
 	free(repos);
 }
 
+charType * getStringFromUTF8(const unsigned char * rawString)
+{
+	charType * output = NULL;
+
+	if(rawString != NULL)
+	{
+		size_t length = ustrlen(rawString);
+		output = malloc((length + 1) * sizeof(charType));
+
+		if(output != NULL)
+		{
+			length = utf8_to_wchar((const char *) rawString, length, output, length + 1, 0);
+			output[length] = 0;
+		}
+	}
+
+	return output;
+}
+
 #pragma mark - Sort function
 
 //Declared in 

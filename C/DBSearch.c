@@ -725,35 +725,16 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	while(pos < length && sqlite3_step(request) == SQLITE_ROW)
 	{
 		if(type == RDBS_TYPE_AUTHOR)
-		{
-			(*dataName)[pos] = malloc(REPO_NAME_LENGTH * sizeof(charType));
-			if((*dataName)[pos] == NULL)
-				continue;
-			
-			const char * utf8 = (const char *) sqlite3_column_text(request, 0);
-			
-			if(utf8 == NULL)
-			{
-				free((*dataName)[pos]);
-				continue;
-			}
-			
-			utf8_to_wchar(utf8, strlen(utf8), (*dataName)[pos], REPO_NAME_LENGTH, 0);
-		}
+			(*dataName)[pos] = getStringFromUTF8(sqlite3_column_text(request, 0));
+
 		else if(type == RDBS_TYPE_CAT)
-		{
 			(*dataName)[pos] = wstrdup(getCatNameForCode((uint32_t) sqlite3_column_int(request, 0)));
-			if((*dataName)[pos] == NULL)
-				continue;
-		}
+
 		else
-		{
 			(*dataName)[pos] = wstrdup(getTagNameForCode((uint32_t) sqlite3_column_int(request, 0)));
-			if((*dataName)[pos] == NULL)
-				continue;
-		}
-		
-		codes[pos++] = (uint64_t) sqlite3_column_int64(request, 1);
+
+		if((*dataName)[pos] != NULL)
+			codes[pos++] = (uint64_t) sqlite3_column_int64(request, 1);
 	}
 	
 	destroyRequest(request);

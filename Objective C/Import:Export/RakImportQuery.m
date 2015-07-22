@@ -13,15 +13,20 @@
 @interface RakImportQuery()
 {
 	RakImportItem * _item;
-	PROJECT_DATA _project;
 	BOOL requestingMetadata;
+
+	//Model
+	PROJECT_DATA _project;
+	CATEGORY_VERBOSE * cats;
+	TAG_VERBOSE * tags;
+	uint nbCats, nbTags;
 
 	CGFloat bordersY[4];	//Y pos of borders to draw
 
 	//Fields to recover metadata data
 	RakText * name, * author, * description;
 	RakSegmentedControl * rightToLeft;
-	RakList * tagList;
+	RakPopUpButton * status, * tagList, * catList;
 	RakImageDropArea * dropSR, * dropSRRet;
 	RakImageDropArea * dropCT, * dropCTRet;
 	RakImageDropArea * dropDD, * dropDDRet;
@@ -34,7 +39,8 @@ enum
 	META_TOP_BORDER = 8,
 	META_BORDER_WIDTH = 8,
 	META_TOP_FORM_BORDER = 10,
-	META_INTERLINE_BORDER = 10
+	META_INTERLINE_BORDER = 10,
+	META_SMALL_INTERLINE_BORDER = 6
 };
 
 @implementation RakImportQuery
@@ -56,7 +62,7 @@ enum
 
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
 {
-	return [[self initWithFrame:NSMakeRect(0, 0, 350, 630)] _autoInitWithMetadata:project];
+	return [[self initWithFrame:NSMakeRect(0, 0, 350, 608)] _autoInitWithMetadata:project];
 }
 
 - (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
@@ -170,63 +176,94 @@ enum
 
 	//Status of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-STATUS" :maxWidthTitles];
-	NSPopUpButton * popupButton = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, maxWidthContent, currentHeight) pullsDown:NO];
+	status = [[RakPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, maxWidthContent, currentHeight) pullsDown:NO];
 	if(title != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = popupButton.bounds.size;
+		inputSize = status.bounds.size;
 
-		[popupButton addItemsWithTitles:@[@"––",
+		[status addItemsWithTitles:@[@"––",
 										  NSLocalizedString(@"CT-STATUS-OVER", nil),
 										  NSLocalizedString(@"CT-STATUS-CANCELLED", nil),
 										  NSLocalizedString(@"CT-STATUS-PAUSE", nil),
 										  NSLocalizedString(@"CT-STATUS-WIP", nil),
 										  NSLocalizedString(@"CT-STATUS-ANNOUNCED", nil)]];
 
-		[popupButton selectItemAtIndex:_project.status < STATUS_INVALID ? _project.status : 0];
+		[status selectItemAtIndex:_project.status < STATUS_INVALID ? _project.status : 0];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
-		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+		selfSize.height -= META_SMALL_INTERLINE_BORDER + currentHeight;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
-		[popupButton setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + currentHeight / 2 - inputSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+		[status setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + (currentHeight - inputSize.height) / 2)];
 
 		[self addSubview:title];
-		[self addSubview:popupButton];
+		[self addSubview:status];
 	}
 
 	//Tagging of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-TAG" :maxWidthTitles];
-	tagList = [[RakList alloc] init];
+	tagList = [[RakPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, maxWidthContent, currentHeight) pullsDown:NO];
 	if(title != nil && tagList != nil)
 	{
+		[tagList addItemsWithTitles:[self getTagArray]];
+
+		//We select the current item
+		if(_project.mainTag != CAT_NO_VALUE)
+		{
+			for(uint i = 0; i < nbTags; i++)
+			{
+				if(tags[i].ID == _project.mainTag)
+				{
+					[tagList selectItemAtIndex:i];
+					break;
+				}
+			}
+		}
+
 		titleSize = title.bounds.size;
+		inputSize = tagList.bounds.size;
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= META_SMALL_INTERLINE_BORDER + currentHeight;
 
-		//List initialization
-		tagList.defaultDataField = @[@"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1", @"Line 1"];
-		tagList.defaultResponder = self;
-		tagList.action = @selector(tagClicked:);
-
-		[tagList applyContext:NSMakeRect(0, 0, maxWidthContent, 5 * titleSize.height) :LIST_INVALID_SELECTION :-1];
-
-		RakListScrollView * scrollview = [tagList getContent];
-
-		scrollview.wantsLayer = YES;
-		scrollview.layer.cornerRadius = 2;
-		scrollview.drawsBackground = YES;
-		scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA :self];
-
-		//Finish putting things where they need to go
-		inputSize = scrollview.bounds.size;
-		selfSize.height -= META_INTERLINE_BORDER;
-
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height - titleSize.height)];
-		[scrollview setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height - inputSize.height)];
-
-		selfSize.height -= MAX(titleSize.height, inputSize.height);
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+		[tagList setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + (currentHeight - inputSize.height) / 2)];
 
 		[self addSubview:title];
-		[self addSubview:scrollview];
+		[self addSubview:tagList];
+	}
+
+	//Category of the project
+	title = [self getTextForLocalizationString:@"IMPORT-META-CAT" :maxWidthTitles];
+	catList = [[RakPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, maxWidthContent, currentHeight) pullsDown:NO];
+	if(title != nil && tagList != nil)
+	{
+		[catList addItemsWithTitles:[self getCatArray]];
+
+		//We select the current item
+		if(_project.category != CAT_NO_VALUE)
+		{
+			for(uint i = 0; i < nbCats; i++)
+			{
+				if(cats[i].ID == _project.category)
+				{
+					[catList selectItemAtIndex:i];
+					break;
+				}
+			}
+		}
+
+		titleSize = title.bounds.size;
+		inputSize = catList.bounds.size;
+
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= META_SMALL_INTERLINE_BORDER + currentHeight;
+
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+		[catList setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + (currentHeight - inputSize.height) / 2)];
+
+		[self addSubview:title];
+		[self addSubview:catList];
 	}
 
 	bordersY[2] = (selfSize.height -= META_TOP_FORM_BORDER);
@@ -301,8 +338,8 @@ enum
 
 	//Image for CT of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-CT" :maxWidthTitles];
-	dropCT = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 1000, 563]];
-	dropCTRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 2000, 1125]];
+	dropCT = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 960, 540]];
+	dropCTRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 1920, 1080]];
 	if(title != nil)
 	{
 		titleSize = title.bounds.size;
@@ -359,6 +396,9 @@ enum
 
 		newSize.height -= selfSize.height;
 
+#ifdef DEV_VERSION
+		NSLog(@"Correcting height to %lf", newSize.height);
+#endif
 		[self setFrameSize:newSize];
 	}
 }
@@ -504,6 +544,34 @@ enum
 		dirtyRect.origin.y = bordersY[i];
 		NSRectFill(dirtyRect);
 	}
+}
+
+#pragma mark - Data manipulation helper
+
+- (NSArray *) getTagArray
+{
+	NSMutableArray * array = [NSMutableArray arrayWithObject:@"––"];
+
+	if(tags != NULL || getCopyOfTags(&tags, &nbTags))
+	{
+		for(uint i = 0; i < nbTags; i++)
+			[array addObject:getStringForWchar(tags[i].name)];
+	}
+
+	return [NSArray arrayWithArray:array];
+}
+
+- (NSArray *) getCatArray
+{
+	NSMutableArray * array = [NSMutableArray arrayWithObject:@"––"];
+
+	if(cats != NULL || getCopyOfCats(&cats, &nbCats))
+	{
+		for(uint i = 0; i < nbCats; i++)
+			[array addObject:getStringForWchar(cats[i].name)];
+	}
+
+	return [NSArray arrayWithArray:array];
 }
 
 #pragma mark - Popover interaction

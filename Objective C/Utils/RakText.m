@@ -311,6 +311,16 @@
 
 #pragma mark - Handle clic
 
+- (BOOL) acceptsFirstMouse:(nullable NSEvent *)theEvent
+{
+	return YES;
+}
+
+- (BOOL) acceptsFirstResponder
+{
+	return YES;
+}
+
 - (void) overrideMouseDown : (NSEvent *) theEvent
 {
 	[super mouseDown:theEvent];

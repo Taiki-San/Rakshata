@@ -198,6 +198,7 @@ void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem);
+charType * getStringFromUTF8(const unsigned char * rawString);
 
 /******		DBLocal.c		*******/
 uint getEmptyLocalSlot(PROJECT_DATA project);
@@ -211,6 +212,9 @@ charType * getTagNameForCode(uint tagID);
 
 bool doesCatOfIDExist(uint32_t catID);
 bool doesTagOfIDExist(uint32_t tagID);
+
+bool getCopyOfTags(TAG_VERBOSE ** newData, uint * nbData);
+bool getCopyOfCats(CATEGORY_VERBOSE ** newData, uint * nbData);
 
 /**		TagUpdate.c		**/
 void checkIfRefreshTag();

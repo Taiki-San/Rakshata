@@ -15,6 +15,7 @@
 #import "RakSwitchButton.h"
 #import "RakSegmentedControl.h"
 #import "RakStatusButton.h"
+#import "RakPopUpButton.h"
 
 @interface RakButton: NSButton
 {

@@ -346,20 +346,7 @@ charType * getNameForRequestAndCode(sqlite3_stmt * request, uint32_t code)
 	if(sqlite3_step(request) != SQLITE_ROW)
 		return L"Unknown category";
 	
-	const unsigned char * rawString = sqlite3_column_text(request, 0);
-	charType * output = NULL;
-	
-	if(rawString != NULL)
-	{
-		size_t length = ustrlen(rawString);
-		output = malloc((length + 1) * sizeof(charType));
-		
-		if(output != NULL)
-		{
-			length = utf8_to_wchar((const char *) rawString, length, output, length + 1, 0);
-			output[length] = 0;
-		}
-	}
+	charType * output = getStringFromUTF8(sqlite3_column_text(request, 0));
 	
 	destroyRequest(request);
 	
@@ -428,4 +415,104 @@ bool doesTagOfIDExist(uint32_t tagID)
 	destroyRequest(request);
 
 	return retValue;
+}
+
+bool getCopyOfTagsOrCat(bool wantTag, void ** newData, uint * nbData)
+{
+	//Check data sanity, create request...
+	if(newData == NULL || nbData == NULL)
+		return false;
+
+	*newData = NULL;
+	*nbData = 0;
+
+	sqlite3_stmt * request;
+
+	if(wantTag)
+		request = createRequest(cache, "SELECT * FROM "TABLE_TAGS" ORDER BY "DBNAMETOID(RDB_tagName)" COLLATE "SORT_FUNC" ASC;");
+	else
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_CAT_ID)", "DBNAMETOID(RDB_CAT_name)" FROM "TABLE_CATEGORY" ORDER BY "DBNAMETOID(RDB_CAT_name)" COLLATE "SORT_FUNC" ASC;");
+
+	if(request == NULL)
+		return false;
+
+	uint currentSize = 1023, currentPos = 0, dataSize = wantTag ? sizeof(TAG_VERBOSE) : sizeof(CATEGORY_VERBOSE);
+	void * buffer = malloc(currentSize * dataSize);
+	if(buffer == NULL)
+	{
+		destroyRequest(request);
+		return false;
+	}
+
+	//Main loop
+	while(sqlite3_step(request) == SQLITE_ROW)
+	{
+		//We increase our buffer size if needed
+		if(currentPos == currentSize)
+		{
+			currentSize += 1024;
+			void * tmp = realloc(buffer, currentSize * dataSize);
+
+			if(tmp == NULL)
+			{
+				if(wantTag)
+				{
+					while(currentPos-- > 0)
+						free(((TAG_VERBOSE *) buffer)[currentPos].name);
+				}
+				else
+				{
+					while(currentPos-- > 0)
+						free(((CATEGORY_VERBOSE *) buffer)[currentPos].name);
+				}
+
+				free(buffer);
+				destroyRequest(request);
+				return false;
+			}
+			else
+				buffer = tmp;
+		}
+
+		if(wantTag)
+		{
+			((TAG_VERBOSE *) buffer)[currentPos].ID = (uint) sqlite3_column_int(request, 0);
+			((TAG_VERBOSE *) buffer)[currentPos].name = getStringFromUTF8(sqlite3_column_text(request, 1));
+
+			if(((TAG_VERBOSE *) buffer)[currentPos].name != NULL)
+				currentPos++;
+		}
+		else
+		{
+			((CATEGORY_VERBOSE *) buffer)[currentPos].ID = (uint) sqlite3_column_int(request, 0);
+			((CATEGORY_VERBOSE *) buffer)[currentPos].rootID = CAT_NO_VALUE;
+			((CATEGORY_VERBOSE *) buffer)[currentPos].name = getStringFromUTF8(sqlite3_column_text(request, 1));
+
+			if(((CATEGORY_VERBOSE *) buffer)[currentPos].name != NULL)
+				currentPos++;
+		}
+	}
+
+	//We reduce the allocated memory to the minimum
+	if(currentPos < currentSize)
+	{
+		void * tmp = realloc(buffer, currentPos * dataSize);
+		if(tmp != NULL)
+			buffer = tmp;
+	}
+
+	*newData = buffer;
+	*nbData = currentPos;
+	
+	return true;
+}
+
+bool getCopyOfTags(TAG_VERBOSE ** newData, uint * nbData)
+{
+	return getCopyOfTagsOrCat(true, (void **) newData, nbData);
+}
+
+bool getCopyOfCats(CATEGORY_VERBOSE ** newData, uint * nbData)
+{
+	return getCopyOfTagsOrCat(false, (void **) newData, nbData);
 }

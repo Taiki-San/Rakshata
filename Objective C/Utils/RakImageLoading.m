@@ -105,7 +105,7 @@ NSSize getThumbSize(NSImage * image)
 
 NSImage * loadCTHeader(const PROJECT_DATA project)
 {
-	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large"), NSMakeSize(1000, 563), NSMakeSize(2000, 1125));
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large"), NSMakeSize(960, 540), NSMakeSize(1920, 1080));
 }
 
 NSImage * loadCTThumb(const PROJECT_DATA project)

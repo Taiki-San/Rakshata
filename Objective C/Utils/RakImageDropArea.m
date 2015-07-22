@@ -24,13 +24,14 @@ enum
 
 	if(self != nil)
 	{
+		self.editable = YES;
+		self.imageScaling = NSImageScaleProportionallyUpOrDown;
+
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 5;
 		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA :self].CGColor;
 
-		[self registerForDraggedTypes:[NSImage imagePasteboardTypes]];
-
-		RakText * content = [[RakText alloc] initWithText:string :[self textColor]];
+		content = [[RakText alloc] initWithText:string :[self textColor]];
 		if(content != nil)
 		{
 			content.alignment = NSTextAlignmentCenter;
@@ -46,6 +47,22 @@ enum
 - (void) dealloc
 {
 	[Prefs deRegisterForChanges:self];
+}
+
+- (BOOL) acceptsFirstResponder
+{
+	return YES;
+}
+
+- (BOOL) acceptsFirstMouse:(nullable NSEvent *)theEvent
+{
+	return YES;
+}
+
+- (void) mouseDown:(nonnull NSEvent *)theEvent
+{
+	if(theEvent.type == NSRightMouseDown)
+		self.image = nil;
 }
 
 #pragma mark - D&D management
@@ -78,19 +95,16 @@ enum
 	return [NSImage canInitWithPasteboard: [sender draggingPasteboard]];
 }
 
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+- (void) setImage:(NSImage * _Nullable)image
 {
-	//set the image using the best representation we can get from the pasteboard
+	if(image == nil)
+		[super setImage:image];
 
-	if([NSImage canInitWithPasteboard: [sender draggingPasteboard]])
-	{
-		NSImage *newImage = [[NSImage alloc] initWithPasteboard: [sender draggingPasteboard]];
-		[self setImage:newImage];
-	}
+	content.hidden = image != nil;
 
-	return YES;
+	if(image != nil)
+		[super setImage:image];
 }
-
 
 #pragma mark - Color & drawing management
 
