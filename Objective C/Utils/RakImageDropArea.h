@@ -10,7 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakImageDropArea : NSView
+@interface RakImageDropArea : NSImageView <NSDraggingDestination>
+{
+	BOOL highlighted;
+}
 
 - (instancetype) initWithContentString : (NSString *) string;
 

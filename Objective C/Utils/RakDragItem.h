@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define PROJECT_PASTEBOARD_TYPE @"PasteboardTypeRakshataProject"
+#define PROJECT_PASTEBOARD_TYPE @"com.taiki.rakshataProject"
 
 @interface RakDragItem : NSObject
 {
