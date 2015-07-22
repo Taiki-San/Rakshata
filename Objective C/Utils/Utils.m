@@ -48,6 +48,16 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 	return [stringA localizedCompare:stringB];
 }
 
+void exportImageToPath(NSImage * image, NSSize size, NSString * outputPath)
+{
+	NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithCGImage:[image CGImageForProposedRect:NULL context:nil hints:nil]];
+
+	if(!NSEqualSizes(size, NSZeroSize))
+		[newRep setSize : size];
+
+	[[newRep representationUsingType:NSPNGFileType properties:nil] writeToFile:outputPath atomically:YES];
+}
+
 //Flush NSBundle cache
 
 // First, we declare the function. Making it weak-linked

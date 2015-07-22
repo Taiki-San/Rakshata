@@ -36,6 +36,7 @@ NSString * getStringForWchar(const charType * string);
 #import "RakDragView.h"
 #import "RakDragItem.h"
 #import "RakDragResponder.h"
+#import "RakImageDropArea.h"
 #import "RakList.h"
 #import "RakGradientView.h"
 
@@ -57,6 +58,8 @@ NSString * getStringForWchar(const charType * string);
 void registerThumbnailUpdate(id object, SEL selector, byte updateType);
 void flushBundleCache(NSBundle *bundle);
 void invalidateCacheForRepoID(uint64_t repoID);
+
+void exportImageToPath(NSImage * image, NSSize size, NSString * outputPath);
 
 //Image loading
 NSSize getThumbSize(NSImage * image);

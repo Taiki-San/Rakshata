@@ -181,18 +181,21 @@
 "IMPORT-REPLACE" = "Remplacer";
 "IMPORT-REPLACE-ALL" = "Remplacer série";
 "IMPORT-META-HEAD" = "Veuillez compléter les informations de la série";
-"IMPORT-META-TITLE" = "Titre :";
+"IMPORT-META-TITLE" = "Titre";
 "IMPORT-META-TITLE-PH" = "Titre de la série";
-"IMPORT-META-AUTHOR" = "Auteur :";
+"IMPORT-META-AUTHOR" = "Auteur";
 "IMPORT-META-AUTHOR-PH" = "Auteur de la série";
-"IMPORT-META-DESCRIPTION" = "Synopsis:";
+"IMPORT-META-DESCRIPTION" = "Synopsis";
 "IMPORT-META-DESCRIPTION-PH" = "Synopsis de la série";
-"IMPORT-META-READ-ORDER" = "Sens de lecture:";
-"IMPORT-META-STATUS" = "Status :";
-"IMPORT-META-TAG" = "Tags :";
-"IMPORT-META-IMG-GRID" = "Image pour la grille :";
-"IMPORT-META-IMG-DD" = "Image pour le glissé-déposé :";
-"IMPORT-META-IMG-CT" = "Image de fiche série :";
+"IMPORT-META-READ-ORDER" = "Sens de lecture";
+"IMPORT-META-STATUS" = "Status";
+"IMPORT-META-TAG" = "Tags";
+"IMPORT-META-PLZ-DRAG" = "Veuillez glissez les images dans les zones dédiées";
+"IMPORT-META-DROP-PH-%d-%d" = "Standard\n(%1$d×%2$d)";
+"IMPORT-META-DROP-PH-RETINA-%d-%d" = "Retina\n(%1$d×%2$d)";
+"IMPORT-META-IMG-GRID" = "Image pour la grille";
+"IMPORT-META-IMG-DD" = "Image pour le glissé-déposé";
+"IMPORT-META-IMG-CT" = "Image de fiche série";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

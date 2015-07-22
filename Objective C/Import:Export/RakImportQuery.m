@@ -16,12 +16,15 @@
 	PROJECT_DATA _project;
 	BOOL requestingMetadata;
 
-	CGFloat bordersY[3];	//Y pos of borders to draw
+	CGFloat bordersY[4];	//Y pos of borders to draw
 
 	//Fields to recover metadata data
 	RakText * name, * author, * description;
 	RakSegmentedControl * rightToLeft;
 	RakList * tagList;
+	RakImageDropArea * dropSR, * dropSRRet;
+	RakImageDropArea * dropCT, * dropCTRet;
+	RakImageDropArea * dropDD, * dropDDRet;
 }
 
 @end
@@ -53,7 +56,7 @@ enum
 
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
 {
-	return [[self initWithFrame:NSMakeRect(0, 0, 350, 600)] _autoInitWithMetadata:project];
+	return [[self initWithFrame:NSMakeRect(0, 0, 350, 630)] _autoInitWithMetadata:project];
 }
 
 - (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
@@ -125,6 +128,9 @@ enum
 	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title;
 	if(header != nil)
 	{
+		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
+		header.textColor = [self mainTitleColor];
+
 		header.cell.wraps = YES;
 		header.fixedWidth = selfSize.width - 20;
 		header.alignment = NSTextAlignmentCenter;
@@ -155,7 +161,7 @@ enum
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
 		[rightToLeft setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH + (maxWidthContent / 2 - inputSize.width / 2), selfSize.height + currentHeight / 2 - inputSize.height / 2)];
 
 		[self addSubview:title];
@@ -182,7 +188,7 @@ enum
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
 		[popupButton setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height + currentHeight / 2 - inputSize.height / 2)];
 
 		[self addSubview:title];
@@ -208,13 +214,13 @@ enum
 		scrollview.wantsLayer = YES;
 		scrollview.layer.cornerRadius = 2;
 		scrollview.drawsBackground = YES;
-		scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :self];
+		scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA :self];
 
 		//Finish putting things where they need to go
 		inputSize = scrollview.bounds.size;
 		selfSize.height -= META_INTERLINE_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height - titleSize.height)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height - titleSize.height)];
 		[scrollview setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, selfSize.height - inputSize.height)];
 
 		selfSize.height -= MAX(titleSize.height, inputSize.height);
@@ -225,49 +231,99 @@ enum
 
 	bordersY[2] = (selfSize.height -= META_TOP_FORM_BORDER);
 
+	header = [self getTextForLocalizationString:@"IMPORT-META-PLZ-DRAG" :selfSize.width];
+	if(header != nil)
+	{
+		header.alignment = NSCenterTextAlignment;
+		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
+		header.textColor = [self mainTitleColor];
+
+		[header sizeToFit];
+
+		titleSize = header.bounds.size;
+
+		selfSize.height -= titleSize.height + 7;
+
+		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - titleSize.width / 2, selfSize.height)];
+		[self addSubview:header];
+
+	}
+
+	bordersY[3] = (selfSize.height -= META_TOP_FORM_BORDER);
+
 	//Image for the grid of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-GRID" :maxWidthTitles];
-	if(title != nil)
+	dropSR = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 150, 150]];
+	dropSRRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 300, 300]];
+	if(title != nil && dropSR != nil && dropSRRet != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = NSZeroSize;
+		inputSize = dropSR.bounds.size;
 
-		currentHeight = titleSize.height;
-		selfSize.height -= currentHeight + META_TOP_FORM_BORDER;
+		currentHeight = MAX(titleSize.height, inputSize.height);
+		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+
+		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
+
+		[dropSR setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
+		[dropSRRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+
 		[self addSubview:title];
+		[self addSubview:dropSR];
+		[self addSubview:dropSRRet];
 	}
 
 	//Image for D&D of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-DD" :maxWidthTitles];
+	dropDD = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 50, 50]];
+	dropDDRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 100, 100]];
 	if(title != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = NSZeroSize;
+		inputSize = dropDD.bounds.size;
 
-		currentHeight = titleSize.height;
+		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+
+		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
+
+		[dropDD setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
+		[dropDDRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+
 		[self addSubview:title];
+		[self addSubview:dropDD];
+		[self addSubview:dropDDRet];
 	}
 
 	//Image for CT of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-CT" :maxWidthTitles];
+	dropCT = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 1000, 563]];
+	dropCTRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 2000, 1125]];
 	if(title != nil)
 	{
 		titleSize = title.bounds.size;
-		inputSize = NSZeroSize;
+		inputSize = dropCT.bounds.size;
 
-		currentHeight = titleSize.height;
+		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
-		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, selfSize.height + currentHeight / 2 - titleSize.height / 2)];
+		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
+
+		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
+
+		[dropCT setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
+		[dropCTRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+
 		[self addSubview:title];
+		[self addSubview:dropCT];
+		[self addSubview:dropCTRet];
 	}
 
-	selfSize.height -= 2 * META_TOP_FORM_BORDER;
+	selfSize.height -= META_TOP_FORM_BORDER;
 
 	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
 	if(button != nil)
@@ -293,6 +349,17 @@ enum
 		[button setFrameOrigin:NSMakePoint(3 * selfSize.width / 4 - titleSize.width / 2, selfSize.height - titleSize.height)];
 
 		[self addSubview:button];
+	}
+
+	selfSize.height -= titleSize.height + META_TOP_BORDER;
+
+	if(selfSize.height < 0)
+	{
+		NSSize newSize = _bounds.size;
+
+		newSize.height -= selfSize.height;
+
+		[self setFrameSize:newSize];
 	}
 }
 
@@ -345,9 +412,9 @@ enum
 			currentY -= currentHeight + META_INTERLINE_BORDER;
 
 			if(i == 2)
-				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, currentY + currentHeight - titleSize.height)];
+				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, currentY + currentHeight - titleSize.height)];
 			else
-				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - title.bounds.size.width, currentY + currentHeight / 2 - titleSize.height / 2)];
+				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, currentY + currentHeight / 2 - titleSize.height / 2)];
 
 			[inputField setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, currentY + currentHeight / 2 - inputSize.height / 2)];
 
@@ -361,7 +428,17 @@ enum
 
 #pragma mark - Color management & UI generation
 
+- (NSColor *) mainTitleColor
+{
+	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+}
+
 - (NSColor *) titleColor
+{
+	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+}
+
+- (NSColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
 }
@@ -371,8 +448,12 @@ enum
 	RakText * text = [[RakText alloc] initWithText:NSLocalizedString(string, nil) :[self titleColor]];
 	if(text != nil)
 	{
-		text.cell.wraps = YES;
-		text.fixedWidth = maxWidth;
+		if(maxWidth)
+		{
+			text.cell.wraps = YES;
+			text.fixedWidth = maxWidth;
+		}
+
 		text.alignment = NSTextAlignmentRight;
 	}
 
@@ -381,7 +462,7 @@ enum
 
 - (RakText *) getInputFieldWithPlaceholder : (NSString *) string : (CGFloat) maxWidth
 {
-	RakText * text = [[RakText alloc] initWithText:nil :[self titleColor]];
+	RakText * text = [[RakText alloc] initWithText:nil :[self textColor]];
 	if(text != nil)
 	{
 		((RakTextCell*) text.cell).customizedInjectionPoint = YES;
@@ -415,7 +496,7 @@ enum
 	dirtyRect.size.width = 4 * dirtyRect.origin.x;
 	dirtyRect.size.height = 1;
 
-	for(byte i = 0; i < 3; ++i)
+	for(byte i = 0; i < 4; ++i)
 	{
 		if(bordersY[i] == 0)
 			continue;
