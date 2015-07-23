@@ -449,6 +449,10 @@ enum
 		}
 	}
 
+	name.maxLength = LENGTH_PROJECT_NAME - 1;
+	author.maxLength = LENGTH_AUTHORS - 1;
+	description.maxLength = LENGTH_DESCRIPTION - 1;
+
 	return currentY;
 }
 
@@ -622,14 +626,9 @@ enum
 	[RakImportStatusList refreshAfterPass];
 }
 
-- (void) tagClicked : (NSNumber *) row
-{
-	NSLog(@"%@!", row);
-}
-
 - (void) validateField
 {
-
+	
 }
 
 - (void) close

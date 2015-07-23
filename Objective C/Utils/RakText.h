@@ -27,6 +27,8 @@
 @property BOOL discardHeight;
 @property NSRect currentFrame;
 
+@property (nonatomic) CGFloat maxLength;
+
 @property (weak) id clicTarget;
 @property SEL clicAction;
 

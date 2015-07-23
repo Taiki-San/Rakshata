@@ -31,7 +31,7 @@
 		
 		[self setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
 		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
-		[self setFormatter:[[RakFormatterLength alloc] init : 100]];
+		self.maxLength = 100;
 		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
 		
 		[self setDelegate:self];

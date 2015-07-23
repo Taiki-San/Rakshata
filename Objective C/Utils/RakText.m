@@ -194,6 +194,12 @@
 	return [super setFont:font];
 }
 
+- (void) setMaxLength:(CGFloat)maxLength
+{
+	[self setFormatter:[[RakFormatterLength alloc] init : maxLength]];
+	_maxLength = maxLength;
+}
+
 #pragma mark - Handle wrap lines properly
 
 - (void) setFixedWidth : (CGFloat)fixedWidth
