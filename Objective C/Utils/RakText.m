@@ -255,7 +255,7 @@
 
 	[textStorage addLayoutManager:layoutManager];
 
-	if(self.attributedStringValue != nil)
+	if(self.attributedStringValue != nil && [self.attributedStringValue length] > 0)
 		[textStorage addAttributes:[self.attributedStringValue attributesAtIndex:0 effectiveRange:NULL] range:NSMakeRange(0, [textStorage length])];
 	else
 		[textStorage addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [textStorage length])];
