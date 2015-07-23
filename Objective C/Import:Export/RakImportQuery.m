@@ -452,6 +452,17 @@ enum
 	return currentY;
 }
 
+- (void) bindFields
+{
+	name.nextKeyView = author;
+	author.nextKeyView = description;
+	description.nextKeyView = rightToLeft;
+	rightToLeft.nextKeyView = status;
+	status.nextKeyView = tagList;
+	tagList.nextKeyView = catList;
+	catList.nextKeyView = name;
+}
+
 #pragma mark - Color management & UI generation
 
 - (NSColor *) mainTitleColor
