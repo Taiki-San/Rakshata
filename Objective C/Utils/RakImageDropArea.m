@@ -49,20 +49,9 @@ enum
 	[Prefs deRegisterForChanges:self];
 }
 
-- (BOOL) acceptsFirstResponder
+- (void) rightMouseDown:(nonnull NSEvent *)theEvent
 {
-	return YES;
-}
-
-- (BOOL) acceptsFirstMouse:(nullable NSEvent *)theEvent
-{
-	return YES;
-}
-
-- (void) mouseDown:(nonnull NSEvent *)theEvent
-{
-	if(theEvent.type == NSRightMouseDown)
-		self.image = nil;
+	self.image = nil;
 }
 
 #pragma mark - D&D management
