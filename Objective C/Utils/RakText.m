@@ -102,6 +102,16 @@
 	}
 }
 
+- (void) dealloc
+{
+	if(self.superview != nil)
+		[self removeFromSuperview];
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Setters Hook
+
 - (void) setFrameSize:(NSSize)newSize
 {
 	//Fix an issue when resizing with an animation
@@ -178,17 +188,15 @@
 		[super setObjectValue:obj];
 }
 
-- (void) dealloc
+- (void) setFont:(NSFont * _Nullable)font
 {
-	if(self.superview != nil)
-		[self removeFromSuperview];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	_cachedMinHeight = 0;
+	return [super setFont:font];
 }
 
 #pragma mark - Handle wrap lines properly
 
-- (void) setFixedWidth:(CGFloat)fixedWidth
+- (void) setFixedWidth : (CGFloat)fixedWidth
 {
 	haveFixedWidth = fixedWidth != 0;
 	if(_fixedWidth != fixedWidth)
@@ -198,11 +206,6 @@
 		if([self.cell wraps] && ![self.stringValue isEqualToString:@""])
 			[self setFrameSize:[self intrinsicContentSize]];
 	}
-}
-
-- (CGFloat) fixedWidth
-{
-	return _fixedWidth;
 }
 
 - (NSSize) intrinsicContentSize
@@ -223,7 +226,39 @@
 	frame.size.height = CGFLOAT_MAX;
 
 	// Calculate new height within the frame with practically infinite height.
-	return NSMakeSize(frame.size.width, [self.cell cellSizeForBounds: frame].height);
+	frame.size = NSMakeSize(frame.size.width, [self.cell cellSizeForBounds: frame].height);
+
+	if(frame.size.height < [self getMinHeight])
+	{
+		//We need to compute the height we would need
+		frame.size.height = [self getMinHeight];
+	}
+
+	return frame.size;
+}
+
+- (CGFloat) getMinHeight
+{
+	if(_cachedMinHeight != 0)
+		return _cachedMinHeight;
+
+	NSTextStorage * textStorage = [[NSTextStorage alloc] initWithString:@"Gravitation"];
+	NSTextContainer * textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
+	NSLayoutManager * layoutManager = [[NSLayoutManager alloc] init];
+	[layoutManager addTextContainer: textContainer];
+
+	[textStorage addLayoutManager:layoutManager];
+
+	if(self.attributedStringValue != nil)
+		[textStorage addAttributes:[self.attributedStringValue attributesAtIndex:0 effectiveRange:NULL] range:NSMakeRange(0, [textStorage length])];
+	else
+		[textStorage addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [textStorage length])];
+
+	[textContainer setLineFragmentPadding:0];
+
+	[layoutManager glyphRangeForTextContainer:textContainer];
+
+	return _cachedMinHeight = [layoutManager usedRectForTextContainer:textContainer].size.height;
 }
 
 - (void) setEnableMultiLine:(BOOL)enableMultiLine
@@ -247,13 +282,6 @@
 			// new line action:
 			// always insert a line-break character and don’t cause the receiver to end editing
 			[textView insertNewlineIgnoringFieldEditor:self];
-			result = YES;
-		}
-		else if (commandSelector == @selector(insertTab:))
-		{
-			// tab action:
-			// always insert a tab character and don’t cause the receiver to end editing
-			[textView insertTabIgnoringFieldEditor:self];
 			result = YES;
 		}
 

@@ -13,15 +13,17 @@
 @interface RakText : NSTextField <NSTextFieldDelegate>
 {
 	BOOL haveFixedWidth;
-	CGFloat _fixedWidth;
 	CGFloat _suggestedWidth;
+
+	CGFloat _cachedMinHeight;
 }
 
 @property BOOL wantCustomBorder;
 @property CGFloat forcedOffsetY;
-@property (nonatomic) BOOL enableMultiLine;
 
-@property CGFloat fixedWidth;
+@property (nonatomic) BOOL enableMultiLine;
+@property (nonatomic) CGFloat fixedWidth;
+
 @property BOOL discardHeight;
 @property NSRect currentFrame;
 
