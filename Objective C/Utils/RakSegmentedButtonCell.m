@@ -91,15 +91,15 @@
 			
 			if(i == impactedCell)
 			{
-				first = [self getSelectedColor];
-				second = [self getUnselectedColor];
-			}
-			else
-			{
 				first = [self getUnselectedColor];
 				second = [self getSelectedColor];
 			}
-			
+			else
+			{
+				first = [self getSelectedColor];
+				second = [self getUnselectedColor];
+			}
+
 			extraFrame = frame;
 			
 			//First part
@@ -117,7 +117,7 @@
 		}
 		else
 		{
-			if(![self isSelectedForSegment:i])
+			if([self isSelectedForSegment:i])
 				[[self getSelectedColor] setFill];
 			else
 				[[self getUnselectedColor] setFill];
@@ -162,7 +162,7 @@
 - (NSColor *) getFontColor : (uint) cellID
 {
 	if(![self isEnabledForSegment:cellID])
-		return [Prefs getSystemColor:COLOR_TEXT_CT_SELECTOR_UNAVAILABLE:nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE:nil];
 	else if([self isSelectedForSegment:cellID])
 		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED:nil];
 	else

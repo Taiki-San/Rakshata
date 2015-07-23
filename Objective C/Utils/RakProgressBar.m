@@ -35,7 +35,7 @@
 		
 		[self addSubview:_speedText];	[self centerText];
 		
-		slotColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_SLOT : nil];
+		slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT : nil];
 		progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
 	}
 	
@@ -58,7 +58,7 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	[_speedText setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
-	slotColor = [Prefs getSystemColor:COLOR_PROGRESSCIRCLE_SLOT : nil];
+	slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT : nil];
 	progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
 	
 	[self setNeedsDisplay:YES];

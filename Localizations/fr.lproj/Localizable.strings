@@ -192,10 +192,9 @@
 "IMPORT-META-TAG" = "Tags";
 "IMPORT-META-CAT" = "Catégorie";
 "IMPORT-META-PLZ-DRAG" = "Veuillez glissez les images dans les zones dédiées";
-"IMPORT-META-DROP-PH-%d-%d" = "Standard\n(%1$d×%2$d)";
-"IMPORT-META-DROP-PH-RETINA-%d-%d" = "Retina\n(%1$d×%2$d)";
-"IMPORT-META-IMG-GRID" = "Image pour la grille";
-"IMPORT-META-IMG-DD" = "Image pour le glissé-déposé";
+"IMPORT-META-DROP-PH-%d-%d" = "Taille:\n%1$d×%2$d";
+"IMPORT-META-IMG-GRID" = "Icône pour la grille";
+"IMPORT-META-IMG-DD" = "Icône  pour le glissé-déposé";
 "IMPORT-META-IMG-CT" = "Image de fiche série";
 
 //Others

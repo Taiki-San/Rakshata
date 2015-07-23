@@ -27,9 +27,7 @@
 	RakText * name, * author, * description;
 	RakSegmentedControl * rightToLeft;
 	RakPopUpButton * status, * tagList, * catList;
-	RakImageDropArea * dropSR, * dropSRRet;
-	RakImageDropArea * dropCT, * dropCTRet;
-	RakImageDropArea * dropDD, * dropDDRet;
+	RakImageDropArea * dropSR, * dropCT, * dropDD;
 }
 
 @end
@@ -290,9 +288,8 @@ enum
 
 	//Image for the grid of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-GRID" :maxWidthTitles];
-	dropSR = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 150, 150]];
-	dropSRRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 300, 300]];
-	if(title != nil && dropSR != nil && dropSRRet != nil)
+	dropSR = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 300, 300]];
+	if(title != nil && dropSR != nil)
 	{
 		titleSize = title.bounds.size;
 		inputSize = dropSR.bounds.size;
@@ -301,22 +298,16 @@ enum
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
-
-		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
-
-		[dropSR setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
-		[dropSRRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+		[dropSR setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
 
 		[self addSubview:title];
 		[self addSubview:dropSR];
-		[self addSubview:dropSRRet];
 	}
 
 	//Image for D&D of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-DD" :maxWidthTitles];
-	dropDD = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 50, 50]];
-	dropDDRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 100, 100]];
-	if(title != nil)
+	dropDD = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 100, 100]];
+	if(title != nil && dropDD != nil)
 	{
 		titleSize = title.bounds.size;
 		inputSize = dropDD.bounds.size;
@@ -325,22 +316,16 @@ enum
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
-
-		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
-
-		[dropDD setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
-		[dropDDRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+		[dropDD setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
 
 		[self addSubview:title];
 		[self addSubview:dropDD];
-		[self addSubview:dropDDRet];
 	}
 
 	//Image for CT of the project
 	title = [self getTextForLocalizationString:@"IMPORT-META-IMG-CT" :maxWidthTitles];
-	dropCT = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 960, 540]];
-	dropCTRet = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-RETINA-%d-%d", nil), 1920, 1080]];
-	if(title != nil)
+	dropCT = [[RakImageDropArea alloc] initWithContentString:[NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-META-DROP-PH-%d-%d", nil), 1920, 1080]];
+	if(title != nil && dropCT != nil)
 	{
 		titleSize = title.bounds.size;
 		inputSize = dropCT.bounds.size;
@@ -349,15 +334,10 @@ enum
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
-
-		CGFloat minX = maxWidthTitles + 2 * META_BORDER_WIDTH, spacing = (selfSize.width - minX - 2 * inputSize.width) / 3;
-
-		[dropCT setFrameOrigin:NSMakePoint(minX + spacing, selfSize.height)];
-		[dropCTRet setFrameOrigin:NSMakePoint(minX + spacing + inputSize.width + spacing, selfSize.height)];
+		[dropCT setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
 
 		[self addSubview:title];
 		[self addSubview:dropCT];
-		[self addSubview:dropCTRet];
 	}
 
 	selfSize.height -= META_TOP_FORM_BORDER;

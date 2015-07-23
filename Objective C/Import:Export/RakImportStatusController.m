@@ -68,8 +68,7 @@ enum
 
 		[superview addSubview:issueTitle];
 	}
-
-
+	
 	if(issueHeader == nil)
 	{
 		issueHeader = [[RakText alloc] initWithText:[self secondaryHeaderText] :[self textColor]];
