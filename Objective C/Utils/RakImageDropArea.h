@@ -17,6 +17,8 @@
 	RakText * content;
 }
 
+@property BOOL defaultImage;
+
 - (instancetype) initWithContentString : (NSString *) string;
 
 @end

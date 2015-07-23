@@ -294,6 +294,8 @@ enum
 		titleSize = title.bounds.size;
 		inputSize = dropSR.bounds.size;
 
+		[self setDefaultThumbFor:dropSR withID:THUMB_INDEX_SR2X fallBack : THUMB_INDEX_SR];
+
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
@@ -312,6 +314,8 @@ enum
 		titleSize = title.bounds.size;
 		inputSize = dropDD.bounds.size;
 
+		[self setDefaultThumbFor:dropDD withID:THUMB_INDEX_DD2X fallBack : THUMBID_DD];
+
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
 
@@ -329,6 +333,8 @@ enum
 	{
 		titleSize = title.bounds.size;
 		inputSize = dropCT.bounds.size;
+
+		[self setDefaultThumbFor:dropCT withID:THUMB_INDEX_HEAD2X fallBack : THUMBID_HEAD];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
@@ -497,6 +503,27 @@ enum
 	}
 
 	return text;
+}
+
+- (void) setDefaultThumbFor : (RakImageDropArea *) area withID : (uint) ID fallBack : (uint) fallbackID
+{
+	if(_itemOfQueryForMetadata != nil)
+	{
+		NSData * thumbData = [_controller queryThumbOf:_itemOfQueryForMetadata withIndex:ID];
+		if(thumbData != nil)
+		{
+			NSImage * image = [[NSImage alloc] initWithData:thumbData];
+			if(image != nil)
+			{
+				area.image = image;
+				area.defaultImage = YES;
+				return;
+			}
+		}
+
+		if(fallbackID < NB_IMAGES)
+			[self setDefaultThumbFor:area withID:fallbackID fallBack:NB_IMAGES];
+	}
 }
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController

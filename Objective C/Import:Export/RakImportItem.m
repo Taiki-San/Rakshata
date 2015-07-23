@@ -198,6 +198,23 @@
 	}
 }
 
+- (NSData *) queryThumbIn : (unzFile *) archive withIndex : (uint) index
+{
+	if(index >= NB_IMAGES || !_projectData.haveImages[index])
+		return nil;
+
+	if(unzLocateFile(archive, _projectData.URLImages[index], true) != UNZ_OK)
+		return nil;
+
+	byte * data = NULL;
+	uint64_t thumbSize;
+
+	if(!extractToMem(archive, &data, &thumbSize))
+		return nil;
+
+	return [NSData dataWithBytesNoCopy:data length:thumbSize freeWhenDone:YES];
+}
+
 - (void) registerProject
 {
 	_projectData.data.project.isInitialized = true;

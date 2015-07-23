@@ -12,6 +12,9 @@
 
 @interface RakImportQuery : RakPopoverView
 
+@property RakImportItem * itemOfQueryForMetadata;
+@property RakImportStatusController * controller;
+
 - (instancetype) autoInitWithDuplicate : (RakImportItem *) item;
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project;
 

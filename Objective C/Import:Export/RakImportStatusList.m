@@ -146,6 +146,9 @@ enum
 		[_query closePopover];
 
 	_query = newQuery;
+
+	if(newQuery != nil)
+		newQuery.controller = _controller;
 }
 
 @end

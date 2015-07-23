@@ -36,6 +36,7 @@
 
 @property BOOL haveDuplicate;
 @property (nonatomic) RakImportQuery * query;
+@property __weak RakImportStatusController * controller;
 
 - (instancetype) initWithImportList : (NSArray *) dataset;
 + (void) refreshAfterPass;

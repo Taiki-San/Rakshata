@@ -36,6 +36,8 @@
 - (BOOL) overrideDuplicate : (unzFile *) archive;
 
 - (void) processThumbs : (unzFile *) archive;
+- (NSData *) queryThumbIn : (unzFile *) archive withIndex : (uint) index;
+
 - (void) registerProject;
 
 @end

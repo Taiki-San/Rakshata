@@ -18,6 +18,8 @@
 - (void) addUnzFile : (unzFile *) unzipFile;
 - (void) switchToIssueUI : (NSArray *) dataSet;
 
+- (NSData *) queryThumbOf : (id) item withIndex : (uint) index;
+
 @end
 
 #define NOTIFICATION_IMPORT_REPLACE_ONE	@"RakImportReplaceOne"

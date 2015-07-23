@@ -83,6 +83,8 @@ enum
 	outlineList = [[RakImportStatusList alloc] initWithImportList:dataSet];
 	if(outlineList != nil)
 	{
+		outlineList.controller = self;
+
 		NSView * view = [outlineList getContent];
 		scrollview = [[RakListScrollView alloc] initWithFrame:NSMakeRect(0, 0, view.bounds.size.width, LIST_HEIGHT)];
 		if(scrollview != nil)
@@ -224,6 +226,13 @@ enum
 - (NSColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+}
+
+#pragma mark - Helper
+
+- (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index
+{
+	return [item queryThumbIn:file withIndex:index];
 }
 
 #pragma mark - Button responder

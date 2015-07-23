@@ -155,7 +155,20 @@
 		return;
 
 	if(metadataProblem)
+	{
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithMetadata:listItem.projectData];
+		if(alert != nil)
+		{
+			if(isRoot)
+			{
+				RakImportStatusListItem * child = [listItem getChildAtIndex:0];
+				if(child != nil)
+					alert.itemOfQueryForMetadata = child.itemForChild;
+			}
+			else
+				alert.itemOfQueryForMetadata = _item;
+		}
+	}
 	else
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDuplicate:_item];
 

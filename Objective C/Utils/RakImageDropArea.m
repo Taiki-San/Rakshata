@@ -103,7 +103,10 @@ enum
 	content.hidden = image != nil;
 
 	if(image != nil)
+	{
 		[super setImage:image];
+		_defaultImage = NO;
+	}
 }
 
 #pragma mark - Color & drawing management
