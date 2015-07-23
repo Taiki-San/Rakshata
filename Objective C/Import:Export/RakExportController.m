@@ -240,7 +240,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	[dict setObject:reverseTag(project) forKey:RAK_STRING_METADATA_TAG_DATA];
 	[dict setObject:@(project.rightToLeft) forKey:RAK_STRING_METADATA_RIGHT2LEFT];
 
-	//Okay, now, we want to inser the thumbnails
+	//Okay, now, we want to insert the thumbnails
 	//We ask an API to craft for us the expected filenames
 
 	PROJECT_DATA_EXTRA extraProject = getEmptyExtraProject();

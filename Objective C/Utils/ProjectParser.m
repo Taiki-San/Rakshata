@@ -490,7 +490,8 @@ NSArray * reverseTag(PROJECT_DATA project)
 			[tagArray addObject:@(tags[i].ID)];
 		}
 
-		return [NSArray arrayWithArray: tagArray];
+		if([tagArray count] > 0)
+			return [NSArray arrayWithArray: tagArray];
 	}
 
 	//Backup solution!
