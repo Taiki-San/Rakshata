@@ -235,6 +235,11 @@ enum
 	return [item queryThumbIn:file withIndex:index];
 }
 
+- (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item
+{
+	return YES;
+}
+
 #pragma mark - Button responder
 
 - (void) replaceAll

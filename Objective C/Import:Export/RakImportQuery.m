@@ -628,7 +628,43 @@ enum
 
 - (void) validateField
 {
-	
+	PROJECT_DATA data = _project;
+
+	//We linearize the data from all the fields
+	wcsncpy(data.projectName, (charType*) [name.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
+	wcsncpy(data.authorName, (charType*) [author.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
+	wcsncpy(data.description, (charType*) [description.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
+	data.rightToLeft = rightToLeft.selectedSegment == 1;
+
+	data.status = status.indexOfSelectedItem == 0 ? STATUS_INVALID : status.indexOfSelectedItem;
+	data.mainTag = tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem >= nbTags ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem].ID;
+	data.category = catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem >= nbCats ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem].ID;
+
+	data.tags = malloc(sizeof(TAG));
+	if(data.tags != NULL)
+	{
+		data.nbTags = 1;
+		data.tags[0].ID = data.mainTag;
+	}
+	else
+		data.nbTags = 0;
+
+	NSMutableArray * overridenImages = [NSMutableArray array];
+
+	if(!dropCT.defaultImage)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_HEAD2X), @"data" : dropCT.image}];
+
+	if(!dropDD.defaultImage)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_DD2X), @"data" : dropDD.image}];
+
+	if(!dropSR.defaultImage)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_SR2X), @"data" : dropSR.image}];
+
+	if([_controller reflectMetadataUpdate:data withImages:[NSArray arrayWithArray:overridenImages] forItem:_itemOfQueryForMetadata])
+	{
+		[RakImportStatusList refreshAfterPass];
+		[self close];
+	}
 }
 
 - (void) close

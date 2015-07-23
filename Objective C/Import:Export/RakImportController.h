@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakImportStatusController.h"
+@class RakImportStatusController;
 
 @interface RakImportController : NSObject
 
@@ -46,6 +46,7 @@
 
 #import "RakImportStatusList.h"
 #import "RakImportQuery.h"
+#import "RakImportStatusController.h"
 
 enum
 {

@@ -18,7 +18,8 @@
 - (void) addUnzFile : (unzFile *) unzipFile;
 - (void) switchToIssueUI : (NSArray *) dataSet;
 
-- (NSData *) queryThumbOf : (id) item withIndex : (uint) index;
+- (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index;
+- (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item;
 
 @end
 
