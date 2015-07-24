@@ -12,4 +12,19 @@
 
 @implementation RakPopUpButton
 
+- (instancetype) initWithFrame:(NSRect)buttonFrame pullsDown:(BOOL)flag
+{
+	self = [super initWithFrame:buttonFrame pullsDown:flag];
+
+	if(self != nil)
+	{
+		//Initially wanted a fully customized control but this does an admirable job and I'm basically out of idea
+		//Maybe replace it at some point, but beside the default state (aka the non clicked state), I don't see anything that would warrant the effort
+		if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
+			self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+	}
+
+	return self;
+}
+
 @end
