@@ -158,13 +158,10 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 
 char * getPathForRepo(REPO_DATA * repo)
 {
-	if(repo == NULL)
-		return NULL;
-	
 	char * output = calloc(20, sizeof(char));
 	if(output != NULL)
 	{
-		if(repo->locale)
+		if(repo == NULL || repo->locale)
 			strncpy(output, LOCAL_PATH_NAME, 20);
 		else
 			snprintf(output, 20, "%x/%x", repo->parentRepoID, repo->repoID);
@@ -182,7 +179,7 @@ char * getPathForProject(PROJECT_DATA project)
 	char rootPath[strlen(repoPath) + 20];
 
 	//Craft the path with the project in it
-	snprintf(rootPath, sizeof(rootPath), project.locale && !project.repo->locale ? "%s/"LOCAL_PATH_NAME"_%d" : "%s/%d", repoPath, project.projectID);
+	snprintf(rootPath, sizeof(rootPath), project.locale && project.repo != NULL && !project.repo->locale ? "%s/"LOCAL_PATH_NAME"_%d" : "%s/%d", repoPath, project.projectID);
 	free(repoPath);
 
 	return strdup(rootPath);

@@ -21,7 +21,7 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 {
 	char requestString[300];
 
-	bool projectLocal = !project.repo->locale && project.locale;
+	bool projectLocal = project.repo == NULL || (!project.repo->locale && project.locale);
 
 	//Either we want the main local repo, or the local entries of a standard repo
 	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_projectID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_projectID)" ASC", getRepoID(project.repo), projectLocal ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");

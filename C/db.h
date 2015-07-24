@@ -198,6 +198,7 @@ void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem);
+ICON_PATH getPathToIconsOfProject(PROJECT_DATA project, uint index);
 charType * getStringFromUTF8(const unsigned char * rawString);
 
 /******		DBLocal.c		*******/

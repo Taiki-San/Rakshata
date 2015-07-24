@@ -567,7 +567,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 
 uint64_t getRepoID(REPO_DATA * repo)
 {
-	if(repo->locale)
+	if(repo == NULL || repo->locale)
 		return LOCAL_REPO_ID;
 
 	uint64_t output = repo->parentRepoID;;

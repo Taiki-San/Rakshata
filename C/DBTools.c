@@ -289,7 +289,6 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 		return NULL;
 	
 	ICONS_UPDATE * workload = NULL, * current = NULL, * previous = NULL;
-	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
 	const byte imageID[4] = {THUMBID_SRGRID, THUMBID_HEAD, THUMBID_CT, THUMBID_DD};
 	
 	for (uint pos = 0; pos < nbElem; pos++)
@@ -326,10 +325,12 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 				previous = current;
 				current = new;
 			}
-			
-			snprintf(&imagePath[length], sizeof(imagePath) - length, project[pos].data.project.locale ?  LOCAL_PATH_NAME"_%d_%s%s.png" : "%d_%s%s.png", project[pos].data.project.projectID, imagesSuffix[i / 2], i % 2 ? "@2x" : "");
-			current->filename = strdup(imagePath);
 
+			ICON_PATH path = getPathToIconsOfProject(project[pos].data.project, i);
+			if(path.string[0] == 0)
+				continue;
+
+			current->filename = strdup(path.string);
 			if(current->filename == NULL)
 			{
 				free(project[pos].URLImages[i]);
@@ -431,6 +432,28 @@ void updateProjectImages(void * _todo)
 	}
 	
 	MUTEX_UNLOCK(DBRefreshMutex);
+}
+
+ICON_PATH getPathToIconsOfProject(PROJECT_DATA project, uint index)
+{
+	ICON_PATH path;
+
+	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
+
+	char * encodedHash = getPathForRepo(project.repo);
+	if(encodedHash == NULL)
+	{
+		memset(&path, 0, sizeof(path));
+		return path;
+	}
+
+	size_t length = MIN((uint) snprintf(path.string, sizeof(path.string), IMAGE_CACHE_DIR"/%s/%s%d_", encodedHash, project.locale ? LOCAL_PATH_NAME"_" : "", project.projectID), sizeof(path.string));
+	free(encodedHash);
+
+	if(index < NB_IMAGES)
+		snprintf(&path.string[length], sizeof(path.string) - length, "%s%s.png", imagesSuffix[index / 2], index % 2 ? "@2x" : "");
+
+	return path;
 }
 
 #pragma mark - Divers

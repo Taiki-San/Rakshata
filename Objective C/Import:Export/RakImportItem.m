@@ -171,30 +171,22 @@
 
 - (void) processThumbs : (unzFile *) archive
 {
-	const char * imagesSuffix[4] = {PROJ_IMG_SUFFIX_SRGRID, PROJ_IMG_SUFFIX_HEAD, PROJ_IMG_SUFFIX_CT, PROJ_IMG_SUFFIX_DD};
-
-	char * encodedHash = getPathForRepo(_projectData.data.project.repo);
-	if(encodedHash == NULL)
-		return;
-
-	char imagePath[1024];
-	size_t length = MIN((uint) snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/%s%d_", encodedHash, _projectData.data.project.locale ? LOCAL_PATH_NAME"_" : "", _projectData.data.project.projectID), sizeof(imagePath));
-	free(encodedHash);
-
 	for(byte pos = 0; pos < NB_IMAGES; pos++)
 	{
 		if(!_projectData.haveImages[pos])
 			continue;
 
-		snprintf(&imagePath[length], sizeof(imagePath) - length, "%s%s.png", imagesSuffix[pos / 2], pos % 2 ? "@2x" : "");
+		ICON_PATH path = getPathToIconsOfProject(_projectData.data.project, pos);
+		if(path.string[0] == 0)
+			continue;
 
-		if(checkFileExist(imagePath))
+		if(checkFileExist(path.string))
 			continue;
 
 		if(unzLocateFile(archive, _projectData.URLImages[pos], true) != UNZ_OK)
 			continue;
 
-		extractCurrentfile(archive, NULL, imagePath, STRIP_TRUST_PATH_AS_FILENAME, NULL);
+		extractCurrentfile(archive, NULL, path.string, STRIP_TRUST_PATH_AS_FILENAME, NULL);
 	}
 }
 

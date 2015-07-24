@@ -49,6 +49,11 @@ typedef struct
 	
 } IMG_DATA;
 
+typedef struct
+{
+	char string[1024];
+} ICON_PATH;
+
 //Gestion du tag
 
 typedef struct
