@@ -59,7 +59,7 @@ void registerThumbnailUpdate(id object, SEL selector, byte updateType);
 void flushBundleCache(NSBundle *bundle);
 void invalidateCacheForRepoID(uint64_t repoID);
 
-void exportImageToPath(NSImage * image, NSSize size, NSString * outputPath);
+void exportImageToPath(NSImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath);
 
 //Image loading
 NSSize getThumbSize(NSImage * image);

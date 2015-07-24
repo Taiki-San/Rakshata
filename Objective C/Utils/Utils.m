@@ -48,14 +48,47 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 	return [stringA localizedCompare:stringB];
 }
 
-void exportImageToPath(NSImage * image, NSSize size, NSString * outputPath)
+//The retina version pixelSize = 2 x size
+void exportImageToPath(NSImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath)
 {
-	NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithCGImage:[image CGImageForProposedRect:NULL context:nil hints:nil]];
+	NSRect pixelInRect = (NSRect) {{0, 0}, pixelSize};
+	NSBitmapImageRep *workingRep = [[NSBitmapImageRep alloc] initWithCGImage:[image CGImageForProposedRect:&(pixelInRect) context:nil hints:nil]];
 
-	if(!NSEqualSizes(size, NSZeroSize))
-		[newRep setSize : size];
+	//Resize the image if needed
+	if(!NSEqualSizes(size, NSZeroSize) && !NSEqualSizes(NSMakeSize(workingRep.pixelsWide, workingRep.pixelsHigh), pixelSize))
+	{
+		//Create a representation of a given size in pixel
+		workingRep = [[NSBitmapImageRep alloc]
+								 initWithBitmapDataPlanes:NULL
+								 pixelsWide:pixelSize.width
+								 pixelsHigh:pixelSize.height
+								 bitsPerSample:8
+								 samplesPerPixel:4
+								 hasAlpha:YES
+								 isPlanar:NO
+								 colorSpaceName:NSCalibratedRGBColorSpace
+								 bytesPerRow:0
+								 bitsPerPixel:0];
+		//Set its size in point
+		[workingRep setSize:size];
 
-	[[newRep representationUsingType:NSPNGFileType properties:nil] writeToFile:outputPath atomically:YES];
+		//Draw the image in the representation
+		[NSGraphicsContext saveGraphicsState];
+		[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:workingRep]];
+		[image drawInRect:(NSRect) {{0, 0}, size} fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+		[NSGraphicsContext restoreGraphicsState];
+	}
+
+	//Export the image
+	NSData * data = [workingRep representationUsingType:NSPNGFileType properties:nil];
+
+	[data writeToFile:outputPath atomically:YES];
+	if(!checkFileExist([outputPath UTF8String]))
+	{
+		//Create the path to the directory if needed
+		createPath([[outputPath substringToIndex:([outputPath rangeOfString:@"/" options: NSBackwardsSearch].location + 1)] UTF8String]);
+		[data writeToFile:outputPath atomically:YES];
+	}
 }
 
 //Flush NSBundle cache

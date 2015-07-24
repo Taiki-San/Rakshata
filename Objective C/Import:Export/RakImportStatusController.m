@@ -244,15 +244,13 @@ enum
 	//Install the overriden images
 	for(NSDictionary * dict in overridenImages)
 	{
-		byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue];
+		byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue], standardCode = retinaCode - retinaCode % 2;
 		NSImage * baseImage = [dict objectForKey:@"data"];
 
-		exportImageToPath(baseImage, thumbSizeForID(retinaCode), [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+		NSSize retinaSize = thumbSizeForID(retinaCode), standardSize = thumbSizeForID(standardCode);
 
-		//Switch to the standard image
-		retinaCode -= retinaCode % 2;
-
-		exportImageToPath(baseImage, thumbSizeForID(retinaCode), [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+		exportImageToPath(baseImage, standardSize, retinaSize, [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+		exportImageToPath(baseImage, standardSize, standardSize, [NSString stringWithUTF8String:getPathToIconsOfProject(project, standardCode).string]);
 	}
 
 	//We look for items from the same project

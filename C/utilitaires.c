@@ -192,7 +192,7 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output)
 	}
 }
 
-void createPath(char *output)
+void createPath(const char *output)
 {
     uint longueur_output = 0, i = 0;
     char folder[512];

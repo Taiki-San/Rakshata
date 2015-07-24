@@ -152,7 +152,7 @@ int sortRootRepo(const void *a, const void *b);
 bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b);
 uint positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
-void createPath(char *output);
+void createPath(const char *output);
 IMG_DATA* readFile(char * path);
 #define isHexa(caract) (((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F')) ? 1 : 0)
 #define isNbr(caract) isdigit(caract)
