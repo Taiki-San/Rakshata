@@ -237,6 +237,49 @@ enum
 
 - (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item
 {
+	char * referencePath = getPathForProject(project);
+	if(referencePath == NULL)
+		return NO;
+
+	//Install the overriden images
+	for(NSDictionary * dict in overridenImages)
+	{
+		byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue];
+		NSImage * baseImage = [dict objectForKey:@"data"];
+
+		exportImageToPath(baseImage, thumbSizeForID(retinaCode), [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+
+		//Switch to the standard image
+		retinaCode -= retinaCode % 2;
+
+		exportImageToPath(baseImage, thumbSizeForID(retinaCode), [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+	}
+
+	//We look for items from the same project
+	BOOL updatedOne = NO;
+	for(RakImportItem * currentItem in _dataSet)
+	{
+		if(currentItem.issue != IMPORT_PROBLEM_METADATA)
+			continue;
+
+		char * currentPath = getPathForProject(currentItem.projectData.data.project);
+		if(currentPath == NULL)
+			continue;
+
+		if(!strcmp(referencePath, currentPath))
+			updatedOne |= [currentItem updateProject:project withArchive:file];
+
+		free(currentPath);
+	}
+
+	free(referencePath);
+
+	if(updatedOne)
+	{
+		[RakImportStatusList refreshAfterPass];
+		[self checkIfStillHaveError];
+	}
+
 	return YES;
 }
 

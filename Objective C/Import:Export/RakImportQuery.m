@@ -346,6 +346,8 @@ enum
 		[self addSubview:dropCT];
 	}
 
+	[self bindFields];
+
 	selfSize.height -= META_TOP_FORM_BORDER;
 
 	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];

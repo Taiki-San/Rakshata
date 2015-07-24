@@ -34,6 +34,7 @@
 - (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
 - (void) deleteData;
 - (BOOL) overrideDuplicate : (unzFile *) archive;
+- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (unzFile *) archive;
 
 - (void) processThumbs : (unzFile *) archive;
 - (NSData *) queryThumbIn : (unzFile *) archive withIndex : (uint) index;

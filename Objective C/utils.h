@@ -68,3 +68,4 @@ NSImage * loadCTHeader(const PROJECT_DATA project);
 NSImage * loadCTThumb(const PROJECT_DATA project);
 NSImage * loadDDThumbnail(const PROJECT_DATA project);
 NSImage * loadImageGrid(const PROJECT_DATA project);
+NSSize thumbSizeForID(byte ID);

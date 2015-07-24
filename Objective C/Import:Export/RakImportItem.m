@@ -39,17 +39,16 @@
 
 	PROJECT_DATA project = _projectData.data.project;
 
+	if(project.projectName[0] == 0)
+		return true;
+
 	if(project.authorName[0] == 0)
 		return true;
 
 	if(project.status == STATUS_INVALID)
 		return true;
 
-#ifdef DEV_VERSION
-	return true;
-#else
 	return false;
-#endif
 }
 
 - (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI
@@ -138,6 +137,33 @@
 		return NO;
 
 	[self deleteData];
+	if(![self install:archive withUI:nil])
+	{
+		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
+		return NO;
+	}
+
+	[self processThumbs:archive];
+	[self registerProject];
+	_issue = IMPORT_PROBLEM_NONE;
+
+	return YES;
+}
+
+- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (unzFile *) archive
+{
+	_projectData.data.project = project;
+
+	if([self needMoreData])
+	{
+		_issue = IMPORT_PROBLEM_DUPLICATE;
+		return NO;
+	}
+
+	//Okay, perform installation
+	if([self isReadable])
+		_issue = IMPORT_PROBLEM_DUPLICATE;
+
 	if(![self install:archive withUI:nil])
 	{
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
