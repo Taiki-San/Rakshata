@@ -74,7 +74,6 @@
 	}
 
 	//Main decompression cycle
-
 	unzGoToFirstFile(archive);
 
 	//We grab the number of file

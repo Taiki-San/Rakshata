@@ -117,6 +117,7 @@ PROJECT_DATA getEmptyProject();
 PROJECT_DATA_PARSED getEmptyParsedProject();
 PROJECT_DATA_EXTRA getEmptyExtraProject();
 REPO_DATA getEmptyRepo();
+REPO_DATA getEmptyRepoWithID(uint64_t repoID);
 bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID);
 
 void freeParseProjectData(PROJECT_DATA_PARSED * projectDB);

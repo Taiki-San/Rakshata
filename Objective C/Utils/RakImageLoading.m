@@ -33,7 +33,7 @@ NSImage * loadImageForRepo(BOOL isRoot, void* repo)
 
 void invalidateCacheForRepoID(uint64_t repoID)
 {
-	REPO_DATA fakeRepo = getEmptyRepo();	fakeRepo.parentRepoID = getRootFromRepoID(repoID);	fakeRepo.repoID = getSubrepoFromRepoID(repoID);
+	REPO_DATA fakeRepo = getEmptyRepoWithID(repoID);
 
 	char * repoPath = getPathForRepo(&fakeRepo);
 	if(repoPath != NULL)

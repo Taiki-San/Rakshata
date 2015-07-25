@@ -41,7 +41,7 @@ sqlite3* getPtrRecentDB()
 		sqlite3_step(request);
 		destroyRequest(request);
 		
-		request = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_team)" text, "DBNAMETOID(RDB_REC_projectID)" INTEGER, "DBNAMETOID(RDB_isLocal)" INTEGER);");
+		request = createRequest(internalDB, "CREATE TABLE RakHL3IsALie ("DBNAMETOID(RDB_REC_lastRead)" INTEGER, "DBNAMETOID(RDB_REC_lastDL)" INTEGER, "DBNAMETOID(RDB_REC_repo)" INTEGER, "DBNAMETOID(RDB_REC_projectID)" INTEGER, "DBNAMETOID(RDB_isLocal)" INTEGER);");
 		if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 		{
 			destroyRequest(request);
@@ -117,14 +117,10 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	destroyRequest(request);
 	
 	//We check if the element exist
-	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
+	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
 	if(request != NULL)
 	{
-#warning "Patch to remove ASAP"
-		if(isLocalRepo(data.repo))
-			sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
-		else
-			sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+		sqlite3_bind_int64(request, 1, (int64_t) getRepoID(data.repo));
 		sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 		sqlite3_bind_int(request, 3, data.locale);
 
@@ -142,15 +138,12 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 			{
 				byte value = wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead;
 				
-				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
+				snprintf(requestString, sizeof(requestString), "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND `%d` = (SELECT MAX(`%d`) FROM RakHL3IsALie);", value, value);
 
 				request = createRequest(database, requestString);
 				if(request != NULL)
 				{
-					if(isLocalRepo(data.repo))
-						sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
-					else
-						sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+					sqlite3_bind_int64(request, 1, (int64_t) getRepoID(data.repo));
 					sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 					sqlite3_bind_int(request, 3, data.locale);
 
@@ -163,14 +156,11 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 						{
 							destroyRequest(request);
 							
-							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;", value);
+							snprintf(requestString, sizeof(requestString), "SELECT `%d` FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;", value);
 
 							if((request = createRequest(database, requestString)) != NULL)
 							{
-								if(isLocalRepo(data.repo))
-									sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
-								else
-									sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+								sqlite3_bind_int64(request, 1, (int64_t) getRepoID(data.repo));
 								sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 								sqlite3_bind_int(request, 3, data.locale);
 
@@ -189,9 +179,9 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 			//We craft the request
 			if(nbOccurence == 0)
-				snprintf(requestString, sizeof(requestString), "INSERT INTO RakHL3IsALie("DBNAMETOID(RDB_REC_lastRead)", "DBNAMETOID(RDB_REC_lastDL)", "DBNAMETOID(RDB_REC_team)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5);");
+				snprintf(requestString, sizeof(requestString), "INSERT INTO RakHL3IsALie("DBNAMETOID(RDB_REC_lastRead)", "DBNAMETOID(RDB_REC_lastDL)", "DBNAMETOID(RDB_REC_repo)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5);");
 			else
-				snprintf(requestString, sizeof(requestString), "UPDATE RakHL3IsALie SET `%d` = ?%d WHERE "DBNAMETOID(RDB_REC_team)" = ?3 AND "DBNAMETOID(RDB_REC_projectID)" = ?4 AND "DBNAMETOID(RDB_isLocal)" = ?5;", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? 2 : 1);
+				snprintf(requestString, sizeof(requestString), "UPDATE RakHL3IsALie SET `%d` = ?%d WHERE "DBNAMETOID(RDB_REC_repo)" = ?3 AND "DBNAMETOID(RDB_REC_projectID)" = ?4 AND "DBNAMETOID(RDB_isLocal)" = ?5;", wasItADL ? RDB_REC_lastDL : RDB_REC_lastRead, wasItADL ? 2 : 1);
 			
 			//Setup the handler
 			request = createRequest(database, requestString);
@@ -202,10 +192,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				if(!nbOccurence || wasItADL)
 					sqlite3_bind_int64(request, 2, recentDL);
 
-				if(isLocalRepo(data.repo))
-					sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
-				else
-					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+				sqlite3_bind_int64(request, 3, (int64_t) getRepoID(data.repo));
 				sqlite3_bind_int(request, 4, (int32_t) data.projectID);
 				sqlite3_bind_int(request, 5, data.locale);
 
@@ -230,19 +217,19 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 void removeRecentEntry(PROJECT_DATA data)
 {
-	removeRecentEntryInternal(isLocalRepo(data.repo) ? "localhost" : data.repo->URL, data.projectID, data.locale);
+	removeRecentEntryInternal(getRepoID(data.repo), data.projectID, data.locale);
 }
 
-void removeRecentEntryInternal(char * URLRepo, uint projectID, bool isLocal)
+void removeRecentEntryInternal(uint64_t repoID, uint projectID, bool isLocal)
 {
 	sqlite3 *database = getPtrRecentDB();
 	if(database == NULL)
 		return;
 	
-	sqlite3_stmt * request = createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3");;
+	sqlite3_stmt * request = createRequest(database, "DELETE FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3");;
 	if(request != NULL)
 	{
-		sqlite3_bind_text(request, 1, URLRepo, -1, SQLITE_STATIC);
+		sqlite3_bind_int64(request, 1, (int64_t) repoID);
 		sqlite3_bind_int(request, 2, (int32_t) projectID);
 		sqlite3_bind_int(request, 3, isLocal);
 
@@ -285,51 +272,41 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 		return NULL;
 	}
 	
-	char *repoURL;
+	uint64_t repoID;
 	uint projectID;
 	bool isLocale;
 	while (*nbElem < 3 && sqlite3_step(request) == SQLITE_ROW)
 	{
-		repoURL =	(char *) sqlite3_column_text(request, 2);
+		repoID =	(uint64_t) sqlite3_column_int64(request, 2);
 		projectID = (uint) sqlite3_column_int(request, 3);
 		isLocale = sqlite3_column_int(request, 4);
 
-		if(repoURL != NULL)
+		output[*nbElem] = getProjectFromSearch(repoID, projectID, isLocale, true);
+
+		if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
+			(*nbElem)++;
+		else
 		{
-			uint64_t repoID = getRepoIndexFromURL(repoURL);
-			if(repoID != UINT64_MAX)
-			{
-				output[*nbElem] = getProjectFromSearch(repoID, projectID, isLocale, true);
-				
-				if(output[*nbElem] != NULL && output[*nbElem]->isInitialized)
-					(*nbElem)++;
-				else
-				{
-					//We craft a PROJECT_DATA structure for updateRecentEntry
-					uint lengthTeam = strlen(repoURL) + 1;
-					PROJECT_DATA tmpProject = getEmptyProject();
+			//We craft a PROJECT_DATA structure for updateRecentEntry
+			PROJECT_DATA tmpProject = getEmptyProject();
+			REPO_DATA tmpRepo = getEmptyRepoWithID(repoID);
 
-					REPO_DATA tmpRepo = getEmptyRepo();
+			tmpProject.repo = &tmpRepo;
+			tmpProject.projectID = projectID;
+			tmpProject.locale = isLocale;
 
-					strncpy(tmpRepo.URL, repoURL, lengthTeam);
-					tmpProject.repo = &tmpRepo;
-					tmpProject.projectID = projectID;
-					tmpProject.locale = isLocale;
+			//We modify the database inside updateRecentEntry, so we must release our opened stuffs
+			destroyRequest(request);
+			closeRecentDB(database);
 
-					//We modify the database inside updateRecentEntry, so we must release our opened stuffs
-					destroyRequest(request);
-					closeRecentDB(database);
-					
-					updateRecentEntry(NULL, tmpProject, 0, wantDL);
-					
-					database = getPtrRecentDB();
-					if(database == NULL || (request = createRequest(database, requestString)) == NULL)
-						break;
-				}
-			}
+			updateRecentEntry(NULL, tmpProject, 0, wantDL);
+
+			database = getPtrRecentDB();
+			if(database == NULL || (request = createRequest(database, requestString)) == NULL)
+				break;
 		}
 	}
-	
+
 	destroyRequest(request);
 	closeRecentDB(database);
 

@@ -72,7 +72,7 @@ bool checkRecentDBValid(sqlite3 * DB);
 
 bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
-void removeRecentEntryInternal(char * URLRepo, uint projectID, bool isLocal);
+void removeRecentEntryInternal(uint64_t repoID, uint projectID, bool isLocal);
 
 /**DBRefresh.c**/
 void updateRepo();
@@ -141,7 +141,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 
 #define RDB_REC_lastRead	1
 #define RDB_REC_lastDL		2
-#define RDB_REC_team		3
+#define RDB_REC_repo		3
 #define RDB_REC_projectID	4
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"

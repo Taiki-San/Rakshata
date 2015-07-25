@@ -626,6 +626,16 @@ REPO_DATA getEmptyRepo()
 	return repo;
 }
 
+REPO_DATA getEmptyRepoWithID(uint64_t repoID)
+{
+	REPO_DATA repo = getEmptyRepo();
+
+	repo.repoID = getSubrepoFromRepoID(repoID);
+	repo.parentRepoID = getRootFromRepoID(repoID);
+
+	return repo;
+}
+
 void freeRootRepo(ROOT_REPO_DATA ** root)
 {
 	if(root == NULL)
