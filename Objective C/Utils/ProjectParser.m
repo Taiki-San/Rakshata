@@ -721,22 +721,97 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
 	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
 
+	//Some inconsistency, weird, let's try to recover
+
 	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
 	{
-		output.nombreChapitreLocal = output.project.nombreChapitre;
+		//Hum, let's try to copy what can be copied
+		output.nombreChapitreLocal = 0;
 
-		output.chapitresLocal = malloc(output.nombreChapitreLocal * sizeof(int));
+		output.chapitresLocal = malloc(output.project.nombreChapitre * sizeof(int));
 		if(output.chapitresLocal != NULL)
-			memcpy(output.chapitresLocal, output.project.chapitresFull, output.nombreChapitreLocal * sizeof(int));
+		{
+			//We move what is installed
+			for(uint currentChap = 0; currentChap < output.project.nombreChapitre; currentChap++)
+			{
+				if(checkChapterReadable(output.project, output.project.chapitresFull[currentChap]))
+				{
+					output.chapitresLocal[output.nombreChapitreLocal++] = output.project.chapitresFull[currentChap];
+				}
+			}
+
+			//Nothing remaining, oh shit
+			if(output.nombreChapitreLocal == 0)
+			{
+				free(output.chapitresLocal);			output.chapitresLocal = NULL;
+				free(output.project.chapitresFull);		output.project.chapitresFull = NULL;
+				output.project.nombreChapitre = 0;
+			}
+
+			//Need to reduce our allocation and update chapitresFull
+			else if(output.nombreChapitreLocal < output.project.nombreChapitre)
+			{
+				void * tmp = realloc(output.chapitresLocal, output.nombreChapitreLocal * sizeof(int));
+				if(tmp != NULL)
+					output.chapitresLocal = tmp;
+
+				output.project.nombreChapitre = output.nombreChapitreLocal;
+				tmp = realloc(output.project.chapitresFull, output.project.nombreChapitre * sizeof(int));
+				if(tmp != NULL)
+					output.project.chapitresFull = tmp;
+
+				memcpy(output.project.chapitresFull, output.chapitresLocal, output.nombreChapitreLocal * sizeof(int));
+			}
+		}
 	}
 
 	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.tomesFull != NULL)
 	{
-		output.nombreTomeLocal = output.project.nombreTomes;
+		output.nombreTomeLocal = 0;
 
-		output.tomeLocal = malloc(output.nombreTomeLocal * sizeof(META_TOME));
+		output.tomeLocal = malloc(output.project.nombreTomes * sizeof(META_TOME));
 		if(output.tomeLocal != NULL)
-			copyTomeList(output.project.tomesFull, output.nombreTomeLocal, output.tomeLocal);
+		{
+			//We move what is installed
+			for(uint currentVol = 0; currentVol < output.project.nombreTomes; currentVol++)
+			{
+				if(checkTomeReadable(output.project, output.project.tomesFull[currentVol].ID))
+					output.tomeLocal[output.nombreTomeLocal++] = output.project.tomesFull[currentVol];
+				else
+					freeSingleTome(output.project.tomesFull[currentVol]);
+			}
+
+			//Nothing remaining, oh shit
+			if(output.nombreTomeLocal == 0)
+			{
+				free(output.tomeLocal);				output.tomeLocal = NULL;
+				free(output.project.tomesFull);		output.project.tomesFull = NULL;
+				output.project.nombreTomes = 0;
+			}
+
+			//Need to reduce our allocation and update chapitresFull
+			else if(output.nombreTomeLocal < output.project.nombreTomes)
+			{
+				void * tmp = realloc(output.tomeLocal, output.nombreTomeLocal * sizeof(META_TOME));
+				if(tmp != NULL)
+					output.tomeLocal = tmp;
+
+				output.project.nombreTomes = output.nombreTomeLocal;
+				tmp = realloc(output.project.tomesFull, output.project.nombreTomes * sizeof(META_TOME));
+				if(tmp != NULL)
+					output.project.tomesFull = tmp;
+			}
+
+			//We need to copy either if there is any data remaining, and if there is none, this is a no-op so let's go
+			copyTomeList(output.tomeLocal, output.nombreTomeLocal, output.project.tomesFull);
+		}
+	}
+
+	//Eh, no data
+	if(output.project.chapitresFull == NULL && output.project.tomesFull == NULL)
+	{
+		releaseParsedData(output);
+		output = getEmptyParsedProject();
 	}
 
 	return output;
