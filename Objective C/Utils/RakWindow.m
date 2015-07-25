@@ -111,7 +111,23 @@
 
 - (NSDragOperation) draggingEntered : (id <NSDraggingInfo>) sender
 {
-	return NSDragOperationCopy;
+	NSArray *files = [[sender draggingPasteboard] propertyListForType: NSFilenamesPboardType];
+
+	if(files != nil && [files count] != 0)
+	{
+		for(NSString * string in files)
+		{
+			NSString * extension = [string pathExtension];
+
+			if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame
+			   || [extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
+			{
+				return NSDragOperationCopy;
+			}
+		}
+	}
+
+	return NSDragOperationNone;
 }
 
 - (BOOL) prepareForDragOperation : (id <NSDraggingInfo>) sender
