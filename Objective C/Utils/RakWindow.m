@@ -119,6 +119,12 @@
 		{
 			NSString * extension = [string pathExtension];
 
+			//If a directory
+			if([extension isEqualToString:@""] && checkDirExist([string UTF8String]))
+			{
+				return NSDragOperationCopy;
+			}
+
 			if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame
 			   || [extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
 			{

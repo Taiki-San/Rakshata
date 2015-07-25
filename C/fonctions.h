@@ -94,7 +94,7 @@ void usstrcpy(void* output, size_t length, const void* input);
 void removeFolder(char *path);
 void ouvrirSite(const char *URL);
 #define checkFileExist(filename) (access(filename, F_OK) != -1)
-bool checkDirExist(char *dirname);
+bool checkDirExist(const char *dirname);
 
 /**Repo.c**/
 bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput);

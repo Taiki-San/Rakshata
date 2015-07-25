@@ -164,7 +164,8 @@
 			[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
 		});
 	}
-	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
+	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame
+			/*|| ([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))*/)
 	{
 		[RakImportController importFile:filename :YES];
 	}

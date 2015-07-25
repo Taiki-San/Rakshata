@@ -176,7 +176,7 @@ void ouvrirSite(const char *URL)
     #endif
 }
 
-bool checkDirExist(char *dirname)
+bool checkDirExist(const char *dirname)
 {
 #ifdef _WIN32
     DIR *directory = opendir(dirname);
