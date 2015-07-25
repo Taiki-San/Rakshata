@@ -51,7 +51,7 @@
 	return false;
 }
 
-- (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI
+- (BOOL) install : (id<RakImportIO>) IOControler withUI : (RakImportStatusController *) UI
 {
 	char * projectPath = getPathForProject(_projectData.data.project);
 	if(projectPath == NULL)
@@ -74,42 +74,30 @@
 	}
 
 	//Main decompression cycle
-	unzGoToFirstFile(archive);
+	if([IOControler respondsToSelector:@selector(willStartEvaluateFromScratch)])
+		[IOControler willStartEvaluateFromScratch];
 
-	//We grab the number of file
-	unz_global_info64 globalMeta;
-	if(unzGetGlobalInfo64(archive, &globalMeta) != UNZ_OK)
-	{
-		free(projectPath);
-		return false;
-	}
+	__block BOOL foundOneThing = NO;
+	NSString * basePathObj = [NSString stringWithUTF8String:basePath];
 
-	const char * startExpectedPath = [_path UTF8String];
-	uint lengthExpected = strlen(startExpectedPath);
-	bool foundOneThing = false;
+	[IOControler evaluateItemFromDir:_path withInitBlock:^(uint nbItems) {
 
-	if(UI != nil)
-		UI.nbElementInEntry = globalMeta.number_entry;
-
-	for (uint pos = 0; pos < globalMeta.number_entry && (UI == nil || ![UI haveCanceled]); pos++)
-	{
 		if(UI != nil)
-			UI.posInEntry = pos;
-		
-		//Get current item filename
-		char filename[1024] = {0};
-		if((unzGetCurrentFileInfo64(archive, NULL, filename, sizeof(filename), NULL, 0, NULL, 0)) == UNZ_OK)
-		{
-			//If file is within the expected path (but not the dir itself)
-			if(!strncmp(filename, startExpectedPath, lengthExpected) && filename[lengthExpected] != '\0')
-			{
-				extractCurrentfile(archive, NULL, basePath, STRIP_PATH_FIRST, NULL);
-				foundOneThing = true;
-			}
-		}
+			UI.nbElementInEntry = nbItems;
 
-		unzGoToNextFile(archive);
-	}
+	} andWithBlock:^(id<RakImportIO> controller, NSString * filename, uint index, BOOL * stop)
+	{
+		if(UI == nil || ![UI haveCanceled])
+		{
+			if(UI != nil)
+				UI.posInEntry = index;
+
+			[controller copyItemOfName:filename toDir:basePathObj];
+			foundOneThing = YES;
+		}
+		else
+			*stop = YES;
+	}];
 
 	//Decompression is over, now, we need to ensure everything is fine
 	if((UI != nil && [UI haveCanceled]) || !foundOneThing || ![self isReadable])
@@ -130,26 +118,26 @@
 	return true;
 }
 
-- (BOOL) overrideDuplicate : (unzFile *) archive
+- (BOOL) overrideDuplicate : (id<RakImportIO>) IOControler
 {
 	if(_issue != IMPORT_PROBLEM_DUPLICATE)
 		return NO;
 
 	[self deleteData];
-	if(![self install:archive withUI:nil])
+	if(![self install:IOControler withUI:nil])
 	{
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 		return NO;
 	}
 
-	[self processThumbs:archive];
+	[self processThumbs:IOControler];
 	[self registerProject];
 	_issue = IMPORT_PROBLEM_NONE;
 
 	return YES;
 }
 
-- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (unzFile *) archive
+- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (id<RakImportIO>) IOControler
 {
 	_projectData.data.project = project;
 
@@ -163,13 +151,13 @@
 	if([self isReadable])
 		_issue = IMPORT_PROBLEM_DUPLICATE;
 
-	if(![self install:archive withUI:nil])
+	if(![self install:IOControler withUI:nil])
 	{
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 		return NO;
 	}
 
-	[self processThumbs:archive];
+	[self processThumbs:IOControler];
 	[self registerProject];
 	_issue = IMPORT_PROBLEM_NONE;
 
@@ -194,7 +182,7 @@
 	_projectData.data.project.nombreTomes = lengthTomeFull;
 }
 
-- (void) processThumbs : (unzFile *) archive
+- (void) processThumbs : (id<RakImportIO>) IOControler
 {
 	for(byte pos = 0; pos < NB_IMAGES; pos++)
 	{
@@ -208,28 +196,21 @@
 		if(checkFileExist(path.string))
 			continue;
 
-		if(unzLocateFile(archive, _projectData.URLImages[pos], true) != UNZ_OK)
-			continue;
-
-		extractCurrentfile(archive, NULL, path.string, STRIP_TRUST_PATH_AS_FILENAME, NULL);
+		[IOControler copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[pos]] toPath:[NSString stringWithUTF8String:path.string]];
 	}
 }
 
-- (NSData *) queryThumbIn : (unzFile *) archive withIndex : (uint) index
+- (NSData *) queryThumbIn : (id<RakImportIO>) IOControler withIndex : (uint) index
 {
 	if(index >= NB_IMAGES || !_projectData.haveImages[index])
 		return nil;
 
-	if(unzLocateFile(archive, _projectData.URLImages[index], true) != UNZ_OK)
+	NSData * data = nil;
+
+	if(![IOControler copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[index]] toData:&data])
 		return nil;
 
-	byte * data = NULL;
-	uint64_t thumbSize;
-
-	if(!extractToMem(archive, &data, &thumbSize))
-		return nil;
-
-	return [NSData dataWithBytesNoCopy:data length:thumbSize freeWhenDone:YES];
+	return data;
 }
 
 - (void) registerProject

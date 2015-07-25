@@ -34,9 +34,9 @@ enum
 
 @implementation RakImportStatusController
 
-- (void) addUnzFile : (unzFile *) unzipFile
+- (void) addIOController : (id <RakImportIO>) IOController
 {
-	file = unzipFile;
+	_IOController = IOController;
 }
 
 - (void) dealloc
@@ -232,7 +232,7 @@ enum
 
 - (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index
 {
-	return [item queryThumbIn:file withIndex:index];
+	return [item queryThumbIn:_IOController withIndex:index];
 }
 
 - (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item
@@ -265,7 +265,7 @@ enum
 			continue;
 
 		if(!strcmp(referencePath, currentPath))
-			updatedOne |= [currentItem updateProject:project withArchive:file];
+			updatedOne |= [currentItem updateProject:project withArchive:_IOController];
 
 		free(currentPath);
 	}
@@ -291,7 +291,7 @@ enum
 	{
 		//If not a duplicate issue, we check if it's okay if we haven't anything
 		//that would prevent us from getting away (missing metadata)
-		if(![item overrideDuplicate:file] && !stillHaveAnError)
+		if(![item overrideDuplicate:_IOController] && !stillHaveAnError)
 			stillHaveAnError |= item.issue != IMPORT_PROBLEM_NONE;
 	}
 
@@ -324,7 +324,7 @@ enum
 
 		if(!strcmp(referencePath, currentPath))
 		{
-			updatedOne |= [currentItem overrideDuplicate:file];
+			updatedOne |= [currentItem overrideDuplicate:_IOController];
 		}
 
 		free(currentPath);
@@ -345,7 +345,7 @@ enum
 	if(![item isKindOfClass:[RakImportItem class]])
 		return;
 
-	[item overrideDuplicate:file];
+	[item overrideDuplicate:_IOController];
 
 	[RakImportStatusList refreshAfterPass];
 
@@ -370,8 +370,8 @@ enum
 - (void) close
 {
 	outlineList.query = nil;
-	[RakImportController postProcessing:file withUI:self];
-	file = NULL;
+	[RakImportController postProcessingUI:self];
+	_IOController = nil;
 }
 
 @end

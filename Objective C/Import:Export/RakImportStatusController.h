@@ -12,10 +12,10 @@
 
 @interface RakImportStatusController : RakEIStatusController
 {
-	unzFile * file;
+	id <RakImportIO> _IOController;
 }
 
-- (void) addUnzFile : (unzFile *) unzipFile;
+- (void) addIOController : (id <RakImportIO>) IOController;
 - (void) switchToIssueUI : (NSArray *) dataSet;
 
 - (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index;

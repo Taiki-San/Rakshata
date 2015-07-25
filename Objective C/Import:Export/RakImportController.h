@@ -10,12 +10,14 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakImportIO.h"
+
 @class RakImportStatusController;
 
 @interface RakImportController : NSObject
 
 + (void) importFile : (NSString *) file : (BOOL) generatedArchive;
-+ (void) postProcessing : (unzFile *) file withUI : (RakImportStatusController *) UI;
++ (void) postProcessingUI: (RakImportStatusController *) UI;
 
 @end
 
@@ -31,13 +33,13 @@
 - (BOOL) isReadable;
 - (BOOL) needMoreData;
 
-- (BOOL) install : (unzFile *) archive withUI : (RakImportStatusController *) UI;
+- (BOOL) install : (id<RakImportIO>) IOControler withUI : (RakImportStatusController *) UI;
 - (void) deleteData;
-- (BOOL) overrideDuplicate : (unzFile *) archive;
-- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (unzFile *) archive;
+- (BOOL) overrideDuplicate : (id<RakImportIO>) IOControler;
+- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (id<RakImportIO>) IOControler;
 
-- (void) processThumbs : (unzFile *) archive;
-- (NSData *) queryThumbIn : (unzFile *) archive withIndex : (uint) index;
+- (void) processThumbs : (id<RakImportIO>) IOControler;
+- (NSData *) queryThumbIn : (id<RakImportIO>) IOControler withIndex : (uint) index;
 
 - (void) registerProject;
 

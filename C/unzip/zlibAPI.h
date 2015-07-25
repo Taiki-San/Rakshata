@@ -27,7 +27,7 @@ enum
 };
 
 //Unzip
-int extractCurrentfile(unzFile zipFile, char* filenameInZip, char* outputPath, int extractWithoutPath, unsigned char* passwordPageCrypted);
+int extractCurrentfile(unzFile zipFile, char* filenameInZip, const char* outputPath, int extractWithoutPath, unsigned char* passwordPageCrypted);
 bool extractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted);
 bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers);
 bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput);

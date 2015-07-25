@@ -66,6 +66,7 @@
 		B66ED1911949B704002A333F /* dragView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B66ED1901949B704002A333F /* dragView.xib */; };
 		B66ED1941949C77A002A333F /* RakDragView.m in Sources */ = {isa = PBXBuildFile; fileRef = B66ED1931949C77A002A333F /* RakDragView.m */; };
 		B66ED1981949EC20002A333F /* theme 1 in Resources */ = {isa = PBXBuildFile; fileRef = B66ED1971949EC20002A333F /* theme 1 */; };
+		B67464881B64179600F4A929 /* RakImportIOController.m in Sources */ = {isa = PBXBuildFile; fileRef = B67464871B64179600F4A929 /* RakImportIOController.m */; };
 		B6748ADF1A936D77003FBC1D /* RakSRDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748ADE1A936D77003FBC1D /* RakSRDetails.m */; };
 		B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748AE11A936E80003FBC1D /* RakSynopsis.m */; };
 		B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */; };
@@ -347,6 +348,8 @@
 		B66ED1971949EC20002A333F /* theme 1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "theme 1"; sourceTree = "<group>"; };
 		B67449441876116200F96DB4 /* prefsControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsControl.h; path = Prefs/prefsControl.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
+		B67464871B64179600F4A929 /* RakImportIOController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportIOController.m; path = "Import:Export/RakImportIOController.m"; sourceTree = "<group>"; };
+		B67464891B64182300F4A929 /* RakImportIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportIO.h; path = "Import:Export/RakImportIO.h"; sourceTree = "<group>"; };
 		B6748ADD1A936D77003FBC1D /* RakSRDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRDetails.h; path = CTSelec/RakSRDetails.h; sourceTree = "<group>"; };
 		B6748ADE1A936D77003FBC1D /* RakSRDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRDetails.m; path = CTSelec/RakSRDetails.m; sourceTree = "<group>"; };
 		B6748AE01A936E80003FBC1D /* RakSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = RakSynopsis.h; path = CTSelec/RakSynopsis.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
@@ -877,6 +880,15 @@
 			name = Includes;
 			sourceTree = "<group>";
 		};
+		B674648A1B641BF300F4A929 /* IO manager */ = {
+			isa = PBXGroup;
+			children = (
+				B67464891B64182300F4A929 /* RakImportIO.h */,
+				B67464871B64179600F4A929 /* RakImportIOController.m */,
+			);
+			name = "IO manager";
+			sourceTree = "<group>";
+		};
 		B6748AE31A936E95003FBC1D /* Tools */ = {
 			isa = PBXGroup;
 			children = (
@@ -1357,6 +1369,7 @@
 		B6F131311B372E1000042F8C /* Import/Export */ = {
 			isa = PBXGroup;
 			children = (
+				B674648A1B641BF300F4A929 /* IO manager */,
 				B6978A7B1B420D34002CBB45 /* RakExportController.h */,
 				B6978A7C1B420D34002CBB45 /* RakExportController.m */,
 				B6F131321B372E4100042F8C /* RakImportController.h */,
@@ -1824,6 +1837,7 @@
 				B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */,
 				B64D1561191058A200B6E47F /* RakMDLController.m in Sources */,
 				B69D61D5186CA2F2003504F9 /* Reader.m in Sources */,
+				B67464881B64179600F4A929 /* RakImportIOController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
