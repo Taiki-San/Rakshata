@@ -81,16 +81,9 @@
 		{
 			if([dataState count] == 5)
 			{
-				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:2] UTF8String]);
-				if(repoID == UINT64_MAX)
-				{
-					NSLog(@"Couldn't find the repo to restore, abort :/");
-					break;
-				}
+				PROJECT_DATA * project = getProjectFromSearch([getNumberForString([dataState objectAtIndex:2]) unsignedLongLongValue], [[dataState objectAtIndex:3] longLongValue], [[dataState objectAtIndex:4] boolValue], NO);
 				
-				PROJECT_DATA * project = getProjectFromSearch(repoID, [[dataState objectAtIndex:3] longLongValue], [[dataState objectAtIndex:4] boolValue], NO);
-				
-				if(project == NULL || project->repo == NULL)
+				if(project == NULL || !project->isInitialized)
 				{
 					free(project);
 					NSLog(@"Couldn't find the project to restore, abort :/");
@@ -325,7 +318,7 @@
 	PROJECT_DATA project = [_mainList getElementAtIndex:[_mainList selectedRow]];
 	
 	if(project.isInitialized)
-		currentSelection = [NSString stringWithFormat:@"%s\n%d\n%d", project.repo->URL, project.projectID, project.locale];
+		currentSelection = [NSString stringWithFormat:@"%llu\n%d\n%d", getRepoID(project.repo), project.projectID, project.locale];
 	else
 		currentSelection = @"";
 	

@@ -133,15 +133,14 @@ typedef struct
 	//64b
 	char language[REPO_LANGUAGE_LENGTH];
 	
-	byte type;
-	bool isMature;
-	bool active;
-	bool locale;
-	
 	//32b
 	uint repoID;
 	uint parentRepoID;
-	
+
+	byte type;
+	bool isMature;
+	bool active;
+
 } REPO_DATA;
 
 typedef struct

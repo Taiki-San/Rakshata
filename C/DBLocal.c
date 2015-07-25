@@ -21,10 +21,8 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 {
 	char requestString[300];
 
-	bool projectLocal = project.repo == NULL || (!project.repo->locale && project.locale);
-
 	//Either we want the main local repo, or the local entries of a standard repo
-	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_projectID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_projectID)" ASC", getRepoID(project.repo), projectLocal ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");
+	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_projectID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_projectID)" ASC", getRepoID(project.repo), isLocalProject(project) ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");
 
 	sqlite3_stmt * request = createRequest(cache, requestString);
 
@@ -67,11 +65,10 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	//First, we need to check if we need to register the project
 
 	char requestString[400];
-	bool projectLocal = !project.project.repo->locale && project.project.locale;
 	uint64_t repoID = getRepoID(project.project.repo);
 
 	//Does the oroject exist?
-	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectID)" = %d AND "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_ID)" ASC", project.project.projectID, repoID, projectLocal ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");
+	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectID)" = %d AND "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_ID)" ASC", project.project.projectID, repoID, isLocalProject(project.project) ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");
 
 	sqlite3_stmt * request = createRequest(cache, requestString);
 

@@ -320,7 +320,7 @@
 	
 	PROJECT_DATA project = [self getElementAtIndex:selectedRowIndex];
 	
-	if(project.repo == NULL)
+	if(!project.isInitialized)
 		return LIST_INVALID_SELECTION;
 	
 	return project.cacheDBID;

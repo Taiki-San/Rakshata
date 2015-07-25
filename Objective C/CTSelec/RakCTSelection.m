@@ -85,10 +85,10 @@
 
 - (NSString *) getContextToGTFO
 {
-	if(data.repo == NULL)
+	if(!data.isInitialized)
 		return nil;
 	
-	return [NSString stringWithFormat:@"%s\n%d\n%d\n%d\n%u\n%.0f\n%u\n%.0f", data.repo->URL, data.projectID, data.locale, [_buttons selectedSegment] == 1 ? 1 : 0, [_chapterView getSelectedElement], [_chapterView getSliderPos], [_volView getSelectedElement], [_volView getSliderPos]];
+	return [NSString stringWithFormat:@"%llu\n%d\n%d\n%d\n%u\n%.0f\n%u\n%.0f", getRepoID(data.repo), data.projectID, data.locale, [_buttons selectedSegment] == 1 ? 1 : 0, [_chapterView getSelectedElement], [_chapterView getSliderPos], [_volView getSelectedElement], [_volView getSliderPos]];
 }
 
 - (void) dealloc

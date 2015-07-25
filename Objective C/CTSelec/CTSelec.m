@@ -84,14 +84,7 @@
 
 - (BOOL) initCoreview : (NSArray*) dataState
 {
-	uint64_t indexTeam = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] UTF8String]);
-	if(indexTeam == UINT64_MAX)
-	{
-		NSLog(@"Couldn't find the repo to restore, abort :/");
-		return NO;
-	}
-	
-	PROJECT_DATA * project = getProjectFromSearch(indexTeam, [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], false);
+	PROJECT_DATA * project = getProjectFromSearch([getNumberForString([dataState objectAtIndex:0]) unsignedLongLongValue], [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], false);
 	
 	if(project == NULL)
 	{

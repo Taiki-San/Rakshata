@@ -224,6 +224,9 @@ DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainL
 
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 {
+	if(data == NULL || isLocalProject(*data))
+		return NULL;
+
 	DATA_LOADED * output = calloc(1, sizeof(DATA_LOADED));
 
 	if(output != NULL)

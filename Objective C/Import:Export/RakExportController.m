@@ -219,7 +219,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	[dict setObject:@(allocatedID) forKey:RAK_STRING_METADATA_PROJECTID];
 	[dict setObject:getStringForWchar(project.projectName) forKey:RAK_STRING_METADATA_PROJECTNAME];
 
-	if(!project.repo->locale)
+	if(!isLocalRepo(project.repo))
 	{
 		[dict setObject:@(project.repo->type) forKey:RAK_STRING_METADATA_REPOTYPE];
 		[dict setObject:[NSString stringWithUTF8String:project.repo->URL] forKey:RAK_STRING_METADATA_REPOURL];

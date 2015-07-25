@@ -69,7 +69,7 @@ uint defineBoundsRepoOnProjectDB(PROJECT_DATA_PARSED * oldData, uint posBase, ui
 	if(oldData == NULL)
 		return UINT_MAX;
 	
-	for(; posBase < nbElem && oldData[posBase].project.repo == NULL; posBase++);
+	for(; posBase < nbElem && isLocalRepo(oldData[posBase].project.repo); posBase++);
 	
 	uint64_t repoID = getRepoID(oldData[posBase].project.repo);
 	
@@ -268,7 +268,7 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 	//Recover URLRepo
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
-		if(project[pos].data.project.repo != NULL)
+		if(!isLocalProject(project[pos].data.project))
 		{
 			repo = project[pos].data.project.repo;
 			break;
@@ -510,7 +510,7 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 
 bool isPaidProject(PROJECT_DATA projectData)
 {
-	return projectData.repo != NULL && projectData.repo->type == TYPE_DEPOT_PAID;
+	return !isLocalProject(projectData) && projectData.repo->type == TYPE_DEPOT_PAID;
 }
 
 bool isInstalled(PROJECT_DATA project, char * basePath)
@@ -693,6 +693,16 @@ charType * getStringFromUTF8(const unsigned char * rawString)
 	}
 
 	return output;
+}
+
+bool isLocalRepo(REPO_DATA * repo)
+{
+	return repo == NULL;
+}
+
+bool isLocalProject(PROJECT_DATA project)
+{
+	return isLocalRepo(project.repo) || project.locale;
 }
 
 #pragma mark - Sort function

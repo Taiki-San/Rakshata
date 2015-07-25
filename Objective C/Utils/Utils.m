@@ -40,6 +40,22 @@ NSString * getStringForWchar(const charType * string)
 	return output;
 }
 
+NSNumber * getNumberForString(NSString * string)
+{
+	NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
+	formatter.numberStyle = NSNumberFormatterDecimalStyle;
+
+	return [formatter numberFromString:string];
+}
+
+NSString * getRepoName(REPO_DATA * repo)
+{
+	if(isLocalRepo(repo))
+		return NSLocalizedString(@"LOCAL-REPO", nil);
+
+	return getStringForWchar(repo->name);
+}
+
 int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int compareEncoding)
 {
 	NSString * stringA = compareEncoding == COMPARE_UTF8 ? [[NSString alloc] initWithBytes:a length:lengthA encoding:NSUTF8StringEncoding] : getStringForWchar(a);

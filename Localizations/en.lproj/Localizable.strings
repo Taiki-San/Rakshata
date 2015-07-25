@@ -25,6 +25,8 @@
 "OK" = "Ok";
 "GO" = "Go";
 
+"LOCAL-REPO" = "Local source";
+
 //MDL
 "MDL-LOGIN-TO-PAY" = "You selection contain paid items,\nplease login to initiate the transaction.";
 "MDL-LOGIN-TO-AUTH" = "Because of the policy of the rightholders\nof a part of your selection, login\n is required to initiate the download.";

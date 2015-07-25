@@ -19,10 +19,13 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	*output = getEmptyProject();
 
 	//Repo
-	buffer = getRepoForID((uint64_t) sqlite3_column_int64(state, RDB_repo-1));
+	uint64_t repoID = (uint64_t) sqlite3_column_int64(state, RDB_repo-1);
+	buffer = getRepoForID(repoID);
 	if(buffer != NULL)				//Si la team est pas valable, on drop complètement le projet
+	{
 		output->repo = buffer;
-	else
+	}
+	else if(repoID != LOCAL_REPO_ID)
 	{
 		MUTEX_UNLOCK(cacheParseMutex);
 		return false;
@@ -567,7 +570,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 
 uint64_t getRepoID(REPO_DATA * repo)
 {
-	if(repo == NULL || repo->locale)
+	if(isLocalRepo(repo))
 		return LOCAL_REPO_ID;
 
 	uint64_t output = repo->parentRepoID;;
@@ -591,6 +594,9 @@ uint64_t getRepoIndexFromURL(const char * URL)
 		if(repoList[i] != NULL && !strcmp(repoList[i]->URL, URL))
 			return getRepoID(repoList[i]);
 	}
+
+	if(!strcmp(URL, "localhost"))
+		return LOCAL_REPO_ID;
 	
 	return UINT64_MAX;
 }
@@ -602,11 +608,7 @@ REPO_DATA * getRepoForID(uint64_t repoID)
 	if(output != NULL)
 	{
 		if(repoID == LOCAL_REPO_ID)
-		{
-			*output = getEmptyRepo();
-			output->locale = true;
-			return output;
-		}
+			return NULL;
 
 		for(uint i = 0; i < lengthRepo; i++)
 		{

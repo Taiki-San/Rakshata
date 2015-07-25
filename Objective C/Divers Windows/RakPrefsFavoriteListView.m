@@ -70,7 +70,7 @@ enum
 	
 	if(repo == nil)
 	{
-		repo = [[RakClickableText alloc] initWithText:getStringForWchar(_project.repo->name) :[self detailTextColor]];
+		repo = [[RakClickableText alloc] initWithText:getRepoName(_project.repo):[self detailTextColor]];
 		if(repo != nil)
 		{
 			repo.ignoreURL = YES;
@@ -81,7 +81,7 @@ enum
 		}
 	}
 	else
-		repo.stringValue = getStringForWchar(_project.repo->name);
+		repo.stringValue = getRepoName(_project.repo);
 	
 	[repo sizeToFit];
 	
@@ -167,7 +167,7 @@ enum
 	{
 		[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FLUSH object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getStringForWchar(_project.repo->name) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_project.repo)), SR_NOTIF_OPTYPE : @(YES)}];
+		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getRepoName(_project.repo) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_project.repo)), SR_NOTIF_OPTYPE : @(YES)}];
 	}
 }
 

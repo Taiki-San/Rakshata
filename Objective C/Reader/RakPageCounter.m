@@ -183,10 +183,8 @@
 	
 	if([partialString rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
 		return NO;
-	
-	NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-	[f setNumberStyle:NSNumberFormatterDecimalStyle];
-	NSNumber * content = [f numberFromString:partialString];
+
+	NSNumber * content = getNumberForString(partialString);
 	
 	if(content == nil)
 		return NO;

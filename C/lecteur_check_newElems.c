@@ -14,7 +14,7 @@
 
 uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
 {
-	if(projectDB->locale || projectDB->repo->locale)
+	if(isLocalProject(*projectDB))
 		return false;
 
 	uint posStart, posEnd, nbElemFullData;

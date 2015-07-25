@@ -591,20 +591,41 @@
 			
 			if(!tooMuchChanges && oldElem != nbElemOld)
 			{
-				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-					
-					[context setDuration:CT_TRANSITION_ANIMATION];
-					
-					if(oldElem != 0)
-						[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
-					
-					if(newElem != 0)
-						[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
-					
-				} completionHandler:^{
-					if(nbElemOld != nbElemNew)
-						[_tableView noteNumberOfRowsChanged];
-				}];
+				@try
+				{
+					[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+
+						[context setDuration:CT_TRANSITION_ANIMATION];
+
+						if(oldElem != 0)
+							[_tableView removeRowsAtIndexes:old withAnimation:NSTableViewAnimationSlideLeft];
+
+						if(newElem != 0)
+							[_tableView insertRowsAtIndexes:new withAnimation:NSTableViewAnimationSlideRight];
+
+					} completionHandler:^{
+						if(nbElemOld != nbElemNew)
+							[_tableView noteNumberOfRowsChanged];
+					}];
+				}
+				@catch (NSException *exception)
+				{
+#ifdef DEV_VERSION
+					NSLog(@"Failed the soft update :/\nNb element : %zu\nRemoved (%d):\n", _tableView.numberOfRows, oldElem);
+
+					[old enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+						NSLog(@"%zu", idx);
+					}];
+
+					NSLog(@"Added (%d):\n", newElem);
+
+					[new enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+						NSLog(@"%zu", idx);
+					}];
+#endif
+
+					[self fullAnimatedReload : nbElemOld  : nbElemNew];
+				}
 			}
 			else
 			{

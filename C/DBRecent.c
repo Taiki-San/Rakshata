@@ -120,7 +120,11 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 	request = createRequest(database, "SELECT count(*) FROM RakHL3IsALie WHERE "DBNAMETOID(RDB_REC_team)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
 	if(request != NULL)
 	{
-		sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+#warning "Patch to remove ASAP"
+		if(isLocalRepo(data.repo))
+			sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
+		else
+			sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 		sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 		sqlite3_bind_int(request, 3, data.locale);
 
@@ -143,7 +147,10 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				request = createRequest(database, requestString);
 				if(request != NULL)
 				{
-					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+					if(isLocalRepo(data.repo))
+						sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
+					else
+						sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 					sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 					sqlite3_bind_int(request, 3, data.locale);
 
@@ -160,7 +167,10 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 							if((request = createRequest(database, requestString)) != NULL)
 							{
-								sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
+								if(isLocalRepo(data.repo))
+									sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
+								else
+									sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 								sqlite3_bind_int(request, 2, (int32_t) data.projectID);
 								sqlite3_bind_int(request, 3, data.locale);
 
@@ -192,7 +202,10 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 				if(!nbOccurence || wasItADL)
 					sqlite3_bind_int64(request, 2, recentDL);
 
-				sqlite3_bind_text(request, 3, data.repo->URL, -1, SQLITE_STATIC);
+				if(isLocalRepo(data.repo))
+					sqlite3_bind_text(request, 1, "localhost", -1, SQLITE_STATIC);
+				else
+					sqlite3_bind_text(request, 1, data.repo->URL, -1, SQLITE_STATIC);
 				sqlite3_bind_int(request, 4, (int32_t) data.projectID);
 				sqlite3_bind_int(request, 5, data.locale);
 
@@ -217,7 +230,7 @@ bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, b
 
 void removeRecentEntry(PROJECT_DATA data)
 {
-	removeRecentEntryInternal(data.repo->URL, data.projectID, data.locale);
+	removeRecentEntryInternal(isLocalRepo(data.repo) ? "localhost" : data.repo->URL, data.projectID, data.locale);
 }
 
 void removeRecentEntryInternal(char * URLRepo, uint projectID, bool isLocal)
@@ -296,8 +309,7 @@ PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem)
 					uint lengthTeam = strlen(repoURL) + 1;
 					PROJECT_DATA tmpProject = getEmptyProject();
 
-					REPO_DATA tmpRepo;
-					memset(&tmpRepo, 0, sizeof(tmpRepo));
+					REPO_DATA tmpRepo = getEmptyRepo();
 
 					strncpy(tmpRepo.URL, repoURL, lengthTeam);
 					tmpProject.repo = &tmpRepo;

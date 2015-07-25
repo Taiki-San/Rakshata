@@ -159,7 +159,7 @@
 {
 	unzClose(file);
 
-//	syncCacheToDisk(SYNC_PROJECTS);
+	syncCacheToDisk(SYNC_PROJECTS);
 	notifyFullUpdate();
 
 	if([NSThread isMainThread])
@@ -236,7 +236,7 @@
 			[self analyseMetadata:currentProject :entry];
 
 		//Not a known project in a known repo
-		if(currentProject->data.project.cacheDBID == 0 && (currentProject->data.project.locale || currentProject->data.project.repo->locale))
+		if(currentProject->data.project.cacheDBID == 0 && isLocalProject(currentProject->data.project))
 			currentProject->data.project.projectID = getEmptyLocalSlot(currentProject->data.project);
 
 		[self analyseImages:currentProject :entry];
@@ -364,21 +364,11 @@
 	NSString * entryString = objectForKey(entry, RAK_STRING_METADATA_REPOURL, nil, [NSString class]);
 	if(entryNumber != nil && [entryNumber unsignedCharValue] <= MAX_TYPE_DEPOT && entryString != nil)
 	{
-		REPO_DATA * repo;
+		REPO_DATA * repo = NULL;
 		uint64_t repoID = getRepoIndexFromURL([entryString UTF8String]);
 
-		if(repoID == UINT64_MAX)	//Not a known repo
-		{
-			repo = calloc(1, sizeof(REPO_DATA));
-			if(repo != NULL)
-			{
-				strncpy(repo->URL, [entryString UTF8String], REPO_URL_LENGTH - 1);
-				repo->URL[REPO_URL_LENGTH - 1] = 0;
-				repo->type = [entryNumber unsignedCharValue];
-				repo->locale = true;
-			}
-		}
-		else						//If a known repo
+		//if a known repo
+		if(repoID != UINT64_MAX)
 		{
 			repo = getRepoForID(repoID);
 			if(repo != NULL)

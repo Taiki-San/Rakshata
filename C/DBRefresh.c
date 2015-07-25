@@ -165,6 +165,9 @@ int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo)
 
 void refreshRepo(REPO_DATA * repo)
 {
+	if(isLocalRepo(repo))
+		return;
+
 	ICONS_UPDATE * iconData = refreshRepoHelper(repo, true);
 	
 	createNewThread(updateProjectImages, iconData);

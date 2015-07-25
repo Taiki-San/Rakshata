@@ -11,6 +11,8 @@
  *********************************************************************************************/
 
 NSString * getStringForWchar(const charType * string);
+NSNumber * getNumberForString(NSString * string);
+NSString * getRepoName(REPO_DATA * repo);
 
 @interface RakFlippedView : NSView
 @end

@@ -200,6 +200,8 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem);
 ICON_PATH getPathToIconsOfProject(PROJECT_DATA project, uint index);
 charType * getStringFromUTF8(const unsigned char * rawString);
+bool isLocalRepo(REPO_DATA * repo);
+bool isLocalProject(PROJECT_DATA project);
 
 /******		DBLocal.c		*******/
 uint getEmptyLocalSlot(PROJECT_DATA project);

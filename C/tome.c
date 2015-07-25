@@ -241,9 +241,6 @@ void freeTomeList(META_TOME * data, uint length, bool includeDetails)
 
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters)
 {
-	uint length = strlen(projectDB.repo->URL) * 4 / 3 + 60, position;
-    char dir[length];
-	
 	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
 	{
 #ifdef DEV_VERSION
@@ -256,7 +253,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 	if(encodedPath == NULL)
 		return;
 	
-	position = getPosForID(projectDB, true, tomeDelete);
+	uint position = getPosForID(projectDB, true, tomeDelete);
 	
 	if(position != INVALID_VALUE && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
 	{
@@ -282,7 +279,9 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 		}
 	}
 	
-    snprintf(dir, length, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/", encodedPath, tomeDelete);
+	char dir[1024];
+    snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/", encodedPath, tomeDelete);
 	removeFolder(dir);
+
 	free(encodedPath);
 }

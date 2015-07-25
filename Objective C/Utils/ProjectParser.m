@@ -651,11 +651,11 @@ end:
 
 NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 {
-	if(project.project.repo == NULL)
+	if(!project.project.isInitialized)
 		return nil;
 
 	//No project remaining
-	if(project.project.locale && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
+	if(isLocalProject(project.project) && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
 		return nil;
 	
 	id buf;
@@ -697,7 +697,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 	[output setObject:@(project.project.rightToLeft) forKey:JSON_PROJ_RIGHT_TO_LEFT];
 	[output setObject:@(project.project.haveDRM) forKey:JSON_PROJ_DRM];
 
-	if(project.project.locale)
+	if(isLocalProject(project.project))
 		[output setObject:@(YES) forKey:JSON_PROJ_ISLOCAL];
 	
 	if(project.project.isPaid)
@@ -857,7 +857,7 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 		if(error != nil)
 			NSLog(@"%@", error.description);
 		else
-			NSLog(@"Parse error when analysing remote project file for %@", getStringForWchar(repo->name));
+			NSLog(@"Parse error when analysing remote project file for %@", repo != NULL ? getStringForWchar(repo->name) : @"local repo");
 		return NULL;
 	}
 		
@@ -916,15 +916,17 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 			continue;
 		}
 		
+		bool isLocal = [(NSNumber*) repoID unsignedLongLongValue] == LOCAL_REPO_ID;
+
 		for(posRepo = 0; posRepo < nbRepo; posRepo++)
 		{
 			if(repo[posRepo] == NULL)
 				continue;
-			
-			if([(NSNumber*) repoID unsignedLongLongValue] == getRepoID(repo[posRepo]))
+
+			if(isLocal || [(NSNumber*) repoID unsignedLongLongValue] == getRepoID(repo[posRepo]))
 			{
 				nbElemPart = 0;
-				currentPart = (PROJECT_DATA_PARSED*) parseProjectJSON(repo[posRepo], remoteDataPart, &nbElemPart, false);
+				currentPart = (PROJECT_DATA_PARSED*) parseProjectJSON(isLocal ? NULL : repo[posRepo], remoteDataPart, &nbElemPart, false);
 
 				if(nbElemPart)
 				{
@@ -950,7 +952,7 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 	if(data == NULL || repo == NULL || !nbElem || !nbRepo)
 		return NULL;
 	
-	uint counters[nbRepo], jumpTable[nbRepo][nbElem];
+	uint counters[nbRepo + 1], jumpTable[nbRepo + 1][nbElem];
 	bool projectLinkedToRepo = false;
 	
 	memset(counters, 0, sizeof(counters));
@@ -958,15 +960,22 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 	//Create a table linking projects to a repo
 	for(uint pos = 0, posRepo; pos < nbElem; pos++)
 	{
-		uint64_t repoID = getRepoID(data[pos].project.repo);
-		
-		for(posRepo = 0; posRepo < nbRepo; posRepo++)
+		if(isLocalRepo(data[pos].project.repo))
 		{
-			if(repoID == getRepoID(repo[posRepo]))
+			jumpTable[nbRepo][counters[nbRepo]++] = pos;
+			projectLinkedToRepo = true;
+		}
+		else
+		{
+			uint64_t repoID = getRepoID(data[pos].project.repo);
+			for(posRepo = 0; posRepo < nbRepo; posRepo++)
 			{
-				jumpTable[posRepo][counters[posRepo]++] = pos;
-				projectLinkedToRepo = true;
-				break;
+				if(repoID == getRepoID(repo[posRepo]))
+				{
+					jumpTable[posRepo][counters[posRepo]++] = pos;
+					projectLinkedToRepo = true;
+					break;
+				}
 			}
 		}
 	}
@@ -978,7 +987,7 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 	NSDictionary * currentNode;
 	id currentProject;
 	
-	for(uint pos = 0; pos < nbRepo; pos++)
+	for(uint pos = 0; pos <= nbRepo; pos++)
 	{
 		if(!counters[pos])	continue;
 		
@@ -993,7 +1002,7 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 		
 		if([projects count])
 		{
-			currentNode = [NSDictionary dictionaryWithObjects:@[@(getRepoID(repo[pos])), projects] forKeys:@[JSON_PROJ_AUTHOR_ID, JSON_PROJ_PROJECTS]];
+			currentNode = [NSDictionary dictionaryWithObjects:@[@(getRepoID(pos < nbRepo ? repo[pos] : NULL)), projects] forKeys:@[JSON_PROJ_AUTHOR_ID, JSON_PROJ_PROJECTS]];
 			if(currentNode != nil)
 				[root addObject:currentNode];
 		}

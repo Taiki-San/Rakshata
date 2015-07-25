@@ -13,8 +13,7 @@
 bool checkIfFaved(PROJECT_DATA* projectDB, char **favs)
 {
     bool generateOwnCache = false;
-	uint projectID;
-    char *favsBak = NULL, *internalCache = NULL, URLRepo[LONGUEUR_URL];
+    char *favsBak = NULL, *internalCache = NULL;
 
     if(favs == NULL)
     {
@@ -30,17 +29,23 @@ bool checkIfFaved(PROJECT_DATA* projectDB, char **favs)
     if(*favs == NULL || projectDB == NULL)
         return 0;
 
+	bool isLocal, wantLocal = isLocalProject(*projectDB);
+	uint64_t repoID, expectedID = getRepoID(projectDB->repo);
+	uint projectID, expectedProjectID = projectDB->projectID;
+
     favsBak = *favs;
-    do
-    {
-        favsBak += sscanfs(favsBak, "%s %d", URLRepo, sizeof(URLRepo), &projectID);
-        for(; favsBak != NULL && (*favsBak == '\n' || *favsBak == '\r'); favsBak++);
-	} while(favsBak != NULL && *favsBak && (strcmp(projectDB->repo->URL, URLRepo) || projectDB->projectID != projectID));
-	
+	do
+	{
+		sscanf(favsBak, "%llu %hhu %u", &repoID, (byte *) &isLocal, &projectID);
+		for(; *favsBak && *favsBak != '\n' && *favsBak != '\r'; favsBak++);
+		for(; *favsBak == '\n' || *favsBak == '\r'; favsBak++);
+
+	} while(*favsBak && (expectedID != repoID || isLocal != wantLocal || projectID != expectedProjectID));
+
     if(generateOwnCache)
         free(internalCache);
 
-	return projectDB->projectID == projectID && !strcmp(projectDB->repo->URL, URLRepo);
+	return repoID == expectedID && isLocal == wantLocal && projectID == expectedProjectID;
 }
 
 bool setFavorite(PROJECT_DATA* projectDB)
@@ -48,11 +53,12 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	if(projectDB == NULL)
 		return false;
 	
-	bool removing = projectDB->favoris != 0, elementAlreadyAdded = false, ret_value = false;
+	bool removing = projectDB->favoris != 0, elementAlreadyAdded = false, ret_value = false, isLocal, wantLocal = isLocalProject(*projectDB);
 	char *favs = loadLargePrefs(SETTINGS_FAVORITE_FLAG), *favsNew;
-	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16], URLRepo[LONGUEUR_URL], *URLRepoRef = projectDB->repo->URL;
+	char line[LENGTH_PROJECT_NAME + LONGUEUR_URL + 16];
 	uint nbSpaces, pos = 0, posLine, projectID;
-	size_t length = (favs != NULL ? strlen(favs) : 0) + 10 + strlen(projectDB->repo->URL) + 64, posOutput = 0;
+	uint64_t currentRepoID, expectedRepoID = getRepoID(projectDB->repo);
+	size_t length = (favs != NULL ? strlen(favs) : 0) + 10 + 128, posOutput = 0;
 
 	favsNew = malloc(length * sizeof(char));	//Alloc final buffer
 	if(favsNew == NULL)
@@ -81,10 +87,10 @@ bool setFavorite(PROJECT_DATA* projectDB)
 			continue;
 		
 		//We read the data
-		sscanfs(line, "%s %d", URLRepo, LONGUEUR_URL, &projectID);
+		sscanf(line, "%llu %hhu %u", &currentRepoID, (byte*) &isLocal, &projectID);
 		
 		//There is a collision
-		if(!strcmp(URLRepo, URLRepoRef) && projectID == projectDB->projectID)
+		if(currentRepoID == expectedRepoID && isLocal == wantLocal && projectID == projectDB->projectID)
 		{
 			if(removing)	//If we wanted to delete, just don't rewrite it on the output buffer. If we wanted to inject it, notify there is a duplicate
 			{
@@ -98,7 +104,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		}
 		
 		//We rewrite the line on the output buffer
-		snprintf(line, sizeof(line), "%s %d\n", URLRepo, projectID);
+		snprintf(line, sizeof(line), "%llu %u %u\n", currentRepoID, isLocal, projectID);
 		strncat(favsNew, line, length - posOutput);
 		posOutput += strlen(line);
 	}
@@ -106,7 +112,7 @@ bool setFavorite(PROJECT_DATA* projectDB)
 	//We have to add the element, and there is no duplicate
 	if(!removing && !elementAlreadyAdded)
 	{
-		snprintf(line, sizeof(line), "%s %d\n", URLRepoRef, projectDB->projectID);
+		snprintf(line, sizeof(line), "%llu %u %u\n", expectedRepoID, wantLocal, projectDB->projectID);
 		strncat(favsNew, line, length - posOutput);
 		posOutput += strlen(line);
 		ret_value = true;
@@ -262,7 +268,7 @@ void getNewFavs()
 
 	for(size_t posProject = 0, posFull, maxPos; posProject < nbProject; posProject++)
     {
-		if(projectDB[posProject].repo == NULL)
+		if(!projectDB[posProject].isInitialized)
 			continue;
 		
 		current = &projectDB[posProject];

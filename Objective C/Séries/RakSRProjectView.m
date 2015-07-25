@@ -19,7 +19,7 @@ enum
 
 - (instancetype) initWithProject : (PROJECT_DATA) project
 {
-	if(!project.isInitialized || project.repo == NULL)
+	if(!project.isInitialized)
 		return nil;
 	
 	self = [self initWithFrame:NSMakeRect(0, 0, RCVC_MINIMUM_WIDTH, RCVC_MINIMUM_HEIGHT)];

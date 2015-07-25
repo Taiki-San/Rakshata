@@ -61,16 +61,8 @@
 		{
 			do
 			{
-				uint64_t repoID = getRepoIndexFromURL((char*)[[dataState objectAtIndex:0] UTF8String]);
-				if(repoID == UINT64_MAX)
-				{
-					NSLog(@"Couldn't find the repo to restore, abort :/");
-					break;
-				}
-				
-				//We have a valid index, now, let's query the database to get the project
-				
-				PROJECT_DATA * project = getProjectFromSearch(repoID, [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], true);
+				//Let's query the database to get the project				
+				PROJECT_DATA * project = getProjectFromSearch([getNumberForString([dataState objectAtIndex:0]) unsignedLongLongValue], [[dataState objectAtIndex:1] longLongValue], [[dataState objectAtIndex:2] boolValue], true);
 				
 				if(project == NULL)
 				{

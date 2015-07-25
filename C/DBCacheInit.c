@@ -109,11 +109,12 @@ uint setupBDDCache()
 		return 0;
 	}
 
-	char * encodedRepo[nombreRepo];
+	char * encodedRepo[nombreRepo + 1];
 	for(uint i = 0; i < nombreRepo; i++)
 	{
 		encodedRepo[i] = getPathForRepo(internalRepoList[i]);
 	}
+	encodedRepo[nombreRepo] = getPathForRepo(NULL);		//Local repo
 
 	getRidOfDuplicateInRepo(internalRepoList, nombreRepo);
 
@@ -174,16 +175,24 @@ uint setupBDDCache()
 		if(projects != NULL)
 		{
 			void * searchData = buildSearchJumpTable(internalDB);
+			bool isWorkingOnLocalRepo;
 			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nombreProject; pos++)
 			{
 				projects[pos].project.favoris = checkIfFaved(&projects[pos].project, &cacheFavs);
 
-				if(internalRepoList[posRepo] != projects[pos].project.repo)
-					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get team index
-
-				if(posRepo < nombreRepo && encodedRepo[posRepo] != NULL)
+				if(isLocalRepo(projects[pos].project.repo))
 				{
+					isWorkingOnLocalRepo = true;
+					posRepo = nombreRepo;
+				}
+				else if(internalRepoList[posRepo] != projects[pos].project.repo)
+				{
+					isWorkingOnLocalRepo = false;
+					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get repo index
+				}
 
+				if((posRepo < nombreRepo || isWorkingOnLocalRepo) && encodedRepo[posRepo] != NULL)
+				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%s%d/", encodedRepo[posRepo], projects[pos].project.locale ? LOCAL_PATH_NAME"_" : "", projects[pos].project.projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall), false))
 					{

@@ -68,7 +68,7 @@
 {
 	//We'll recover the main view by hicking the view hierarchy
 	
-	if(!project.isInitialized || project.repo == NULL)
+	if(!project.isInitialized)
 		return NO;
 	
 	//We get our current tab
