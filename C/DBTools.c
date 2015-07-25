@@ -264,8 +264,8 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 	size_t length;
 	char imagePath[1024];
 	REPO_DATA *repo = NULL;
-	
-	//Recover URLRepo
+
+	//Recover the repo
 	for (uint pos = 0; pos < nbElem; pos++)
 	{
 		if(!isLocalProject(project[pos].data.project))
@@ -275,18 +275,16 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 		}
 	}
 	
-	if(repo != NULL)
-	{
-		char * encodedHash = getPathForRepo(repo);
-		if(encodedHash == NULL)
-			return NULL;
-		
-		length = MIN((uint) snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
-		createPath(imagePath);
-		free(encodedHash);
-	}
-	else
+	if(repo == NULL)
 		return NULL;
+
+	char * encodedHash = getPathForRepo(repo);
+	if(encodedHash == NULL)
+		return NULL;
+
+	length = MIN((uint) snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
+	createPath(imagePath);
+	free(encodedHash);
 	
 	ICONS_UPDATE * workload = NULL, * current = NULL, * previous = NULL;
 	const byte imageID[4] = {THUMBID_SRGRID, THUMBID_HEAD, THUMBID_CT, THUMBID_DD};

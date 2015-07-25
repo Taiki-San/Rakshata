@@ -595,9 +595,6 @@ uint64_t getRepoIndexFromURL(const char * URL)
 			return getRepoID(repoList[i]);
 	}
 
-	if(!strcmp(URL, "localhost"))
-		return LOCAL_REPO_ID;
-	
 	return UINT64_MAX;
 }
 

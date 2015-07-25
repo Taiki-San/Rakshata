@@ -102,6 +102,30 @@
 	
 }
 
+#pragma mark - Register D&D of file extension
+
+- (void) registerForDrop
+{
+	[self registerForDraggedTypes:@[NSFilenamesPboardType]];
+}
+
+- (NSDragOperation) draggingEntered : (id <NSDraggingInfo>) sender
+{
+	return NSDragOperationCopy;
+}
+
+- (BOOL) prepareForDragOperation : (id <NSDraggingInfo>) sender
+{
+	NSArray *files = [[sender draggingPasteboard] propertyListForType: NSFilenamesPboardType];
+
+	if(files == nil || [files count] == 0)
+		return NO;
+
+	[[NSApp delegate] application:NSApp openFiles:files];
+
+	return YES;
+}
+
 #pragma mark - Title management
 
 - (NSString *) getProjectName

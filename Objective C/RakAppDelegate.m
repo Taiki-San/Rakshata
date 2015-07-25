@@ -20,6 +20,7 @@
 	self.window.isMainWindow = YES;
 	[self.window setDelegate:self];
 	[self.window configure];
+	[self.window registerForDrop];
 	
 	RakContentView * contentView = [self getContentView];
 	if(contentView == nil)
@@ -171,6 +172,11 @@
 		return NO;
 
 	return YES;
+}
+
+- (void)application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames;
+{
+	[self application:sender openFile:[filenames objectAtIndex:0]];
 }
 
 - (void) applicationWillBecomeActive:(nonnull NSNotification *)notification

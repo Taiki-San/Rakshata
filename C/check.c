@@ -111,8 +111,7 @@ void networkAndVersionTest()
 		//Nouveau killswitch
         if(COMPTE_PRINCIPAL_MAIL != NULL)
 		{
-			uint length = strlen(COMPTE_PRINCIPAL_MAIL);
-			char URL[length + 100];
+			char URL[strlen(COMPTE_PRINCIPAL_MAIL) + 100];
 			
 			//Compte killswitché
 			snprintf(URL, sizeof(URL), SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);

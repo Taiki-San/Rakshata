@@ -12,7 +12,7 @@
 
 #define TITLE_BAR_HEIGHT 22
 
-@interface RakWindow : NSWindow
+@interface RakWindow : NSWindow <NSDraggingDestination>
 {
 	BOOL _sheetManipulation;
 }
@@ -31,6 +31,7 @@
 @property (strong) NSResponder* imatureFirstResponder;
 
 - (void) configure;
+- (void) registerForDrop;
 
 - (void) resetTitle;
 - (void) setProjectTitle : (PROJECT_DATA) project;
