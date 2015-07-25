@@ -37,7 +37,7 @@
 
 - (void) dealloc
 {
-	if(filenames != NULL || nbFiles != 0)
+	if(filenames != NULL && nbFiles != 0)
 	{
 		for(uint i = 0; i < nbFiles; i++)
 			free(filenames[i]);
@@ -532,8 +532,6 @@
 		return NO;
 
 	extractCurrentfile(archive, NULL, [path UTF8String], STRIP_TRUST_PATH_AS_FILENAME, NULL);
-
-	[self copyItemOfName:name toData:nil];
 
 	return YES;
 }

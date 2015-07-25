@@ -44,6 +44,8 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 	if(buffer == NULL)
 	{
 		MUTEX_UNLOCK(cacheParseMutex);
+		free(output->repo);
+		output->repo = NULL;
 		return false;
 	}
 	else
@@ -384,7 +386,7 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 			output = NULL;
 		}
 
-		if(sqlite3_step(request) == SQLITE_ROW)
+		if(output != NULL && sqlite3_step(request) == SQLITE_ROW)
 		{
 #ifdef DEV_VERSION
 			printf("Project was %ls\n", wantParsed ? ((PROJECT_DATA_PARSED *) output)->project.projectName : ((PROJECT_DATA *) output)->projectName);
@@ -600,13 +602,12 @@ uint64_t getRepoIndexFromURL(const char * URL)
 
 REPO_DATA * getRepoForID(uint64_t repoID)
 {
+	if(repoID == LOCAL_REPO_ID)
+		return NULL;
+
 	REPO_DATA * output = malloc(sizeof(REPO_DATA));
-	
 	if(output != NULL)
 	{
-		if(repoID == LOCAL_REPO_ID)
-			return NULL;
-
 		for(uint i = 0; i < lengthRepo; i++)
 		{
 			if(repoList[i] != NULL && getRepoID(repoList[i]) == repoID)

@@ -500,7 +500,12 @@ bool getCopyOfTagsOrCat(bool wantTag, void ** newData, uint * nbData)
 	}
 
 	//We reduce the allocated memory to the minimum
-	if(currentPos < currentSize)
+	if(currentPos == 0)
+	{
+		free(buffer);
+		buffer = NULL;
+	}
+	else if(currentPos < currentSize)
 	{
 		void * tmp = realloc(buffer, currentPos * dataSize);
 		if(tmp != NULL)

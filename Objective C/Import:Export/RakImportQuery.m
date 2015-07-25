@@ -126,7 +126,7 @@ enum
 
 - (void) setupUIMetadata
 {
-	NSSize selfSize = self.frame.size, titleSize, inputSize;
+	NSSize selfSize = self.frame.size, titleSize = NSZeroSize, inputSize;
 	CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 7 / 10, currentHeight = 0;
 
 	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title;

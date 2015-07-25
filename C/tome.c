@@ -239,6 +239,12 @@ void freeTomeList(META_TOME * data, uint length, bool includeDetails)
 	free(data);
 }
 
+void freeSingleTome(META_TOME data)
+{
+	free(data.details);
+}
+
+
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters)
 {
 	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt

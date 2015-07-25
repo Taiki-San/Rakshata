@@ -109,6 +109,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			memcpy(&newField[cachedProject.nombreTomeLocal], project.tomeLocal, project.nombreTomeLocal * sizeof(META_TOME));
 			cachedProject.nombreTomeLocal += project.nombreTomeLocal;
 			cachedProject.tomeLocal = newField;
+
+			qsort(newField, cachedProject.nombreTomeLocal, sizeof(META_TOME), sortNumbers);
 		}
 	}
 	else
@@ -119,6 +121,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			memcpy(&newField[cachedProject.nombreChapitreLocal], project.chapitresLocal, project.nombreChapitreLocal * sizeof(int));
 			cachedProject.nombreChapitreLocal += project.nombreChapitreLocal;
 			cachedProject.chapitresLocal = newField;
+
+			qsort(newField, cachedProject.nombreChapitreLocal, sizeof(int), sortNumbers);
 		}
 	}
 
@@ -136,12 +140,14 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 	uint nbOld, nbNew, lengthCollector;
 	void * dataOld, *dataNew, * collector;
 	uint16_t sizeOfType;
+	bool shouldFreeCollector;
 
 	//We have two passes, one for the chapters, one for the volume
 	for(byte run = 0; run < 2; run++)
 	{
 		lengthCollector = 0;
 		collector = NULL;
+		shouldFreeCollector = false;
 
 		if(run == 0)	//chapters
 		{
@@ -194,6 +200,8 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 				continue;
 			}
 
+			shouldFreeCollector = true;
+
 			//O(n^2) because meh
 			for(uint posOld = 0, posNew; posOld < nbOld; ++posOld)
 			{
@@ -241,7 +249,9 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 					newProject->nombreTomeLocal += lengthCollector;
 				}
 			}
-			free(collector);
 		}
+
+		if(shouldFreeCollector)
+			free(collector);
 	}
 }

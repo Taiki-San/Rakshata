@@ -261,7 +261,6 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 	if(project == NULL || !nbElem)
 		return NULL;
 	
-	size_t length;
 	char imagePath[1024];
 	REPO_DATA *repo = NULL;
 
@@ -282,7 +281,7 @@ void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem)
 	if(encodedHash == NULL)
 		return NULL;
 
-	length = MIN((uint) snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash), sizeof(imagePath));
+	snprintf(imagePath, sizeof(imagePath), IMAGE_CACHE_DIR"/%s/", encodedHash);
 	createPath(imagePath);
 	free(encodedHash);
 	

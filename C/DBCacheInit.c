@@ -175,7 +175,7 @@ uint setupBDDCache()
 		if(projects != NULL)
 		{
 			void * searchData = buildSearchJumpTable(internalDB);
-			bool isWorkingOnLocalRepo;
+			bool isWorkingOnLocalRepo = false;
 			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nombreProject; pos++)
 			{
 				projects[pos].project.favoris = checkIfFaved(&projects[pos].project, &cacheFavs);
@@ -187,7 +187,6 @@ uint setupBDDCache()
 				}
 				else if(internalRepoList[posRepo] != projects[pos].project.repo)
 				{
-					isWorkingOnLocalRepo = false;
 					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get repo index
 				}
 

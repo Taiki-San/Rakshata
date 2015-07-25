@@ -15,6 +15,17 @@ int sortNumbers(const void *a, const void *b)
 	return ( *(uint*)a > *(uint*)b ) ? 1 : (( *(uint*)a == *(uint*)b ) ? 0 : -1);
 }
 
+int sortTomes(const void *a, const void *b)
+{
+	if(a == NULL)
+		return 1;
+
+	if(b == NULL)
+		return -1;
+
+	return sortNumbers(&(((META_TOME *) a)->ID), &(((META_TOME *) b)->ID));
+}
+
 int sortProjects(const void *a, const void *b)
 {
     const PROJECT_DATA_PARSED *struc1 = a;
@@ -137,7 +148,7 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 	if((a.project.tags != NULL) ^ (b.project.tags != NULL))
 		return false;
 
-	if(memcmp(a.project.tags, b.project.tags, a.project.nbTags * sizeof(TAG)))
+	if(a.project.tags != NULL && memcmp(a.project.tags, b.project.tags, a.project.nbTags * sizeof(TAG)))
 		return false;
 	
 	if(a.project.rightToLeft != b.project.rightToLeft)

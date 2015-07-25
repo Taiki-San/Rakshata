@@ -136,6 +136,7 @@ void getTomeInstalled(PROJECT_DATA *project, int *dernierLu);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);
+void freeSingleTome(META_TOME data);
 void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
 
 /**Unzip.c**/
