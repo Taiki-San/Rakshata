@@ -722,7 +722,6 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
 
 	//Some inconsistency, weird, let's try to recover
-
 	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
 	{
 		//Hum, let's try to copy what can be copied
@@ -762,6 +761,40 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 
 				memcpy(output.project.chapitresFull, output.chapitresLocal, output.nombreChapitreLocal * sizeof(int));
 			}
+		}
+	}
+	else if(output.chapitresLocal != NULL)
+	{
+		//Ensure everything is installed
+		uint length = output.nombreChapitreLocal;
+		for(uint copyPos = 0, checkPos = 0; checkPos < output.nombreChapitreLocal; checkPos++)
+		{
+			if(checkChapterReadable(output.project, output.chapitresLocal[checkPos]))
+			{
+				if(checkPos != copyPos)
+					output.chapitresLocal[copyPos] = output.chapitresLocal[checkPos];
+
+				copyPos++;
+			}
+			else
+				length--;
+		}
+
+		if(length == 0)
+		{
+			free(output.chapitresLocal);
+			output.chapitresLocal = NULL;
+			output.nombreChapitreLocal = 0;
+			consolidateCTLocale(&output, false);
+		}
+		else if(length < output.nombreChapitreLocal)
+		{
+			void * tmp = realloc(output.chapitresLocal, length * sizeof(int));
+			if(tmp != NULL)
+				output.chapitresLocal = tmp;
+
+			output.nombreChapitreLocal = length;
+			consolidateCTLocale(&output, false);
 		}
 	}
 
@@ -804,6 +837,43 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 
 			//We need to copy either if there is any data remaining, and if there is none, this is a no-op so let's go
 			copyTomeList(output.tomeLocal, output.nombreTomeLocal, output.project.tomesFull);
+		}
+	}
+	else if(output.tomeLocal != NULL)
+	{
+		//Ensure everything is installed
+		uint length = output.nombreTomeLocal;
+		for(uint copyPos = 0, checkPos = 0; checkPos < output.nombreTomeLocal; checkPos++)
+		{
+			if(checkTomeReadable(output.project, output.tomeLocal[checkPos].ID))
+			{
+				if(checkPos != copyPos)
+					output.tomeLocal[copyPos] = output.tomeLocal[checkPos];
+
+				copyPos++;
+			}
+			else
+			{
+				freeSingleTome(output.tomeLocal[checkPos]);
+				length--;
+			}
+		}
+
+		if(length == 0)
+		{
+			free(output.tomeLocal);
+			output.tomeLocal = NULL;
+			output.nombreTomeLocal = 0;
+			consolidateCTLocale(&output, true);
+		}
+		else if(length < output.nombreTomeLocal)
+		{
+			void * tmp = realloc(output.tomeLocal, length * sizeof(META_TOME));
+			if(tmp != NULL)
+				output.tomeLocal = tmp;
+
+			output.nombreTomeLocal = length;
+			consolidateCTLocale(&output, true);
 		}
 	}
 
