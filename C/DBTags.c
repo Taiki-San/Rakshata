@@ -369,7 +369,10 @@ charType * getCatNameForCode(uint32_t catID)
 bool doesCatOfIDExist(uint32_t catID)
 {
 	if(cache == NULL && immatureCache == NULL)
-		return NULL;
+		return false;
+
+	if(catID == CAT_NO_VALUE)
+		return true;
 
 	sqlite3_stmt * request;
 
@@ -401,7 +404,10 @@ charType * getTagNameForCode(uint32_t tagID)
 bool doesTagOfIDExist(uint32_t tagID)
 {
 	if(cache == NULL && immatureCache == NULL)
-		return NULL;
+		return false;
+
+	if(tagID == CAT_NO_VALUE)
+		return true;
 
 	sqlite3_stmt * request;
 

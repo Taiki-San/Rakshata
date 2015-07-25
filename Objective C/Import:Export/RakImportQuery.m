@@ -639,8 +639,8 @@ enum
 	data.rightToLeft = rightToLeft.selectedSegment == 1;
 
 	data.status = status.indexOfSelectedItem == 0 ? STATUS_INVALID : status.indexOfSelectedItem;
-	data.mainTag = tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem >= nbTags ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem].ID;
-	data.category = catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem >= nbCats ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem].ID;
+	data.mainTag = (tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem > nbTags) ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem - 1].ID;
+	data.category = (catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem > nbCats) ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem - 1].ID;
 
 	data.tags = malloc(sizeof(TAG));
 	if(data.tags != NULL)
