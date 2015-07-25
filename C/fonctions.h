@@ -84,8 +84,6 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage);
 /**Native.c**/
 int mkdirR(char *path);
 void strend(char *recepter, size_t length, const char *sender);
-int fscanfs(FILE* stream, const char *format, ...);
-int sscanfs(char *char_input, const char *format, ...);
 size_t ustrlen(const void *input);
 size_t wstrlen(const charType * input);
 int wstrcmp(const charType * a, const charType * b);

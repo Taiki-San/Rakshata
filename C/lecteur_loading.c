@@ -264,7 +264,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				return NULL;
 			}
 			
-			if(fscanfs(fileInput, "%d %s", &j, output[i], LONGUEUR_NOM_PAGE) != 2)
+			if(fscanf(fileInput, "%u %"STRINGIZE(LONGUEUR_NOM_PAGE)"s", &j, output[i]) != 2)
 			{
 				//Handle the case where we got less pages than expected
 				

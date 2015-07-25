@@ -55,7 +55,7 @@ bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, int currentSelection
 #define TOLERANCE_CLIC_PAGE 10
 
 /*Limites buffers*/
-#define LONGUEUR_NOM_PAGE LENGTH_PROJECT_NAME*2+300
+#define LONGUEUR_NOM_PAGE 1024
 
 /*Status*/
 enum

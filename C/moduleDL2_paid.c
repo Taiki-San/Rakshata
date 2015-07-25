@@ -49,13 +49,12 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
 			/*Interrogration du serveur*/
 			if(download_mem(SERVEUR_URL"/checkPaid.php", POSTRequest, &bufferOut, &downloadLength, SSL_ON) == CODE_RETOUR_OK && bufferOut != NULL && downloadLength != 0 && isNbr(bufferOut[0]))
 			{
-				int prix = -1;
+				int prix;
 				uint pos = 0, detail;
 
 				bufferOutBak = bufferOut;
 				
-				bufferOut += sscanfs(bufferOut, "%d\n%d", &prix, &factureID);
-				if(prix != -1 && factureID != INVALID_VALUE)
+				if(sscanf(bufferOut, "%d\n%d", &prix, &factureID) == 2 && prix != -1 && factureID != INVALID_VALUE)
 				{
 					uint posStatusLocal = 0;
 					int8_t ** statusLocal = calloc(sizeIndex+1, sizeof(int8_t*));
@@ -64,9 +63,13 @@ bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uin
 						bool somethingToPay = false, needLogin = false;
 						
 						/*Chargement du fichier*/
+
+						//We need to drop the first two lines we already parsed
 						for(; *bufferOut && *bufferOut != '\n'; bufferOut++);
 						for(; *bufferOut == '\n' || *bufferOut == '\r'; bufferOut++);
-						
+						for(; *bufferOut && *bufferOut != '\n'; bufferOut++);
+						for(; *bufferOut == '\n' || *bufferOut == '\r'; bufferOut++);
+
 						while(pos < sizeIndex && *bufferOut)
 						{
 							for(; *bufferOut && !isNbr(*bufferOut) && *bufferOut != MDLP_CODE_ERROR; bufferOut++);

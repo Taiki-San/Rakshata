@@ -130,7 +130,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
     {
 		uint posLine, projectID, posPtr = 0;
 		int chapitreTmp, posCatalogue = 0;
-		char ligne[2*LONGUEUR_COURT + 20], URL[LONGUEUR_URL], type[2];
+		char ligne[2*LONGUEUR_COURT + 20], type[2];
 
 		//Create the new structure, initialized at NULL
         DATA_LOADED **newBufferTodo = calloc(*nombreProjectTotal, sizeof(DATA_LOADED*));
@@ -144,6 +144,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 		//Load data from import.dat
 		DATA_LOADED * newChunk;
 		PROJECT_DATA * currentProject;
+		uint64_t repoID;
 		
 		for(pos = 0; state[pos] && posPtr < *nombreProjectTotal;) //On incrémente pas posPtr si la ligne est rejeté
         {
@@ -171,20 +172,26 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 			}
 			
 			if(nombreEspace != 3 || ligne[posLine])
+			{
+				(*nombreProjectTotal)--;
 				continue;
+			}
 
 			//Grab preliminary data
-
-            sscanfs(ligne, "%s %d %s %d", URL, LONGUEUR_URL, &projectID, type, 2, &chapitreTmp);
+            if(sscanf(ligne, "%llu %d %2s %d", &repoID, &projectID, type, &chapitreTmp) != 4)
+			{
+				(*nombreProjectTotal)--;
+				continue;
+			}
 			
-			if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->projectID != projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL)) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
+			if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->projectID == projectID && getRepoID(projectDB[posCatalogue]->repo) == repoID) //On vérifie si c'est pas le même projet, pour éviter de se retapper toute la liste
             {
 				currentProject = projectDB[posCatalogue];
             }
             else
             {
-                for(posCatalogue = 0; projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && (projectDB[posCatalogue]->projectID != projectID || strcmp(projectDB[posCatalogue]->repo->URL, URL)); posCatalogue++);
-                if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && projectID == projectDB[posCatalogue]->projectID && !strcmp(projectDB[posCatalogue]->repo->URL, URL))
+                for(posCatalogue = 0; projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && (projectDB[posCatalogue]->projectID != projectID || getRepoID(projectDB[posCatalogue]->repo) != repoID); posCatalogue++);
+                if(projectDB[posCatalogue] != NULL && projectDB[posCatalogue]->repo != NULL && projectID == projectDB[posCatalogue]->projectID && getRepoID(projectDB[posCatalogue]->repo) == repoID)
                 {
                     currentProject = projectDB[posCatalogue];
                 }
