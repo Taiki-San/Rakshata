@@ -145,6 +145,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 /**Utilitaires.c**/
 #define crashTemp(string, length) bzero(string, length)
 int sortNumbers(const void *a, const void *b);
+int sortTomes(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 int sortRootRepo(const void *a, const void *b);

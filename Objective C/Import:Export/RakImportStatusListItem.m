@@ -72,6 +72,8 @@
 - (byte) checkStatusFromChildren
 {
 	BOOL anythingWrong = NO, everythingWrong = YES;
+	_metadataProblem = NO;
+
 	for(RakImportStatusListItem * item in children)
 	{
 		BOOL itemStatus = item.itemForChild.issue != IMPORT_PROBLEM_NONE;
@@ -90,6 +92,7 @@
 
 - (void) checkRefreshStatusChild
 {
+	_metadataProblem = _itemForChild.issue == IMPORT_PROBLEM_METADATA;
 	_status = _itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
 }
 

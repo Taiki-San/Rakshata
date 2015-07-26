@@ -110,7 +110,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			cachedProject.nombreTomeLocal += project.nombreTomeLocal;
 			cachedProject.tomeLocal = newField;
 
-			qsort(newField, cachedProject.nombreTomeLocal, sizeof(META_TOME), sortNumbers);
+			qsort(cachedProject.tomeLocal, cachedProject.nombreTomeLocal, sizeof(META_TOME), sortTomes);
 		}
 	}
 	else
@@ -122,7 +122,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			cachedProject.nombreChapitreLocal += project.nombreChapitreLocal;
 			cachedProject.chapitresLocal = newField;
 
-			qsort(newField, cachedProject.nombreChapitreLocal, sizeof(int), sortNumbers);
+			qsort(cachedProject.chapitresLocal, cachedProject.nombreChapitreLocal, sizeof(int), sortNumbers);
 		}
 	}
 

@@ -34,7 +34,7 @@
 	NSArray * rootItems;
 }
 
-@property BOOL haveDuplicate;
+@property (readonly) BOOL haveDuplicate;
 @property (nonatomic) RakImportQuery * query;
 @property __weak RakImportStatusController * controller;
 
@@ -48,7 +48,7 @@
 	RakImportStatusListItem * listItem;
 
 	RakImportItem * _item;
-	BOOL isRoot, metadataProblem;
+	BOOL isRoot;
 
 	RakText * projectName;
 	RakStatusButton * button;

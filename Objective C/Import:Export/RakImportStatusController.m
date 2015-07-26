@@ -75,10 +75,10 @@ enum
 		if(issueHeader != nil)
 			[superview addSubview:issueHeader];
 
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshHeaderText) name:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshUI) name:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 	}
 	else
-		[self refreshHeaderText];
+		[self refreshUI];
 
 	outlineList = [[RakImportStatusList alloc] initWithImportList:dataSet];
 	if(outlineList != nil)
@@ -99,15 +99,13 @@ enum
 		}
 	}
 
-	if(outlineList.haveDuplicate)
+	replaceAll = [RakButton allocWithText:NSLocalizedString(@"REPLACE-ALL", nil)];
+	if(replaceAll != nil)
 	{
-		replaceAll = [RakButton allocWithText:NSLocalizedString(@"REPLACE-ALL", nil)];
-		if(replaceAll != nil)
-		{
-			replaceAll.target = self;
-			replaceAll.action = @selector(replaceAll);
-			[superview addSubview:replaceAll];
-		}
+		replaceAll.hidden = !outlineList.haveDuplicate;
+		replaceAll.target = self;
+		replaceAll.action = @selector(replaceAll);
+		[superview addSubview:replaceAll];
 	}
 
 	close = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
@@ -132,7 +130,7 @@ enum
 
 	currentY /= 2;
 
-	if(replaceAll != nil)
+	if(replaceAll != nil && !replaceAll.isHidden)
 	{
 		[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, oldHeight + currentY - replaceAll.bounds.size.height / 2)];
 		[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
@@ -218,9 +216,15 @@ enum
 	return @"Yay, everything is okay (shouldn't appear)";
 }
 
-- (void) refreshHeaderText
+- (void) refreshUI
 {
 	issueHeader.stringValue = [self secondaryHeaderText];
+
+	if(replaceAll.isHidden == outlineList.haveDuplicate)
+	{
+		replaceAll.hidden = !replaceAll.isHidden;
+		[self setPositioningOfIssueUI];
+	}
 }
 
 - (NSColor *) textColor

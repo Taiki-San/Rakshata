@@ -34,7 +34,6 @@
 	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
-	metadataProblem = item.metadataProblem;
 
 	if(projectName == nil)
 	{
@@ -151,10 +150,10 @@
 
 - (void) getDetails
 {
-	if(isRoot && !metadataProblem)
+	if(isRoot && !listItem.metadataProblem)
 		return;
 
-	if(metadataProblem)
+	if(listItem.metadataProblem)
 	{
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithMetadata:listItem.projectData];
 		if(alert != nil)

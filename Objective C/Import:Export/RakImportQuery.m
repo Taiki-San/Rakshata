@@ -45,7 +45,7 @@ enum
 
 - (instancetype) autoInitWithDuplicate : (RakImportItem *) item
 {
-	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA)
+	if(item == nil || item.issue != IMPORT_PROBLEM_DUPLICATE)
 		return nil;
 
 	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithDuplicate:item];
@@ -653,13 +653,13 @@ enum
 
 	NSMutableArray * overridenImages = [NSMutableArray array];
 
-	if(!dropCT.defaultImage)
+	if(!dropCT.defaultImage && dropCT.image != nil)
 		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_HEAD2X), @"data" : dropCT.image}];
 
-	if(!dropDD.defaultImage)
+	if(!dropDD.defaultImage && dropDD.image != nil)
 		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_DD2X), @"data" : dropDD.image}];
 
-	if(!dropSR.defaultImage)
+	if(!dropSR.defaultImage && dropSR.image != nil)
 		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_SR2X), @"data" : dropSR.image}];
 
 	if([_controller reflectMetadataUpdate:data withImages:[NSArray arrayWithArray:overridenImages] forItem:_itemOfQueryForMetadata])

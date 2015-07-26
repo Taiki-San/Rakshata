@@ -45,9 +45,6 @@
 	if(project.authorName[0] == 0)
 		return true;
 
-	if(project.status == STATUS_INVALID)
-		return true;
-
 	return false;
 }
 
@@ -143,7 +140,7 @@
 
 	if([self needMoreData])
 	{
-		_issue = IMPORT_PROBLEM_DUPLICATE;
+		_issue = IMPORT_PROBLEM_METADATA;
 		return NO;
 	}
 

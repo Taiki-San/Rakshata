@@ -721,6 +721,8 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
 	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
 
+	BOOL needRebuildCT = NO;
+
 	//Some inconsistency, weird, let's try to recover
 	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
 	{
@@ -785,7 +787,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 			free(output.chapitresLocal);
 			output.chapitresLocal = NULL;
 			output.nombreChapitreLocal = 0;
-			consolidateCTLocale(&output, false);
+			needRebuildCT = YES;
 		}
 		else if(length < output.nombreChapitreLocal)
 		{
@@ -794,7 +796,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 				output.chapitresLocal = tmp;
 
 			output.nombreChapitreLocal = length;
-			consolidateCTLocale(&output, false);
+			needRebuildCT = YES;
 		}
 	}
 
@@ -864,7 +866,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 			free(output.tomeLocal);
 			output.tomeLocal = NULL;
 			output.nombreTomeLocal = 0;
-			consolidateCTLocale(&output, true);
+			needRebuildCT = YES;
 		}
 		else if(length < output.nombreTomeLocal)
 		{
@@ -873,9 +875,12 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 				output.tomeLocal = tmp;
 
 			output.nombreTomeLocal = length;
-			consolidateCTLocale(&output, true);
+			needRebuildCT = YES;
 		}
 	}
+
+	if(needRebuildCT)
+		generateCTUsable(&output);
 
 	//Eh, no data
 	if(output.project.chapitresFull == NULL && output.project.tomesFull == NULL)

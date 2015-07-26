@@ -52,8 +52,6 @@ enum
 			}
 
 			[currentRoot addItemAsChild:item];
-
-			_haveDuplicate |= item.issue == IMPORT_PROBLEM_DUPLICATE;
 		}
 
 		[rootCollector enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL * stop) {	[obj commitFinalList];	}];
@@ -138,6 +136,17 @@ enum
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+}
+
+- (BOOL) haveDuplicate
+{
+	for(RakImportItem * item in _dataSet)
+	{
+		if(item.issue == IMPORT_PROBLEM_DUPLICATE)
+			return YES;
+	}
+
+	return NO;
 }
 
 - (void) setQuery : (RakImportQuery *) newQuery
