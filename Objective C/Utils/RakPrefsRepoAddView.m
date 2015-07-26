@@ -188,7 +188,7 @@ enum
 	title = [[RakText alloc] initWithText:[self getTitleString] :[self getTitleColor]];
 	if(title != nil)
 	{
-		title.alignment = NSCenterTextAlignment;
+		title.alignment = NSTextAlignmentCenter;
 		
 		[title.cell setWraps:YES];
 		title.fixedWidth = WIDTH_BORDERED;

@@ -139,7 +139,7 @@
 	cell.centered = YES;
 	
 	[cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
-	[cell setAlignment:NSCenterTextAlignment];
+	[cell setAlignment:NSTextAlignmentCenter];
 	
 	[fields insertObject:cell atIndex:cellID];
 }

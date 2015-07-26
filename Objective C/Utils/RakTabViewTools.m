@@ -27,7 +27,7 @@
 		[head sizeToFit];
 		
 		main = [[RakText alloc] initWithText:frameRect : detail : textColor];
-		[main setAlignment:NSCenterTextAlignment];
+		[main setAlignment:NSTextAlignmentCenter];
 		[main sizeToFit];
 		[main setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - main.bounds.size.width / 2, frameRect.size.height / 2 - main.bounds.size.height / 2 -  head.bounds.size.height * 0.75)];
 		[self addSubview:main];

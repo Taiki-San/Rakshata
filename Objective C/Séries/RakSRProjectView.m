@@ -98,7 +98,7 @@ enum
 	RakText * output = [[RakText alloc] initWithText :string : color];
 	if(output != nil)
 	{
-		output.alignment = NSCenterTextAlignment;
+		output.alignment = NSTextAlignmentCenter;
 		output.font = [NSFont fontWithName:[Prefs getFontName:fontCode] size:fontSize];
 		
 		[output.cell setWraps : YES];

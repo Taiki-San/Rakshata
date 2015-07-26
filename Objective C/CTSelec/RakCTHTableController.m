@@ -290,7 +290,7 @@ enum
 	}
 	
 	[result setTextColor : [self textColor : isTitleColumn]];
-	[result setAlignment : isTitleColumn ? NSLeftTextAlignment : NSRightTextAlignment];
+	[result setAlignment : isTitleColumn ? NSTextAlignmentLeft : NSTextAlignmentRight];
 	[result setDrawsBackground:NO];
 	
 	return result;

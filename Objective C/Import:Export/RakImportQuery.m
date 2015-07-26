@@ -269,7 +269,7 @@ enum
 	header = [self getTextForLocalizationString:@"IMPORT-META-PLZ-DRAG" :selfSize.width];
 	if(header != nil)
 	{
-		header.alignment = NSCenterTextAlignment;
+		header.alignment = NSTextAlignmentCenter;
 		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
 		header.textColor = [self mainTitleColor];
 

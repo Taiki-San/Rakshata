@@ -55,7 +55,7 @@
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS
 			[_placeholder setFont: [NSFont systemFontOfSize:15]];
 #endif
-			[_placeholder setAlignment:NSCenterTextAlignment];
+			[_placeholder setAlignment:NSTextAlignmentCenter];
 			[_placeholder sizeToFit];
 			[self addSubview:_placeholder];
 		}

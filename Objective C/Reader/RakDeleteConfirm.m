@@ -53,7 +53,7 @@
 	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
 	if(contentText != nil)
 	{
-		[contentText setAlignment:NSCenterTextAlignment];
+		[contentText setAlignment:NSTextAlignmentCenter];
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 		[contentText sizeToFit];
 		[self addSubview : contentText];

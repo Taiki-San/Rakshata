@@ -37,7 +37,7 @@
 	foreground.delegate = self;
 	
 	footerPlaceholder = [[RakText alloc] initWithText:container.bounds : NSLocalizedString(@"AUTH-FOOTER-PLACEHOLDER", nil) : [Prefs getSystemColor : COLOR_ACTIVE : nil]];
-	[footerPlaceholder setAlignment:NSCenterTextAlignment];
+	[footerPlaceholder setAlignment:NSTextAlignmentCenter];
 	[footerPlaceholder sizeToFit];
 	
 	NSPoint origin = NSCenteredViews(container, footerPlaceholder);	origin.y += 5;

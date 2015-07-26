@@ -32,7 +32,7 @@
 			_title.widthGradient = 0.4f;
 			
 			[_title setFrame : [self frameForTitle:_bounds : _title.bounds.size.height]];
-			[_title setAlignment : NSRightTextAlignment];
+			[_title setAlignment : NSTextAlignmentRight];
 			[self addSubview:_title];
 		}
 		

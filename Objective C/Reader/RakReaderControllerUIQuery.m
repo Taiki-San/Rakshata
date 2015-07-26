@@ -58,7 +58,7 @@
 	if(contentText != nil)
 	{
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
-		[contentText setAlignment:NSCenterTextAlignment];
+		[contentText setAlignment:NSTextAlignmentCenter];
 		[contentText sizeToFit];
 		
 		[contentText setFrameOrigin:NSMakePoint(frame.size.width / 2 - contentText.bounds.size.width / 2, frame.size.height - 10 - contentText.frame.size.height)];

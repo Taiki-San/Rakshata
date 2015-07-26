@@ -41,7 +41,7 @@ enum
 		infos = [[RakText alloc] initWithText:@"Data" :[self getTextColor]];
 		if(infos != nil)
 		{
-			[infos setAlignment:NSCenterTextAlignment];
+			[infos setAlignment:NSTextAlignmentCenter];
 			[self addSubview:infos];
 		}
 		else
@@ -65,7 +65,7 @@ enum
 			synopsis.fixedWidth = _bounds.size.width - 2 * OFFSET_SYNOPSIS;
 			[synopsis setFrameOrigin : NSMakePoint(OFFSET_SYNOPSIS, 0)];
 			
-			[synopsis setAlignment:NSJustifiedTextAlignment];
+			[synopsis setAlignment:NSTextAlignmentJustified];
 			[synopsis.cell setWraps:YES];
 			
 			[synopsis setTextColor : [self getSynopsisColor]];

@@ -116,7 +116,7 @@
 {
 	if(_drawGradient)
 	{
-		if(self.alignment != NSRightTextAlignment)
+		if(self.alignment != NSTextAlignmentRight)
 		{
 			_gradientXOrigin = width * _widthGradient;
 			_gradientAngle = 0;

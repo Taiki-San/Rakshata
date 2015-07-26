@@ -85,7 +85,7 @@ enum
 		_synopsis.fixedWidth = self.bounds.size.width - [RakScroller width] - (_haveScroller ? COMPACT_OFFSET : 0);
 		[_synopsis setFrameOrigin : NSZeroPoint];
 		
-		[_synopsis setAlignment:NSJustifiedTextAlignment];
+		[_synopsis setAlignment:NSTextAlignmentJustified];
 		[_synopsis.cell setWraps:YES];
 		
 		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];

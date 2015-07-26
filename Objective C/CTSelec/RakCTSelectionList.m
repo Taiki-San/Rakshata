@@ -784,7 +784,7 @@
 	
 	if(_detailColumns != nil && [_detailColumns containsObject : tableColumn])
 	{
-		output.alignment = NSRightTextAlignment;
+		output.alignment = NSTextAlignmentRight;
 		
 		output.stringValue = [self tableView:tableView objectValueForTableColumn:tableColumn row:row];
 		[output sizeToFit];
@@ -805,7 +805,7 @@
 		}
 	}
 	else
-		output.alignment = NSLeftTextAlignment;
+		output.alignment = NSTextAlignmentLeft;
 	
 	return output;
 }

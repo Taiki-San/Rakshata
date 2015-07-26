@@ -99,7 +99,7 @@
 		projectName = [[RakText alloc] initWithText : _bounds : currentElem : [self textColor]];
 		if(projectName != nil)
 		{
-			[projectName setAlignment:NSLeftTextAlignment];
+			[projectName setAlignment:NSTextAlignmentLeft];
 			[projectName.cell setWraps:YES];
 			needProcessName = YES;
 			
@@ -126,7 +126,7 @@
 		{
 			authorName.URL = @"";
 			
-			[authorName setAlignment:NSLeftTextAlignment];
+			[authorName setAlignment:NSTextAlignmentLeft];
 			[authorName.cell setWraps:YES];
 			needProcessAuthor = YES;
 			

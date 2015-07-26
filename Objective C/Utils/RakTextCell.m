@@ -79,7 +79,7 @@
 		self.centered = YES;
 		self.drawsBackground = NO;
 		self.backgroundColor = [NSColor clearColor];
-		self.alignment = NSCenterTextAlignment;
+		self.alignment = NSTextAlignmentCenter;
 		
 		if(color != nil)
 			self.textColor = color;

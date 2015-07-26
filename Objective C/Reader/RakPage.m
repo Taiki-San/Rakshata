@@ -1279,7 +1279,7 @@
 			{
 				objectPage = object.page;
 				
-				if(objectPage < MAX(curPage, 5) - 5 ||	//Too far behind
+				if(objectPage < MAX(curPage, 5U) - 5 ||	//Too far behind
 				   objectPage > curPage + 24)			//Too far ahead
 				{
 					[freeList addObject:object];

@@ -40,7 +40,7 @@
 	RakText * contentText = [[RakText alloc] initWithText:self.frame :NSLocalizedString(@"FAVORITE-DESCRIPTION", nil) :[Prefs getSystemColor : COLOR_ACTIVE:nil]];
 	if(contentText != nil)
 	{
-		[contentText setAlignment:NSCenterTextAlignment];
+		[contentText setAlignment:NSTextAlignmentCenter];
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
 		[contentText sizeToFit];
 		

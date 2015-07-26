@@ -199,7 +199,7 @@ enum
 			[mainEaster.cell setWraps:YES];
 			mainEaster.fixedWidth = WINDOW_WIDTH - WINDOW_WIDTH / EASTER_BORDER;
 			
-			mainEaster.alignment = NSJustifiedTextAlignment;
+			mainEaster.alignment = NSTextAlignmentJustified;
 			
 			[contentView addSubview:mainEaster];
 		}
