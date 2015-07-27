@@ -10,8 +10,8 @@ mkdir lib && mv *.a lib
 cp lib/*.a ../
 
 #libcURL
-#don’t forget to update openSSL path
-./configure --disable-debug --enable-optimize --enable-static --disable-shared --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-smb --enable-ipv6 --enable-threaded-resolver --disable-verbose --disable-sspi --disable-ntlm-wb --disable-cookies --disable-soname-bump --without-darwinssl --with-ssl=/Users/Taiki/Downloads/openssl-1.0.2c --without-ca-bundle --without-libssh2 --without-librtmp --without-winidn --without-libidn --disable-libcurl-option
+#don’t forget to update LibreSSL path
+./configure --disable-debug --enable-optimize --enable-static --disable-shared --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-smb --enable-ipv6 --enable-threaded-resolver --disable-verbose --disable-sspi --disable-ntlm-wb --disable-cookies --disable-soname-bump --without-darwinssl --with-ssl=/Users/Taiki/Downloads/libressl-2.2.1 --without-ca-bundle --without-libssh2 --without-librtmp --without-winidn --without-libidn --disable-libcurl-option
 make
 mv lib/.libs/libcurl.a ../
 

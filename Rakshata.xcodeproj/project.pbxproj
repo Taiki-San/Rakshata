@@ -15,12 +15,13 @@
 		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
 		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
-		B6033BD218E4617000750226 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCD18E4617000750226 /* libssl.a */; };
 		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
 		B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */; };
 		B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */; };
 		B60AF9D21B39B94F00A520D0 /* DBLocal.c in Sources */ = {isa = PBXBuildFile; fileRef = B60AF9D11B39B94F00A520D0 /* DBLocal.c */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
+		B611254D1B6688A7007ED137 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B611254C1B6688A7007ED137 /* libssl.a */; };
+		B611254F1B6689CA007ED137 /* libtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B611254E1B6689CA007ED137 /* libtls.a */; };
 		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
 		B61585F81912591F004F1791 /* moduleDLMainWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = B61585F71912591F004F1791 /* moduleDLMainWorker.m */; };
@@ -259,7 +260,6 @@
 		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
 		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
-		B6033BCD18E4617000750226 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
 		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
 		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = "Objective C/Utils/JSONParser.h"; sourceTree = "<group>"; };
 		B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSlideshowButton.h; path = Utils/RakSlideshowButton.h; sourceTree = "<group>"; };
@@ -269,6 +269,8 @@
 		B60AF9D11B39B94F00A520D0 /* DBLocal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBLocal.c; path = C/DBLocal.c; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
+		B611254C1B6688A7007ED137 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
+		B611254E1B6689CA007ED137 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = Libraries/libtls.a; sourceTree = "<group>"; };
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
 		B61279FC1A586B5E0034C241 /* dbProperties.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = dbProperties.h; path = C/dbProperties.h; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
@@ -635,11 +637,12 @@
 			files = (
 				B694B8681A732F3500391B62 /* Foundation.framework in Frameworks */,
 				B694B8661A732F2800391B62 /* AppKit.framework in Frameworks */,
+				B611254D1B6688A7007ED137 /* libssl.a in Frameworks */,
 				B694B8641A732F1B00391B62 /* Cocoa.framework in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
 				B6033BD118E4617000750226 /* libsqlite.a in Frameworks */,
-				B6033BD218E4617000750226 /* libssl.a in Frameworks */,
 				B6033BD018E4617000750226 /* libcurl.a in Frameworks */,
+				B611254F1B6689CA007ED137 /* libtls.a in Frameworks */,
 				B6033BD318E4617000750226 /* libz.a in Frameworks */,
 				B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */,
 				B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */,
@@ -1255,15 +1258,15 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B694B8631A732F1B00391B62 /* Cocoa.framework */,
 				B6033BCA18E4617000750226 /* libcrypto.a */,
 				B6033BCB18E4617000750226 /* libcurl.a */,
 				B6033BCC18E4617000750226 /* libsqlite.a */,
-				B6033BCD18E4617000750226 /* libssl.a */,
+				B611254C1B6688A7007ED137 /* libssl.a */,
+				B611254E1B6689CA007ED137 /* libtls.a */,
 				B6033BCE18E4617000750226 /* libz.a */,
+				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
 				B6EBD8091953934600642EB8 /* INPopoverController.framework */,
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
-				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1271,8 +1274,9 @@
 		B6CF07C01868DD58009B16A3 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B694B8671A732F3500391B62 /* Foundation.framework */,
 				B694B8651A732F2800391B62 /* AppKit.framework */,
+				B694B8631A732F1B00391B62 /* Cocoa.framework */,
+				B694B8671A732F3500391B62 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
