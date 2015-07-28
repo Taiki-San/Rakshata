@@ -23,9 +23,33 @@
 
 @implementation RakTableRowView
 
+- (instancetype) init
+{
+	self = [super init];
+
+	if(self != nil)
+	{
+		self.drawBackground = NO;
+	}
+
+	return self;
+}
+
 - (void) drawBackgroundInRect:(NSRect)dirtyRect
 {
-	
+	if(self.drawBackground)
+	{
+		if(self.selected)
+		{
+			[[Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO :nil] setFill];
+			NSRectFill(dirtyRect);
+		}
+	}
+}
+
+- (void)drawSelectionInRect:(NSRect)dirtyRect
+{
+	[self drawBackgroundInRect:dirtyRect];
 }
 
 - (void) setForcedWidth:(CGFloat)forcedWidth

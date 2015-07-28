@@ -61,6 +61,7 @@ enum
 
 		[self initializeMain:NSMakeRect(0, 0, LIST_WIDTH, 200)];
 		[content setHeaderView:nil];
+		[content setAllowsMultipleSelection:YES];
 
 		//Expand what have to be
 		[rootCollector enumerateObjectsUsingBlock:^(RakImportStatusListItem * obj, NSUInteger idx, BOOL * stop) {
@@ -105,6 +106,7 @@ enum
 	if(rowView == nil)
 	{
 		rowView = [[RakTableRowView alloc] init];
+		rowView.drawBackground = YES;
 		rowView.identifier = @"HeaderRowView";
 	}
 
@@ -126,9 +128,9 @@ enum
 	return rowView;
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
+- (NSIndexSet *)outlineView:(NSOutlineView *)outlineView selectionIndexesForProposedSelection:(NSIndexSet *)proposedSelectionIndexes
 {
-	return NO;
+	return proposedSelectionIndexes;
 }
 
 + (void) refreshAfterPass

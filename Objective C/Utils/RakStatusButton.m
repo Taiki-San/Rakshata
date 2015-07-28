@@ -112,6 +112,9 @@ enum
 	if(!clickingInside || _target == nil || ![_target respondsToSelector:_action])
 		return [super mouseUp:theEvent];
 
+	if([self convertPoint:theEvent.locationInWindow fromView:nil].x < [self getMinX])
+		return [super mouseUp:theEvent];
+
 	IMP imp = [_target methodForSelector:_action];
 	void (*func)(id, SEL, id) = (void *)imp;
 	func(_target, _action, nil);

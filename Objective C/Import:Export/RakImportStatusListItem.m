@@ -10,6 +10,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakImportStatusListItem()
+{
+	BOOL cachedMetadataProblem;
+}
+
+@end
+
 @implementation RakImportStatusListItem
 
 - (instancetype) initWithProject : (PROJECT_DATA) project
@@ -40,7 +47,6 @@
 		_itemForChild = item;
 		_projectData = _itemForChild.projectData.data.project;
 		_status = self.itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
-		_metadataProblem = _status == IMPORT_PROBLEM_METADATA;
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatusChild) name:NOTIFICATION_CHILD object:nil];
 	}
@@ -72,7 +78,7 @@
 - (byte) checkStatusFromChildren
 {
 	BOOL anythingWrong = NO, everythingWrong = YES;
-	_metadataProblem = NO;
+	cachedMetadataProblem = NO;
 
 	for(RakImportStatusListItem * item in children)
 	{
@@ -82,17 +88,21 @@
 		everythingWrong &= itemStatus;
 
 		if(itemStatus && item.itemForChild.issue == IMPORT_PROBLEM_METADATA)
-			_metadataProblem = YES;
+			cachedMetadataProblem = YES;
 	}
 
 	return anythingWrong ? (everythingWrong ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;
+}
+
+- (BOOL) metadataProblem
+{
+	return _isRootItem ? cachedMetadataProblem : _itemForChild.issue == IMPORT_PROBLEM_METADATA;
 }
 
 #pragma mark - Content update
 
 - (void) checkRefreshStatusChild
 {
-	_metadataProblem = _itemForChild.issue == IMPORT_PROBLEM_METADATA;
 	_status = _itemForChild.issue == IMPORT_PROBLEM_NONE ? STATUS_BUTTON_OK : STATUS_BUTTON_ERROR;
 }
 

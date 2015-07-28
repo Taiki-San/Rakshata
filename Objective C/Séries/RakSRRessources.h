@@ -23,6 +23,7 @@
 	BOOL haveForcedWidth;
 }
 
+@property BOOL drawBackground;
 @property (nonatomic) CGFloat forcedWidth;
 
 @end
