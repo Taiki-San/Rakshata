@@ -16,7 +16,7 @@
 
 @interface RakImportController : NSObject
 
-+ (void) importFile : (NSString *) file : (BOOL) generatedArchive;
++ (void) importFile : (id <RakImportIO>) IOController;
 + (void) postProcessingUI: (RakImportStatusController *) UI;
 
 @end

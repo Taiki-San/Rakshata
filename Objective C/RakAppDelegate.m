@@ -164,10 +164,20 @@
 			[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
 		});
 	}
-	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame
-			/*|| ([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))*/)
+	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
 	{
-		[RakImportController importFile:filename :YES];
+		RakImportDotRakController * IOController = [[RakImportDotRakController alloc] initWithArchive:unzOpen64([filename UTF8String])];
+		if(IOController == nil)
+		{
+			NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
+		}
+		else
+			[RakImportController importFile:IOController];
+	}
+	else if([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))
+	{
+		//Import a directory
+		return NO;
 	}
 	else
 		return NO;

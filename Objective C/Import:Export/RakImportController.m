@@ -12,9 +12,9 @@
 
 @implementation RakImportController
 
-+ (void) importFile : (NSString *) filename : (BOOL) generatedArchive
++ (void) importFile : (id <RakImportIO>) IOController
 {
-	if(filename == nil || !generatedArchive)
+	if(IOController == nil)
 		return;
 
 	if([NSThread isMainThread])
@@ -22,7 +22,7 @@
 		RakImportStatusController * UI = [[RakImportStatusController alloc] init];
 
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self importFile:filename :generatedArchive withUI:UI];
+			[self importFile:IOController withUI:UI];
 		});
 	}
 	else
@@ -33,21 +33,13 @@
 			UI = [[RakImportStatusController alloc] init];
 		});
 
-		[self importFile:filename :generatedArchive withUI:UI];
+		[self importFile:IOController withUI:UI];
 	}
 }
 
-+ (void) importFile : (NSString *) filename : (BOOL) generatedArchive withUI : (RakImportStatusController *) UI
++ (void) importFile : (id <RakImportIO>) IOController withUI : (RakImportStatusController *) UI
 {
 	//We first try to open the file, so we can eventually start working with it
-	RakImportDotRakController * IOController = [[RakImportDotRakController alloc] initWithArchive:unzOpen64([filename UTF8String])];
-	if(IOController == nil)
-	{
-		NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
-		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
-		return;
-	}
-
 	NSArray * manifest = [IOController getManifest];
 	if(manifest == nil || [manifest count] == 0)
 	{
