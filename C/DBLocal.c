@@ -94,8 +94,12 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 
 			generateCTUsable(&project);
 
-			if(addToCache(NULL, project, repoID, true, false))
+			project.project.cacheDBID = addToCache(NULL, project, repoID, true, true);
+			if(project.project.cacheDBID != 0)
+			{
 				insertInSearch(NULL, INSERT_PROJECT, project.project);
+				addRecentEntry(project.project, true);
+			}
 			return;
 		}
 	}
@@ -130,6 +134,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	generateCTUsable(&cachedProject);
 
 	updateCache(cachedProject, RDB_UPDATE_ID, 0);
+	addRecentEntry(cachedProject.project, true);
 	releaseParsedData(cachedProject);
 }
 
