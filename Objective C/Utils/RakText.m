@@ -68,6 +68,9 @@
 	self.drawsBackground = NO;
 	self.backgroundColor = [NSColor clearColor];
 	self.selectable = NO;
+
+	if([self respondsToSelector:@selector(setAllowsDefaultTighteningForTruncation:)])
+		[self setAllowsDefaultTighteningForTruncation:YES];
 	
 	[self.cell setWraps : NO];
 }

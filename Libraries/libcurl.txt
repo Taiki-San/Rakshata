@@ -1,10 +1,7 @@
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
-#OpenSSL
-wget https://www.openssl.org/source/openssl-1.0.2-latest.tar.gz -O openssl.tag.gz
-tar -zxvf openssl.tag.gz
-rm openssl.tag.gz
-./Configure darwin64-x86_64-cc
+#LibreSSL
+./config
 make
 mkdir lib && mv *.a lib
 cp lib/*.a ../
