@@ -41,7 +41,7 @@ void deleteCrashFile();
 
 uint32_t getMainThread();
 bool shouldDownloadFavorite();
-void sendToLog(char * string);
+void sendToLog(const char * string);
 void notifyEmailUpdate();
 void restorePrefsFile();
 bool removeProjectWithContent();

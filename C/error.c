@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-void logR(char *error)
+void logR(const char *error)
 {
 #ifdef __APPLE__
 	sendToLog(error);

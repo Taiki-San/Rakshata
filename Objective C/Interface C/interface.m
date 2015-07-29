@@ -188,7 +188,7 @@ bool shouldDownloadFavorite()
 	return output;
 }
 
-void sendToLog(char * string)
+void sendToLog(const char * string)
 {
 	NSLog(@"%s", string);
 }

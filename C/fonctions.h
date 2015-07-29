@@ -42,7 +42,7 @@ int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_l
 int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled);
 
 /**Error.c**/
-void logR(char *error);
+void logR(const char *error);
 int libcurlErrorCode(CURLcode code);
 void memoryError(size_t size);
 
