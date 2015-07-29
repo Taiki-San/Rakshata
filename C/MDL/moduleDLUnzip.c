@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include "unzip/unz_memory.c"
+#include "../unzip/unz_memory.c"
 
 //Utils
 bool checkNameFileZip(char * fileToTest)
