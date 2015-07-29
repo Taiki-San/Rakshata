@@ -19,8 +19,6 @@
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
-			<key>NSDocumentClass</key>
-			<string></string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -47,6 +45,8 @@
 			<string>RAR Archive</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -59,6 +59,8 @@
 			<string>CBR Archive</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -71,6 +73,8 @@
 			<string>ZIP Archive</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -82,7 +86,9 @@
 			<key>CFBundleTypeName</key>
 			<string>CBZ Archive</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -100,7 +106,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>12914</string>
+	<string>12932</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.entertainment</string>
 	<key>LSMinimumSystemVersion</key>

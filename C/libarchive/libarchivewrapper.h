@@ -16,6 +16,9 @@
 typedef struct libArchiveWrapper
 {
 	struct archive * archive;
+	struct archive_entry * cachedEntry;
+
+	FILE * fileHandle;
 
 	char ** fileList;
 	uint nbFiles;
@@ -24,7 +27,12 @@ typedef struct libArchiveWrapper
 
 //Utils
 ARCHIVE * openArchiveFromFile(const char * path);
+void rarJumpBackAtBegining(ARCHIVE * archive);
+
+bool rarExtractOnefile(ARCHIVE * archive, const char* filename, const char* outputPath);
+bool rarExtractToMem(ARCHIVE * archive, const char* filename, byte ** data, uint64_t * length);
 
 bool fileExistInArchive(ARCHIVE * archive, const char * filename);
+bool rarLocateFile(ARCHIVE * archive, void ** entryBackup, const char * filename);
 
 void closeArchive(ARCHIVE * archive);

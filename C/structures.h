@@ -10,9 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#ifndef byte
-	typedef unsigned char byte;
-#endif
 typedef byte rawData;
 
 typedef wchar_t charType;

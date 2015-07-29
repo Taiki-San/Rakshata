@@ -74,7 +74,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
         goto quit;
 
 	//List files
-    ret_value &= listArchiveContent(zipFile, &filename, &nombreFichiers);
+    ret_value &= unzListArchiveContent(zipFile, &filename, &nombreFichiers);
 	if(ret_value)
 	{
 		uint nombreFichierValide = 0;
@@ -90,7 +90,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			//Name is valid
 			if(checkNameFileZip(filename[i]))
 			{
-				ret_value &= extractOnefile(zipFile, filename[i], outputPath, STRIP_PATH_ALL, project.haveDRM ? pass[i] : NULL);
+				ret_value &= unzExtractOnefile(zipFile, filename[i], outputPath, STRIP_PATH_ALL, project.haveDRM ? pass[i] : NULL);
 				nombreFichierValide++;
 			}
 			else

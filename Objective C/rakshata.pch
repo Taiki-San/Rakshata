@@ -20,6 +20,11 @@
 #include <limits.h>
 #include <dirent.h>
 #include <libcurl/curl.h>
+
+#ifndef byte
+	typedef unsigned char byte;
+#endif
+
 #include "libarchivewrapper.h"
 
 #include "main.h"

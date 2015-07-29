@@ -426,7 +426,7 @@
 	uint64_t contentSize;
 	byte * contentFile;
 
-	if(!extractToMem(archive, &contentFile, &contentSize) || contentFile == NULL || contentSize == 0)
+	if(!unzExtractToMem(archive, &contentFile, &contentSize) || contentFile == NULL || contentSize == 0)
 		return nil;
 
 	NSArray * manifest = [self analyzeManifest:[NSData dataWithBytes:contentFile length:contentSize]];

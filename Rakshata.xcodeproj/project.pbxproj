@@ -1466,7 +1466,6 @@
 				B6F6ECDB18A3001400E3B55B /* ioapi.c */,
 				B6F6ECDC18A3001400E3B55B /* ioapi.h */,
 				B6F6ECDF18A3001400E3B55B /* miniunz.c */,
-				B6F6ECE018A3001400E3B55B /* zlibAPI.h */,
 				B6E07A1D1B35917B0016C9B0 /* minizip.c */,
 				B6F6ED1B18A3003500E3B55B /* unz_memory.c */,
 				B6F6ECE318A3001400E3B55B /* unzip.c */,
@@ -1474,6 +1473,7 @@
 				B6E07A1A1B3575F60016C9B0 /* zip.c */,
 				B6E07A1B1B3575F60016C9B0 /* zip.h */,
 				B6F6ECE418A3001400E3B55B /* zlib */,
+				B6F6ECE018A3001400E3B55B /* zlibAPI.h */,
 			);
 			name = zlib;
 			path = C/unzip;

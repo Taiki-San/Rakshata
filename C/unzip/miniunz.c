@@ -18,7 +18,7 @@
 
 #define BUFFER_SIZE 0x4000
 
-int extractCurrentfile(unzFile zipFile, char* filenameExpected, const char* outputPath, int extractWithoutPath, unsigned char* passwordPageCrypted)
+int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* outputPath, int extractWithoutPath, unsigned char* passwordPageCrypted)
 {
 	int err = UNZ_OK;
 	unz_file_info64 file_info;
@@ -233,7 +233,7 @@ int extractArchive(char * inputFile, char *outputPath, bool extractWithoutPath)
 	{
 		for (uint i = 0, nbEntry = metadata.number_entry; i < nbEntry; i++)
 		{
-			if(((err = extractCurrentfile(zipFile, NULL, outputPath, extractWithoutPath, NULL)) != UNZ_OK)			//Extract the current file
+			if(((err = unzExtractCurrentFile(zipFile, NULL, outputPath, extractWithoutPath, NULL)) != UNZ_OK)			//Extract the current file
 			   || (i + 1 < nbEntry && (err = unzGoToNextFile(zipFile)) != UNZ_OK))									//Jump to the next file
 				break;
 		}
@@ -244,7 +244,7 @@ int extractArchive(char * inputFile, char *outputPath, bool extractWithoutPath)
 	return err;
 }
 
-bool extractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted)
+bool unzExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extractWithoutPath, unsigned char* passwordPageCrypted)
 {
 	if(unzLocateFile(zipFile, filename, 0) != UNZ_OK)
 	{
@@ -256,10 +256,10 @@ bool extractOnefile(unzFile zipFile, char* filename, char* outputPath, bool extr
 		return false;
 	}
 
-	return extractCurrentfile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
+	return unzExtractCurrentFile(zipFile, filename, outputPath, extractWithoutPath, passwordPageCrypted) == UNZ_OK;
 }
 
-bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
+bool unzListArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
 {
 	if(filenameInzip == NULL)
 		return false;
@@ -310,7 +310,7 @@ bool listArchiveContent(unzFile uf, char *** filenameInzip, uint * nbFichiers)
 	return true;
 }
 
-bool extractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput)
+bool unzExtractToMem(unzFile zipFile, byte ** output, uint64_t * sizeOutput)
 {
 	if(zipFile == NULL || output == NULL)
 		return false;

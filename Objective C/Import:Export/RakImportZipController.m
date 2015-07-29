@@ -28,7 +28,7 @@
 			return nil;
 
 		//We grab the metadata as we will need them later
-		listArchiveContent(archive, &filenames, &nbFiles);
+		unzListArchiveContent(archive, &filenames, &nbFiles);
 
 		if(nbFiles == 0)
 			return nil;
@@ -103,7 +103,7 @@
 	if(strcmp([name UTF8String], filename) && unzLocateFile(archive, [name UTF8String], true) != UNZ_OK)
 		return NO;
 
-	extractCurrentfile(archive, NULL, [dirName UTF8String], STRIP_PATH_FIRST, NULL);
+	unzExtractCurrentFile(archive, NULL, [dirName UTF8String], STRIP_PATH_FIRST, NULL);
 
 	return YES;
 }
@@ -118,7 +118,7 @@
 	if(strcmp([name UTF8String], filename) && unzLocateFile(archive, [name UTF8String], true) != UNZ_OK)
 		return NO;
 
-	extractCurrentfile(archive, NULL, [path UTF8String], STRIP_TRUST_PATH_AS_FILENAME, NULL);
+	unzExtractCurrentFile(archive, NULL, [path UTF8String], STRIP_TRUST_PATH_AS_FILENAME, NULL);
 
 	return YES;
 }
@@ -136,7 +136,7 @@
 	byte * bytes = NULL;
 	uint64_t thumbSize;
 
-	if(!extractToMem(archive, &bytes, &thumbSize))
+	if(!unzExtractToMem(archive, &bytes, &thumbSize))
 		return NO;
 
 	*data = [NSData dataWithBytesNoCopy:bytes length:thumbSize freeWhenDone:YES];
