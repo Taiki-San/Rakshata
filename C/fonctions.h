@@ -149,6 +149,7 @@ int sortTomes(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);
 int sortRootRepo(const void *a, const void *b);
+int strnatcmp(const char *a, const char *b);
 bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b);
 uint positionnementApresChar(char* input, char *stringToFind);
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
