@@ -157,32 +157,75 @@
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
 	NSString * extension = [filename pathExtension];
+	BOOL retValue = NO;
 
 	if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
 		});
+		return YES;
 	}
-	else if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
+
+	//Okay, file Import
+	id <RakImportIO> IOController = nil;
+
+	if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
 	{
-		RakImportDotRakController * IOController = [[RakImportDotRakController alloc] initWithArchive:unzOpen64([filename UTF8String])];
-		if(IOController == nil)
-		{
-			NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
-		}
-		else
-			[RakImportController importFile:IOController];
+		IOController = [[RakImportDotRakController alloc] initWithFilename:filename];
+		if(IOController != nil)
+			retValue = YES;
 	}
 	else if([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))
 	{
 		//Import a directory
-		return NO;
 	}
 	else
-		return NO;
+	{
+		//Look for Rar
+		BOOL foundIt = NO;
+		for(NSString * string in EXTERNAL_FILE_EXT_RAR)
+		{
+			if([extension caseInsensitiveCompare:string] == NSOrderedSame)
+			{
+				foundIt = YES;
+				break;
+			}
+		}
 
-	return YES;
+		if(foundIt)
+		{
+			IOController = [[RakImportRarController alloc] initWithFilename:filename];
+			if(IOController != nil)
+				retValue = YES;
+		}
+		else
+		{
+			//Look for zip
+			for(NSString * string in EXTERNAL_FILE_EXT_ZIP)
+			{
+				if([extension caseInsensitiveCompare:string] == NSOrderedSame)
+				{
+					foundIt = YES;
+					break;
+				}
+			}
+
+			if(foundIt)
+			{
+				IOController = [[RakImportRarController alloc] initWithFilename:filename];
+				if(IOController != nil)
+					retValue = YES;
+			}
+		}
+	}
+
+	if(IOController != nil)
+		[RakImportController importFile:IOController];
+	else
+		NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
+
+	return retValue;
 }
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames;

@@ -159,6 +159,7 @@
 		B6AC08001AD69D5D00F750D3 /* RakOutlineList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AC07FF1AD69D5D00F750D3 /* RakOutlineList.m */; };
 		B6AC08031AD6A46600F750D3 /* RakOutlineListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AC08021AD6A46600F750D3 /* RakOutlineListItem.m */; };
 		B6ACB32F1B037988009AFF7C /* RakMDLFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACB32E1B037988009AFF7C /* RakMDLFooter.m */; };
+		B6AEB9781B69188B00F233B3 /* RakImportZipController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AEB9771B69188B00F233B3 /* RakImportZipController.m */; };
 		B6B209B81B5F943A0054DD76 /* RakImageDropArea.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B209B71B5F943A0054DD76 /* RakImageDropArea.m */; };
 		B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
 		B6B46DB018FB34FE00EB1FE6 /* RakList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B46DAF18FB34FE00EB1FE6 /* RakList.m */; };
@@ -493,6 +494,7 @@
 		B6AC08021AD6A46600F750D3 /* RakOutlineListItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakOutlineListItem.m; path = Utils/RakOutlineListItem.m; sourceTree = "<group>"; };
 		B6ACB32D1B037988009AFF7C /* RakMDLFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLFooter.h; path = MDL/RakMDLFooter.h; sourceTree = "<group>"; };
 		B6ACB32E1B037988009AFF7C /* RakMDLFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLFooter.m; path = MDL/RakMDLFooter.m; sourceTree = "<group>"; };
+		B6AEB9771B69188B00F233B3 /* RakImportZipController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportZipController.m; path = "Import:Export/RakImportZipController.m"; sourceTree = "<group>"; };
 		B6B209B61B5F943A0054DD76 /* RakImageDropArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImageDropArea.h; path = Utils/RakImageDropArea.h; sourceTree = "<group>"; };
 		B6B209B71B5F943A0054DD76 /* RakImageDropArea.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImageDropArea.m; path = Utils/RakImageDropArea.m; sourceTree = "<group>"; };
 		B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTabSize.m; path = Prefs/tools/RakPrefsTabSize.m; sourceTree = "<group>"; };
@@ -896,6 +898,7 @@
 				B67464891B64182300F4A929 /* RakImportIO.h */,
 				B67464871B64179600F4A929 /* RakImportDotRakController.m */,
 				B6D7EC081B682B90009FCE64 /* RakImportRarController.m */,
+				B6AEB9771B69188B00F233B3 /* RakImportZipController.m */,
 			);
 			name = "IO manager";
 			sourceTree = "<group>";
@@ -1827,6 +1830,7 @@
 				B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */,
 				B678675118F5EF6F004AA6B4 /* RakSRRessources.m in Sources */,
 				B6B93D8C1B580C2B00F7DE42 /* RakImportStatusList.m in Sources */,
+				B6AEB9781B69188B00F233B3 /* RakImportZipController.m in Sources */,
 				B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */,
 				B606EB291B6854F900DDBBBD /* DBCacheQuery.c in Sources */,
 				B606EB521B6855D300DDBBBD /* natsort.c in Sources */,

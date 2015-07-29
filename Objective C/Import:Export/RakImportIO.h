@@ -38,7 +38,7 @@
 
 @end
 
-@interface RakImportDotRakController : NSObject <RakImportIO>
+@interface RakImportZipController : NSObject <RakImportIO>
 {
 	unzFile * archive;
 
@@ -46,7 +46,22 @@
 	uint nbFiles;
 }
 
-- (instancetype __nullable) initWithArchive : (unzFile __nullable * __nullable) file;
+- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
 
 @end
 
+@interface RakImportDotRakController : RakImportZipController
+{
+
+}
+
+@end
+
+@interface RakImportRarController : NSObject <RakImportIO>
+{
+	ARCHIVE * archive;
+}
+
+- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
+
+@end

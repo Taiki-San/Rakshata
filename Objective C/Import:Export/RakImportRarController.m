@@ -12,13 +12,6 @@
 
 #include "JSONParser.h"
 
-@interface RakImportRarController : NSObject <RakImportIO>
-{
-	ARCHIVE * archive;
-}
-
-@end
-
 @implementation RakImportRarController
 
 - (instancetype) initWithFilename : (NSString *) filename
@@ -33,6 +26,11 @@
 	}
 
 	return self;
+}
+
+- (void) dealloc
+{
+	closeArchive(archive);
 }
 
 #pragma mark - RakImportIO conformance
