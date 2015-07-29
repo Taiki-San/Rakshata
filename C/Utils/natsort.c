@@ -29,7 +29,7 @@
  * value must be that of an unsigned int, even on platforms that have
  * negative chars in their default char type.
  *
- * 2015-07-29 Taiki: Tweak to get close of the convention of the project this code will be poured in
+ * 2015-07-29 Taiki: Tweak to get close of the convention of the project this code will be poured in, plus add support for prioritary chars
  */
 
 #include <getopt.h>
@@ -38,15 +38,25 @@
 
 /* These are defined as macros to make it easier to adapt this code to
  * different characters types or comparison functions. */
-static inline int nat_isdigit(char a)
+static inline int nat_isdigit(const char a)
 {
 	return isdigit((unsigned char) a);
 }
 
-
-static inline int nat_isspace(char a)
+static inline int nat_isspace(const char a)
 {
 	return isspace((unsigned char) a);
+}
+
+static inline char nat_toupper(const char a)
+{
+	return toupper((unsigned char) a);
+}
+
+static inline bool isPrioritary(const char a)
+{
+	return a == '(' || a == '[' || a == '{'
+		|| a == ')' || a == ']' || a == '}';
 }
 
 static int compare_right(const char *a, const char *b)
@@ -104,13 +114,15 @@ static int compare_left(const char *a, const char *b)
 
 int _strnatcmp(const char *a, const char *b)
 {
-	int ai, bi;
 	char ca, cb;
 	int fractional, result;
 
-	assert(a && b);
-	ai = bi = 0;
-	while (1)
+	if(a == NULL)
+		return 1;
+	else if(b == NULL)
+		return -1;
+
+	for(uint ai = 0, bi = 0; ; ++ai, ++bi)
 	{
 		ca = a[ai]; cb = b[bi];
 
@@ -122,7 +134,8 @@ int _strnatcmp(const char *a, const char *b)
 			cb = b[++bi];
 
 		/* process run of digits */
-		if (nat_isdigit(ca) && nat_isdigit(cb))
+		bool isDigitA = nat_isdigit(ca), isDigitB = nat_isdigit(cb);
+		if (isDigitA && isDigitB)
 		{
 			fractional = (ca == '0' || cb == '0');
 
@@ -142,16 +155,21 @@ int _strnatcmp(const char *a, const char *b)
 			return 0;
 		}
 
-		if (ca < cb)
+		ca = nat_toupper(ca);
+		cb = nat_toupper(cb);
+
+		bool isPrioA = isPrioritary(ca), isPrioB = isPrioritary(cb);
+
+		if((isPrioA && isDigitB) || (isPrioB && isDigitA) || isPrioA != isPrioB)
+			return isPrioA ? -1 : 1;
+		else if (ca < cb)
 			return -1;
 		else if (ca > cb)
-			return +1;
-
-		++ai; ++bi;
+			return 1;
 	}
 }
 
 int strnatcmp(const void *a, const void *b)
 {
-	return _strnatcmp(a, b);
+	return _strnatcmp(* (char**) a, * (char**) b);
 }
