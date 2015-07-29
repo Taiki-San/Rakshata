@@ -21,3 +21,10 @@ typedef struct libArchiveWrapper
 	uint nbFiles;
 
 } ARCHIVE;
+
+//Utils
+ARCHIVE * openArchiveFromFile(const char * path);
+
+bool fileExistInArchive(ARCHIVE * archive, const char * filename);
+
+void closeArchive(ARCHIVE * archive);
