@@ -1,13 +1,23 @@
-//
-//  libarchivewrapper.h
-//  Rakshata
-//
-//  Created by Taiki on 28/07/2015.
-//  Copyright © 2015 Taiki. All rights reserved.
-//
+/*********************************************************************************************
+ **	__________         __           .__            __                 ________   _______   	**
+ **	\______   \_____  |  | __  _____|  |__ _____ _/  |______   	___  _\_____  \  \   _  \  	**
+ **	 |       _/\__  \ |  |/ / /  ___/  |  \\__  \\   __\__  \  	\  \/ //  ____/  /  /_\  \ 	**
+ **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
+ **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
+ **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
+ **                                                                                          **
+ **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
+ **                                                                                          **
+ *********************************************************************************************/
 
-#ifndef libarchivewrapper_h
-#define libarchivewrapper_h
+#include <archive.h>
+#include <archive_entry.h>
 
+typedef struct libArchiveWrapper
+{
+	struct archive * archive;
 
-#endif /* libarchivewrapper_h */
+	char ** fileList;
+	uint nbFiles;
+
+} ARCHIVE;

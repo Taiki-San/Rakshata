@@ -14,3 +14,8 @@ mv lib/.libs/libcurl.a ../
 
 #sqlite
 clang -O3 -c sqlite3.c && ar rcs ../libsqlite.a sqlite3.o
+
+#libarchive
+./configure --enable-shared=no --disable-rpath --without-bz2lib --without-iconv --without-lzma
+strip -Sx .libs/libarchive.a
+mv .libs/libarchive.a ../
