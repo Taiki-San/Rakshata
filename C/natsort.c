@@ -102,7 +102,7 @@ static int compare_left(const char *a, const char *b)
 	return 0;
 }
 
-int strnatcmp(const char *a, const char *b)
+int _strnatcmp(const char *a, const char *b)
 {
 	int ai, bi;
 	char ca, cb;
@@ -149,4 +149,9 @@ int strnatcmp(const char *a, const char *b)
 
 		++ai; ++bi;
 	}
+}
+
+int strnatcmp(const void *a, const void *b)
+{
+	return _strnatcmp(a, b);
 }
