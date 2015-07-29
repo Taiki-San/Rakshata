@@ -12,7 +12,7 @@
 				<string>raksource</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>raksource</string>
+			<string>Raksource</string>
 			<key>CFBundleTypeName</key>
 			<string>Rakshata Source File</string>
 			<key>CFBundleTypeRole</key>
@@ -28,13 +28,61 @@
 				<string>rak</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>rak</string>
+			<string>Rak</string>
 			<key>CFBundleTypeName</key>
 			<string>Rakshata Content File</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rar</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Rar</string>
+			<key>CFBundleTypeName</key>
+			<string>RAR Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>cbr</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Rar</string>
+			<key>CFBundleTypeName</key>
+			<string>CBR Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>zip</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Zip</string>
+			<key>CFBundleTypeName</key>
+			<string>ZIP Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>cbz</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Zip</string>
+			<key>CFBundleTypeName</key>
+			<string>CBZ Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
