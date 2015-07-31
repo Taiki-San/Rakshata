@@ -91,7 +91,9 @@
 		_currentPlaceholderState = YES;
 		
 		[self initCell];
-		
+
+		if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
+			self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
 		self.bezeled = NO;
 		self.drawsBackground = NO;
 		self.focusRingType = NSFocusRingTypeNone;
