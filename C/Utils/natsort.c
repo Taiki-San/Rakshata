@@ -96,17 +96,18 @@ static int compare_left(const char *a, const char *b)
 {
 	/* Compare two left-aligned numbers: the first to have a
 		 different value wins. */
-	for (;; a++, b++) {
+	for (;; a++, b++)
+	{
 		if (!nat_isdigit(*a)  &&  !nat_isdigit(*b))
 			return 0;
 		else if (!nat_isdigit(*a))
 			return -1;
 		else if (!nat_isdigit(*b))
-			return +1;
+			return 1;
 		else if (*a < *b)
 			return -1;
 		else if (*a > *b)
-			return +1;
+			return 1;
 	}
 
 	return 0;
@@ -115,7 +116,7 @@ static int compare_left(const char *a, const char *b)
 int _strnatcmp(const char *a, const char *b)
 {
 	char ca, cb;
-	int fractional, result;
+	int result;
 
 	if(a == NULL)
 		return 1;
@@ -126,37 +127,40 @@ int _strnatcmp(const char *a, const char *b)
 	{
 		ca = a[ai]; cb = b[bi];
 
-		/* skip over leading spaces or zeros */
+		//Can we skip the lengthy comparaison?
+		if(ca == cb && !nat_isdigit(ca))
+			continue;
+
+		//If one string end early
+		if((ca == 0) != (cb == 0))
+			return ca == 0 ? -1 : 1;
+
+		//Skip over leading spaces or zeros
 		while (nat_isspace(ca))
 			ca = a[++ai];
 
 		while (nat_isspace(cb))
 			cb = b[++bi];
 
-		/* process run of digits */
+		//Process run of digits
 		bool isDigitA = nat_isdigit(ca), isDigitB = nat_isdigit(cb);
 		if (isDigitA && isDigitB)
 		{
-			fractional = (ca == '0' || cb == '0');
-
-			if (fractional)
+			if(ca == '0' || cb == '0')
 			{
-				if ((result = compare_left(a+ai, b + bi)) != 0)
+				if((result = compare_left(a+ai, b + bi)) != 0)
 					return result;
 			}
 			else if ((result = compare_right(a + ai, b + bi)) != 0)
 				return result;
 		}
 
+		//The strings compare the same, we try to break the tie
 		if (!ca && !cb)
-		{
-			/* The strings compare the same.  Perhaps the caller
-				 will want to call strcmp to break the tie. */
-			return 0;
-		}
+			return strcmp(a, b);
 
-		ca = nat_toupper(ca);
-		cb = nat_toupper(cb);
+		if((ca = nat_toupper(ca)) == (cb = nat_toupper(cb)))
+			continue;
 
 		bool isPrioA = isPrioritary(ca), isPrioB = isPrioritary(cb);
 
