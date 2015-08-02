@@ -159,6 +159,7 @@
 	NSString * extension = [filename pathExtension];
 	BOOL retValue = NO;
 
+	//Source insertions are only supported on the per file basis
 	if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -168,60 +169,10 @@
 	}
 
 	//Okay, file Import
-	id <RakImportIO> IOController = nil;
-
-	if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
-	{
-		IOController = [[RakImportDotRakController alloc] initWithFilename:filename];
-		if(IOController != nil)
-			retValue = YES;
-	}
-	else if([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))
-	{
-		//Import a directory
-	}
-	else
-	{
-		//Look for Rar
-		BOOL foundIt = NO;
-		for(NSString * string in EXTERNAL_FILE_EXT_RAR)
-		{
-			if([extension caseInsensitiveCompare:string] == NSOrderedSame)
-			{
-				foundIt = YES;
-				break;
-			}
-		}
-
-		if(foundIt)
-		{
-			IOController = [[RakImportRarController alloc] initWithFilename:filename];
-			if(IOController != nil)
-				retValue = YES;
-		}
-		else
-		{
-			//Look for zip
-			for(NSString * string in EXTERNAL_FILE_EXT_ZIP)
-			{
-				if([extension caseInsensitiveCompare:string] == NSOrderedSame)
-				{
-					foundIt = YES;
-					break;
-				}
-			}
-
-			if(foundIt)
-			{
-				IOController = [[RakImportZipController alloc] initWithFilename:filename];
-				if(IOController != nil)
-					retValue = YES;
-			}
-		}
-	}
+	id <RakImportIO> IOController = createIOForFilename(filename);
 
 	if(IOController != nil)
-		[RakImportController importFile:IOController];
+		[RakImportController importFile:@[IOController]];
 	else
 		NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
 
@@ -230,7 +181,20 @@
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames;
 {
-	[self application:sender openFile:[filenames objectAtIndex:0]];
+	NSMutableArray * collector = [NSMutableArray array];
+
+	for(NSString * filename in filenames)
+	{
+		id <RakImportIO> IOController = createIOForFilename(filename);
+
+		if(IOController != nil)
+			[collector addObject:IOController];
+		else
+			NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
+	}
+
+	if([collector count])
+		[RakImportController importFile:[NSArray arrayWithArray:collector]];
 }
 
 - (void) applicationWillBecomeActive:(nonnull NSNotification *)notification

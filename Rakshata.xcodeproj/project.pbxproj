@@ -131,6 +131,7 @@
 		B69D61D5186CA2F2003504F9 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B69D61D8186CA308003504F9 /* Series.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D7186CA308003504F9 /* Series.m */; };
 		B69D61DE186CA3D0003504F9 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
+		B69E35F41B6DA5030022C466 /* RakImportIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E35F31B6DA5030022C466 /* RakImportIO.m */; };
 		B69F74041AA635AB008AA51B /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B69F74031AA635AB008AA51B /* RakPrefsTools.m */; };
 		B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */ = {isa = PBXBuildFile; fileRef = B69FBE8C1A74FBE1009ACBEF /* RakButtonMorphic.m */; };
 		B69FBE921A756472009ACBEF /* RakSRHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69FBE911A756472009ACBEF /* RakSRHeader.m */; };
@@ -452,6 +453,7 @@
 		B69D61D7186CA308003504F9 /* Series.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Series.m; path = "Séries/Series.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B69D61DC186CA3D0003504F9 /* MDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = MDL.h; path = MDL/MDL.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B69D61DD186CA3D0003504F9 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B69E35F31B6DA5030022C466 /* RakImportIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportIO.m; path = "Import:Export/RakImportIO.m"; sourceTree = "<group>"; };
 		B69F74021AA635AB008AA51B /* RakPrefsTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = "Divers Windows/RakPrefsTools.h"; sourceTree = "<group>"; };
 		B69F74031AA635AB008AA51B /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = "Divers Windows/RakPrefsTools.m"; sourceTree = "<group>"; };
 		B69FBE8B1A74FBE1009ACBEF /* RakButtonMorphic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakButtonMorphic.h; path = "Séries/RakButtonMorphic.h"; sourceTree = "<group>"; };
@@ -900,6 +902,7 @@
 			children = (
 				B67464871B64179600F4A929 /* RakImportDotRakController.m */,
 				B67464891B64182300F4A929 /* RakImportIO.h */,
+				B69E35F31B6DA5030022C466 /* RakImportIO.m */,
 				B63805EA1B6C4A060029418C /* RakImportIOController.h */,
 				B63805E81B6BD9F90029418C /* RakImportIOTools.m */,
 				B6D7EC081B682B90009FCE64 /* RakImportRarController.m */,
@@ -1766,6 +1769,7 @@
 				B6F6ED1518A3001400E3B55B /* miniunz.c in Sources */,
 				B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */,
 				B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */,
+				B69E35F41B6DA5030022C466 /* RakImportIO.m in Sources */,
 				B66ED1941949C77A002A333F /* RakDragView.m in Sources */,
 				B6FBE6CF1B385D3D005D2CC6 /* RakImportItem.m in Sources */,
 				B62F1E6518DE4EB0005FF4A5 /* RakResPath.m in Sources */,

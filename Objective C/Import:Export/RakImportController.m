@@ -12,9 +12,9 @@
 
 @implementation RakImportController
 
-+ (void) importFile : (id <RakImportIO>) IOController
++ (void) importFile : (NSArray *) IOController
 {
-	if(IOController == nil)
+	if(IOController == nil || [IOController count] == 0)
 		return;
 
 	if([NSThread isMainThread])
@@ -22,7 +22,7 @@
 		RakImportStatusController * UI = [[RakImportStatusController alloc] init];
 
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self importFile:IOController withUI:UI];
+			[self importFile:[IOController objectAtIndex:0] withUI:UI];
 		});
 	}
 	else
@@ -33,7 +33,7 @@
 			UI = [[RakImportStatusController alloc] init];
 		});
 
-		[self importFile:IOController withUI:UI];
+		[self importFile:[IOController objectAtIndex:0] withUI:UI];
 	}
 }
 

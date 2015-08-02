@@ -86,3 +86,5 @@ struct import_io_node_for_analysis
 - (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
 
 @end
+
+id <RakImportIO> __nullable createIOForFilename(NSString * __nonnull filename);
