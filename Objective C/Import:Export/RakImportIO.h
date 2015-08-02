@@ -87,4 +87,16 @@ struct import_io_node_for_analysis
 
 @end
 
+@interface RakImportDirController : NSObject <RakImportIO>
+{
+	NSString * archiveFileName;
+
+	char * __nonnull * __nonnull filenames;
+	uint nbFiles;
+}
+
+- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
+
+@end
+
 id <RakImportIO> __nullable createIOForFilename(NSString * __nonnull filename);

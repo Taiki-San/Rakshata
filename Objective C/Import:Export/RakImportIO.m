@@ -14,14 +14,13 @@ id <RakImportIO> createIOForFilename(NSString * filename)
 {
 	NSString * extension = [filename pathExtension];
 
+	//Import a .rak
 	if([extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
 		return [[RakImportDotRakController alloc] initWithFilename:filename];
 
+	//Import a directory
 	if([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))
-	{
-		//Import a directory
-		return nil;
-	}
+		return [[RakImportDirController alloc] initWithFilename:filename];
 
 	//Look for Rar
 	BOOL foundIt = NO;
@@ -36,7 +35,6 @@ id <RakImportIO> createIOForFilename(NSString * filename)
 
 	if(foundIt)
 		return [[RakImportRarController alloc] initWithFilename:filename];
-
 
 	//Look for zip
 	for(NSString * string in EXTERNAL_FILE_EXT_ZIP)

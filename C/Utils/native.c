@@ -135,7 +135,7 @@ void removeFolder(char *path)
 		char subdirName[dirnameLength + entry->d_namlen + 2];
 		snprintf(subdirName, sizeof(subdirName), "%s/%s", path, entry->d_name);
 
-		if(checkDirExist(subdirName))	//Recursive call on a directory
+		if(entry->d_type & DT_DIR)	//Recursive call on a directory
 		{
 #ifdef DEV_VERSION
 			depth++;
@@ -151,6 +151,139 @@ void removeFolder(char *path)
 
 	closedir(directory);
     rmdir(path); //Maintenant le dossier doit être vide, on le supprime.
+}
+
+char ** listDir(const char * dirName, uint * nbElements)
+{
+	if(dirName == NULL || nbElements == NULL)
+		return NULL;
+
+	//Open the directory
+	DIR * directory = opendir(dirName);
+
+	if(directory == NULL)
+		return NULL;
+
+	//Alloc all out memory
+	uint baseLength = 127, currentLength = 0, dirnameLength = strlen(dirName);
+	char ** output = malloc(baseLength * sizeof(char *)), ** tmp = output;
+	struct dirent * entry;
+
+	if(output == NULL)
+	{
+		closedir(directory);
+		memoryError(baseLength * sizeof(char *));
+		*nbElements = 0;
+		return NULL;
+	}
+
+	//Iterate the directory
+	while ((entry = readdir(directory)) != NULL)
+	{
+		//We need more space in the collector
+		if(currentLength == baseLength)
+		{
+			baseLength += 128;
+
+			//Overflow or allocation error
+			if(baseLength < currentLength || (tmp = realloc(output, (baseLength * sizeof(char *)))) == NULL)
+			{
+				logR("Too many files in dir");
+				logR(dirName);
+				while(currentLength-- > 0)
+					free(output[currentLength]);
+
+				free(output);
+				output = NULL;
+				currentLength = 0;
+				break;
+			}
+
+			output = tmp;
+		}
+
+		//Dirs we don't care about
+		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..") || entry->d_namlen == 0)
+			continue;
+
+		char subdirName[dirnameLength + entry->d_namlen + 3];
+		bool isDir = (entry->d_type & DT_DIR) != 0;
+
+		//Craft the filename
+		if(isDir && entry->d_name[entry->d_namlen - 1] != '/')
+			snprintf(subdirName, sizeof(subdirName), "%s/%s/", dirName, entry->d_name);
+		else
+			snprintf(subdirName, sizeof(subdirName), "%s/%s", dirName, entry->d_name);
+
+		output[currentLength++] = strdup(subdirName);
+
+		//Recursively insert the dirs content
+		if(isDir)
+		{
+			uint nbInBlock;
+			char ** block = listDir(subdirName, &nbInBlock);
+
+			//Merge the two lists
+			if(block == NULL && nbInBlock > 0)
+			{
+				//We are carefull about potential overflows
+				if(nbInBlock > baseLength - currentLength)
+				{
+					if(baseLength + nbInBlock < baseLength || (tmp = realloc(output, (baseLength + nbInBlock) * sizeof(char *))) == NULL)	//Overflow or alloc error
+					{
+						if(tmp != NULL)
+						{
+							logR("Too many files in dir");
+							logR(dirName);
+						}
+
+						while(currentLength-- > 0)
+							free(output[currentLength]);
+						free(output);
+
+						while(nbInBlock-- > 0)
+							free(block[nbInBlock]);
+						free(block);
+
+						output = NULL;
+						currentLength = 0;
+						break;
+					}
+					else
+					{
+						output = tmp;
+						baseLength += nbInBlock;
+						currentLength += nbInBlock;
+					}
+				}
+
+				memcpy(&output[currentLength], block, nbInBlock * sizeof(char *));
+				currentLength += nbInBlock;
+			}
+		}
+	}
+
+	closedir(directory);
+
+	//Reduce our memory footprint to the bare minimum
+	if(currentLength < baseLength)
+	{
+		if(currentLength == 0)
+		{
+			free(output);
+			output = NULL;
+		}
+		else
+		{
+			tmp = realloc(output, currentLength * sizeof(char *));
+			if(tmp != NULL)
+				output = tmp;
+		}
+	}
+
+	*nbElements = currentLength;
+
+	return output;
 }
 
 void ouvrirSite(const char *URL)

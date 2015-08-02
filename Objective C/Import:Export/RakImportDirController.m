@@ -10,9 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "JSONParser.h"
-
-@implementation RakImportRarController
+@implementation RakImportDirController
 
 - (instancetype) initWithFilename : (NSString *) filename
 {
@@ -20,11 +18,13 @@
 
 	if(self != nil)
 	{
-		archive = openArchiveFromFile([filename UTF8String]);
-		if(archive == NULL)
+		archiveFileName = filename;
+
+		filenames = listDir([filename UTF8String], &nbFiles);
+		if(filenames == NULL || nbFiles == 0)
 			return nil;
 
-		archiveFileName = [[filename lastPathComponent] stringByDeletingPathExtension];
+		qsort(filenames, nbFiles, sizeof(char *), strnatcmp);
 	}
 
 	return self;
@@ -32,7 +32,13 @@
 
 - (void) dealloc
 {
-	closeArchive(archive);
+	if(filenames != NULL)
+	{
+		while(nbFiles-- > 0)
+			free(filenames[nbFiles]);
+
+		free(filenames);
+	}
 }
 
 #pragma mark - RakImportIO conformance
@@ -44,18 +50,18 @@
 
 - (BOOL) canLocateFile : (NSString * __nonnull) file
 {
-	return fileExistInArchive(archive, [file UTF8String]);
+	return checkFileExist([file UTF8String]);
 }
 
 - (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
 	const char * startExpectedPath = [dirName UTF8String];
-	uint lengthExpected = strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[archive->nbFiles];
+	uint lengthExpected = strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
 
 	//We gather the indexes of the files we'll evaluate
-	for(uint pos = 0; pos < archive->nbFiles; pos++)
+	for(uint pos = 0; pos < nbFiles; pos++)
 	{
-		if(!strncmp(archive->fileList[pos], startExpectedPath, lengthExpected) && archive->fileList[pos][lengthExpected] != '\0')
+		if(!strncmp(filenames[pos], startExpectedPath, lengthExpected) && filenames[pos][lengthExpected] != '\0')
 		{
 			indexOfFiles[nbFileToEvaluate++] = pos;
 		}
@@ -70,49 +76,40 @@
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)
 	{
-		void * entry;
-		if(rarLocateFile(archive, &entry, archive->fileList[indexOfFiles[pos]]) != ARCHIVE_OK)
-			continue;
-
-		archive->cachedEntry = entry;
-		workingBlock(self, [NSString stringWithUTF8String:archive->fileList[indexOfFiles[pos]]], pos, &abort);
-		archive->cachedEntry = NULL;
+		if(checkFileExist(filenames[indexOfFiles[pos]]))
+			workingBlock(self, [NSString stringWithUTF8String:filenames[indexOfFiles[pos]]], pos, &abort);
 	}
 }
 
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toDir : (NSString * __nonnull) dirName
 {
-	NSArray * part = [name componentsSeparatedByString:@"/"];
-	NSString * strippedName = [part count] <= 1 ? name : [part objectAtIndex:[part count] - 1];
+	NSData * data = nil;
 
-	return [self copyItemOfName:name toPath:[NSString stringWithFormat:@"%@/%@", dirName, strippedName]];
+	if(![self copyItemOfName:name toData:&data])
+		return NO;
+
+	return [data writeToFile:[NSString stringWithFormat:@"%@/%@", dirName, [name lastPathComponent]] atomically:NO];
 }
 
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toPath : (NSString * __nonnull) path
 {
-	return rarExtractOnefile(archive, [name UTF8String], [path UTF8String]);
+	NSData * data = nil;
+
+	if(![self copyItemOfName:name toData:&data])
+		return NO;
+
+	return [data writeToFile:path atomically:NO];
 }
 
 - (BOOL) copyItemOfName : (NSString * __nullable) name toData : (NSData * __nullable * __nonnull) data
 {
-	byte * dataBytes = NULL;
-	uint64_t length = 0;
-	BOOL retValue = rarExtractToMem(archive, [name UTF8String], &dataBytes, &length);
-
-	*data = [NSData dataWithBytes:dataBytes length:length];
-	free(dataBytes);
-
-	return retValue && length > 0;
-}
-
-- (void) willStartEvaluateFromScratch
-{
-	rarJumpBackAtBegining(archive);
+	*data = [NSData dataWithContentsOfFile:name];
+	return *data != nil;
 }
 
 - (IMPORT_NODE) getNode
 {
-	return importDataForFiles(strdup([archiveFileName UTF8String]), archive->fileList, archive->nbFiles, (__bridge void *) self);
+	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, (__bridge void *) self);
 }
 
 @end
