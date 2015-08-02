@@ -48,6 +48,8 @@ struct import_io_node_for_analysis
 	char * __nonnull nodeName;
 
 	uint nbChildren;
+	uint nbImages;
+	
 	bool isFlatCT;
 	bool couldBeComplexT;
 	bool isValid;

@@ -216,4 +216,134 @@
 	registerImportEntry(_projectData.data, _isTome);
 }
 
+#pragma mark - Metadata inference
+
+//If hinted, and we can't figure anything ourselves, we relax the search
+- (void) inferMetadataFromPathWithHint : (BOOL) haveHintedCT
+{
+	NSMutableCharacterSet * charSet = [NSMutableCharacterSet new];
+	[charSet addCharactersInString:@"_ -~:;|"];
+
+	//We look for something la C* or [T-V]* followed then exclusively by numbers
+	NSArray * tokens = [[_path lastPathComponent] componentsSeparatedByCharactersInSet:charSet];
+
+	BOOL couldHaveSomething, inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
+	int elementID;
+
+	for(uint i = 0, length, posInChunk, baseDigits; i < [tokens count]; ++i)
+	{
+		NSData * data = [[tokens objectAtIndex:i] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+		const char * simplifiedChunk = [data bytes];
+		length = [data length];
+
+		if(length == 0)
+			continue;
+
+		couldHaveSomething = NO;
+
+		char sample = toupper(simplifiedChunk[0]);
+
+		if(sample == 'C')	//Chapter?
+		{
+			couldHaveSomething = YES;
+			inferingTome = NO;
+		}
+		else if(sample == 'V' || sample == 'T')	//Volume? (or Tome)
+		{
+			couldHaveSomething = YES;
+			inferingTome = YES;
+		}
+		else
+			continue;
+
+		for(posInChunk = 1; posInChunk < length && !isdigit(simplifiedChunk[posInChunk]); ++posInChunk);
+
+		//Couldn't find digits in the end of the chunk and the next chunk doesn't start with digits
+		if(posInChunk == length && (i == [tokens count] || [[tokens objectAtIndex:i + 1] length] == 0 || !isdigit([[tokens objectAtIndex:i + 1] UTF8String][0])))
+			continue;
+
+		//Digits analysis
+
+		//If we separated the numbers from the base
+		if(posInChunk == length)
+		{
+			data = [[tokens objectAtIndex:i + 1] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+			simplifiedChunk = [data bytes];
+			length = [data length];
+			posInChunk = 0;
+		}
+
+		//We only want digits at this point, any interruption will result in elimination
+		firstPointCrossed = NO;
+		for(baseDigits = posInChunk; posInChunk < length; ++posInChunk)
+		{
+			if(isdigit(simplifiedChunk[posInChunk]))
+				continue;
+
+			if(!firstPointCrossed && simplifiedChunk[posInChunk] == '.')
+			{
+				firstPointCrossed = YES;
+				continue;
+			}
+
+			break;
+		}
+
+		//Close call, but nop, invalid
+		if(posInChunk < length)
+		{
+#ifdef DEV_VERSION
+			logR("Close call, this chunk almost got me!");
+			NSLog(@"`%@` -> %s", tokens, simplifiedChunk);
+#endif
+			continue;
+		}
+
+		//Well, we're good
+		isTomeInfered = inferingTome;
+		double inferedElementID = atof(&simplifiedChunk[baseDigits]);
+		inferedElementID *= 10;
+
+		if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
+		{
+			elementID = (int) inferedElementID;
+			inferedSomethingSolid = YES;
+		}
+	}
+
+	if(inferedSomethingSolid)
+	{
+		_isTome = isTomeInfered;
+		_contentID = isTomeInfered ? elementID / 10 : elementID;
+	}
+
+	//Perform a simpler search
+	else if(haveHintedCT)
+	{
+		charSet = [NSMutableCharacterSet new];
+		[charSet addCharactersInString:@"0123456789."];
+		NSCharacterSet * notOnlyDigits = [charSet invertedSet];
+
+		for(NSString * chunk in tokens)
+		{
+			if([chunk length] == 0 || [chunk rangeOfCharacterFromSet:notOnlyDigits].location != NSNotFound)
+				continue;
+
+			double inferedElementID = atof([chunk UTF8String]);
+			if(!_isTome)
+				inferedElementID *= 10;
+
+			if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
+			{
+				elementID = (int) inferedElementID;
+				inferedSomethingSolid = YES;
+			}
+		}
+
+		//We found something \o/
+		if(inferedSomethingSolid)
+			_contentID = elementID;
+	}
+}
+
 @end

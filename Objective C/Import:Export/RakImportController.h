@@ -46,6 +46,8 @@
 
 - (void) registerProject;
 
+- (void) inferMetadataFromPathWithHint : (BOOL) haveHintedCT;
+
 @end
 
 @class RakImportQuery;

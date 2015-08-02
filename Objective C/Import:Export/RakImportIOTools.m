@@ -42,6 +42,7 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 	bool onlyImages = true, imagesAndFlatCT = true;
 	const char * supportedFormat[] = {"png", "jpg", "dat", "jpeg", "pdf", "tiff", "gif"};
 	const byte formatLengths[] = {3, 3, 3, 4, 3, 4, 3};
+	uint nbImages = 0;
 
 	for(uint pos = 0, length, cursor; pos < nbFiles; pos++)
 	{
@@ -122,6 +123,8 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 						break;
 					}
 				}
+				else
+					++nbImages;
 			}
 
 			if(!foundOne)
@@ -134,13 +137,26 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 			imagesAndFlatCT = onlyImages = false;
 	}
 
-	output.isFlatCT = onlyImages;
-	output.couldBeComplexT = !onlyImages && imagesAndFlatCT && output.nbChildren > 1;
-
-	if(output.isFlatCT || output.nbChildren)
+	//Empty shell around one dir
+	if(nbImages == 0 && output.nbChildren == 1)
 	{
-		output.isValid = true;
-		output.IOController = IOController;
+		free(output.nodeName);
+		IMPORT_NODE newNode = output.children[0];
+
+		free(output.children);
+		output = newNode;
+	}
+	else
+	{
+		output.isFlatCT = onlyImages;
+		output.couldBeComplexT = !onlyImages && imagesAndFlatCT && output.nbChildren > 1;
+		output.nbImages = nbImages;
+
+		if(output.isFlatCT || output.nbChildren)
+		{
+			output.isValid = true;
+			output.IOController = IOController;
+		}
 	}
 
 	return output;
@@ -159,8 +175,6 @@ IMPORT_NODE getEmptyImportNode()
 
 	return node;
 }
-
-
 
 void freeImportNode(IMPORT_NODE node)
 {

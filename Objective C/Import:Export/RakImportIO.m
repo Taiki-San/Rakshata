@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define THREESOLD_IMAGES_FOR_VOL 80
+
 id <RakImportIO> createIOForFilename(NSString * filename)
 {
 	NSString * extension = [filename pathExtension];
@@ -52,14 +54,44 @@ id <RakImportIO> createIOForFilename(NSString * filename)
 	return nil;
 }
 
-NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * IOControllers)
+NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOControllers)
 {
-	if([IOControllers count] == 1)
+	NSMutableArray <RakImportItem *> * output = [NSMutableArray array];
+
+	//We iterate input files, we perform independant analysis on each of them
+	//We don't try to merge different input files (eg, all flat CT) because it would be an issues
+	//	if the reader was importing the daily releases of various projects in one take
+	for(id <RakImportIO> IOController in _IOControllers)
 	{
-		id controller = [IOControllers objectAtIndex:0];
-		if([controller respondsToSelector:@selector(getManifest)])
-			return [controller getManifest];
+		//Cool, simplified analysis available
+		if([IOController respondsToSelector:@selector(getManifest)])
+		{
+			[output addObjectsFromArray:[(id) IOController getManifest]];
+			continue;
+		}
+
+		//We get the node
+		IMPORT_NODE node = [IOController getNode];
+		if(!node.isValid)
+			continue;
+
+		//Easy case, no analysis needed
+		if(node.isFlatCT)
+		{
+			RakImportItem * item = [RakImportItem new];
+			if(item == nil)
+				continue;
+
+			item.issue = IMPORT_PROBLEM_NONE;
+			item.path = [NSString stringWithUTF8String:node.nodeName];
+			item.projectData = getEmptyExtraProject();
+			item.IOController = IOController;
+
+			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
+			[item inferMetadataFromPathWithHint:YES];
+			[output addObject:item];
+		}
 	}
 
-	return nil;
+	return [NSArray arrayWithArray:output];
 }
