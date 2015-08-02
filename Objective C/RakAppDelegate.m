@@ -213,7 +213,7 @@
 
 			if(foundIt)
 			{
-				IOController = [[RakImportRarController alloc] initWithFilename:filename];
+				IOController = [[RakImportZipController alloc] initWithFilename:filename];
 				if(IOController != nil)
 					retValue = YES;
 			}

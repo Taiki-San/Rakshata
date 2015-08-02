@@ -119,8 +119,33 @@ ARCHIVE * openArchiveFromFile(const char * path)
 			closeArchive(output);
 			return NULL;
 		}
-		else
-			currentPos++;
+
+		//Dirs don't always have / at the end, but we assume they do later :(
+		//Our heuristic is that empty entries are directories
+
+		if(archive_entry_size(entry) == 0)
+		{
+			uint length = strlen(filename[currentPos]);
+			void * tmp = realloc(filename[currentPos], length + 1);
+
+			if(tmp != NULL)
+			{
+				filename[currentPos] = tmp;
+				filename[currentPos][length] = '/';
+				filename[currentPos][length + 1] = '\0';
+			}
+			else
+			{
+				logR("Memory error, couldn't analyse the file");
+
+				output->fileList = filename;
+				output->nbFiles = currentPos + 1;
+				closeArchive(output);
+				return NULL;
+			}
+		}
+		
+		currentPos++;
 	}
 
 	rarJumpBackAtBegining(output);
