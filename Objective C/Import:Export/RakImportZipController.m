@@ -27,11 +27,15 @@
 		if(archive == NULL)
 			return nil;
 
+		archiveFileName = [[filename lastPathComponent] stringByDeletingPathExtension];
+
 		//We grab the metadata as we will need them later
 		unzListArchiveContent(archive, &filenames, &nbFiles);
 
 		if(nbFiles == 0)
 			return nil;
+
+		qsort(filenames, nbFiles, sizeof(char *), strnatcmp);
 	}
 
 	return self;
@@ -147,6 +151,11 @@
 - (void) willStartEvaluateFromScratch
 {
 	unzGoToFirstFile(archive);
+}
+
+- (IMPORT_NODE) getNode
+{
+	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, (__bridge void *) self);
 }
 
 @end

@@ -436,4 +436,16 @@
 	return manifest;
 }
 
+- (IMPORT_NODE) getNode
+{
+	IMPORT_NODE output = getEmptyImportNode();
+
+	output.nodeName = strdup([archiveFileName UTF8String]);
+	output.isFlatCT = true;
+	output.IOController = (__bridge void *) self;
+	output.isValid = true;
+
+	return output;
+}
+
 @end

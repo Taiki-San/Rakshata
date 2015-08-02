@@ -75,6 +75,7 @@
 		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
+		B63805E91B6BD9F90029418C /* RakImportIOTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B63805E81B6BD9F90029418C /* RakImportIOTools.m */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
@@ -351,6 +352,8 @@
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = ../../../../../../System/Library/Frameworks/QuartzCore.framework; sourceTree = "<group>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
+		B63805E81B6BD9F90029418C /* RakImportIOTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportIOTools.m; path = "Import:Export/RakImportIOTools.m"; sourceTree = "<group>"; };
+		B63805EA1B6C4A060029418C /* RakImportIOController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportIOController.h; path = "Import:Export/RakImportIOController.h"; sourceTree = "<group>"; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -895,8 +898,10 @@
 		B674648A1B641BF300F4A929 /* IO manager */ = {
 			isa = PBXGroup;
 			children = (
-				B67464891B64182300F4A929 /* RakImportIO.h */,
 				B67464871B64179600F4A929 /* RakImportDotRakController.m */,
+				B67464891B64182300F4A929 /* RakImportIO.h */,
+				B63805EA1B6C4A060029418C /* RakImportIOController.h */,
+				B63805E81B6BD9F90029418C /* RakImportIOTools.m */,
 				B6D7EC081B682B90009FCE64 /* RakImportRarController.m */,
 				B6AEB9771B69188B00F233B3 /* RakImportZipController.m */,
 			);
@@ -1692,6 +1697,7 @@
 				B6EA520718A4111000A9B16E /* interface.m in Sources */,
 				B6824AF01AA8AB8D001837D6 /* RakPrefsRepoDetails.m in Sources */,
 				B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */,
+				B63805E91B6BD9F90029418C /* RakImportIOTools.m in Sources */,
 				B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */,
 				B68B5228191AE31E0057F35A /* RakMDLListView.m in Sources */,
 				B6AC08031AD6A46600F750D3 /* RakOutlineListItem.m in Sources */,

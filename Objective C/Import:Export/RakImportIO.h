@@ -10,9 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@protocol RakImportIO <NSObject>
+typedef struct import_io_node_for_analysis IMPORT_NODE;
 
-@required
+@protocol RakImportIO <NSObject>
 
 //Craft a list of the content of the dataset to import
 - (NSArray * __nullable) getManifest;
@@ -32,17 +32,37 @@
 //Copy a file from the entity to a NSData
 - (BOOL) copyItemOfName : (NSString * __nullable) name toData : (NSData * __nullable * __nonnull) data;
 
+//Get the state of the node
+- (IMPORT_NODE) getNode;
+
 @optional
 //Used by the zip layer to move to the begining
 - (void) willStartEvaluateFromScratch;
 
 @end
 
+//This structure is used to map the directory structure and infer metadata
+//TL;DR: Shaddy shit
+struct import_io_node_for_analysis
+{
+	IMPORT_NODE * __nullable children;
+	void * __nonnull IOController;	//id <RakImportIO>
+
+	char * __nonnull nodeName;
+
+	uint nbChildren;
+	bool isFlatCT;
+	bool couldBeComplexT;
+	bool isValid;
+
+};
+
 @interface RakImportZipController : NSObject <RakImportIO>
 {
 	unzFile * archive;
+	NSString * archiveFileName;
 
-	char ** filenames;
+	char * __nonnull * __nonnull filenames;
 	uint nbFiles;
 }
 
@@ -60,6 +80,7 @@
 @interface RakImportRarController : NSObject <RakImportIO>
 {
 	ARCHIVE * archive;
+	NSString * archiveFileName;
 }
 
 - (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;

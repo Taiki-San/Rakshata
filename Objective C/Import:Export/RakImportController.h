@@ -11,6 +11,7 @@
  *********************************************************************************************/
 
 #import "RakImportIO.h"
+#import "RakImportIOController.h"
 
 @class RakImportStatusController;
 

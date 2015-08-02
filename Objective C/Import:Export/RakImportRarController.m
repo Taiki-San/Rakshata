@@ -23,6 +23,8 @@
 		archive = openArchiveFromFile([filename UTF8String]);
 		if(archive == NULL)
 			return nil;
+
+		archiveFileName = [[filename lastPathComponent] stringByDeletingPathExtension];
 	}
 
 	return self;
@@ -107,6 +109,11 @@
 - (void) willStartEvaluateFromScratch
 {
 	rarJumpBackAtBegining(archive);
+}
+
+- (IMPORT_NODE) getNode
+{
+	return importDataForFiles(strdup([archiveFileName UTF8String]), archive->fileList, archive->nbFiles, (__bridge void *) self);
 }
 
 @end
