@@ -48,7 +48,6 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 		if(files[pos] == NULL)
 			continue;
 
-		strcpy(files[pos], CONFIGFILE);
 		cursor = length = strlen(files[pos]);
 
 		if(length <= 1)
@@ -160,6 +159,8 @@ IMPORT_NODE getEmptyImportNode()
 
 	return node;
 }
+
+
 
 void freeImportNode(IMPORT_NODE node)
 {

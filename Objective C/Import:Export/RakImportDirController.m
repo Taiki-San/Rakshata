@@ -14,6 +14,9 @@
 
 - (instancetype) initWithFilename : (NSString *) filename
 {
+	if([filename length] == 0)
+		return nil;
+
 	self = [super init];
 
 	if(self != nil)
@@ -21,7 +24,25 @@
 		archiveFileName = filename;
 
 		filenames = listDir([filename UTF8String], &nbFiles);
-		if(filenames == NULL || nbFiles == 0)
+		if(filenames == NULL || nbFiles == 0 || nbFiles + 1 > nbFiles)
+			return nil;
+
+		//We add the directory to the filename list
+		void * tmp = realloc(filenames, (nbFiles + 1) * sizeof(char *));
+		if(tmp == NULL)		//Dealloc will clean the memory for us
+			return nil;
+
+		//Offset everything
+		filenames = tmp;
+		for(uint i = nbFiles; i-- > 0;)
+			filenames[i + 1] = filenames[i];
+
+		//Add / at the end if needed
+		if([filename UTF8String][[filename length] - 1] != '/')
+			filename = [filename stringByAppendingString:@"/"];
+
+		filenames[0] = strdup([filename UTF8String]);
+		if(filenames[0] == NULL)
 			return nil;
 
 		qsort(filenames, nbFiles, sizeof(char *), strnatcmp);
@@ -42,11 +63,6 @@
 }
 
 #pragma mark - RakImportIO conformance
-
-- (NSArray * __nullable) getManifest
-{
-	return nil;
-}
 
 - (BOOL) canLocateFile : (NSString * __nonnull) file
 {

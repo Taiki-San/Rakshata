@@ -22,7 +22,7 @@
 		RakImportStatusController * UI = [[RakImportStatusController alloc] init];
 
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self importFile:[IOController objectAtIndex:0] withUI:UI];
+			[self importFile:IOController withUI:UI];
 		});
 	}
 	else
@@ -33,14 +33,14 @@
 			UI = [[RakImportStatusController alloc] init];
 		});
 
-		[self importFile:[IOController objectAtIndex:0] withUI:UI];
+		[self importFile:IOController withUI:UI];
 	}
 }
 
-+ (void) importFile : (id <RakImportIO>) IOController withUI : (RakImportStatusController *) UI
++ (void) importFile : (NSArray <id <RakImportIO>> *) IOController withUI : (RakImportStatusController *) UI
 {
 	//We first try to open the file, so we can eventually start working with it
-	NSArray * manifest = [IOController getManifest];
+	NSArray * manifest = getManifestForIOs(IOController);
 	if(manifest == nil || [manifest count] == 0)
 	{
 		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
@@ -61,7 +61,7 @@
 			UI.posInExport++;
 
 		//First, check the file exist in the archive
-		if(![IOController canLocateFile: item.path])
+		if(![item.IOController canLocateFile: item.path])
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
@@ -80,14 +80,14 @@
 		}
 
 		//Well, I guess we can carry on
-		if(![item install:IOController withUI:UI])
+		if(![item installWithUI:UI])
 		{
 			haveFoundProblems = YES;
 			item.issue = IMPORT_PROBLEM_INSTALL_ERROR;
 			continue;
 		}
 
-		[item processThumbs:IOController];
+		[item processThumbs];
 		[item registerProject];
 
 		if([UI haveCanceled])
@@ -112,7 +112,6 @@
 			if(haveFoundProblems)
 			{
 				UI.posInExport = UI.nbElementToExport;
-				[UI addIOController:IOController];
 				[UI switchToIssueUI:manifest];
 			}
 			else

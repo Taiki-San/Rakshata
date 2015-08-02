@@ -11,11 +11,7 @@
  *********************************************************************************************/
 
 @interface RakImportStatusController : RakEIStatusController
-{
-	id <RakImportIO> _IOController;
-}
 
-- (void) addIOController : (id <RakImportIO>) IOController;
 - (void) switchToIssueUI : (NSArray *) dataSet;
 
 - (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index;

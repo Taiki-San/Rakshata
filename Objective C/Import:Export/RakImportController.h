@@ -10,10 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@class RakImportStatusController;
+@class RakImportItem;
+
 #import "RakImportIO.h"
 #import "RakImportIOController.h"
-
-@class RakImportStatusController;
 
 @interface RakImportController : NSObject
 
@@ -25,6 +26,7 @@
 @interface RakImportItem : NSObject
 
 @property NSString * path;
+@property id<RakImportIO> IOController;
 @property PROJECT_DATA_EXTRA projectData;
 @property int contentID;
 @property BOOL isTome;
@@ -34,13 +36,13 @@
 - (BOOL) isReadable;
 - (BOOL) needMoreData;
 
-- (BOOL) install : (id<RakImportIO>) IOControler withUI : (RakImportStatusController *) UI;
+- (BOOL) installWithUI : (RakImportStatusController *) UI;
 - (void) deleteData;
-- (BOOL) overrideDuplicate : (id<RakImportIO>) IOControler;
-- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (id<RakImportIO>) IOControler;
+- (BOOL) overrideDuplicate;
+- (BOOL) updateProject : (PROJECT_DATA) project;
 
-- (void) processThumbs : (id<RakImportIO>) IOControler;
-- (NSData *) queryThumbIn : (id<RakImportIO>) IOControler withIndex : (uint) index;
+- (void) processThumbs;
+- (NSData *) queryThumbInWithIndex : (uint) index;
 
 - (void) registerProject;
 

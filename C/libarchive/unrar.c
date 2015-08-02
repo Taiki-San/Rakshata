@@ -351,9 +351,17 @@ bool rarExtractToMem(ARCHIVE * archive, const char* filename, byte ** data, uint
 	//Reduce the buffer size to what is needed
 	if(currentPos < expectedLength)
 	{
-		void * tmp = realloc(internalBuffer, currentPos * sizeof(byte));
-		if(tmp != NULL)
-			internalBuffer = tmp;
+		if(currentPos == 0)
+		{
+			free(internalBuffer);
+			internalBuffer = NULL;
+		}
+		else
+		{
+			void * tmp = realloc(internalBuffer, currentPos * sizeof(byte));
+			if(tmp != NULL)
+				internalBuffer = tmp;
+		}
 	}
 
 	*data = internalBuffer;

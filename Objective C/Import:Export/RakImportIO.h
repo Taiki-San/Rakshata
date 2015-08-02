@@ -14,9 +14,6 @@ typedef struct import_io_node_for_analysis IMPORT_NODE;
 
 @protocol RakImportIO <NSObject>
 
-//Craft a list of the content of the dataset to import
-- (NSArray * __nullable) getManifest;
-
 //Check the file exist
 - (BOOL) canLocateFile : (NSString * __nonnull) file;
 
@@ -71,9 +68,9 @@ struct import_io_node_for_analysis
 @end
 
 @interface RakImportDotRakController : RakImportZipController
-{
 
-}
+//Craft a list of the content of the dataset to import
+- (NSArray <RakImportItem *> * __nullable) getManifest;
 
 @end
 
@@ -100,3 +97,4 @@ struct import_io_node_for_analysis
 @end
 
 id <RakImportIO> __nullable createIOForFilename(NSString * __nonnull filename);
+NSArray <RakImportItem *> * __nullable getManifestForIOs(NSArray <id <RakImportIO>> * __nonnull IOControllers);

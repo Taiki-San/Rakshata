@@ -217,6 +217,19 @@ char ** listDir(const char * dirName, uint * nbElements)
 
 		output[currentLength++] = strdup(subdirName);
 
+		if(output[currentLength - 1] == NULL)
+		{
+			logR("Memory error");
+
+			while(currentLength-- > 0)
+				free(output[currentLength]);
+
+			free(output);
+			output = NULL;
+			currentLength = 0;
+			break;
+		}
+
 		//Recursively insert the dirs content
 		if(isDir)
 		{
@@ -224,7 +237,7 @@ char ** listDir(const char * dirName, uint * nbElements)
 			char ** block = listDir(subdirName, &nbInBlock);
 
 			//Merge the two lists
-			if(block == NULL && nbInBlock > 0)
+			if(block != NULL && nbInBlock > 0)
 			{
 				//We are carefull about potential overflows
 				if(nbInBlock > baseLength - currentLength)

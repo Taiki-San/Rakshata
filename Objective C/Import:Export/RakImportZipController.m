@@ -57,11 +57,6 @@
 
 #pragma mark - RakImportIO conformance
 
-- (NSArray * __nullable) getManifest
-{
-	return nil;
-}
-
 - (BOOL) canLocateFile : (NSString * __nonnull) file
 {
 	return unzLocateFile(archive, [file UTF8String], true) == UNZ_OK;

@@ -48,7 +48,7 @@
 	return false;
 }
 
-- (BOOL) install : (id<RakImportIO>) IOControler withUI : (RakImportStatusController *) UI
+- (BOOL) installWithUI : (RakImportStatusController *) UI
 {
 	char * projectPath = getPathForProject(_projectData.data.project);
 	if(projectPath == NULL)
@@ -71,13 +71,13 @@
 	}
 
 	//Main decompression cycle
-	if([IOControler respondsToSelector:@selector(willStartEvaluateFromScratch)])
-		[IOControler willStartEvaluateFromScratch];
+	if([_IOController respondsToSelector:@selector(willStartEvaluateFromScratch)])
+		[_IOController willStartEvaluateFromScratch];
 
 	__block BOOL foundOneThing = NO;
 	NSString * basePathObj = [NSString stringWithUTF8String:basePath];
 
-	[IOControler evaluateItemFromDir:_path withInitBlock:^(uint nbItems) {
+	[_IOController evaluateItemFromDir:_path withInitBlock:^(uint nbItems) {
 
 		if(UI != nil)
 			UI.nbElementInEntry = nbItems;
@@ -115,26 +115,26 @@
 	return true;
 }
 
-- (BOOL) overrideDuplicate : (id<RakImportIO>) IOControler
+- (BOOL) overrideDuplicate
 {
 	if(_issue != IMPORT_PROBLEM_DUPLICATE)
 		return NO;
 
 	[self deleteData];
-	if(![self install:IOControler withUI:nil])
+	if(![self installWithUI:nil])
 	{
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 		return NO;
 	}
 
-	[self processThumbs:IOControler];
+	[self processThumbs];
 	[self registerProject];
 	_issue = IMPORT_PROBLEM_NONE;
 
 	return YES;
 }
 
-- (BOOL) updateProject : (PROJECT_DATA) project withArchive : (id<RakImportIO>) IOControler
+- (BOOL) updateProject : (PROJECT_DATA) project
 {
 	_projectData.data.project = project;
 
@@ -148,13 +148,13 @@
 	if([self isReadable])
 		_issue = IMPORT_PROBLEM_DUPLICATE;
 
-	if(![self install:IOControler withUI:nil])
+	if(![self installWithUI:nil])
 	{
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 		return NO;
 	}
 
-	[self processThumbs:IOControler];
+	[self processThumbs];
 	[self registerProject];
 	_issue = IMPORT_PROBLEM_NONE;
 
@@ -179,7 +179,7 @@
 	_projectData.data.project.nombreTomes = lengthTomeFull;
 }
 
-- (void) processThumbs : (id<RakImportIO>) IOControler
+- (void) processThumbs
 {
 	for(byte pos = 0; pos < NB_IMAGES; pos++)
 	{
@@ -193,18 +193,18 @@
 		if(checkFileExist(path.string))
 			continue;
 
-		[IOControler copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[pos]] toPath:[NSString stringWithUTF8String:path.string]];
+		[_IOController copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[pos]] toPath:[NSString stringWithUTF8String:path.string]];
 	}
 }
 
-- (NSData *) queryThumbIn : (id<RakImportIO>) IOControler withIndex : (uint) index
+- (NSData *) queryThumbInWithIndex : (uint) index
 {
 	if(index >= NB_IMAGES || !_projectData.haveImages[index])
 		return nil;
 
 	NSData * data = nil;
 
-	if(![IOControler copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[index]] toData:&data])
+	if(![_IOController copyItemOfName:[NSString stringWithUTF8String:_projectData.URLImages[index]] toData:&data])
 		return nil;
 
 	return data;

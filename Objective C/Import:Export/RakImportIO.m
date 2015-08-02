@@ -51,3 +51,15 @@ id <RakImportIO> createIOForFilename(NSString * filename)
 
 	return nil;
 }
+
+NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * IOControllers)
+{
+	if([IOControllers count] == 1)
+	{
+		id controller = [IOControllers objectAtIndex:0];
+		if([controller respondsToSelector:@selector(getManifest)])
+			return [controller getManifest];
+	}
+
+	return nil;
+}

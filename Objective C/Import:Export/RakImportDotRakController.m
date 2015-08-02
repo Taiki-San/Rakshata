@@ -180,6 +180,7 @@
 		}
 
 		item.projectData = projectData;
+		item.IOController = self;
 
 		[output addObject:item];
 	}
