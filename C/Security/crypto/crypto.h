@@ -133,7 +133,7 @@ typedef struct
 	size_t length;
 	rawData CBC[2][CRYPTO_BUFFER_SIZE];
 	
-	_Atomic int * decWhenJobDone;
+	atomic_int * decWhenJobDone;
 
 	TwofishInstance twofish;
 	SerpentInstance serpent;

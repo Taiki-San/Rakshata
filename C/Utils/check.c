@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-static _Atomic int NETWORK_ACCESS = CONNEXION_OK;
+static atomic_int NETWORK_ACCESS = CONNEXION_OK;
 
 #ifdef _WIN32
 void checkHostNonModifie()
