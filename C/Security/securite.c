@@ -87,7 +87,7 @@ void decryptPageWorker(DECRYPT_PAGE_DATA *data)
 
 void decryptPage(void *password, rawData *buffer_in, rawData *buffer_out, size_t length)
 {
-    volatile int jobIsDone = 1;
+    _Atomic int jobIsDone = 1;
 	
 	//On génère les données qui seront envoyés au worker
 	

@@ -131,6 +131,8 @@ void flushBundleCache(NSBundle *bundle)
 #if 0
 //Ensure app defaults, out of sandbox only
 
+#import <ApplicationServices/ApplicationServices.h>
+
 void registerDefaultForExtension(NSString * extension)
 {
 	//We get the current default app
