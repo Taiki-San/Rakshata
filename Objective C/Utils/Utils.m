@@ -127,3 +127,27 @@ void flushBundleCache(NSBundle *bundle)
 		CFRelease(cfBundle);
 	}
 }
+
+#if 0
+//Ensure app defaults, out of sandbox only
+
+void registerDefaultForExtension(NSString * extension)
+{
+	//We get the current default app
+	CFStringRef localExtension = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) extension, NULL);
+	CFURLRef currentDefault = LSCopyDefaultApplicationURLForContentType(localExtension, kLSRolesViewer, NULL);
+
+	//If it's us, we return
+	if([(__bridge NSURL *) currentDefault isEqualTo:[[NSBundle mainBundle] bundleURL]])
+		return;
+
+	//If not, let's take it over :o
+	OSStatus status = LSSetDefaultRoleHandlerForContentType (localExtension, kLSRolesViewer, (__bridge CFStringRef) [[NSBundle mainBundle] bundleIdentifier]);
+
+	if(status != kLSLaunchInProgressErr)
+	{
+		NSLog(@"Failure :c %d", status);
+	}
+}
+
+#endif
