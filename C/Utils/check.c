@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-volatile int NETWORK_ACCESS = CONNEXION_OK;
+static _Atomic int NETWORK_ACCESS = CONNEXION_OK;
 
 #ifdef _WIN32
 void checkHostNonModifie()
@@ -46,10 +46,8 @@ void checkHostNonModifie()
 				{
 					fclose(host);
 					logR("Violation détecté: redirection dans host\n");
-					MUTEX_LOCK(networkMutex);
-					
+
 					NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
-					MUTEX_UNLOCK(networkMutex);
 					break; //On quitte la boucle en while
 				}
 			}
@@ -65,10 +63,8 @@ void networkAndVersionTest()
 	char testURL[512], * bufferDL = NULL;
 	size_t lengthBufferDL;
 
-    MUTEX_LOCK(networkMutex);
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
-    MUTEX_UNLOCK(networkMutex);
-	
+
 	/*Chargement de l'URL*/
     snprintf(testURL, sizeof(testURL), SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
 
@@ -89,21 +85,17 @@ void networkAndVersionTest()
         if(download_mem(BACKUP_INTERNET_CHECK, NULL, &bufferDL, &lengthBufferDL, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
             hostNotReached++;
 		
-        MUTEX_LOCK(networkMutex);
         if(hostNotReached == 2 || bufferDL == NULL || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_IDENTIFIED_DOWN;
-        MUTEX_UNLOCK(networkMutex);
-		
+
 		free(bufferDL);
     }
 
 	else
     {
-        MUTEX_LOCK(networkMutex);
         NETWORK_ACCESS = CONNEXION_OK;
-        MUTEX_UNLOCK(networkMutex);
 
 		free(bufferDL);
 		bufferDL = NULL;
@@ -138,11 +130,5 @@ void networkAndVersionTest()
 
 bool checkNetworkState(int state)
 {
-    MUTEX_LOCK(networkMutex);
-
-	bool ret_value = NETWORK_ACCESS == state;
-	
-	MUTEX_UNLOCK(networkMutex);
-
-	return ret_value;
+	return NETWORK_ACCESS == state;
 }

@@ -10,7 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
-volatile bool quit;
+_Atomic bool quit;
 
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 {

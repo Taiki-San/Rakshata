@@ -17,7 +17,7 @@
 
 static CURLSH* cacheDNS;
 
-extern volatile bool quit;
+extern _Atomic bool quit;
 
 static void downloadChapterCore(DL_DATA *data);
 static int handleDownloadMetadata(DL_DATA* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
