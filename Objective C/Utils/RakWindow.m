@@ -125,10 +125,15 @@
 				return NSDragOperationCopy;
 			}
 
-			if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame
-			   || [extension caseInsensitiveCompare:ARCHIVE_FILE_EXT] == NSOrderedSame)
+			if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
 			{
 				return NSDragOperationCopy;
+			}
+
+			for(NSString * sample in ARCHIVE_SUPPORT)
+			{
+				if([extension caseInsensitiveCompare:sample] == NSOrderedSame)
+					return NSDragOperationCopy;
 			}
 		}
 	}

@@ -187,7 +187,7 @@ enum
 										  NSLocalizedString(@"CT-STATUS-WIP", nil),
 										  NSLocalizedString(@"CT-STATUS-ANNOUNCED", nil)]];
 
-		[status selectItemAtIndex:_project.status < STATUS_INVALID ? _project.status : 0];
+		[status selectItemAtIndex:_project.status <= STATUS_MAX ? _project.status : 0];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
 		selfSize.height -= META_SMALL_INTERLINE_BORDER + currentHeight;
@@ -638,7 +638,7 @@ enum
 	wcsncpy(data.description, (charType*) [description.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
 	data.rightToLeft = rightToLeft.selectedSegment == 1;
 
-	data.status = status.indexOfSelectedItem == 0 ? STATUS_INVALID : status.indexOfSelectedItem;
+	data.status = status.indexOfSelectedItem;
 	data.mainTag = (tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem > nbTags) ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem - 1].ID;
 	data.category = (catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem > nbCats) ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem - 1].ID;
 

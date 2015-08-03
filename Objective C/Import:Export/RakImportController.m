@@ -65,7 +65,7 @@
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
-		if([item needMoreData])	//We need to ask extra details to the user
+		if(item.issue == IMPORT_PROBLEM_METADATA || [item needMoreData])	//We need to ask extra details to the user
 		{
 			haveFoundProblems = YES;
 			item.issue = IMPORT_PROBLEM_METADATA;

@@ -82,14 +82,51 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 			if(item == nil)
 				continue;
 
-			item.issue = IMPORT_PROBLEM_NONE;
+			item.issue = IMPORT_PROBLEM_METADATA;
 			item.path = [NSString stringWithUTF8String:node.nodeName];
 			item.projectData = getEmptyExtraProject();
 			item.IOController = IOController;
 
+			item.contentID = INVALID_SIGNED_VALUE;
 			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
 			[item inferMetadataFromPathWithHint:YES];
+
+			PROJECT_DATA_EXTRA extraProject = item.projectData;
+
+			wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [[item.path lastPathComponent] UTF8String]));
+			extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
+			extraProject.data.project.locale = true;
+
+			if(item.contentID != INVALID_SIGNED_VALUE)
+			{
+				if(item.isTome)
+				{
+					extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
+					if(extraProject.data.tomeLocal != NULL)
+					{
+						extraProject.data.tomeLocal[0].ID = extraProject.data.tomeLocal[0].readingID = item.contentID;
+						extraProject.data.nombreTomeLocal++;
+					}
+				}
+				else
+				{
+					extraProject.data.chapitresLocal = malloc(sizeof(int));
+					if(extraProject.data.chapitresLocal != NULL)
+					{
+						extraProject.data.chapitresLocal[0] = item.contentID;
+						extraProject.data.nombreChapitreLocal++;
+					}
+				}
+			}
+
+			item.projectData = extraProject;
+
 			[output addObject:item];
+		}
+		else
+		{
+			[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:nil otherButton:nil informativeTextWithFormat:nil] runModal];
+			break;
 		}
 	}
 

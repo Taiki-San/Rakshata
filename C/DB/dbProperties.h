@@ -14,14 +14,14 @@
 //This order + initial value is assumed not to change by RakImportQuery
 enum
 {
+	STATUS_INVALID = 0,
 	STATUS_OVER = 1,
 	STATUS_CANCELED,
 	STATUS_SUSPENDED,
 	STATUS_WIP,
 	STATUS_ANOUNCED,
-	STATUS_INVALID,
-	
-	STATUS_MAX = STATUS_INVALID
+
+	STATUS_MAX = STATUS_ANOUNCED
 };
 
 /*Repository*/
