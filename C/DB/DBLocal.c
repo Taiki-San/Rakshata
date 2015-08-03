@@ -53,7 +53,7 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 		removeFolder(pathFinal);
 	}
 
-	return baseID;
+	return baseID++;
 }
 
 void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
