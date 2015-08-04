@@ -402,27 +402,39 @@
 		inferedName = [_path lastPathComponent];
 
 	//We try to clean it up a bit
-	if(inferedName != nil)
+	return [self cleanupString : inferedName];
+}
+
+- (NSString *) cleanupString : (NSString *) inferedName
+{
+	if(inferedName == nil)
+		return nil;
+
+	//First, remove digits withing parenthesis
+	inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\(\\d+?\\)"
+														 withString:@""
+															options:NSRegularExpressionSearch
+															  range:NSMakeRange(0, inferedName.length)];
+
+	//Then, anything between []
+	inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\[.*\\]"
+														 withString:@""
+															options:NSRegularExpressionSearch
+															  range:NSMakeRange(0, inferedName.length)];
+
+	if(inferedName != nil && [inferedName length] > 0)
 	{
-		//First, remove digits withing parenthesis
-		inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\(\\d+?\\)"
-															 withString:@""
-																options:NSRegularExpressionSearch
-																  range:NSMakeRange(0, inferedName.length)];
+		NSMutableCharacterSet * charSet = [NSMutableCharacterSet new];
+		[charSet addCharactersInString:@"_ -~:;|"];
 
-		//Then, anything between []
-		inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\[.*\\]"
-															 withString:@""
-																options:NSRegularExpressionSearch
-																  range:NSMakeRange(0, inferedName.length)];
-
-		if(inferedName != nil && [inferedName length] > 0)
-		{
-			//Good, now, let's replace _ with spaces, and remove noise from the end
-			inferedName = [inferedName stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-			inferedName = [inferedName stringByTrimmingCharactersInSet:charSet];
-		}
+		//Good, now, let's replace _ with spaces, and remove noise from the end
+		inferedName = [inferedName stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+		inferedName = [inferedName stringByTrimmingCharactersInSet:charSet];
 	}
+
+	//Okay, we're going too hard, we give up
+	if([inferedName length] == 0)
+		return nil;
 
 	return inferedName;
 }

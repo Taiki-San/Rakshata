@@ -101,11 +101,16 @@
 		}
 		else if(metadata.readingID != INVALID_SIGNED_VALUE)
 			return [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), metadata.readingID];
+		else
+			return _item.path;
 
 		return getStringForWchar(metadata.readingName);
 	}
 
 	int content = _item.contentID;
+
+	if(content == INVALID_SIGNED_VALUE)
+		return _item.path;
 
 	if(content % 10)
 		return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), content / 10, content % 10];

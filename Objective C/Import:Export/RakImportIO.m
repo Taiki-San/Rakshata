@@ -101,25 +101,22 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 			extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
 			extraProject.data.project.locale = true;
 
-			if(item.contentID != INVALID_SIGNED_VALUE)
+			if(item.isTome)
 			{
-				if(item.isTome)
+				extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
+				if(extraProject.data.tomeLocal != NULL)
 				{
-					extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
-					if(extraProject.data.tomeLocal != NULL)
-					{
-						extraProject.data.tomeLocal[0].ID = extraProject.data.tomeLocal[0].readingID = item.contentID;
-						extraProject.data.nombreTomeLocal++;
-					}
+					extraProject.data.tomeLocal[0].ID = extraProject.data.tomeLocal[0].readingID = item.contentID;
+					extraProject.data.nombreTomeLocal++;
 				}
-				else
+			}
+			else
+			{
+				extraProject.data.chapitresLocal = malloc(sizeof(int));
+				if(extraProject.data.chapitresLocal != NULL)
 				{
-					extraProject.data.chapitresLocal = malloc(sizeof(int));
-					if(extraProject.data.chapitresLocal != NULL)
-					{
-						extraProject.data.chapitresLocal[0] = item.contentID;
-						extraProject.data.nombreChapitreLocal++;
-					}
+					extraProject.data.chapitresLocal[0] = item.contentID;
+					extraProject.data.nombreChapitreLocal++;
 				}
 			}
 
