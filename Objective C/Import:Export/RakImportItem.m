@@ -219,16 +219,19 @@
 #pragma mark - Metadata inference
 
 //If hinted, and we can't figure anything ourselves, we relax the search
-- (void) inferMetadataFromPathWithHint : (BOOL) haveHintedCT
+- (NSString *) inferMetadataFromPathWithHint : (BOOL) haveHintedCT
 {
+	NSString * inferedName = nil;
+	const char * forbiddenChars = "_ -~:;|", nbForbiddenChars = 7;
 	NSMutableCharacterSet * charSet = [NSMutableCharacterSet new];
-	[charSet addCharactersInString:@"_ -~:;|"];
+	[charSet addCharactersInString:[NSString stringWithUTF8String:forbiddenChars]];
 
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
 	NSArray * tokens = [[_path lastPathComponent] componentsSeparatedByCharactersInSet:charSet];
 
 	BOOL couldHaveSomething, inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
 	int elementID;
+	uint discardedCloseCalls = 0;
 
 	for(uint i = 0, length, posInChunk, baseDigits; i < [tokens count]; ++i)
 	{
@@ -260,7 +263,10 @@
 
 		//Couldn't find digits in the end of the chunk and the next chunk doesn't start with digits
 		if(posInChunk == length && (i == [tokens count] || [[tokens objectAtIndex:i + 1] length] == 0 || !isdigit([[tokens objectAtIndex:i + 1] UTF8String][0])))
+		{
+			++discardedCloseCalls;
 			continue;
+		}
 
 		//Digits analysis
 
@@ -296,6 +302,7 @@
 			logR("Close call, this chunk almost got me!");
 			NSLog(@"`%@` -> %s", tokens, simplifiedChunk);
 #endif
+			++discardedCloseCalls;
 			continue;
 		}
 
@@ -307,14 +314,60 @@
 		if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
 		{
 			elementID = (int) inferedElementID;
-			inferedSomethingSolid = YES;
+
+			if(inferedSomethingSolid)
+				++discardedCloseCalls;
+			else
+				inferedSomethingSolid = YES;
 		}
+		else
+			++discardedCloseCalls;
 	}
 
 	if(inferedSomethingSolid)
 	{
 		_isTome = isTomeInfered;
 		_contentID = isTomeInfered ? elementID / 10 : elementID;
+
+		//We'll assume that most of what came before CT was the name
+		char * fullName = strdup([[[_path lastPathComponent] stringByDeletingPathExtension] UTF8String]);
+		uint fullNameLength = strlen(fullName), posFullName = 0;
+		BOOL nextCharNeedChecking = YES;
+
+		for(; posFullName < fullNameLength; ++posFullName)
+		{
+			char c = fullName[posFullName];
+			if(nextCharNeedChecking)
+			{
+				c = toupper(c);
+				if((c == 'C' || c == 'T' || c == 'V') && discardedCloseCalls-- == 0)
+				{
+					//If it starts with the C/T/V we used, we stop the prediction
+					if(posFullName)
+					{
+						fullName[posFullName] = 0;
+						inferedName = [NSString stringWithUTF8String:fullName];
+					}
+					break;
+				}
+				else
+					nextCharNeedChecking = NO;
+			}
+			else
+			{
+				//We don't care about hot chars if they are not the begining of a chunk
+				for(byte i = 0; i < nbForbiddenChars; ++i)
+				{
+					if(c == forbiddenChars[i])
+					{
+						nextCharNeedChecking = YES;
+						break;
+					}
+				}
+			}
+		}
+
+		free(fullName);
 	}
 
 	//Perform a simpler search
@@ -344,6 +397,34 @@
 		if(inferedSomethingSolid)
 			_contentID = elementID;
 	}
+
+	if(inferedName == nil || inferedName.length == 0)
+		inferedName = [_path lastPathComponent];
+
+	//We try to clean it up a bit
+	if(inferedName != nil)
+	{
+		//First, remove digits withing parenthesis
+		inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\(\\d+?\\)"
+															 withString:@""
+																options:NSRegularExpressionSearch
+																  range:NSMakeRange(0, inferedName.length)];
+
+		//Then, anything between []
+		inferedName = [inferedName stringByReplacingOccurrencesOfString:@"\\[.*\\]"
+															 withString:@""
+																options:NSRegularExpressionSearch
+																  range:NSMakeRange(0, inferedName.length)];
+
+		if(inferedName != nil && [inferedName length] > 0)
+		{
+			//Good, now, let's replace _ with spaces, and remove noise from the end
+			inferedName = [inferedName stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+			inferedName = [inferedName stringByTrimmingCharactersInSet:charSet];
+		}
+	}
+
+	return inferedName;
 }
 
 @end

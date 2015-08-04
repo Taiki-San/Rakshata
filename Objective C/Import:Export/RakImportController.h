@@ -46,7 +46,7 @@
 
 - (void) registerProject;
 
-- (void) inferMetadataFromPathWithHint : (BOOL) haveHintedCT;
+- (NSString *) inferMetadataFromPathWithHint : (BOOL) haveHintedCT;
 
 @end
 

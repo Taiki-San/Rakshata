@@ -89,11 +89,15 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 
 			item.contentID = INVALID_SIGNED_VALUE;
 			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
-			[item inferMetadataFromPathWithHint:YES];
+			NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
 
 			PROJECT_DATA_EXTRA extraProject = item.projectData;
 
-			wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [[item.path lastPathComponent] UTF8String]));
+			if(inferedName == nil)
+				inferedName = [item.path lastPathComponent];
+
+			wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
+
 			extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
 			extraProject.data.project.locale = true;
 
