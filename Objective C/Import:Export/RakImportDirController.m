@@ -21,10 +21,8 @@
 
 	if(self != nil)
 	{
-		archiveFileName = filename;
-
 		filenames = listDir([filename UTF8String], &nbFiles);
-		if(filenames == NULL || nbFiles == 0 || nbFiles + 1 > nbFiles)
+		if(filenames == NULL || nbFiles == 0 || nbFiles + 1 < nbFiles)
 			return nil;
 
 		//We add the directory to the filename list
@@ -46,6 +44,7 @@
 			return nil;
 
 		qsort(filenames, nbFiles, sizeof(char *), strnatcmp);
+		archiveFileName = filename;
 	}
 
 	return self;

@@ -136,7 +136,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 		}
 		else
 		{
-			[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:nil otherButton:nil informativeTextWithFormat:nil] runModal];
+			[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:@"Ok :c" otherButton:@"Ok :c" informativeTextWithFormat:@"WIP"] runModal];
 			break;
 		}
 	}

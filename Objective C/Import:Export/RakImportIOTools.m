@@ -58,7 +58,7 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 		if(files[pos][cursor - 1] == '/')
 		{
 			uint basePosDir = pos;
-			//We look for files in this directory. The filename have to be longer, not to
+			//We look for files in this directory. The filename have to be longer
 			for(; pos + 1 < nbFiles && strlen(files[pos + 1]) > length && !strncmp(files[basePosDir], files[pos + 1], length); pos++);
 
 			//Empty path, we discard it
@@ -133,8 +133,6 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 				continue;
 			}
 		}
-		else
-			imagesAndFlatCT = onlyImages = false;
 	}
 
 	//Empty shell around one dir
