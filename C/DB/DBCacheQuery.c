@@ -455,6 +455,47 @@ PROJECT_DATA getProjectByID(uint cacheID)
 	return getProjectByIDHelper(cacheID, true, false, false).project;
 }
 
+uint getProjectByName(const char * UTF8Name)
+{
+	if(UTF8Name == NULL)
+		return INVALID_VALUE;
+
+	sqlite3_stmt * request = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" = ?1 COLLATE NOCASE");
+	if(request == NULL)
+		return INVALID_VALUE;
+
+	sqlite3_bind_text(request, 1, UTF8Name, -1, SQLITE_STATIC);
+
+	uint retValue = INVALID_VALUE;
+
+	//We have something!
+	if(sqlite3_step(request) == SQLITE_ROW)
+	{
+		retValue = (uint) sqlite3_column_int(request, 0);
+
+		//Uh, we have something else... Okay, let's try something: if something match perfectly the name, we'll pick it,
+		//otherwise, we rollback to the first case insensitive match
+		if(sqlite3_step(request) == SQLITE_ROW)
+		{
+			destroyRequest(request);
+
+			request = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" = ?1");
+			if(request != NULL)
+			{
+				sqlite3_bind_text(request, 1, UTF8Name, -1, SQLITE_STATIC);
+
+				//Lucky us!
+				if(sqlite3_step(request) == SQLITE_ROW)
+					retValue = (uint) sqlite3_column_int(request, 0);
+			}
+		}
+	}
+
+	destroyRequest(request);
+
+	return retValue;
+}
+
 uint * getFavoritesID(uint * nbFavorites)
 {
 	if(nbFavorites == NULL || cache == NULL)

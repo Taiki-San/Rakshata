@@ -128,6 +128,7 @@ PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool local
 PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed, bool wantTags);
 PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID);
 PROJECT_DATA getProjectByID(uint cacheID);
+uint getProjectByName(const char * UTF8Name);
 
 bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData);
 bool isProjectInstalledInCache (uint ID);

@@ -96,10 +96,20 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 			if(inferedName == nil)
 				inferedName = [item.path lastPathComponent];
 
-			wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
+			//We try to find if we can easily match a project
+			extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
 
-			extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
-			extraProject.data.project.locale = true;
+			//No luck ¯\_(ツ)_/¯
+			if(extraProject.data.project.cacheDBID == INVALID_VALUE)
+			{
+				wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
+				extraProject.data.project.locale = true;
+				extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
+			}
+			else
+			{
+				extraProject.data.project = getProjectByID(extraProject.data.project.cacheDBID);
+			}
 
 			if(item.isTome)
 			{
