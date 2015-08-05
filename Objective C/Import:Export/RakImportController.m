@@ -115,7 +115,10 @@
 				[UI switchToIssueUI:manifest];
 			}
 			else
+			{
 				[UI finishing];
+				[UI closeUI];
+			}
 		});
 	}
 	else

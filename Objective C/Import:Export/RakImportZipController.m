@@ -59,6 +59,9 @@
 
 - (BOOL) canLocateFile : (NSString * __nonnull) file
 {
+	if([file isEqualToString: archiveFileName])
+		return YES;
+
 	return unzLocateFile(archive, [file UTF8String], true) == UNZ_OK;
 }
 
