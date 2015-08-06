@@ -14,12 +14,13 @@
 {
 	NSView* documentViewToResize;
 	
-	BOOL forceUpdate;
+	BOOL forceUpdate, redirectingClic;
 	NSRect _cachedFrame;
 }
 
 @property BOOL horizontalScrollingEnabled;
 @property BOOL scrollingDisabled;
+@property BOOL redirectClicToContentView;
 
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) updateScrollerState : (NSRect) frame;

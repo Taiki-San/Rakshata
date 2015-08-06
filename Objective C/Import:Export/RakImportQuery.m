@@ -432,6 +432,7 @@ enum
 				view.drawsBackground = YES;
 				view.backgroundColor = inputField.backgroundColor;
 				view.documentView = inputField;
+				view.redirectClicToContentView = YES;
 
 				((RakScroller *) view.verticalScroller).hideScroller = YES;
 				((RakScroller *) view.verticalScroller).backgroundColorToReplicate = [self backgroundColor];

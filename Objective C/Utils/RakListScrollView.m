@@ -124,4 +124,26 @@
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
+#pragma mark - Redirecting clic
+
+- (void) mouseDown:(nonnull NSEvent *)theEvent
+{
+	if(!_redirectClicToContentView || self.documentView == nil || redirectingClic)
+		return [super mouseDown:theEvent];
+
+	redirectingClic = YES;
+	[self.documentView mouseDown:theEvent];
+	redirectingClic = NO;
+}
+
+- (void) mouseUp:(nonnull NSEvent *)theEvent
+{
+	if(!_redirectClicToContentView || self.documentView == nil || redirectingClic)
+		return [super mouseUp:theEvent];
+
+	redirectingClic = YES;
+	[self.documentView mouseUp:theEvent];
+	redirectingClic = NO;
+}
+
 @end
