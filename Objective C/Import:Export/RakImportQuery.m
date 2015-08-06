@@ -408,7 +408,10 @@ enum
 				inputField.stringValue = getStringForWchar(collector[i]);
 
 			if(i == 0)
+			{
 				name = inputField;
+				name.wantCompletion = YES;
+			}
 			else if(i == 1)
 				author = inputField;
 			//Synopsis, this one is slightly different

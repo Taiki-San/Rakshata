@@ -10,9 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakText : NSTextField <NSTextFieldDelegate>
+@interface RakText : NSTextField <NSTextFieldDelegate, NSTextViewDelegate>
 {
-	BOOL haveFixedWidth;
+	BOOL haveFixedWidth, autoCompleting;
 	CGFloat _suggestedWidth;
 
 	CGFloat _cachedMinHeight;
@@ -31,6 +31,11 @@
 
 @property (weak) id clicTarget;
 @property SEL clicAction;
+
+//Completion
+@property BOOL wantCompletion;
+@property (weak) id completionCallback;
+@property SEL completionSelector;
 
 - (instancetype)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color;

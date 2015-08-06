@@ -71,7 +71,10 @@
 
 	if([self respondsToSelector:@selector(setAllowsDefaultTighteningForTruncation:)])
 		[self setAllowsDefaultTighteningForTruncation:YES];
-	
+
+//	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
+//		self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+
 	[self.cell setWraps : NO];
 }
 
@@ -280,6 +283,11 @@
 	self.delegate = self;
 }
 
+- (BOOL) textView:(nonnull NSTextView *)textView doCommandBySelector:(nonnull SEL)commandSelector
+{
+	return [self control:self textView:textView doCommandBySelector:commandSelector];
+}
+
 - (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector;
 {
 	BOOL result = NO;
@@ -296,6 +304,25 @@
 
 		if(result)
 			[self updateMultilineHeight];
+	}
+	else if(_wantCompletion)
+	{
+		//Prevent the auto completion from messing with deleting chars
+		if(commandSelector == @selector(deleteBackward:))
+		{
+			autoCompleting = YES;
+			[textView deleteBackward:self];
+			autoCompleting = NO;
+			result = YES;
+		}
+
+		else if(commandSelector == @selector(deleteForward:))
+		{
+			autoCompleting = YES;
+			[textView deleteForward:self];
+			autoCompleting = NO;
+			result = YES;
+		}
 	}
 
 	return result;
@@ -387,6 +414,52 @@
 	}
 	else
 		[super mouseUp:theEvent];
+}
+
+#pragma mark - Completion is required
+
+- (void) textDidChange:(nonnull NSNotification *)obj
+{
+	if(_wantCompletion && !autoCompleting)
+	{
+		autoCompleting = YES;
+		[obj.object complete:nil];
+		autoCompleting = NO;
+	}
+}
+
+//By default, we complete with project names
+- (NSArray<NSString *> *)textView:(NSTextView *)textView completions:(NSArray<NSString *> *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
+{
+	if(!_wantCompletion)
+		return nil;
+
+	else if(_completionCallback != nil)
+	{
+		IMP imp = [_completionCallback methodForSelector:_completionSelector];
+		NSArray * (*func)(id, SEL, id) = (void *)imp;
+		return func(_completionCallback, _completionSelector, nil);
+	}
+
+	uint nbElem;
+	char ** output = getProjectNameStartingWith([textView.string UTF8String], &nbElem);
+
+	if(output == NULL || nbElem == 0)
+	{
+		free(output);
+		return @[];
+	}
+
+	NSMutableArray * array = [NSMutableArray array];
+
+	for(uint i = 0; i < nbElem; i++)
+	{
+		[array addObject:[NSString stringWithUTF8String:output[i]]];
+		free(output[i]);
+	}
+	free(output);
+
+	return array;
 }
 
 @end
