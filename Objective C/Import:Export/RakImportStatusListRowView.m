@@ -126,7 +126,7 @@
 	if(item.isRootItem && item.metadataProblem)
 		return @"Données incomplètes 😱";
 
-	else if(status == STATUS_BUTTON_WARN || item.isRootItem)
+	else if(item.isRootItem || status == STATUS_BUTTON_WARN)
 		return @"Problèmes detectés 😕";
 
 	//Ok, error
@@ -135,6 +135,9 @@
 
 	else if(item.itemForChild.issue == IMPORT_PROBLEM_INSTALL_ERROR)
 		return [NSString stringWithFormat:@"%@ corrompu 😡", NSLocalizedString(_item.isTome ? @"VOLUME" : @"CHAPTER", nil)];
+
+	else if(item.itemForChild.issue == IMPORT_PROBLEM_METADATA_DETAILS)
+		return @"Détails manquants 😔";
 
 	return @"Données incomplètes 😱";
 }
@@ -173,8 +176,13 @@
 				alert.itemOfQueryForMetadata = _item;
 		}
 	}
-	else
+	else if(_item.issue == IMPORT_PROBLEM_DUPLICATE)
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDuplicate:_item];
+
+	else if(_item.issue == IMPORT_PROBLEM_METADATA_DETAILS)
+	{
+
+	}
 
 	[alert launchPopover:button :self];
 }

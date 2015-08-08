@@ -104,10 +104,9 @@
 		CFRelease(cgEvent);
 		[super scrollWheel:event];
 	}
-#else
+#endif
 	else
 		[super scrollWheel:event];
-#endif
 }
 
 - (void) setBackgroundColor:(NSColor *)backgroundColor

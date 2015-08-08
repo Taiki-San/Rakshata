@@ -72,7 +72,14 @@
 			continue;
 		}
 
-		if([item isReadable])
+		else if(item.issue == IMPORT_PROBLEM_METADATA_DETAILS || item.contentID == INVALID_SIGNED_VALUE)
+		{
+			haveFoundProblems = YES;
+			item.issue = IMPORT_PROBLEM_METADATA_DETAILS;
+			continue;
+		}
+
+		else if([item isReadable])
 		{
 			haveFoundProblems = YES;
 			item.issue = IMPORT_PROBLEM_DUPLICATE;

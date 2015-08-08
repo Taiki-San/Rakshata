@@ -54,6 +54,12 @@
 	if(projectPath == NULL)
 		return false;
 
+	if(_contentID == INVALID_SIGNED_VALUE)
+	{
+		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
+		return NO;
+	}
+
 	char basePath[sizeof(projectPath) + 256];
 	int selection = _contentID;
 
@@ -138,27 +144,32 @@
 {
 	_projectData.data.project = project;
 
+	//Check the data update is enough
 	if([self needMoreData])
-	{
 		_issue = IMPORT_PROBLEM_METADATA;
-		return NO;
-	}
 
-	//Okay, perform installation
-	if([self isReadable])
+	//We have a valid targer
+	else if(_contentID == INVALID_SIGNED_VALUE)
+		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
+
+	//Quick check we're not already installed
+	else if([self isReadable])
 		_issue = IMPORT_PROBLEM_DUPLICATE;
 
-	if(![self installWithUI:nil])
-	{
+	//Perform installation
+	else if(![self installWithUI:nil])
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
-		return NO;
+
+	//Okay! We're good
+	else
+	{
+		[self processThumbs];
+		[self registerProject];
+
+		return YES;
 	}
 
-	[self processThumbs];
-	[self registerProject];
-	_issue = IMPORT_PROBLEM_NONE;
-
-	return YES;
+	return NO;
 }
 
 - (void) deleteData

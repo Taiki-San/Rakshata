@@ -13,7 +13,7 @@
 @interface RakImportQuery()
 {
 	RakImportItem * _item;
-	BOOL requestingMetadata;
+	byte issue;
 
 	//Model
 	PROJECT_DATA _project;
@@ -43,6 +43,8 @@ enum
 
 @implementation RakImportQuery
 
+#pragma mark Duplicate management
+
 - (instancetype) autoInitWithDuplicate : (RakImportItem *) item
 {
 	if(item == nil || item.issue != IMPORT_PROBLEM_DUPLICATE)
@@ -54,34 +56,8 @@ enum
 - (instancetype) _autoInitWithDuplicate : (RakImportItem *) item
 {
 	_item = item;
-	requestingMetadata = NO;
+	issue = _item.issue;
 	return self;
-}
-
-- (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
-{
-	return [[self initWithFrame:NSMakeRect(0, 0, 350, 608)] _autoInitWithMetadata:project];
-}
-
-- (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
-{
-	_project = project;
-	requestingMetadata = YES;
-	return self;
-}
-
-- (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
-{
-	[self internalInit:anchor :NSZeroRect :NO];
-	return YES;
-}
-
-- (void) setupView
-{
-	if(requestingMetadata)
-		[self setupUIMetadata];
-	else
-		[self setupUIDuplicate];
 }
 
 - (void) setupUIDuplicate
@@ -122,6 +98,42 @@ enum
 			[self addSubview:button];
 		}
 	}
+}
+
+#pragma mark Details management
+
+- (instancetype) autoInitWithDetails : (RakImportItem *) item
+{
+	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA_DETAILS)
+		return nil;
+
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithDetails:item];
+}
+
+- (instancetype) _autoInitWithDetails : (RakImportItem *) item
+{
+	_item = item;
+	issue = _item.issue;
+	return self;
+}
+
+- (void) setupUIDetails
+{
+
+}
+
+#pragma mark Metadata management
+
+- (instancetype) autoInitWithMetadata : (PROJECT_DATA) project
+{
+	return [[self initWithFrame:NSMakeRect(0, 0, 350, 608)] _autoInitWithMetadata:project];
+}
+
+- (instancetype) _autoInitWithMetadata : (PROJECT_DATA) project
+{
+	_project = project;
+	issue = IMPORT_PROBLEM_METADATA;
+	return self;
 }
 
 - (void) setupUIMetadata
@@ -473,6 +485,28 @@ enum
 	catList.nextKeyView = name;
 }
 
+#pragma mark Generic initialization
+
+- (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
+{
+	[self internalInit:anchor :NSZeroRect :NO];
+	return YES;
+}
+
+- (void) setupView
+{
+	if(issue == IMPORT_PROBLEM_METADATA)
+		[self setupUIMetadata];
+
+	else if(issue == IMPORT_PROBLEM_METADATA_DETAILS)
+		[self setupUIDetails];
+
+	else if(issue == IMPORT_PROBLEM_DUPLICATE)
+		[self setupUIDuplicate];
+	else
+		NSLog(@"Unimplemented issue management");
+}
+
 #pragma mark - Color management & UI generation
 
 - (NSColor *) mainTitleColor
@@ -555,7 +589,7 @@ enum
 {
 	[super drawRect:dirtyRect];
 
-	if(!requestingMetadata)
+	if(issue != IMPORT_PROBLEM_METADATA)
 		return;
 
 	[[[NSColor whiteColor] colorWithAlphaComponent:0.3] setFill];
