@@ -88,7 +88,8 @@ enum
 - (void) didAddSubview:(NSView *)subview
 {
 	//Hide the text 10.11 added which broke our customization with undocumented classes, yay \o/
-	subview.hidden = YES;
+	if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_3)
+		subview.hidden = YES;
 }
 
 + (Class)cellClass
