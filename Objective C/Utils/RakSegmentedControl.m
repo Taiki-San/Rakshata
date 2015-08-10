@@ -85,6 +85,12 @@ enum
 	[self.animator setFrame : [self getButtonFrame:frameRect]];
 }
 
+- (void) didAddSubview:(NSView *)subview
+{
+	//Hide the text 10.11 added which broke our customization with undocumented classes, yay \o/
+	subview.hidden = YES;
+}
+
 + (Class)cellClass
 {
 	return [RakSegmentedButtonCell class];
