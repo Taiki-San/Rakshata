@@ -180,9 +180,7 @@
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDuplicate:_item];
 
 	else if(_item.issue == IMPORT_PROBLEM_METADATA_DETAILS)
-	{
-
-	}
+		_list.query = alert = [[RakImportQuery alloc] autoInitWithDetails:_item];
 
 	[alert launchPopover:button :self];
 }

@@ -28,6 +28,10 @@
 	RakSegmentedControl * rightToLeft;
 	RakPopUpButton * status, * tagList, * catList;
 	RakImageDropArea * dropSR, * dropCT, * dropDD;
+
+	//Fields to recover details
+	RakSegmentedControl * isTome;
+	RakText * contentID;
 }
 
 @end
@@ -74,7 +78,7 @@ enum
 			selfSize.width = _bounds.size.width;
 		}
 
-		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + 8))];
+		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + META_TOP_BORDER))];
 		[self addSubview:header];
 	}
 
@@ -107,7 +111,7 @@ enum
 	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA_DETAILS)
 		return nil;
 
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, 64)] _autoInitWithDetails:item];
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 141)] _autoInitWithDetails:item];
 }
 
 - (instancetype) _autoInitWithDetails : (RakImportItem *) item
@@ -119,7 +123,77 @@ enum
 
 - (void) setupUIDetails
 {
+	NSSize selfSize = self.frame.size, workingSize;
+	CGFloat currentY = selfSize.height;
 
+	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(_item.isTome ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil) :[self titleColor]];
+	if(header != nil)
+	{
+		if(selfSize.width < header.bounds.size.width)
+		{
+			[self setFrameSize:NSMakeSize(header.bounds.size.width + 20, selfSize.height)];
+			selfSize.width = _bounds.size.width;
+		}
+
+		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + META_TOP_BORDER))];
+		[self addSubview:header];
+	}
+
+	bordersY[0] = (currentY -= META_INTERLINE_BORDER);
+
+	isTome = [[RakSegmentedControl alloc] initWithFrame:NSZeroRect :@[NSLocalizedString(@"CHAPTER", nil), NSLocalizedString(@"VOLUME", nil)]];
+	if(isTome != nil)
+	{
+		[isTome setEnabled:YES forSegment:0];
+		[isTome setEnabled:YES forSegment:1];
+		[isTome setSelectedSegment:_item.isTome];
+
+		isTome.target = self;
+		isTome.action = @selector(changedIsTome);
+
+		workingSize = isTome.bounds.size;
+		[isTome setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_INTERLINE_BORDER)];
+		[self addSubview:isTome];
+	}
+
+	contentID = [self getInputFieldWithPlaceholder:(_item.isTome ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP") : selfSize.width * 3 / 4];
+	if(contentID != nil)
+	{
+		workingSize = contentID.bounds.size;
+		[contentID setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_SMALL_INTERLINE_BORDER)];
+		[self addSubview:contentID];
+	}
+
+	currentY -= META_INTERLINE_BORDER;
+	bordersY[1] = currentY;
+	currentY -= META_INTERLINE_BORDER;
+
+
+	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
+	if(button != nil)
+	{
+		button.target = self;
+		button.action = @selector(close);
+
+		workingSize = button.bounds.size;
+
+		[button setFrameOrigin:NSMakePoint(selfSize.width / 3 - workingSize.width / 2, currentY - workingSize.height)];
+
+		[self addSubview:button];
+	}
+
+	button = [RakButton allocWithText:NSLocalizedString(@"CONFIRM", nil)];
+	if(button != nil)
+	{
+		button.target = self;
+		button.action = @selector(validateDetail);
+
+		workingSize = button.bounds.size;
+
+		[button setFrameOrigin:NSMakePoint(2 * selfSize.width / 3 - workingSize.width / 2, currentY - workingSize.height)];
+
+		[self addSubview:button];
+	}
 }
 
 #pragma mark Metadata management
@@ -589,7 +663,7 @@ enum
 {
 	[super drawRect:dirtyRect];
 
-	if(issue != IMPORT_PROBLEM_METADATA)
+	if(bordersY[0] == 0)
 		return;
 
 	[[[NSColor whiteColor] colorWithAlphaComponent:0.3] setFill];
@@ -650,6 +724,11 @@ enum
 
 #pragma mark - Button responder
 
+- (void) changedIsTome
+{
+	NSLog(@"lol");
+}
+
 - (void) replaceAll
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_REPLACE_ALL object:_item];
@@ -705,6 +784,11 @@ enum
 		[RakImportStatusList refreshAfterPass];
 		[self close];
 	}
+}
+
+- (void) validateDetail
+{
+
 }
 
 - (void) close

@@ -198,6 +198,10 @@
 "IMPORT-META-IMG-GRID" = "Grid icon";
 "IMPORT-META-IMG-DD" = "Drag & Drop icon";
 "IMPORT-META-IMG-CT" = "Serie's page image";
+"IMPORT-DET-HEAD-CHAP" = "Missing chapter number";
+"IMPORT-DET-HEAD-VOL" = "Missing volume name and position";
+"IMPORT-DET-PH-CHAP" = "Chapter's number";
+"IMPORT-DET-PH-VOL" = "Volume's name or number";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";

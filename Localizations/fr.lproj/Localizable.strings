@@ -198,6 +198,10 @@
 "IMPORT-META-IMG-GRID" = "Icône pour la grille";
 "IMPORT-META-IMG-DD" = "Icône  pour le glissé-déposé";
 "IMPORT-META-IMG-CT" = "Image de fiche série";
+"IMPORT-DET-HEAD-CHAP" = "Numéro du chapitre manquant";
+"IMPORT-DET-HEAD-VOL" = "Nom et position du tome manquants";
+"IMPORT-DET-PH-CHAP" = "Numéro du chapitre";
+"IMPORT-DET-PH-VOL" = "Numéro ou nom du tome";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";
