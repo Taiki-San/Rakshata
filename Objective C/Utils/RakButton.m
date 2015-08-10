@@ -74,6 +74,17 @@
 	return output;
 }
 
+- (instancetype) init
+{
+	self = [super init];
+
+	//El Capitan
+	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_3)
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+
+	return self;
+}
+
 - (void) viewDidChangeBackingProperties
 {
 	[self setFrameOrigin:self.frame.origin];
@@ -412,11 +423,17 @@
 			cellFrame.origin.y += _borderWidth;
 		}
 		
+	}
+
+	//El Capitan
+	if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_10_3)
+	{
 		[[self getBackgroundColor] setFill];
 		NSRectFill(cellFrame);
-		
-		[textCell drawInteriorWithFrame:cellFrame inView:controlView];
 	}
+
+	if(textCell != nil)
+		[textCell drawInteriorWithFrame:cellFrame inView:controlView];
 	else
 		[super drawWithFrame:cellFrame inView:controlView];
 }
