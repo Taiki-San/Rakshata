@@ -136,14 +136,14 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	releaseParsedData(cachedProject);
 }
 
-#define getData(run, newData, index)	ACCESS_DATA(run == 1, ((int*) newData)[index], ((META_TOME*) newData)[index].ID)
+#define getData(isTome, newData, index)	ACCESS_DATA(isTome, ((int*) newData)[index], ((META_TOME*) newData)[index].ID)
 
 void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject)
 {
 	uint nbOld, nbNew, lengthCollector;
 	void * dataOld, *dataNew, * collector;
 	uint16_t sizeOfType;
-	bool shouldFreeCollector;
+	bool shouldFreeCollector, isTome;
 
 	//We have two passes, one for the chapters, one for the volume
 	for(byte run = 0; run < 2; run++)
@@ -151,8 +151,9 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		lengthCollector = 0;
 		collector = NULL;
 		shouldFreeCollector = false;
+		isTome = run == 1;
 
-		if(run == 0)	//chapters
+		if(!isTome)	//chapters
 		{
 			oldProject.project.nombreChapitre = nbOld = oldProject.nombreChapitreRemote;
 			oldProject.project.chapitresFull = dataOld = oldProject.chapitresRemote;
@@ -178,18 +179,18 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		//Nothing remaining, so anything remaining is here to stay
 		if(nbNew == 0)
 		{
-			if(run == 0)
-				oldProject.project.chapitresInstalled = NULL;
-			else
+			if(isTome)
 				oldProject.project.tomesInstalled = NULL;
+			else
+				oldProject.project.chapitresInstalled = NULL;
 
-			getCTInstalled(&oldProject.project, run != 0);
+			getCTInstalled(&oldProject.project, isTome);
 
-			uint length = ACCESS_DATA(run != 0, oldProject.project.nombreChapitreInstalled, oldProject.project.nombreTomesInstalled);
+			uint length = ACCESS_DATA(isTome, oldProject.project.nombreChapitreInstalled, oldProject.project.nombreTomesInstalled);
 
 			if(length != 0)
 			{
-				collector = ACCESS_DATA(run != 0, (void*) oldProject.project.chapitresInstalled, (void*) oldProject.project.tomesInstalled);
+				collector = ACCESS_DATA(isTome, (void*) oldProject.project.chapitresInstalled, (void*) oldProject.project.tomesInstalled);
 				lengthCollector = length;
 			}
 		}
@@ -209,22 +210,22 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 			for(uint posOld = 0, posNew; posOld < nbOld; ++posOld)
 			{
 				posNew = 0;
-				int oldDataForIndex = getData(run, dataOld, posOld);
+				int oldDataForIndex = getData(isTome, dataOld, posOld);
 
-				for(; posNew < nbNew && getData(run, dataNew, posNew) != oldDataForIndex; ++posNew);
+				for(; posNew < nbNew && getData(isTome, dataNew, posNew) != oldDataForIndex; ++posNew);
 
 				//The entry still exist, awesome
 				if (posNew != nbNew)
 					continue;
 
 				//Oh, is it still installed?
-				if(checkReadable(oldProject.project, run != 0, oldDataForIndex))
+				if(checkReadable(oldProject.project, isTome, oldDataForIndex))
 				{
 					//And shit... we need to copy it to the selector :X
-					if(run == 0)
-						((int *) collector)[lengthCollector++] = oldDataForIndex;
-					else
+					if(isTome)
 						copyTomeList(&(((META_TOME *) dataOld)[posOld]), 1, &(((META_TOME *) collector)[lengthCollector++]));
+					else
+						((int *) collector)[lengthCollector++] = oldDataForIndex;
 				}
 			}
 		}
@@ -232,17 +233,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		//Copy the collected data to the local buffer
 		if(lengthCollector != 0)
 		{
-			if(run == 0)
-			{
-				void * tmp = realloc(newProject->chapitresLocal, newProject->nombreChapitreLocal + lengthCollector);
-				if(tmp != NULL)
-				{
-					newProject->chapitresLocal = tmp;
-					memcpy(&(newProject->chapitresLocal[newProject->nombreChapitreLocal]), collector, lengthCollector * sizeOfType);
-					newProject->nombreChapitreLocal += lengthCollector;
-				}
-			}
-			else
+			if(isTome)
 			{
 				void * tmp = realloc(newProject->tomeLocal, newProject->nombreTomeLocal + lengthCollector);
 				if(tmp != NULL)
@@ -250,6 +241,16 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 					newProject->tomeLocal = tmp;
 					memcpy(&(newProject->tomeLocal[newProject->nombreTomeLocal]), collector, lengthCollector * sizeOfType);
 					newProject->nombreTomeLocal += lengthCollector;
+				}
+			}
+			else
+			{
+				void * tmp = realloc(newProject->chapitresLocal, newProject->nombreChapitreLocal + lengthCollector);
+				if(tmp != NULL)
+				{
+					newProject->chapitresLocal = tmp;
+					memcpy(&(newProject->chapitresLocal[newProject->nombreChapitreLocal]), collector, lengthCollector * sizeOfType);
+					newProject->nombreChapitreLocal += lengthCollector;
 				}
 			}
 		}

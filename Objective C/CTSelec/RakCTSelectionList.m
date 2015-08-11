@@ -827,8 +827,8 @@
 	{
 		if(_detailColumns == nil || (column = [_detailColumns indexOfObject:tableColumn]) == NSNotFound)
 			return EMPTY_MESSAGE;
-		else
-			isDetails = YES;
+
+		isDetails = YES;
 	}
 	
 	rowIndex = [self rowFromCoordinates : rowIndex : column * _nbElemPerCouple];
@@ -840,10 +840,9 @@
 			[self performSelectorOnMainThread:@selector(updateRowNumber) withObject:nil waitUntilDone:NO];
 			return EMPTY_MESSAGE;
 		}
-		else	//We're just on the last incomplete row
-		{
-			return @"";
-		}
+
+		//We're just on the last incomplete row
+		return @"";
 	}
 	
 	if(self.compactMode)

@@ -432,10 +432,16 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 		
 		*nbElem = cache;
 		
-		if(*nbElem == 0)
+		if(cache == 0)
 		{
 			free(output);
 			output = NULL;
+		}
+		else if(cache < nbElemMax)
+		{
+			void * tmp = realloc(output, cache * sizeof(META_TOME));
+			if(tmp != NULL)
+				output = tmp;
 		}
 	}
 	
