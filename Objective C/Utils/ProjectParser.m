@@ -391,11 +391,6 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID", [NSNumber class]);
 			if(readingID == nil)	continue;
 
-			//Overflow
-			int64_t currentReadingID = [readingID intValue] * 10;
-			if(currentReadingID > INT_MAX || currentReadingID < INT_MIN)
-				continue;
-
 			readingName = objectForKey(dict, JSON_PROJ_VOL_READING_NAME, @"Reading name", [NSString class]);
 			if(readingName != nil && [readingName length] == 0)
 				readingName = nil;
@@ -416,7 +411,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 				continue;
 			
 			output[cache].ID = [internalID intValue];
-			output[cache].readingID = (int) currentReadingID;
+			output[cache].readingID = [readingID intValue];
 			
 			if(readingName == nil)			output[cache].readingName[0] = 0;
 			else							wcsncpy(output[cache].readingName, (charType*) [readingName cStringUsingEncoding:NSUTF32StringEncoding], MAX_TOME_NAME_LENGTH);
@@ -1029,6 +1024,14 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 			output[pos].data.nombreChapitreRemote = output[pos].data.project.nombreChapitre;
 			output[pos].data.tomeRemote = output[pos].data.project.tomesFull;
 			output[pos].data.nombreTomeRemote = output[pos].data.project.nombreTomes;
+
+#ifndef EXPOSE_DECIMAL_VOLUMES
+			for(uint i = 0, length = output[pos].data.nombreTomeRemote; i < length; ++i)
+			{
+				if(output[pos].data.tomeRemote[i].readingID != INVALID_SIGNED_VALUE)
+					output[pos].data.tomeRemote[i].readingID *= 10;
+			}
+#endif
 
 			output[pos].data.project.chapitresFull = NULL;
 			output[pos].data.project.nombreChapitre = 0;
