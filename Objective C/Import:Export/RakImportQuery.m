@@ -30,9 +30,14 @@
 	RakImageDropArea * dropSR, * dropCT, * dropDD;
 
 	//Fields to recover details
+	RakText * detailHeader;
 	RakSegmentedControl * isTome;
 	RakText * contentID;
 }
+
+@end
+
+@interface RakCTFormatter : NSNumberFormatter
 
 @end
 
@@ -126,17 +131,19 @@ enum
 	NSSize selfSize = self.frame.size, workingSize;
 	CGFloat currentY = selfSize.height;
 
-	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(_item.isTome ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil) :[self titleColor]];
-	if(header != nil)
+	detailHeader = [[RakText alloc] initWithText:NSLocalizedString(_item.isTome ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil) :[self titleColor]];
+	if(detailHeader != nil)
 	{
-		if(selfSize.width < header.bounds.size.width)
+		workingSize = detailHeader.bounds.size;
+
+		if(selfSize.width < workingSize.width)
 		{
-			[self setFrameSize:NSMakeSize(header.bounds.size.width + 20, selfSize.height)];
+			[self setFrameSize:NSMakeSize(workingSize.width + 20, selfSize.height)];
 			selfSize.width = _bounds.size.width;
 		}
 
-		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + META_TOP_BORDER))];
-		[self addSubview:header];
+		[detailHeader setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, (currentY -= workingSize.height + META_TOP_BORDER))];
+		[self addSubview:detailHeader];
 	}
 
 	bordersY[0] = (currentY -= META_INTERLINE_BORDER);
@@ -159,6 +166,8 @@ enum
 	contentID = [self getInputFieldWithPlaceholder:(_item.isTome ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP") : selfSize.width * 3 / 4];
 	if(contentID != nil)
 	{
+		contentID.formatter = [[RakCTFormatter alloc] init];
+
 		workingSize = contentID.bounds.size;
 		[contentID setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_SMALL_INTERLINE_BORDER)];
 		[self addSubview:contentID];
@@ -726,7 +735,14 @@ enum
 
 - (void) changedIsTome
 {
-	NSLog(@"lol");
+	detailHeader.stringValue = NSLocalizedString(isTome.selectedSegment ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil);
+
+	NSRect frame = detailHeader.frame;
+
+	[detailHeader sizeToFit];
+	frame.size = detailHeader.frame.size;
+
+	[detailHeader setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - frame.size.width / 2, frame.origin.y)];
 }
 
 - (void) replaceAll
@@ -794,6 +810,47 @@ enum
 - (void) close
 {
 	[self closePopover];
+}
+
+@end
+
+@implementation RakCTFormatter
+
+- (BOOL)isPartialStringValid:(NSString*)partialString newEditingString:(NSString**)newString errorDescription:(NSString**)error
+{
+	if([partialString length] == 0)
+		return YES;
+
+	NSMutableCharacterSet * chSet = [NSMutableCharacterSet decimalDigitCharacterSet];
+	[chSet addCharactersInString:@".,"];
+
+	//Check for non-numerical chars
+	if([partialString rangeOfCharacterFromSet:[chSet invertedSet]].location != NSNotFound)
+		return NO;
+
+	//Don't allow both , and .
+	if([partialString rangeOfString:@","].location != NSNotFound && [partialString rangeOfString:@"."].location != NSNotFound)
+		return NO;
+
+	//Try to convert in a way that convert , but fails with .
+	NSNumber * content = getNumberForString(partialString);
+
+	if(content == nil)
+	{
+		//Try to convert in a way that convert . but fails with ,
+		content = [[NSDecimalNumber alloc] initWithString:partialString];
+
+		if(content == nil)
+			return NO;
+	}
+
+	double numberWithNoDecimal = [content doubleValue] * 10;
+
+	//We only want one number after ./,
+	if((numberWithNoDecimal * 10) - (((int64_t) numberWithNoDecimal) * 10))
+		return NO;
+
+	return YES;
 }
 
 @end
