@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#define getData(run, dataInject, index)	ACCESS_DATA(run == 1, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+#define getData(isTome, dataInject, index)	ACCESS_DATA(isTome, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
 
 void nullifyCTPointers(PROJECT_DATA * project)
 {
@@ -120,13 +120,15 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 	void * dataBase, *dataInject;
 	uint * chaptersPrice = NULL;
 	uint16_t sizeOfType;
+	bool isTome;
 
 	//We have two passes, one for the chapters, one for the volume
 	for(byte run = 0; run < 2; run++)
 	{
+		isTome = run == 1;
 		//Choose to inject the smallest list
 
-		if(run == 0)	//chapters
+		if(!isTome)
 		{
 			nbElemToInject = project->nombreChapitreLocal;
 			dataInject = project->chapitresLocal;
@@ -148,10 +150,18 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 		//Have anything to inject?
 		if((sumEntries = nbElemBase + nbElemToInject) != 0)
 		{
+			//Overflowing something, GTFO
+			if(sumEntries < nbElemBase || sumEntries < nbElemToInject)
+			{
+				logR("Overflowing :X, let's just cancel, ok?");
+				continue;
+			}
+
+			//Make space
 			void * outputData = malloc(sumEntries * sizeOfType);
 			if(outputData != NULL)
 			{
-				if(run == 0 && project->project.chapitresPrix != NULL)	//Chapters
+				if(!isTome && project->project.chapitresPrix != NULL)	//Chapters
 				{
 					chaptersPrice = malloc(sumEntries * sizeof(uint));
 					if(chaptersPrice == NULL)
@@ -165,8 +175,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 
 				uint currentLength = nbElemBase;
 
-				//chapters
-				if(run == 0)
+				if(!isTome)
 					memcpy(outputData, dataBase, nbElemBase * sizeOfType);
 				else
 					copyTomeList(dataBase, nbElemBase, outputData);
@@ -177,12 +186,12 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 					//Ok, we now merge. We work backward to we don't have to deal with offsets as we insert into the list
 					for(uint posInject = 0; posInject < nbElemToInject; posInject++)
 					{
-						int dataToInject = getData(run, dataInject, posInject);
+						int dataToInject = getData(isTome, dataInject, posInject);
 						uint posLowestDiff = 0;
 						//Okay, we look for the closest value in the list
-						for(uint posBase = 1, newDiff, lowestDiff = llabs(getData(run, outputData, 0) - dataToInject); posBase < nbElemBase; posBase++)
+						for(uint posBase = 1, newDiff, lowestDiff = llabs(getData(isTome, outputData, 0) - dataToInject); posBase < nbElemBase; posBase++)
 						{
-							newDiff = llabs(getData(run, outputData, posBase) - dataToInject);
+							newDiff = llabs(getData(isTome, outputData, posBase) - dataToInject);
 							if(newDiff < lowestDiff)
 							{
 								posLowestDiff = posBase;
@@ -207,13 +216,13 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						}
 
 						//We have the position of the element to inject in posLowestDiff
-						int nextValue = getData(run, outputData, (posLowestDiff + 1 >= currentLength ? posLowestDiff : posLowestDiff + 1));
-						int previousValue = getData(run, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
+						int nextValue = getData(isTome, outputData, (posLowestDiff + 1 >= currentLength ? posLowestDiff : posLowestDiff + 1));
+						int previousValue = getData(isTome, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
 						bool increasing = nextValue >= previousValue;	//increasing, we got after the value
-						bool goNext = increasing == (getData(run, outputData, posLowestDiff) < dataToInject);
+						bool goNext = increasing == (getData(isTome, outputData, posLowestDiff) < dataToInject);
 
 						//We offset what come next
-						if(run == 0)
+						if(!isTome)
 						{
 							if(currentLength)
 							{
@@ -277,8 +286,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 					}
 				}
 
-				//Chapitres
-				if(run == 0)
+				if(!isTome)
 				{
 					project->project.chapitresFull = outputData;
 					project->project.nombreChapitre = sumEntries;
@@ -293,7 +301,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 		}
 		else
 		{
-			if(run == 0)
+			if(!isTome)
 			{
 				if(project->project.chapitresFull != NULL)
 				{

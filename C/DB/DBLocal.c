@@ -12,8 +12,6 @@
 
 #include "dbCache.h"
 
-#pragma mark - Public API
-
 //Prevent reusing ID
 static uint baseID = 1;
 

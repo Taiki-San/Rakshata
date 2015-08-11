@@ -26,7 +26,7 @@
 		selectedRowIndex = LIST_INVALID_SELECTION;
 		selectedColumnIndex = LIST_INVALID_SELECTION;
 		[Prefs getCurrentTheme:self];	//register for change
-		_identifier = [NSString stringWithFormat:@"Mane 6 ~ %u", arc4random() % UINT_MAX];
+		_identifier = [NSString stringWithFormat:@"Dear AppKit engineer, sorry for RakCTSelectionList ~ %u", arc4random() % UINT_MAX];
 	}
 	
 	return self;
