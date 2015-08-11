@@ -62,16 +62,17 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     {
 		didElemGotDownloaded[i] = false;
         todoListTmp.listChapitreOfTome = NULL;
-        todoListTmp.tomeName = NULL;
 		
         if(!isTome)
 		{
             todoListTmp.chapitre = input.todoList->identifier;
             todoListTmp.subFolder = false;
             todoListTmp.partOfTome = INVALID_SIGNED_VALUE;
-        }
+			todoListTmp.tomeName = NULL;
+		}
         else
 		{
+			todoListTmp.tomeName = input.todoList->tomeName;
             todoListTmp.chapitre = input.todoList->listChapitreOfTome[i].ID;
             todoListTmp.subFolder = input.todoList->listChapitreOfTome[i].isPrivate;
             todoListTmp.partOfTome = input.todoList->identifier;

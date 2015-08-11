@@ -256,7 +256,10 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 				MDLFlushElement(output);
 				return NULL;
 			}
-			
+
+			if(data->tomesFull[index].readingName[0])
+				output->tomeName = wstrdup(data->tomesFull[index].readingName);
+
 			output->nbElemList = data->tomesFull[index].lengthDetails;
 			output->listChapitreOfTome = malloc(output->nbElemList * sizeof(CONTENT_TOME));
 			
@@ -279,6 +282,7 @@ void MDLFlushElement(DATA_LOADED * element)
 		return;
 	
 	free(element->listChapitreOfTome);
+	free(element->tomeName);
 	free(element);
 }
 

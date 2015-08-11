@@ -94,7 +94,7 @@ typedef struct //intermediary_from_data_loaded_to_DL_thread
 	
     PROJECT_DATA* datas;
 	int *listChapitreOfTome;
-	unsigned char *tomeName;
+	charType *tomeName;
 	
 	int chapitre;
     int partOfTome; //Si INVALID_VALUEURE, alors chapitre indé, sinon, tome dont c'est l'ID
