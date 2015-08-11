@@ -40,6 +40,32 @@ NSString * getStringForWchar(const charType * string)
 	return output;
 }
 
+NSString * getStringForChapter(int chapID)
+{
+	if(chapID % 10)
+		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapID / 10, chapID % 10];
+
+	return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), chapID / 10];
+}
+
+NSString * getStringForVolume(int volID)
+{
+	if(volID % 10)
+		return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d.%d", nil), volID / 10, volID % 10];
+
+	return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), volID / 10];
+}
+
+NSString * getStringForVolumeFull(META_TOME tome)
+{
+	NSString * readingID = tome.readingID == INVALID_SIGNED_VALUE ? nil : getStringForVolume(tome.readingID);
+
+	if(tome.readingName[0] == 0)
+		return readingID;
+
+	return [NSString stringWithFormat:@"%@ - %@", readingID, getStringForWchar(tome.readingName)];
+}
+
 NSNumber * getNumberForString(NSString * string)
 {
 	NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];

@@ -34,7 +34,7 @@ typedef struct
 	uint price;
 	uint lengthDetails;
 	
-	charType readingName[MAX_TOME_NAME_LENGTH];
+	charType readingName[MAX_TOME_NAME_LENGTH + 1];
 	charType description[TOME_DESCRIPTION_LENGTH];
 
 } META_TOME;

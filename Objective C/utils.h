@@ -11,6 +11,9 @@
  *********************************************************************************************/
 
 NSString * getStringForWchar(const charType * string);
+NSString * getStringForChapter(int chapID);
+NSString * getStringForVolume(int volID);
+NSString * getStringForVolumeFull(META_TOME tome);
 NSNumber * getNumberForString(NSString * string);
 NSString * getRepoName(REPO_DATA * repo);
 

@@ -13,6 +13,7 @@
 "VOLUMES" = "Tomes";
 "VOLUME-NO-CAP" = "tome";
 "VOLUME-%d" = "Tome %1$d";
+"VOLUME-%d.%d" = "Tome %1$d.%2$d";
 
 "FREE" = "Gratuit";
 "REMIND" = "S'en souvenir";

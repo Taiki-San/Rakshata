@@ -117,23 +117,19 @@ enum
 {
 	NSString * localized;
 	
-	if((*todoList)->listChapitreOfTome == NULL)
+	if((*todoList)->listChapitreOfTome != NULL)
 	{
-		if((*todoList)->identifier % 10)
-			localized = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), (*todoList)->identifier / 10, (*todoList)->identifier % 10];
-		else
-			localized = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), (*todoList)->identifier / 10];
+		META_TOME tome;
+
+		tome.readingID = (*todoList)->identifier;
+		wstrncpy(tome.readingName, MAX_TOME_NAME_LENGTH, (*todoList)->tomeName);
+		tome.readingName[MAX_TOME_NAME_LENGTH] = 0;
+
+		localized = getStringForVolumeFull(tome);
 	}
 	else
-	{
-		if((*todoList)->tomeName != NULL && (*todoList)->tomeName[0] != 0)
-		{
-			localized = getStringForWchar((*todoList)->tomeName);
-		}
-		else
-			localized = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*todoList)->identifier];
-	}
-	
+		localized = getStringForChapter((*todoList)->identifier);
+
 	if(wasMultiLine)
 		return [NSString stringWithFormat:@"%@\n%@", getStringForWchar((*todoList)->datas->projectName), localized];
 	

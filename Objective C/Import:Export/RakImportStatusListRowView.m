@@ -95,16 +95,10 @@
 	{
 		META_TOME metadata = _item.projectData.data.tomeLocal[0];
 
-		if(metadata.readingID != INVALID_SIGNED_VALUE && metadata.readingName[0])
-		{
-			return [NSString stringWithFormat:@"%@ - %@", [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), metadata.readingID], getStringForWchar(metadata.readingName)];
-		}
-		else if(metadata.readingID != INVALID_SIGNED_VALUE)
-			return [NSString localizedStringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), metadata.readingID];
-		else
-			return _item.path;
+		if(metadata.readingID != INVALID_SIGNED_VALUE || metadata.readingName[0])
+			return getStringForVolumeFull(metadata);
 
-		return getStringForWchar(metadata.readingName);
+		return _item.path;
 	}
 
 	int content = _item.contentID;
@@ -112,10 +106,7 @@
 	if(content == INVALID_SIGNED_VALUE)
 		return _item.path;
 
-	if(content % 10)
-		return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), content / 10, content % 10];
-
-	return [NSString localizedStringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), content / 10];
+	return getStringForChapter(content);
 }
 
 - (NSString *) determineMessageForStatus : (byte) status andItem : (RakImportStatusListItem *) item

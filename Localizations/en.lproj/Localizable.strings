@@ -13,6 +13,7 @@
 "VOLUMES" = "Volumes";
 "VOLUME-NO-CAP" = "volume";
 "VOLUME-%d" = "Volume %1$d";
+"VOLUME-%d.%d" = "Volume %1$d.%2$d";
 
 "FREE" = "Free";
 "REMIND" = "Remind";

@@ -860,14 +860,11 @@
 		if(element.ID != INVALID_SIGNED_VALUE)
 		{
 			if(_detailColumns == nil || !isDetails)
-			{
-				if(element.readingName[0])
-					output = getStringForWchar(element.readingName);
-				else
-					output = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), element.readingID];
-			}
+				output = getStringForVolumeFull(element);
+
 			else if(_installedTable == NULL || !_installedTable[rowIndex])
 				output = priceString(element.price);
+
 			else
 				output = @"";
 		}
@@ -880,13 +877,9 @@
 		if(_detailColumns == nil || !isDetails)
 		{
 			int ID = ((int *) _data)[rowIndex];
+
 			if(ID != INVALID_SIGNED_VALUE)
-			{
-				if(ID % 10)
-					output = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), ID / 10, ID % 10];
-				else
-					output = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), ID / 10];
-			}
+				output = getStringForChapter(ID);
 			else
 				output = @"Error! Out of bounds D:";
 		}

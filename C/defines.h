@@ -75,7 +75,7 @@ enum
 #define INVALID_SIGNED_VALUE INT_MIN
 
 /*Tome*/
-#define MAX_TOME_NAME_LENGTH 31
+#define MAX_TOME_NAME_LENGTH 30
 #define TOME_DESCRIPTION_LENGTH 256
 
 /*Tags*/

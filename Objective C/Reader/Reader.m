@@ -507,25 +507,15 @@
 		{
 			if(project.tomesInstalled == NULL || position >= project.nombreTomesInstalled)
 				return;
-			
-			META_TOME tome = project.tomesInstalled[position];
-			
-			if(tome.readingName[0])
-				string = getStringForWchar(tome.readingName);
-			else
-				string = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), tome.readingID];
+
+			string = getStringForVolumeFull(project.tomesInstalled[position]);
 		}
 		else
 		{
 			if(project.chapitresInstalled == NULL || position >= project.nombreChapitreInstalled)
 				return;
-			
-			int element = project.chapitresInstalled[position];
-			
-			if(element % 10)
-				string = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), element / 10, element % 10];
-			else
-				string = [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), element / 10];
+
+			string = getStringForChapter(project.chapitresInstalled[position]);
 		}
 		
 		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];

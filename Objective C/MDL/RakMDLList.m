@@ -216,21 +216,18 @@ enum
 	if(dataProject == NULL)
 		return nil;
 	
-	if((*dataProject)->listChapitreOfTome == NULL)
+	if((*dataProject)->listChapitreOfTome != NULL)
 	{
-		int chapitre = (*dataProject)->identifier;
-		
-		if(chapitre % 10)
-			return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapitre / 10, chapitre % 10];
-		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), chapitre / 10];
+		META_TOME tome;
+
+		tome.readingID = (*dataProject)->identifier;
+		wstrncpy(tome.readingName, MAX_TOME_NAME_LENGTH, (*dataProject)->tomeName);
+		tome.readingName[MAX_TOME_NAME_LENGTH] = 0;
+
+		return getStringForVolumeFull(tome);
 	}
-	else
-	{
-		if((*dataProject)->tomeName != NULL && (*dataProject)->tomeName[0] != 0)
-			return [NSString stringWithUTF8String: (char*) (*dataProject)->tomeName];
-		
-		return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), (*dataProject)->identifier];
-	}
+
+	return getStringForChapter((*dataProject)->identifier);
 }
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row

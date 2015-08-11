@@ -45,21 +45,11 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(position == INVALID_VALUE)
 					return nil;
 
-				META_TOME volumeData = project.tomesFull[position];
-
-				if(volumeData.readingName[0] != 0)
-					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForWchar(volumeData.readingName)];
-				else
-					outputPath = [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), volumeData.readingID];
+				outputPath = getStringForVolumeFull(project.tomesFull[position]);
 			}
 
 			else
-			{
-				if(selection % 10)
-					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), selection / 10, selection % 10]];
-				else
-					outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), selection / 10]];
-			}
+				outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForChapter(selection)];
 		}
 		else
 			outputPath = projectPath;

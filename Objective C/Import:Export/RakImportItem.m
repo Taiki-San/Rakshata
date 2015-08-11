@@ -240,7 +240,7 @@
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
 	NSArray * tokens = [[_path lastPathComponent] componentsSeparatedByCharactersInSet:charSet];
 
-	BOOL couldHaveSomething, inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
+	BOOL inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
 	int elementID;
 	uint discardedCloseCalls = 0;
 
@@ -253,20 +253,14 @@
 		if(length == 0)
 			continue;
 
-		couldHaveSomething = NO;
-
 		char sample = toupper(simplifiedChunk[0]);
 
 		if(sample == 'C')	//Chapter?
-		{
-			couldHaveSomething = YES;
 			inferingTome = NO;
-		}
+
 		else if(sample == 'V' || sample == 'T')	//Volume? (or Tome)
-		{
-			couldHaveSomething = YES;
 			inferingTome = YES;
-		}
+
 		else
 			continue;
 
@@ -393,9 +387,7 @@
 			if([chunk length] == 0 || [chunk rangeOfCharacterFromSet:notOnlyDigits].location != NSNotFound)
 				continue;
 
-			double inferedElementID = atof([chunk UTF8String]);
-			if(!_isTome)
-				inferedElementID *= 10;
+			double inferedElementID = atof([chunk UTF8String]) * 10;
 
 			if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
 			{
