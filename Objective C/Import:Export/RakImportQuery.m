@@ -163,14 +163,26 @@ enum
 		[self addSubview:isTome];
 	}
 
-	contentID = [self getInputFieldWithPlaceholder:(_item.isTome ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP") : selfSize.width * 3 / 4];
-	if(contentID != nil)
-	{
-		contentID.formatter = [[RakCTFormatter alloc] init];
+	const CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 13 / 20;
 
+	RakText * contentIDTitle = [self getTextForLocalizationString:@"Numéro :" :maxWidthTitles];
+	contentID = [self getInputFieldWithPlaceholder:(_item.isTome ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP") : maxWidthContent];
+	if(contentIDTitle != nil && contentID != nil)
+	{
+		if(!_item.isTome)
+			contentID.formatter = [[RakCTFormatter alloc] init];
+
+		NSSize titleSize = contentIDTitle.bounds.size;
 		workingSize = contentID.bounds.size;
-		[contentID setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_SMALL_INTERLINE_BORDER)];
+
+		const CGFloat currentHeight = MAX(titleSize.height, workingSize.height);
+		currentY -= currentHeight + META_SMALL_INTERLINE_BORDER;
+
+		[contentIDTitle setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, currentY + currentHeight / 2 - titleSize.height / 2)];
+		[contentID setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, currentY + currentHeight / 2 - workingSize.height / 2)];
+
 		[self addSubview:contentID];
+		[self addSubview:contentIDTitle];
 	}
 
 	currentY -= META_INTERLINE_BORDER;
@@ -735,7 +747,9 @@ enum
 
 - (void) changedIsTome
 {
-	detailHeader.stringValue = NSLocalizedString(isTome.selectedSegment ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil);
+	BOOL isTomeSelected = isTome.selectedSegment;
+
+	detailHeader.stringValue = NSLocalizedString(isTomeSelected ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil);
 
 	NSRect frame = detailHeader.frame;
 
@@ -743,6 +757,22 @@ enum
 	frame.size = detailHeader.frame.size;
 
 	[detailHeader setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - frame.size.width / 2, frame.origin.y)];
+
+	contentID.formatter = isTomeSelected ? nil : [[RakCTFormatter alloc] init];
+	contentID.placeholderString = NSLocalizedString(isTomeSelected ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP", nil);
+
+	//We need to check that what was inputed in the field is valid
+	if(!isTomeSelected)
+	{
+		NSString * string = contentID.stringValue;
+
+		while(string.length > 0 && ![contentID.formatter isPartialStringValid:string newEditingString:nil errorDescription:nil])
+		{
+			string = [string substringToIndex:string.length - 1];
+		}
+
+		contentID.stringValue = string;
+	}
 }
 
 - (void) replaceAll
