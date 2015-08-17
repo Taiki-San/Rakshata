@@ -55,7 +55,7 @@
 	tabMDL.needUpdateMainViews = YES;
 	[tabMDL resetFrameSize:NO];
 	
-	[self.window makeKeyWindow];
+	[self.window makeKeyAndOrderFront:self];
 	
 	deleteCrashFile();
 
