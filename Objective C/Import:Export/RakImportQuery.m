@@ -30,9 +30,9 @@
 	RakImageDropArea * dropSR, * dropCT, * dropDD;
 
 	//Fields to recover details
-	RakText * detailHeader;
+	RakText * detailHeader, * contentIDTitle, * contentID, * contentSeparator, * contentName;
 	RakSegmentedControl * isTome;
-	RakText * contentID;
+	CGFloat maxContentIDWidth;
 }
 
 @end
@@ -46,8 +46,10 @@ enum
 	META_TOP_BORDER = 8,
 	META_BORDER_WIDTH = 8,
 	META_TOP_FORM_BORDER = 10,
-	META_INTERLINE_BORDER = 10,
-	META_SMALL_INTERLINE_BORDER = 6
+	META_LARGE_INTERLINE_BORDER = 10,
+	META_INTERLINE_BORDER = 8,
+	META_SMALL_INTERLINE_BORDER = 6,
+	BORDER = 4
 };
 
 @implementation RakImportQuery
@@ -116,7 +118,7 @@ enum
 	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA_DETAILS)
 		return nil;
 
-	return [[self initWithFrame:NSMakeRect(0, 0, 300, 141)] _autoInitWithDetails:item];
+	return [[self initWithFrame:NSMakeRect(0, 0, 300, 143)] _autoInitWithDetails:item];
 }
 
 - (instancetype) _autoInitWithDetails : (RakImportItem *) item
@@ -131,6 +133,7 @@ enum
 	NSSize selfSize = self.frame.size, workingSize;
 	CGFloat currentY = selfSize.height;
 
+	//Header
 	detailHeader = [[RakText alloc] initWithText:NSLocalizedString(_item.isTome ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil) :[self titleColor]];
 	if(detailHeader != nil)
 	{
@@ -146,8 +149,10 @@ enum
 		[self addSubview:detailHeader];
 	}
 
-	bordersY[0] = (currentY -= META_INTERLINE_BORDER);
+	//Border over input fields
+	bordersY[0] = (currentY -= META_LARGE_INTERLINE_BORDER);
 
+	//C/T toggle
 	isTome = [[RakSegmentedControl alloc] initWithFrame:NSZeroRect :@[NSLocalizedString(@"CHAPTER", nil), NSLocalizedString(@"VOLUME", nil)]];
 	if(isTome != nil)
 	{
@@ -159,37 +164,56 @@ enum
 		isTome.action = @selector(changedIsTome);
 
 		workingSize = isTome.bounds.size;
-		[isTome setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_INTERLINE_BORDER)];
+		[isTome setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_LARGE_INTERLINE_BORDER)];
 		[self addSubview:isTome];
 	}
 
 	const CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 13 / 20;
 
-	RakText * contentIDTitle = [self getTextForLocalizationString:@"Numéro :" :maxWidthTitles];
-	contentID = [self getInputFieldWithPlaceholder:(_item.isTome ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP") : maxWidthContent];
+	//Field for the number of the CT
+	contentIDTitle = [self getTextForLocalizationString:(_item.isTome ? @"VOLUME" : @"CHAPTER") :maxWidthTitles + META_BORDER_WIDTH];
+	contentID = [self getInputFieldWithPlaceholder:@"IMPORT-DET-PH-NUMBER" : maxWidthContent];
 	if(contentIDTitle != nil && contentID != nil)
 	{
-		if(!_item.isTome)
-			contentID.formatter = [[RakCTFormatter alloc] init];
+		contentIDTitle.stringValue = [contentIDTitle.stringValue stringByAppendingString:@" #"];
+		contentID.formatter = [[RakCTFormatter alloc] init];
 
 		NSSize titleSize = contentIDTitle.bounds.size;
 		workingSize = contentID.bounds.size;
 
-		const CGFloat currentHeight = MAX(titleSize.height, workingSize.height);
-		currentY -= currentHeight + META_SMALL_INTERLINE_BORDER;
+		maxContentIDWidth = workingSize.width;
 
-		[contentIDTitle setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, currentY + currentHeight / 2 - titleSize.height / 2)];
-		[contentID setFrameOrigin:NSMakePoint(maxWidthTitles + 2 * META_BORDER_WIDTH, currentY + currentHeight / 2 - workingSize.height / 2)];
+		const CGFloat currentHeight = MAX(titleSize.height, workingSize.height);
+		currentY -= currentHeight + META_INTERLINE_BORDER;
+
+		[contentIDTitle setFrameOrigin:NSMakePoint(0, currentY + currentHeight / 2 - titleSize.height / 2)];
+		[contentID setFrameOrigin:NSMakePoint(maxWidthTitles + META_BORDER_WIDTH + 4, currentY + currentHeight / 2 - workingSize.height / 2)];
 
 		[self addSubview:contentID];
 		[self addSubview:contentIDTitle];
 	}
 
-	currentY -= META_INTERLINE_BORDER;
+	//The field to receive the name of the volume, hidden to the right when in chap mode
+	contentSeparator = [self getTextForLocalizationString:@"-" :0];
+	if(contentSeparator != nil)
+		[self addSubview:contentSeparator];
+
+	contentName = [self getInputFieldWithPlaceholder:@"IMPORT-DET-PH-NAME" :127];
+	if(contentName != nil)
+	{
+		contentName.nextKeyView = contentID;
+		[self addSubview:contentName];
+	}
+
+	//Enforce the positions of the field for the name
+	[self positionForIsTomeState:_item.isTome withAnimation:NO];
+
+	//Border below the input field
+	currentY -= META_LARGE_INTERLINE_BORDER;
 	bordersY[1] = currentY;
-	currentY -= META_INTERLINE_BORDER;
+	currentY -= META_LARGE_INTERLINE_BORDER;
 
-
+	//Confirmation/discard buttons
 	RakButton * button = [RakButton allocWithText:NSLocalizedString(@"CLOSE", nil)];
 	if(button != nil)
 	{
@@ -215,6 +239,52 @@ enum
 
 		[self addSubview:button];
 	}
+}
+
+- (void) positionForIsTomeState : (BOOL) isTomeState withAnimation : (BOOL) animate
+{
+	NSRect workingFrame;
+
+	//# field
+	workingFrame = contentID.frame;
+	const CGFloat widthContenID = isTomeState ? 50 : maxContentIDWidth, baseY = workingFrame.origin.y, elemHeight = workingFrame.size.height;
+
+	if(workingFrame.size.width != widthContenID)
+	{
+		workingFrame.size.width = widthContenID;
+		[animate ? contentID.animator: contentID setFrameSize:workingFrame.size];
+	}
+
+	CGFloat width = (isTomeState ? NSMaxX(workingFrame) : _bounds.size.width) + BORDER;
+
+	//Separator
+	workingFrame = contentSeparator.frame;
+	if(workingFrame.origin.x != width)
+	{
+		if(workingFrame.origin.y == 0)
+			workingFrame.origin.y = baseY + (elemHeight / 2 - workingFrame.size.height / 2);
+
+		[animate ? contentSeparator.animator : contentSeparator setFrameOrigin:NSMakePoint(width, workingFrame.origin.y)];
+	}
+
+	width += workingFrame.size.width + BORDER;
+
+	//Name field
+	workingFrame = contentName.frame;
+	if(workingFrame.origin.x != width)
+	{
+		if(workingFrame.origin.y == 0)
+			workingFrame.origin.y = baseY + (elemHeight / 2 - workingFrame.size.height / 2);
+
+		[animate ? contentName.animator : contentName setFrameOrigin:NSMakePoint(width, workingFrame.origin.y)];
+	}
+
+	[self bindFieldsDetails : isTomeState];
+}
+
+- (void) bindFieldsDetails : (BOOL) isTomeState
+{
+	contentID.nextKeyView = isTomeState ? contentName : contentID;
 }
 
 #pragma mark Metadata management
@@ -252,7 +322,7 @@ enum
 
 	bordersY[0] = (selfSize.height -= META_TOP_FORM_BORDER);
 
-	selfSize.height = [self insertTopThreeTextOnly : selfSize.height - META_TOP_FORM_BORDER + META_INTERLINE_BORDER : maxWidthTitles : maxWidthContent];
+	selfSize.height = [self insertTopThreeTextOnly : selfSize.height - META_TOP_FORM_BORDER + META_LARGE_INTERLINE_BORDER : maxWidthTitles : maxWidthContent];
 
 	bordersY[1] = (selfSize.height -= META_TOP_FORM_BORDER);
 
@@ -404,7 +474,7 @@ enum
 		[self setDefaultThumbFor:dropSR withID:THUMB_INDEX_SR2X fallBack : THUMB_INDEX_SR];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
-		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+		selfSize.height -= currentHeight + META_LARGE_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
 		[dropSR setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
@@ -424,7 +494,7 @@ enum
 		[self setDefaultThumbFor:dropDD withID:THUMB_INDEX_DD2X fallBack : THUMBID_DD];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
-		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+		selfSize.height -= currentHeight + META_LARGE_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
 		[dropDD setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
@@ -444,7 +514,7 @@ enum
 		[self setDefaultThumbFor:dropCT withID:THUMB_INDEX_HEAD2X fallBack : THUMBID_HEAD];
 
 		currentHeight = MAX(titleSize.height, inputSize.height);
-		selfSize.height -= currentHeight + META_INTERLINE_BORDER;
+		selfSize.height -= currentHeight + META_LARGE_INTERLINE_BORDER;
 
 		[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, selfSize.height + (currentHeight - titleSize.height) / 2)];
 		[dropCT setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles + (maxWidthContent - inputSize.width) / 2, selfSize.height)];
@@ -453,7 +523,7 @@ enum
 		[self addSubview:dropCT];
 	}
 
-	[self bindFields];
+	[self bindFieldsMetadata];
 
 	selfSize.height -= META_TOP_FORM_BORDER;
 
@@ -548,7 +618,7 @@ enum
 			}
 
 			CGFloat currentHeight = MAX(titleSize.height, inputSize.height);
-			currentY -= currentHeight + META_INTERLINE_BORDER;
+			currentY -= currentHeight + META_LARGE_INTERLINE_BORDER;
 
 			if(i == 2)
 				[title setFrameOrigin:NSMakePoint(META_BORDER_WIDTH + maxWidthTitles - titleSize.width, currentY + currentHeight - titleSize.height)];
@@ -569,7 +639,7 @@ enum
 	return currentY;
 }
 
-- (void) bindFields
+- (void) bindFieldsMetadata
 {
 	name.nextKeyView = author;
 	author.nextKeyView = description;
@@ -629,6 +699,8 @@ enum
 			text.cell.wraps = YES;
 			text.fixedWidth = maxWidth;
 		}
+		else
+			[text sizeToFit];
 
 		text.alignment = NSTextAlignmentRight;
 	}
@@ -647,9 +719,13 @@ enum
 		text.drawsBackground = YES;
 		text.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil];
 
-		[text setFrameSize:NSMakeSize(maxWidth, text.bounds.size.height)];
 		[text setPlaceholderString:NSLocalizedString(string, nil)];
-		[text setEditable:YES];
+		text.editable = YES;
+
+		if (maxWidth != 0)
+			[text setFrameSize:NSMakeSize(maxWidth, text.bounds.size.height)];
+		else
+			[text sizeToFit];
 	}
 
 	return text;
@@ -749,6 +825,7 @@ enum
 {
 	BOOL isTomeSelected = isTome.selectedSegment;
 
+	//Top header
 	detailHeader.stringValue = NSLocalizedString(isTomeSelected ? @"IMPORT-DET-HEAD-VOL" : @"IMPORT-DET-HEAD-CHAP", nil);
 
 	NSRect frame = detailHeader.frame;
@@ -758,8 +835,8 @@ enum
 
 	[detailHeader setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - frame.size.width / 2, frame.origin.y)];
 
-	contentID.formatter = isTomeSelected ? nil : [[RakCTFormatter alloc] init];
-	contentID.placeholderString = NSLocalizedString(isTomeSelected ? @"IMPORT-DET-PH-VOL" : @"IMPORT-DET-PH-CHAP", nil);
+	//Input fields
+	contentIDTitle.stringValue = [NSString stringWithFormat:@"%@ #", NSLocalizedString(isTomeSelected ? @"VOLUME" : @"CHAPTER", nil)];
 
 	//We need to check that what was inputed in the field is valid
 	if(!isTomeSelected)
@@ -773,6 +850,8 @@ enum
 
 		contentID.stringValue = string;
 	}
+
+	[self positionForIsTomeState:isTomeSelected withAnimation:YES];
 }
 
 - (void) replaceAll
