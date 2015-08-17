@@ -462,6 +462,22 @@
 	return array;
 }
 
+#pragma mark - Workarounds
+
+- (BOOL) textShouldEndEditing:(NSText *)textObject
+{
+	BOOL initialRetValue = [super textShouldEndEditing:textObject];
+
+	//In the case we override the formatter to support , AND ., we may be prevented to stop editing if the selection contains a ,/.
+	if(!initialRetValue && self.formatter != nil)
+	{
+		if([self.formatter isKindOfClass:[NSNumberFormatter class]] && [self.formatter class] != [NSNumberFormatter class])
+			return YES;
+	}
+
+	return initialRetValue;
+}
+
 @end
 
 @implementation RakFormatterLength
