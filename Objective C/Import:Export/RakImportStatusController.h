@@ -17,6 +17,8 @@
 - (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index;
 - (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item;
 
+- (void) postProcessUpdate;
+
 @end
 
 #define NOTIFICATION_IMPORT_REPLACE_ONE	@"RakImportReplaceOne"

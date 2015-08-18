@@ -40,6 +40,7 @@
 - (void) deleteData;
 - (BOOL) overrideDuplicate;
 - (BOOL) updateProject : (PROJECT_DATA) project;
+- (void) refreshState;
 
 - (void) processThumbs;
 - (NSData *) queryThumbInWithIndex : (uint) index;

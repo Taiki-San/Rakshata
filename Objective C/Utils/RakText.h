@@ -31,11 +31,13 @@
 
 @property (weak) id clicTarget;
 @property SEL clicAction;
+@property (copy) void (^callbackOnClic) (RakText * textField);
+
+@property (copy) void (^callbackOnChange)(NSNotification * notification);
 
 //Completion
 @property BOOL wantCompletion;
-@property (weak) id completionCallback;
-@property SEL completionSelector;
+@property (copy) NSArray<NSString *> * (^callbackOnCompletion)();
 
 - (instancetype)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
 - (instancetype) initWithText : (NSString *) text : (NSColor *) color;

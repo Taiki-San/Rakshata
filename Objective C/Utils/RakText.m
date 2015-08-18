@@ -60,6 +60,7 @@
 
 - (void) internalInit
 {
+	self.delegate = self;
 	self.wantsLayer = NO;
 	self.editable = NO;
 	self.bordered = NO;
@@ -279,8 +280,6 @@
 
 	if(!self.cell.wraps)
 		NSLog(@"Eh, I need a max width :/");
-
-	self.delegate = self;
 }
 
 - (BOOL) textView:(nonnull NSTextView *)textView doCommandBySelector:(nonnull SEL)commandSelector
@@ -326,12 +325,6 @@
 	}
 
 	return result;
-}
-
-- (void)controlTextDidChange:(NSNotification *)notification
-{
-	if(_enableMultiLine)
-		[self updateMultilineHeight];
 }
 
 - (void) updateMultilineHeight
@@ -403,7 +396,11 @@
 
 - (void) mouseUp : (NSEvent *) theEvent
 {
-	if(self.clicTarget != nil)
+	if(_callbackOnClic != nil)
+	{
+		_callbackOnClic(self);
+	}
+	else if(self.clicTarget != nil)
 	{
 		if([self.clicTarget respondsToSelector:self.clicAction])
 		{
@@ -418,28 +415,14 @@
 
 #pragma mark - Completion is required
 
-- (void) textDidChange:(nonnull NSNotification *)obj
-{
-	if(_wantCompletion && !autoCompleting)
-	{
-		autoCompleting = YES;
-		[obj.object complete:nil];
-		autoCompleting = NO;
-	}
-}
-
 //By default, we complete with project names
 - (NSArray<NSString *> *)textView:(NSTextView *)textView completions:(NSArray<NSString *> *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
 	if(!_wantCompletion)
 		return nil;
 
-	else if(_completionCallback != nil)
-	{
-		IMP imp = [_completionCallback methodForSelector:_completionSelector];
-		NSArray * (*func)(id, SEL, id) = (void *)imp;
-		return func(_completionCallback, _completionSelector, nil);
-	}
+	else if(_callbackOnCompletion != nil)
+		return _callbackOnCompletion();
 
 	uint nbElem;
 	char ** output = getProjectNameStartingWith([textView.string UTF8String], &nbElem);
@@ -476,6 +459,31 @@
 	}
 
 	return initialRetValue;
+}
+
+#pragma mark - Delegate responder
+
+- (void) textDidChange:(nonnull NSNotification *)obj
+{
+	//Auto completion
+	if(_wantCompletion && !autoCompleting)
+	{
+		autoCompleting = YES;
+		[obj.object complete:nil];
+		autoCompleting = NO;
+	}
+
+	if(_enableMultiLine)
+		[self updateMultilineHeight];
+
+	if(self.callbackOnChange != nil)
+	{
+		//-updateMultilineHeight call this method that commit the text changes, if it wasn't called, we must do it ourselves
+		if(!_enableMultiLine)
+			[self validateEditing];
+
+		self.callbackOnChange(obj);
+	}
 }
 
 @end

@@ -272,10 +272,7 @@ enum
 	free(referencePath);
 
 	if(updatedOne)
-	{
-		[RakImportStatusList refreshAfterPass];
-		[self checkIfStillHaveError];
-	}
+		[self postProcessUpdate];
 
 	return YES;
 }
@@ -332,10 +329,7 @@ enum
 	free(referencePath);
 
 	if(updatedOne)
-	{
-		[RakImportStatusList refreshAfterPass];
-		[self checkIfStillHaveError];
-	}
+		[self postProcessUpdate];
 }
 
 - (void) replaceItem : (NSNotification *) notification
@@ -346,8 +340,12 @@ enum
 
 	[item overrideDuplicate];
 
-	[RakImportStatusList refreshAfterPass];
+	[self postProcessUpdate];
+}
 
+- (void) postProcessUpdate
+{
+	[RakImportStatusList refreshAfterPass];
 	[self checkIfStillHaveError];
 }
 

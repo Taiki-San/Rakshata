@@ -31,6 +31,7 @@
 
 	//Fields to recover details
 	RakText * detailHeader, * contentIDTitle, * contentID, * contentSeparator, * contentName;
+	RakButton * detailConfirm;
 	RakSegmentedControl * isTome;
 	CGFloat maxContentIDWidth;
 }
@@ -201,8 +202,18 @@ enum
 	contentName = [self getInputFieldWithPlaceholder:@"IMPORT-DET-PH-NAME" :127];
 	if(contentName != nil)
 	{
+		contentName.maxLength = MAX_TOME_NAME_LENGTH;
 		contentName.nextKeyView = contentID;
 		[self addSubview:contentName];
+	}
+
+	//Toggle the confirmation button when text is typed to lock it when fields are empty
+	if(contentID != nil || contentName != nil)
+	{
+		__unsafe_unretained id weakSelf = self;
+		contentName.callbackOnChange = contentID.callbackOnChange = ^(NSNotification * notification) {
+			[weakSelf updateButtonStateByFields];
+		};
 	}
 
 	//Enforce the positions of the field for the name
@@ -227,17 +238,18 @@ enum
 		[self addSubview:button];
 	}
 
-	button = [RakButton allocWithText:NSLocalizedString(@"CONFIRM", nil)];
-	if(button != nil)
+	detailConfirm = [RakButton allocWithText:NSLocalizedString(@"CONFIRM", nil)];
+	if(detailConfirm != nil)
 	{
-		button.target = self;
-		button.action = @selector(validateDetail);
+		detailConfirm.enabled = NO;
+		detailConfirm.target = self;
+		detailConfirm.action = @selector(validateDetail);
 
-		workingSize = button.bounds.size;
+		workingSize = detailConfirm.bounds.size;
 
-		[button setFrameOrigin:NSMakePoint(2 * selfSize.width / 3 - workingSize.width / 2, currentY - workingSize.height)];
+		[detailConfirm setFrameOrigin:NSMakePoint(2 * selfSize.width / 3 - workingSize.width / 2, currentY - workingSize.height)];
 
-		[self addSubview:button];
+		[self addSubview:detailConfirm];
 	}
 }
 
@@ -285,6 +297,11 @@ enum
 - (void) bindFieldsDetails : (BOOL) isTomeState
 {
 	contentID.nextKeyView = isTomeState ? contentName : contentID;
+}
+
+- (void) updateButtonStateByFields
+{
+	detailConfirm.enabled = [contentName.stringValue length] > 0 || [contentID.stringValue length] > 0;
 }
 
 #pragma mark Metadata management
@@ -905,15 +922,66 @@ enum
 		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_SR2X), @"data" : dropSR.image}];
 
 	if([_controller reflectMetadataUpdate:data withImages:[NSArray arrayWithArray:overridenImages] forItem:_itemOfQueryForMetadata])
-	{
-		[RakImportStatusList refreshAfterPass];
 		[self close];
-	}
 }
 
 - (void) validateDetail
 {
+	BOOL wantTome = _item.isTome = isTome.selectedSegment != 0, validInput = NO;
 
+	NSNumber * number = getNumberForString(contentID.stringValue);
+	NSString * string = contentName.stringValue;
+
+	int checkedContentID = INVALID_SIGNED_VALUE;
+
+	//Valid number ID
+	if(number != nil && [number longLongValue] <= INT_MAX && [number longLongValue] >= INT_MIN && [number intValue] != INVALID_SIGNED_VALUE)
+	{
+		checkedContentID = [number intValue];
+		validInput = YES;
+	}
+
+	//Valid name
+	if(wantTome)
+	{
+		if(string != nil && [string length] > 0)
+			validInput = YES;
+		else
+			string = nil;
+	}
+
+	//No valid data :(
+	if(!validInput)
+		return;
+
+	_item.contentID = checkedContentID;
+
+	if(wantTome)
+	{
+		META_TOME tomeData;
+
+#warning "Can not possibly last"
+		tomeData.ID = checkedContentID;
+		tomeData.readingID = checkedContentID;
+		wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));
+
+		PROJECT_DATA_EXTRA project = _item.projectData;
+
+		uint nbTomes = project.data.nombreTomeLocal++;
+
+		void * tmp = realloc(project.data.tomeLocal, (nbTomes + 1) * sizeof(META_TOME));
+		if(tmp != NULL)
+		{
+			project.data.tomeLocal = tmp;
+			project.data.tomeLocal[nbTomes] = tomeData;
+			_item.projectData = project;
+		}
+	}
+
+	[self close];
+
+	[_item refreshState];
+	[_controller postProcessUpdate];
 }
 
 - (void) close

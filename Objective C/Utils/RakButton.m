@@ -355,6 +355,12 @@
 	}
 }
 
+- (void) setEnabled : (BOOL) enabled
+{
+	[super setEnabled:enabled];
+	[self reloadFontColor];
+}
+
 #pragma mark - Sizing
 
 - (void) setBorderWidth:(CGFloat)borderWidth

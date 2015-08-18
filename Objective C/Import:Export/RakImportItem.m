@@ -144,6 +144,22 @@
 {
 	_projectData.data.project = project;
 
+	[self refreshState];
+
+	//Okay! We're good
+	if(_issue == IMPORT_PROBLEM_NONE)
+	{
+		[self processThumbs];
+		[self registerProject];
+
+		return YES;
+	}
+
+	return NO;
+}
+
+- (void) refreshState
+{
 	//Check the data update is enough
 	if([self needMoreData])
 		_issue = IMPORT_PROBLEM_METADATA;
@@ -160,16 +176,8 @@
 	else if(![self installWithUI:nil])
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 
-	//Okay! We're good
 	else
-	{
-		[self processThumbs];
-		[self registerProject];
-
-		return YES;
-	}
-
-	return NO;
+		_issue = IMPORT_PROBLEM_NONE;
 }
 
 - (void) deleteData
