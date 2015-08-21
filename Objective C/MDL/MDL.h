@@ -39,15 +39,15 @@
 - (BOOL) available;
 - (void) wakeUp;
 
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (int) newElem  partOfBatch : (BOOL) partOfBatch;
-- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) removingEmailAddress;
 
 - (BOOL) isDisplayed;
 
 - (void) updateDependingViews : (BOOL) animated;
 
-- (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (int) element;
+- (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
 
 @end

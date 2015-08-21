@@ -15,7 +15,7 @@
 #define EXPORT_GENERIC_NAME "Archive"
 #define BASE_THUMBS_PATH "thumbs/"
 
-NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL isTome, int selection, uint * index);
+NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL isTome, void * selection, uint * index);
 
 @implementation RakExportController
 
@@ -31,13 +31,13 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	return [self craftArchiveName:item.project isTome:item.isTome selection:item.selection];
 }
 
-+ (NSString *) craftArchiveName : (PROJECT_DATA) project isTome : (BOOL) isTome selection : (int) selection
++ (NSString *) craftArchiveName : (PROJECT_DATA) project isTome : (BOOL) isTome selection : (uint) selection
 {
 	NSString * projectPath = [getStringForWchar(project.projectName) stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/:"]], * outputPath = nil;
 
 	if(projectPath != nil && [projectPath length] > 0)
 	{
-		if(selection != INVALID_SIGNED_VALUE)
+		if(selection != INVALID_VALUE)
 		{
 			if(isTome)
 			{
@@ -285,7 +285,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	return [NSDictionary dictionaryWithDictionary:dict];
 }
 
-+ (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (int) selection index : (uint *) index
++ (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (uint) selection index : (uint *) index
 {
 	//Ensure we have valid data
 	if((fullProject || isTome) && project->tomesInstalled == NULL)
@@ -309,19 +309,19 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	//To insert a full project, we first inject the
 	if(fullProject)
 	{
-		selection = INVALID_SIGNED_VALUE;
+		selection = INVALID_VALUE;
 		isTome = false;
 	}
 
 	//Okay, at this point, we craft the array
-	if(selection == INVALID_SIGNED_VALUE)
+	if(selection == INVALID_VALUE)
 	{
 		uint length = ACCESS_DATA(isTome, project->nombreChapitreInstalled, project->nombreTomesInstalled);
 		NSMutableArray * collector = [NSMutableArray new];
 
 		for(uint i = 0; i < length; ++i)
 		{
-			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, ACCESS_DATA(isTome, project->chapitresInstalled[i], project->tomesInstalled[i].ID), index);
+			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, ACCESS_DATA(isTome,  (void *) &project->chapitresInstalled[i], &project->tomesInstalled[i]), index);
 			if(dict != nil)
 				[collector addObject:dict];
 		}
@@ -331,7 +331,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			length = project->nombreTomesInstalled;
 			for(uint i = 0; i < length; ++i)
 			{
-				NSDictionary * dict = linearizeContentLine(*project, projectID, true, project->tomesInstalled[i].ID, index);
+				NSDictionary * dict = linearizeContentLine(*project, projectID, true, &project->tomesInstalled[i], index);
 				if(dict != nil)
 					[collector addObject:dict];
 			}
@@ -342,7 +342,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	}
 	else
 	{
-		NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, selection, index);
+		NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, &selection, index);
 		if(dict != nil)
 			output = [NSMutableArray arrayWithObject:dict];
 	}
@@ -373,7 +373,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		//Load the data so we get a list of files
 		DATA_LECTURE entryData;
 		BOOL isTome = [objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]) boolValue];
-		int selection = [objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]) intValue];
+		uint selection = [objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]) unsignedIntValue];
 
 		if(!configFileLoader(item.project, isTome, selection, &entryData))
 		{
@@ -532,27 +532,30 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 @end
 
-NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL isTome, int selection, uint * index)
+NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL isTome, void * selection, uint * index)
 {
 	NSMutableDictionary * dict = [NSMutableDictionary new];
 
 	[dict setObject:@(projectID) forKey:RAK_STRING_CONTENT_PROJECT];
 	[dict setObject:[NSString stringWithFormat:@"%d", (*index)++] forKey:RAK_STRING_CONTENT_DIRECTORY];
 	[dict setObject:@(isTome) forKey:RAK_STRING_CONTENT_ISTOME];
-	[dict setObject:@(selection) forKey:RAK_STRING_CONTENT_ID];
 
 	if(isTome)
 	{
-		uint pos = getPosForID(project, true, selection);
+		META_TOME * tome = selection;
+		
+		uint pos = getPosForID(project, true, tome->ID);
 		if(pos == INVALID_VALUE)
 			return nil;
-		else
-		{
-			NSArray * volumeMetadata = recoverVolumeBloc(&(project.tomesInstalled[pos]), 1, project.isPaid);
-			if(volumeMetadata != nil && [volumeMetadata count] > 0)
-				[dict setObject:[volumeMetadata objectAtIndex:0] forKey:RAK_STRING_CONTENT_VOL_DETAILS];
-		}
+		
+		[dict setObject:@(tome->ID) forKey:RAK_STRING_CONTENT_ID];
+		
+		NSArray * volumeMetadata = recoverVolumeBloc(&(project.tomesInstalled[pos]), 1, project.isPaid);
+		if(volumeMetadata != nil && [volumeMetadata count] > 0)
+			[dict setObject:[volumeMetadata objectAtIndex:0] forKey:RAK_STRING_CONTENT_VOL_DETAILS];
 	}
+	else
+		[dict setObject:@(* (int *) selection) forKey:RAK_STRING_CONTENT_ID];
 
 	return [NSDictionary dictionaryWithDictionary:dict];
 }

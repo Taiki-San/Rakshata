@@ -12,7 +12,7 @@
 
 @implementation Reader (PageManagement)
 
-- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
@@ -515,7 +515,7 @@
 
 #pragma mark    -   Active routines
 
-- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	_project = getCopyOfProjectData(dataRequest);
 	_currentElem = elemRequest;
@@ -810,7 +810,7 @@
 	}
 }
 
-- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+- (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
 	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
@@ -1179,8 +1179,7 @@
 
 - (BOOL) loadAdjacentChapter : (BOOL) loadNext : (NSArray *) data : (uint) currentSession
 {
-	int nextElement;
-	uint nextElementPos = _posElemInStructure;
+	uint nextElement, nextElementPos = _posElemInStructure;
 	
 	MUTEX_LOCK(cacheMutex);
 	//Check if next CT is readable
@@ -1574,7 +1573,7 @@
 		return;
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
-	int * selection = calloc(nbElemToGrab, sizeof(int));
+	uint * selection = calloc(nbElemToGrab, sizeof(uint));
 	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate]MDL];
 	
 	if(selection == NULL || tabMDL == nil)

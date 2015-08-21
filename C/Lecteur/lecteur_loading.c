@@ -18,17 +18,17 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 	uint maxValue = isTome ? projectDB.nombreTomesInstalled : projectDB.nombreChapitreInstalled;
 
 	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < maxValue
-										&& !checkReadable(projectDB, isTome, isTome ? projectDB.tomesInstalled[*currentPosIntoStructure].ID: projectDB.chapitresInstalled[*currentPosIntoStructure]);		(*currentPosIntoStructure)++);
+										&& !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chapitresInstalled[*currentPosIntoStructure], projectDB.tomesInstalled[*currentPosIntoStructure].ID));		(*currentPosIntoStructure)++);
 	
 	return *currentPosIntoStructure < maxValue;
 }
 
 /**	Load the reader data	**/
 
-bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA_LECTURE* dataReader)
+bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader)
 {
 	uint nombreToursRequis = 1, nombrePageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
-	int chapterRequestedForVolume = INVALID_SIGNED_VALUE;
+	uint chapterRequestedForVolume = INVALID_VALUE;
 	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedPath = getPathForProject(projectDB);
 	CONTENT_TOME *localBuffer = NULL;
     void * intermediaryPtr;
@@ -66,25 +66,25 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 			if(localBuffer[nombreTours].isPrivate)
 			{
 				if(chapterRequestedForVolume % 10)
-					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 				else
-					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d", IDRequested, chapterRequestedForVolume / 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
 			}
 			else
 			{
 				if(isChapterShared(NULL, projectDB, chapterRequestedForVolume))
 				{
 					if(chapterRequestedForVolume % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d.%d", chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%u.%u", chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d", chapterRequestedForVolume / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%u", chapterRequestedForVolume / 10);
 				}
 				else
 				{
 					if(chapterRequestedForVolume % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d.%d", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d", IDRequested, chapterRequestedForVolume / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
 				}
 				
 			}
@@ -92,9 +92,9 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
 		else
 		{
 			if(IDRequested % 10)
-				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d.%d", IDRequested / 10, IDRequested % 10);
+				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%u.%u", IDRequested / 10, IDRequested % 10);
 			else
-				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%d", IDRequested / 10);
+				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%u", IDRequested / 10);
 		}
 		
         snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/%s", encodedPath, name, CONFIGFILE);
@@ -106,14 +106,14 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
             dataReader->nombrePage += nombrePageInChunck;
 			
             ///pathNumber
-            intermediaryPtr = realloc(dataReader->pathNumber, dataReader->nombrePage * sizeof(int));
+            intermediaryPtr = realloc(dataReader->pathNumber, dataReader->nombrePage * sizeof(uint));
             if(intermediaryPtr != NULL)
                 dataReader->pathNumber = intermediaryPtr;
             else
                 goto memoryFail;
 			
             ///pageCouranteDuChapitre
-            intermediaryPtr = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePage+1) * sizeof(int));
+            intermediaryPtr = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePage+1) * sizeof(uint));
             if(intermediaryPtr != NULL)
                 dataReader->pageCouranteDuChapitre = intermediaryPtr;
             else
@@ -127,7 +127,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, int IDRequested, DATA
                 goto memoryFail;
 			
             ///chapitreTomeCPT
-            intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (nombreTours + 2) * sizeof(int));
+            intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (nombreTours + 2) * sizeof(uint));
             if(intermediaryPtr != NULL)
                 dataReader->chapitreTomeCPT = intermediaryPtr;
             else
@@ -384,7 +384,7 @@ void releaseDataReader(DATA_LECTURE *data)
 	}
 }
 
-bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
+bool changeChapter(PROJECT_DATA* projectDB, bool isTome, uint *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
 	if(goToNextChap)
 		(*posIntoStruc)++;
@@ -401,7 +401,7 @@ bool changeChapter(PROJECT_DATA* projectDB, bool isTome, int *ptrToSelectedID, u
 	if(isTome)
 		*ptrToSelectedID = projectDB->tomesInstalled[*posIntoStruc].ID;
 	else
-		*ptrToSelectedID = projectDB->chapitresInstalled[*posIntoStruc];
+		*ptrToSelectedID = (uint) projectDB->chapitresInstalled[*posIntoStruc];
 	return true;
 }
 

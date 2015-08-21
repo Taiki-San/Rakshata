@@ -78,10 +78,11 @@ typedef struct
 	CONTENT_TOME *listChapitreOfTome;	//Should be used to differentiate chapters from volumes
 	
 	uint nbElemList;
-	int identifier;
+	uint identifier;
 	
 	METADATA_LOADED metadata;
 	
+	int tomeID;
 	uint8_t downloadSuspended;	//Divised in two parts
 } DATA_LOADED;
 
@@ -96,8 +97,8 @@ typedef struct //intermediary_from_data_loaded_to_DL_thread
 	int *listChapitreOfTome;
 	charType *tomeName;
 	
-	int chapitre;
-    int partOfTome; //Si INVALID_VALUEURE, alors chapitre indé, sinon, tome dont c'est l'ID
+	uint chapitre;
+    uint partOfTome; //Si INVALID_VALUE, alors chapitre indé, sinon, tome dont c'est l'ID
 	
 	bool subFolder;
 	
@@ -183,10 +184,10 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(REPO_DATA repoData, uint* length);
 DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, uint * currentPosition, DATA_LOADED ** newChunk);
-DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element);
+DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element);
 void MDLFlushElement(DATA_LOADED * element);
-uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome);
-void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID);
+uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint IDChap, uint *posIndexTome);
+void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 int sortProjectsToDownload(const void *a, const void *b);
 
@@ -197,7 +198,7 @@ void MDLInstallOver(PROJECT_DATA project);
 void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void MDLCommunicateOC(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
-bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
+bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
 bool dataRequireLoginWithNotif(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController);
 bool dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, bool noEmail);
 void watcherForLoginRequest(MDL_MWORKER_ARG * arg);
@@ -211,7 +212,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile);
 bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem);
 void MDLUpdateKillState(bool newState);
-bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, int chapitre, int tome, bool subFolder, bool haveToPutTomeAsReadable);
+bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, uint chapitre, uint tome, bool subFolder, bool haveToPutTomeAsReadable);
 
 /**Module2_paid.h**/
 bool MDLPHandle(DATA_LOADED ** data, int8_t *** status, uint * IDToPosition, uint length);

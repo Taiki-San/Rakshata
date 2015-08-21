@@ -191,7 +191,7 @@ enum
 	
 	if(dataProject != NULL && (*dataProject)->datas != NULL)
 	{
-		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :INVALID_SIGNED_VALUE];
+		[RakTabView broadcastUpdateContext:self :*(*dataProject)->datas :YES :INVALID_VALUE];
 	}
 	
 	return NO;
@@ -220,7 +220,7 @@ enum
 	{
 		META_TOME tome;
 
-		tome.readingID = (*dataProject)->identifier;
+		tome.readingID = (*dataProject)->tomeID;
 		wstrncpy(tome.readingName, MAX_TOME_NAME_LENGTH, (*dataProject)->tomeName);
 		tome.readingName[MAX_TOME_NAME_LENGTH] = 0;
 
@@ -288,11 +288,11 @@ enum
 	return TAB_MDL;
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (uint) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
 	if(sender == [self getSelfCode])	//Reorder
 	{
-		if(project.repo == NULL || element == INVALID_SIGNED_VALUE || row > [self numberOfRowsInTableView:_tableView] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
+		if(project.repo == NULL || element == INVALID_VALUE || row > [self numberOfRowsInTableView:_tableView] || (operation != NSTableViewDropAbove && operation != NSTableViewDropOn))
 			return NO;
 		
 		if(!dragInProgress)
@@ -308,7 +308,7 @@ enum
 		getUpdatedCTList(&project, isTome);
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
-		if(element != INVALID_SIGNED_VALUE)
+		if(element != INVALID_VALUE)
 			[controller addElement:project :isTome :element:NO];
 		else
 			nbElemInjected = [controller addBatch:project :isTome :YES];

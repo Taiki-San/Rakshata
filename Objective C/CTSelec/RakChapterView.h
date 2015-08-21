@@ -32,7 +32,7 @@
 
 - (void) updateContext : (PROJECT_DATA) data;
 - (void) projectDataUpdate : (PROJECT_DATA) oldData : (PROJECT_DATA) newData;
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element;
 - (PROJECT_DATA) activeProject;
 
 @end

@@ -14,7 +14,7 @@
 {
 	PROJECT_DATA _project;
 	BOOL _isTome;
-	int* _arraySelection;
+	uint* _arraySelection;
 	uint _sizeArray;
 	
 	Reader* _tabReader;
@@ -22,7 +22,7 @@
 	BOOL _remind;
 }
 
-- (instancetype) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (int*) arraySelection : (uint) sizeArray;
+- (instancetype) initWithData : (MDL*) tabMDL : (PROJECT_DATA) project : (BOOL) isTome : (uint *) arraySelection : (uint) sizeArray;
 
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated;
 

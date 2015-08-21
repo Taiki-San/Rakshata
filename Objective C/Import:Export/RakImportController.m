@@ -72,7 +72,7 @@
 			continue;
 		}
 
-		else if(item.issue == IMPORT_PROBLEM_METADATA_DETAILS || item.contentID == INVALID_SIGNED_VALUE)
+		else if(item.issue == IMPORT_PROBLEM_METADATA_DETAILS || item.contentID == INVALID_VALUE)
 		{
 			haveFoundProblems = YES;
 			item.issue = IMPORT_PROBLEM_METADATA_DETAILS;

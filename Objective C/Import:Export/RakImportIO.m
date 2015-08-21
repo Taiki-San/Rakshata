@@ -87,7 +87,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 			item.projectData = getEmptyExtraProject();
 			item.IOController = IOController;
 
-			item.contentID = INVALID_SIGNED_VALUE;
+			item.contentID = INVALID_VALUE;
 			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
 			NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
 
@@ -116,13 +116,14 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 				extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
 				if(extraProject.data.tomeLocal != NULL)
 				{
-					extraProject.data.tomeLocal[0].ID = extraProject.data.tomeLocal[0].readingID = item.contentID;
+					extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
+					extraProject.data.tomeLocal[0].readingID = (int) item.contentID;
 					extraProject.data.nombreTomeLocal++;
 				}
 			}
 			else
 			{
-				extraProject.data.chapitresLocal = malloc(sizeof(int));
+				extraProject.data.chapitresLocal = malloc(sizeof(uint));
 				if(extraProject.data.chapitresLocal != NULL)
 				{
 					extraProject.data.chapitresLocal[0] = item.contentID;

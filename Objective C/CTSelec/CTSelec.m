@@ -189,7 +189,7 @@
 	return string;
 }
 
-- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (int) element
+- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (uint) element
 {
 	PROJECT_DATA newProject = getProjectByID(project.cacheDBID);	//Isole le tab des données
 	
@@ -317,9 +317,9 @@
 
 #pragma mark - Communication with other tabs
 
-- (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (int) element
+- (void) updateContextNotification:(PROJECT_DATA) project : (BOOL)isTome : (uint) element
 {
-	if(element == INVALID_SIGNED_VALUE && project.isInitialized)
+	if(element == INVALID_VALUE && project.isInitialized)
 	{
 		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
 		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];
@@ -387,7 +387,7 @@
 
 #pragma mark - Proxy
 
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element
 {
 	[coreView selectElem : projectID : isTome : element];
 }
@@ -399,11 +399,11 @@
 
 #pragma mark - Drop
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender
 {
 	BOOL ret_value = NO;
 	
-	if(element == INVALID_SIGNED_VALUE || sender == TAB_MDL)
+	if(element == INVALID_VALUE || sender == TAB_MDL)
 	{
 		[coreView updateContext:data];
 		ret_value = YES;

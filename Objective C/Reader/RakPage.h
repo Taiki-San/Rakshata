@@ -19,7 +19,7 @@
 
 @interface Reader (PageManagement) <NSPageControllerDelegate>
 
-- (BOOL) initPage : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (NSString *) getContextToGTFO;
 
 - (void) initialPositionning : (RakPageScrollView *) scrollView;
@@ -37,11 +37,11 @@
 - (BOOL) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
 
-- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (void) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
 - (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
-- (void) changeProject : (PROJECT_DATA) projectRequest : (int) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (void) updateCTTab;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;
 - (void) updateEvnt;

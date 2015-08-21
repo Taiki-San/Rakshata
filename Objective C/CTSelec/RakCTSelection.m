@@ -318,7 +318,7 @@
 	if(self.dontNotify)
 		return;
 	
-	int ID;
+	uint ID;
 	NSNumber * _index = [notification.userInfo objectForKey:@"index"], *_isTome = [notification.userInfo objectForKey:@"isTome"], * _installed = [notification.userInfo objectForKey:@"isInstalled"];
 	
 	if(_index == nil || _isTome == nil || _installed == nil)
@@ -332,7 +332,7 @@
 		if(isTome && index < data.nombreTomesInstalled)
 			ID = data.tomesInstalled[index].ID;
 		else if(!isTome && index < data.nombreChapitreInstalled)
-			ID = data.chapitresInstalled[index];
+			ID = (uint) data.chapitresInstalled[index];
 		else
 			return;
 	}
@@ -341,7 +341,7 @@
 		if(isTome && index < data.nombreTomes)
 			ID = data.tomesFull[index].ID;
 		else if(!isTome && index < data.nombreChapitre)
-			ID = data.chapitresFull[index];
+			ID = (uint) data.chapitresFull[index];
 		else
 			return;
 	}
@@ -395,7 +395,7 @@
 	[_volView setWantIsTome : isTome];
 }
 
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element
 {
 	if(data.cacheDBID != projectID || self.dontNotify)
 		return;

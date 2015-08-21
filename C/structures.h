@@ -19,7 +19,7 @@ typedef struct sqlite3_stmt sqlite3_stmt;
 
 typedef struct
 {
-	int ID;
+	uint ID;
 	bool isPrivate;			//Chapitre indé
 
 } CONTENT_TOME;
@@ -28,7 +28,7 @@ typedef struct
 {
 	CONTENT_TOME * details;
 	
-	int ID;
+	uint ID;
 	int readingID;
 	
 	uint price;
@@ -222,9 +222,9 @@ typedef struct
 {
 	//Pointeurs, un bloc chacun (64b)
 	REPO_DATA *repo;
-	int *chapitresFull;
+	uint *chapitresFull;
 	uint *chapitresPrix;
-	int *chapitresInstalled;
+	uint *chapitresInstalled;
 	META_TOME *tomesFull;
 	META_TOME *tomesInstalled;
 	
@@ -266,8 +266,8 @@ typedef struct
 {
 	PROJECT_DATA project;
 
-	int *chapitresRemote;
-	int *chapitresLocal;
+	uint *chapitresRemote;
+	uint *chapitresLocal;
 
 	uint nombreChapitreRemote;
 	uint nombreChapitreLocal;

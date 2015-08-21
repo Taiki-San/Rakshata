@@ -156,7 +156,7 @@ enum
 	
 	if(image != nil)
 	{
-		lastDragCouldDL = [RakDragItem canDL:_dragProject isTome:YES element:INVALID_SIGNED_VALUE] || [RakDragItem canDL:_dragProject isTome:NO element:INVALID_SIGNED_VALUE];
+		lastDragCouldDL = [RakDragItem canDL:_dragProject isTome:YES element:INVALID_VALUE] || [RakDragItem canDL:_dragProject isTome:NO element:INVALID_VALUE];
 	}
 	
 	return image;
@@ -175,7 +175,7 @@ enum
 		return NO;
 	
 	//We initialize the item, then insert it in the pasteboard
-	[item setDataProject:_dragProject fullProject:YES isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:INVALID_SIGNED_VALUE];
+	[item setDataProject:_dragProject fullProject:YES isTome:[RakDragItem defineIsTomePriority: &_dragProject alreadyRefreshed: YES] element:INVALID_VALUE];
 	[pasteboard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	return YES;

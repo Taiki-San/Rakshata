@@ -11,7 +11,7 @@
  *********************************************************************************************/
 
 NSString * getStringForWchar(const charType * string);
-NSString * getStringForChapter(int chapID);
+NSString * getStringForChapter(uint chapID);
 NSString * getStringForVolume(int volID);
 NSString * getStringForVolumeFull(META_TOME tome);
 NSNumber * getNumberForString(NSString * string);

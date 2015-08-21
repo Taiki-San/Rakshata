@@ -50,11 +50,11 @@ enum {
 - (void) initView: (NSView *)superview : (NSString *) state;
 - (NSString *) byebye;
 
-+ (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
++ (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 + (void) broadcastUpdateFocus : (uint) newFocus;
 - (void) contextChanged : (NSNotification*) notification;
 - (void) ownFocus;
-- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (int) element;
+- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
 - (NSColor*) getMainColor;
 - (void) drawContentView: (NSRect) frame;
@@ -107,7 +107,7 @@ enum {
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 - (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL;
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender;
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender;
 - (BOOL) shouldDeployWhenDragComeIn;
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL;
 - (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender;

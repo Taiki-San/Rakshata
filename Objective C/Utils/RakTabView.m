@@ -64,7 +64,7 @@
 	[self setNeedsDisplay:YES];
 }
 
-+ (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (int) element
++ (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
 {
 	//We'll recover the main view by hicking the view hierarchy
 	
@@ -117,7 +117,7 @@
 		id tmp;
 		PROJECT_DATA project;
 		BOOL isTome;
-		int element;
+		uint element;
 		
 		tmp = [userInfo objectForKey:@"project"];
 		if(tmp != nil)
@@ -133,9 +133,9 @@
 		
 		tmp = [userInfo objectForKey:@"selection"];
 		if(tmp != nil)
-			element = [tmp intValue];
+			element = [tmp unsignedIntValue];
 		else
-			element = INVALID_SIGNED_VALUE;
+			element = INVALID_VALUE;
 		
 		[self updateContextNotification : project : isTome : element];
 	}
@@ -160,7 +160,7 @@
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (int) element
+- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
 {
 	
 }
@@ -689,7 +689,7 @@
 	
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender
 {
 	NSLog(@"Project %@ received: istome: %d - element : %d", getStringForWchar(data.projectName), isTome, element);
 	return YES;

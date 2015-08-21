@@ -35,7 +35,7 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 
-- (NSInteger) getIndexOfElement : (NSInteger) element;
+- (NSInteger) getIndexOfElement : (uint) element;
 - (void) selectIndex : (uint) index;
 - (void) jumpScrollerToIndex : (uint) index;
 

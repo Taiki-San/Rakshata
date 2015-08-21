@@ -72,11 +72,11 @@
 				
 				//Perfect! now, all we have to do is to sanitize last few data :D
 				
-				int elemToRead;
+				uint elemToRead;
 				BOOL isTome;
 				uint page;
 				
-				elemToRead = [[dataState objectAtIndex:3] intValue];
+				elemToRead = [[dataState objectAtIndex:3] unsignedIntValue];
 				isTome = [[dataState objectAtIndex:4] boolValue];
 				page = [[dataState objectAtIndex:5] longLongValue];
 				
@@ -98,7 +98,7 @@
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (BOOL) isTome : (uint) startPage
+- (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
 {
 	BOOL shouldNotifyBottomBarInitialized = NO;
 	
@@ -467,14 +467,14 @@
 	return _project;
 }
 
-- (int) currentElem
+- (uint) currentElem
 {
 	return _currentElem;
 }
 
-- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(int)element
+- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(uint)element
 {
-	if(element != INVALID_SIGNED_VALUE)
+	if(element != INVALID_VALUE)
 	{
 		[self startReading : project : element : isTome : UINT_MAX];
 		[self ownFocus];
@@ -531,9 +531,9 @@
 
 #pragma mark - Drop support
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender
 {
-	if(element != INVALID_SIGNED_VALUE && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
+	if(element != INVALID_VALUE && (sender != TAB_MDL || (isTome ? checkTomeReadable(data, element) : checkChapterReadable(data, element))))
 	{
 		[self updateContextNotification:data :isTome :element];
 		return YES;

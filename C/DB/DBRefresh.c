@@ -373,9 +373,9 @@ void updateProjects()
 	notifyFullUpdate();
 }
 
-void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
+void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 {
-	if(elemToDel == INVALID_SIGNED_VALUE)	//On supprime tout
+	if(elemToDel == INVALID_VALUE)	//On supprime tout
 	{
 		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForProject(project);
 		
@@ -392,10 +392,9 @@ void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome)
 	notifyUpdateProject(project);
 }
 
-void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
+void setLastChapitreLu(PROJECT_DATA project, bool isTome, uint dernierChapitre)
 {
 	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForProject(project);
-	FILE* fichier = NULL;
 	
 	if(encodedRepo == NULL)
 		return;
@@ -405,7 +404,7 @@ void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre)
 	else
         snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/"CONFIGFILE, encodedRepo);
 
-	fichier = fopen(temp, "w+");
+	FILE * fichier = fopen(temp, "w+");
 	fprintf(fichier, "%d", dernierChapitre);
 	fclose(fichier);
 }

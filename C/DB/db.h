@@ -182,8 +182,8 @@ void flushRecentMutex();
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 
-void deleteProject(PROJECT_DATA project, int elemToDel, bool isTome);
-void setLastChapitreLu(PROJECT_DATA project, bool isTome, int dernierChapitre);
+void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome);
+void setLastChapitreLu(PROJECT_DATA project, bool isTome, uint dernierChapitre);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);
@@ -208,6 +208,8 @@ bool isLocalProject(PROJECT_DATA project);
 /******		DBLocal.c		*******/
 uint getEmptyLocalSlot(PROJECT_DATA project);
 void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome);
+uint getVolumeIDForImport(PROJECT_DATA project);
+bool isLocalVolumeID(uint ID);
 
 /**tagManagement.c**/
 uint getRootCategoryIDForID(uint32_t categoryID);

@@ -19,10 +19,10 @@
 
 @property PROJECT_DATA project;
 @property BOOL isTome, fullProject;
-@property int selection;
+@property uint selection;
 @property uint price;
 
-- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (int) element;
+- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (uint) element;
 - (instancetype) initWithData : (NSData *) data;
 
 - (NSData *) getData;
@@ -31,7 +31,7 @@
 - (BOOL) canDL;
 - (BOOL) canDLRefreshed;
 + (BOOL) canDL : (NSPasteboard*) pasteboard;
-+ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element;
++ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (uint) element;
 + (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed;
 
 @end

@@ -40,7 +40,7 @@
 - (void) feedAnimationController : (RakCTAnimationController *) animationController;
 - (void) switchIsTome;
 
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element;
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element;
 - (BOOL) updateContext : (PROJECT_DATA) newData;
 
 - (void) cleanChangeCurrentContext;

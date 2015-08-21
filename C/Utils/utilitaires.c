@@ -62,7 +62,7 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 	for(byte count = 0; count < 2; count++)
 	{
 		uint lengthA, lengthB;
-		int * aChap, * bChap;
+		uint * aChap, * bChap;
 
 		if(count == 0)
 		{
@@ -85,7 +85,7 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 		if(aChap == NULL ^ bChap == NULL)
 			return false;
 
-		if(aChap != NULL && memcmp(aChap, bChap, lengthA * sizeof(int)))
+		if(aChap != NULL && memcmp(aChap, bChap, lengthA * sizeof(uint)))
 			return false;
 
 		META_TOME * aTome, * bTome;

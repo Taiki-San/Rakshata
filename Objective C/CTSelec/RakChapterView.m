@@ -324,7 +324,7 @@
 	[header updateProjectDiff:oldData :newData];
 }
 
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (int) element
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element
 {
 	if(coreview != nil)
 		[coreview selectElem : projectID : isTome : element];

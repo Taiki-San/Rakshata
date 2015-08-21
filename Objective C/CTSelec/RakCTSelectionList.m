@@ -113,7 +113,7 @@
 	}
 	else
 	{
-		allocSize = sizeof(int);
+		allocSize = sizeof(uint);
 		
 		nbElem = project.nombreChapitre;
 		newData = project.chapitresFull;
@@ -354,7 +354,7 @@
 	}
 }
 
-- (uint) getIndexOfElement : (int) element
+- (uint) getIndexOfElement : (uint) element
 {
 	if(_data == NULL || (self.compactMode && _installedJumpTable == NULL))
 		return LIST_INVALID_SELECTION;
@@ -384,7 +384,7 @@
 		{
 			for (uint pos = 0; pos < _nbInstalled; pos++)
 			{
-				if(((int*) _data)[_installedJumpTable[pos]] == element)
+				if(((uint*) _data)[_installedJumpTable[pos]] == element)
 					return pos;
 			}
 		}
@@ -392,7 +392,7 @@
 		{
 			for (uint pos = 0; pos < _nbElem; pos++)
 			{
-				if(((int *) _data)[pos] == element)
+				if(((uint *) _data)[pos] == element)
 					return pos;
 			}
 		}
@@ -856,7 +856,7 @@
 	if(self.isTome)
 	{
 		META_TOME element = ((META_TOME *) _data)[rowIndex];
-		if(element.ID != INVALID_SIGNED_VALUE)
+		if(element.ID != INVALID_VALUE)
 		{
 			if(_detailColumns == nil || !isDetails)
 				output = getStringForVolumeFull(element);
@@ -875,9 +875,9 @@
 	{
 		if(_detailColumns == nil || !isDetails)
 		{
-			int ID = ((int *) _data)[rowIndex];
+			uint ID = ((uint *) _data)[rowIndex];
 
-			if(ID != INVALID_SIGNED_VALUE)
+			if(ID != INVALID_VALUE)
 				output = getStringForChapter(ID);
 			else
 				output = @"Error! Out of bounds D:";
@@ -934,7 +934,7 @@
 	{
 		for(uint i = 0; i < nbElem; i++)
 		{
-			output[i].data = (uint) (isTome ? ((META_TOME*)data)[i].ID : ((int*)data)[i]);
+			output[i].data = (uint) (isTome ? ((META_TOME *) data)[i].ID : ((uint *) data)[i]);
 			output[i].installed = installed == NULL ? NO : installed[i];
 		}
 	}
@@ -1078,7 +1078,7 @@
 
 - (void) fillDragItemWithData:(RakDragItem *)item :(uint)row
 {
-	int selection;
+	uint selection;
 	row = [self rowFromCoordinates : row : _tableView.preCommitedLastClickedColumn];
 	
 	if(self.isTome)
@@ -1088,7 +1088,7 @@
 	}
 	else
 	{
-		selection = ((int *) _data)[row];
+		selection = ((uint *) _data)[row];
 		
 		if(chapterPrice != NULL && row < _nbChapterPrice)
 			item.price = chapterPrice[row];

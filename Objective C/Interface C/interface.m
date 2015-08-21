@@ -337,14 +337,14 @@ void updateRecentSeries()
  **										**
  *****************************************/
 
-bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, int element)
+bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element)
 {
 	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
 
 	return tabMDL == nil ? [tabMDL proxyCheckForCollision:data :isTome :element] : false;
 }
 
-void addElementToMDL(PROJECT_DATA data, bool isTome, int element, bool partOfBatch)
+void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch)
 {
 	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
 	

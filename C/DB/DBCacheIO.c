@@ -215,9 +215,9 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 
 	if(data.project.chapitresFull != NULL)
 	{
-		buffer = malloc(data.project.nombreChapitre * sizeof(int));
+		buffer = malloc(data.project.nombreChapitre * sizeof(uint));
 		if(buffer != NULL)
-			memcpy(buffer, data.project.chapitresFull, data.project.nombreChapitre * sizeof(int));
+			memcpy(buffer, data.project.chapitresFull, data.project.nombreChapitre * sizeof(uint));
 
 		sqlite3_bind_int64(request, 11, (int64_t) buffer);
 	}
@@ -226,9 +226,9 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 
 	if(data.chapitresRemote != NULL)
 	{
-		buffer = malloc(data.nombreChapitreRemote * sizeof(int));
+		buffer = malloc(data.nombreChapitreRemote * sizeof(uint));
 		if(buffer != NULL)
-			memcpy(buffer, data.chapitresRemote, data.nombreChapitreRemote * sizeof(int));
+			memcpy(buffer, data.chapitresRemote, data.nombreChapitreRemote * sizeof(uint));
 
 		sqlite3_bind_int64(request, 13, (int64_t) buffer);
 	}
@@ -237,9 +237,9 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 
 	if(data.chapitresLocal != NULL)
 	{
-		buffer = malloc(data.nombreChapitreLocal * sizeof(int));
+		buffer = malloc(data.nombreChapitreLocal * sizeof(uint));
 		if(buffer != NULL)
-			memcpy(buffer, data.chapitresLocal, data.nombreChapitreLocal * sizeof(int));
+			memcpy(buffer, data.chapitresLocal, data.nombreChapitreLocal * sizeof(uint));
 
 		sqlite3_bind_int64(request, 15, (int64_t) buffer);
 	}

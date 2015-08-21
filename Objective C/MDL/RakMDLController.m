@@ -300,16 +300,16 @@
 	return *(status[row]);
 }
 
-- (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
+- (BOOL) checkForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
 	return nbElem && MDLisThereCollision(data, isTome, element, *todoList, status, nbElem);
 }
 
 #pragma mark - Tools
 
-- (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (BOOL) partOfBatch
+- (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (BOOL) partOfBatch
 {
-	if(!data.isInitialized || element == INVALID_SIGNED_VALUE)
+	if(!data.isInitialized || element == INVALID_VALUE)
 		return;
 	
 	uint pos;
@@ -383,8 +383,7 @@
 - (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd
 {
 	//We assume our data are up-to-date
-	int previousElem = INVALID_SIGNED_VALUE;
-	uint posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
+	uint previousElem = INVALID_VALUE, posFull = 0, posInst = 0, nbFull, nbInst, countInjected = 0;
 	
 	if(isTome)
 	{
@@ -410,7 +409,7 @@
 			posInst++;
 		else
 		{
-			if(previousElem != INVALID_SIGNED_VALUE)
+			if(previousElem != INVALID_VALUE)
 			{
 				[self addElement:data :isTome :previousElem :YES];
 				countInjected++;
@@ -423,7 +422,7 @@
 	//Le burst de fin
 	while (posFull < nbFull)
 	{
-		if(previousElem != INVALID_SIGNED_VALUE)
+		if(previousElem != INVALID_VALUE)
 		{
 			[self addElement:data :isTome :previousElem :YES];
 			countInjected++;
@@ -432,7 +431,7 @@
 		previousElem = MDLCTRL_getDataFull(data, posFull++, isTome);
 	}
 	
-	if(previousElem != INVALID_SIGNED_VALUE)
+	if(previousElem != INVALID_VALUE)
 	{
 		[self addElement:data :isTome :previousElem :!launchAtTheEnd];
 		countInjected++;

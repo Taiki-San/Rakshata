@@ -117,14 +117,14 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	}
 	else
 	{
-		int * newField = realloc(cachedProject.chapitresLocal, (project.nombreChapitreLocal + cachedProject.nombreChapitreLocal) * sizeof(int));
+		uint * newField = realloc(cachedProject.chapitresLocal, (project.nombreChapitreLocal + cachedProject.nombreChapitreLocal) * sizeof(uint));
 		if(newField != NULL)
 		{
-			memcpy(&newField[cachedProject.nombreChapitreLocal], project.chapitresLocal, project.nombreChapitreLocal * sizeof(int));
+			memcpy(&newField[cachedProject.nombreChapitreLocal], project.chapitresLocal, project.nombreChapitreLocal * sizeof(uint));
 			cachedProject.nombreChapitreLocal += project.nombreChapitreLocal;
 			cachedProject.chapitresLocal = newField;
 
-			qsort(cachedProject.chapitresLocal, cachedProject.nombreChapitreLocal, sizeof(int), sortNumbers);
+			qsort(cachedProject.chapitresLocal, cachedProject.nombreChapitreLocal, sizeof(uint), sortNumbers);
 		}
 	}
 
@@ -136,7 +136,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	releaseParsedData(cachedProject);
 }
 
-#define getData(isTome, newData, index)	ACCESS_DATA(isTome, ((int*) newData)[index], ((META_TOME*) newData)[index].ID)
+#define getData(isTome, newData, index)	ACCESS_DATA(isTome, ((uint *) newData)[index], ((META_TOME*) newData)[index].ID)
 
 void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject)
 {
@@ -160,7 +160,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 			nbNew = newProject->nombreChapitreRemote;
 			dataNew = newProject->chapitresRemote;
 
-			sizeOfType = sizeof(int);
+			sizeOfType = sizeof(uint);
 		}
 		else
 		{
@@ -210,7 +210,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 			for(uint posOld = 0, posNew; posOld < nbOld; ++posOld)
 			{
 				posNew = 0;
-				int oldDataForIndex = getData(isTome, dataOld, posOld);
+				uint oldDataForIndex = getData(isTome, dataOld, posOld);
 
 				for(; posNew < nbNew && getData(isTome, dataNew, posNew) != oldDataForIndex; ++posNew);
 
@@ -225,7 +225,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 					if(isTome)
 						copyTomeList(&(((META_TOME *) dataOld)[posOld]), 1, &(((META_TOME *) collector)[lengthCollector++]));
 					else
-						((int *) collector)[lengthCollector++] = oldDataForIndex;
+						((uint *) collector)[lengthCollector++] = oldDataForIndex;
 				}
 			}
 		}
@@ -258,4 +258,33 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		if(shouldFreeCollector)
 			free(collector);
 	}
+}
+
+uint getVolumeIDForImport(PROJECT_DATA project)
+{
+	if(!project.isInitialized)
+		return INVALID_VALUE;
+	
+	char *encodedRepo = getPathForProject(project);
+	if(encodedRepo == NULL)
+		return INVALID_VALUE;
+	
+	char dirVol[2*LENGTH_PROJECT_NAME + 100];
+	uint ID = 0x80000000 - 1;
+
+	//Check for an empty slot
+	do
+	{
+		snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/", encodedRepo, ++ID);
+
+	} while(checkDirExist(dirVol));
+	
+	free(encodedRepo);
+	
+	return ID;
+}
+
+bool isLocalVolumeID(uint ID)
+{
+	return ID >= 0x80000000;
 }

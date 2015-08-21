@@ -28,7 +28,7 @@
 @property NSString * path;
 @property id<RakImportIO> IOController;
 @property PROJECT_DATA_EXTRA projectData;
-@property int contentID;
+@property uint contentID;
 @property BOOL isTome;
 
 @property byte issue;

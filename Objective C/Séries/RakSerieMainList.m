@@ -236,7 +236,7 @@
 		free(oldInstalled);
 		
 		if(element != LIST_INVALID_SELECTION)
-			[self selectElement : (int) element];
+			[self selectElement : element];
 		
 		if(needSwapInstalled)
 			self.installOnlyMode = newState;
@@ -326,14 +326,14 @@
 	return project.cacheDBID;
 }
 
-- (uint) getIndexOfElement : (int) element
+- (uint) getIndexOfElement : (uint) element
 {
 	if(_jumpToInstalled == NULL)
 		return LIST_INVALID_SELECTION;
 	
 	for (uint pos = 0; pos < _nbElemInstalled; pos++)
 	{
-		if(((PROJECT_DATA*) _data)[_jumpToInstalled[pos]].cacheDBID == (uint) element)
+		if(((PROJECT_DATA*) _data)[_jumpToInstalled[pos]].cacheDBID == element)
 			return pos;
 	}
 	
@@ -430,7 +430,7 @@
 	PROJECT_DATA dataToSend = [self getElementAtIndex : selectedRowIndex];
 	
 	if(dataToSend.isInitialized)
-		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : INVALID_SIGNED_VALUE];
+		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : INVALID_VALUE];
 }
 
 #pragma mark - Drag and drop support
@@ -469,7 +469,7 @@
 	getUpdatedCTList(&project, true);
 	getUpdatedCTList(&project, NO);
 	
-	[item setDataProject:project fullProject:YES isTome:isTome element:INVALID_SIGNED_VALUE];
+	[item setDataProject:project fullProject:YES isTome:isTome element:INVALID_VALUE];
 }
 
 - (BOOL) shouldPromiseFile : (RakDragItem *) item

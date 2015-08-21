@@ -40,8 +40,10 @@ NSString * getStringForWchar(const charType * string)
 	return output;
 }
 
-NSString * getStringForChapter(int chapID)
+NSString * getStringForChapter(uint _chapID)
 {
+	int chapID = (int) _chapID;
+	
 	if(chapID % 10)
 		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapID / 10, chapID % 10];
 

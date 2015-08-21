@@ -248,7 +248,7 @@
 	return TAB_UNKNOWN;
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (int) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
+- (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (uint) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
 	setFavorite(&project);
 	return YES;

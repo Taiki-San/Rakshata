@@ -115,13 +115,13 @@ enum
 
 #pragma mark - Proxy
 
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (int) newElem  partOfBatch : (BOOL) partOfBatch
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch
 {
 	if(controller != nil)
 		[controller addElement:data :isTome :newElem :partOfBatch];
 }
 
-- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (int) element
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
 	if(controller != nil)
 		return [controller checkForCollision:data :isTome :element];
@@ -454,9 +454,9 @@ enum
 
 #pragma mark - Intertab communication
 
-- (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (int) element
+- (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
-	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : INVALID_SIGNED_VALUE];
+	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : INVALID_VALUE];
 	[[(RakAppDelegate*) [NSApp delegate] reader]	updateContextNotification : data : isTome : element];
 }
 
@@ -512,7 +512,7 @@ enum
 	return [super dropOperationForSender:sender:canDL];
 }
 
-- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (int) element : (uint) sender;
+- (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender;
 {
 	return (coreView != nil && [coreView proxyReceiveDrop:data :isTome :element :sender]);
 }

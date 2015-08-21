@@ -12,7 +12,7 @@
 
 #include "lecteur.h"
 
-uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, int CT)
+uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
 {
 	if(isLocalProject(*projectDB))
 		return false;

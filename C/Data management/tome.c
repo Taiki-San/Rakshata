@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-uint getPosForID(PROJECT_DATA data, bool installed, int ID)
+uint getPosForID(PROJECT_DATA data, bool installed, uint ID)
 {
 	if((installed && data.tomesInstalled == NULL) || (!installed && data.tomesFull == NULL))
 		return INVALID_VALUE;
@@ -35,7 +35,7 @@ void refreshTomeList(PROJECT_DATA *projectDB)
 	projectDB->tomesFull = getUpdatedCTForID(projectDB->cacheDBID, true, &(projectDB->nombreTomes), NULL);
 }
 
-void setTomeReadable(PROJECT_DATA projectDB, int ID)
+void setTomeReadable(PROJECT_DATA projectDB, uint ID)
 {
 	char pathWithTemp[600], pathWithoutTemp[600], *encodedPath = getPathForProject(projectDB);
 	
@@ -55,7 +55,7 @@ void setTomeReadable(PROJECT_DATA projectDB, int ID)
 }
 
 //Require the ID of the element in tomeFull
-bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
+bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 {
 	bool releaseAtTheEnd = false, retValue = true;
 
@@ -92,24 +92,24 @@ bool checkTomeReadable(PROJECT_DATA projectDB, int ID)
 		if(cache[posDetails].isPrivate)
 		{
 			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d", ID, cache[posDetails].ID / 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
 		}
 		else
 		{
 			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%d.%d", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%u.%u", cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%d", cache[posDetails].ID / 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), CHAPTER_PREFIX"%u", cache[posDetails].ID / 10);
 			
 			snprintf(fullPath, sizeof(fullPath), "%s/%s/%s", basePath, intermediaryDirectory, CONFIGFILE);
 			if(!checkFileExist(fullPath))
 			{
 				if(cache[posDetails].ID % 10)
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d.%d", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 				else
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%d", ID, cache[posDetails].ID / 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
 			}
 			else
 			{
@@ -144,7 +144,7 @@ end:
     return retValue;
 }
 
-void getTomeInstalled(PROJECT_DATA *project, int *dernierLu)
+void getTomeInstalled(PROJECT_DATA *project, uint *dernierLu)
 {
 	if(project->tomesInstalled != NULL)
 	{
@@ -166,7 +166,7 @@ void getTomeInstalled(PROJECT_DATA *project, int *dernierLu)
 		free(encodedPath);
 		if((config = fopen(temp, "r")) != NULL)
 		{
-			*dernierLu = INVALID_SIGNED_VALUE;
+			*dernierLu = INVALID_VALUE;
 			fscanf(config, "%d", dernierLu);
 			fclose(config);
 		}
@@ -211,7 +211,7 @@ void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
 		return;
 	
 	memcpy(output, input, nombreTomes * sizeof(META_TOME));
-	for(uint pos = 0; pos < nombreTomes && input[pos].ID != INVALID_SIGNED_VALUE; pos++)
+	for(uint pos = 0; pos < nombreTomes && input[pos].ID != INVALID_VALUE; pos++)
 	{
 		if(input[pos].details == NULL)
 			continue;
@@ -245,7 +245,7 @@ void freeSingleTome(META_TOME data)
 }
 
 
-void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters)
+void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutLinkedChapters)
 {
 	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
 	{
@@ -263,21 +263,20 @@ void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLi
 	
 	if(position != INVALID_VALUE && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
 	{
-		int curID;
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];
 		CONTENT_TOME * details = projectDB.tomesInstalled[position].details;
 		
 		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s", encodedPath);
 		
-		for(uint posDetails = 0; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
+		for(uint posDetails = 0, curID; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
 		{
 			if(!details[posDetails].isPrivate)
 			{
 				curID = details[posDetails].ID;
 				if(curID % 10)
-					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%d.%d/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10, curID % 10);
+					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%u.%u/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10, curID % 10);
 				else
-					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%d/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10);
+					snprintf(dirToChap, sizeof(dirToChap), "%s/"CHAPTER_PREFIX"%u/"VOLUME_CHAP_SHARED_TOKEN, basePath, curID / 10);
 				
 				if(checkFileExist(dirToChap))
 					remove(dirToChap);

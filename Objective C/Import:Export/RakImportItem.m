@@ -54,14 +54,14 @@
 	if(projectPath == NULL)
 		return false;
 
-	if(_contentID == INVALID_SIGNED_VALUE)
+	if(_contentID == INVALID_VALUE)
 	{
 		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
 		return NO;
 	}
 
 	char basePath[sizeof(projectPath) + 256];
-	int selection = _contentID;
+	uint selection = _contentID;
 
 	//Local project
 	if(_isTome)
@@ -71,9 +71,9 @@
 	else
 	{
 		if(selection % 10)
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d.%d", projectPath, selection / 10, selection % 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u", projectPath, selection / 10, selection % 10);
 		else
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d", projectPath, selection / 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u", projectPath, selection / 10);
 	}
 
 	//Main decompression cycle
@@ -165,7 +165,7 @@
 		_issue = IMPORT_PROBLEM_METADATA;
 
 	//We have a valid targer
-	else if(_contentID == INVALID_SIGNED_VALUE)
+	else if(_contentID == INVALID_VALUE || (_isTome && _projectData.data.tomeLocal[0].ID == INVALID_VALUE))
 		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
 
 	//Quick check we're not already installed
@@ -249,8 +249,7 @@
 	NSArray * tokens = [[_path lastPathComponent] componentsSeparatedByCharactersInSet:charSet];
 
 	BOOL inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
-	int elementID;
-	uint discardedCloseCalls = 0;
+	uint elementID, discardedCloseCalls = 0;
 
 	for(uint i = 0, length, posInChunk, baseDigits; i < [tokens count]; ++i)
 	{
@@ -326,7 +325,7 @@
 
 		if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
 		{
-			elementID = (int) inferedElementID;
+			elementID = (uint) inferedElementID;
 
 			if(inferedSomethingSolid)
 				++discardedCloseCalls;
@@ -399,7 +398,7 @@
 
 			if(inferedElementID >= INT_MIN && inferedElementID <= INT_MAX)
 			{
-				elementID = (int) inferedElementID;
+				elementID = (uint) inferedElementID;
 				inferedSomethingSolid = YES;
 			}
 		}

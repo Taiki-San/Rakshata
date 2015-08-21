@@ -206,7 +206,7 @@ void getFileDate(const char *filename, char *date, void* internalData)
 #endif
 }
 
-IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uint page)
+IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, uint numeroChapitre, uint page)
 {
 	if(pathRoot == NULL || pathPage == NULL)
 		return IMGLOAD_NODATA;

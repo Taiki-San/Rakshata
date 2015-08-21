@@ -178,7 +178,7 @@ enum
 
 + (void) readProject : (PROJECT_DATA) project
 {
-	[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_SIGNED_VALUE];
+	[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_VALUE];
 	[RakTabView broadcastUpdateFocus:TAB_CT];
 	[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
 }
@@ -195,7 +195,7 @@ enum
 	
 	PROJECT_DATA projectPipeline; projectPipeline.isInitialized = false;
 	bool isTome;
-	int element;
+	uint element;
 	
 	checkFavoriteUpdate(_project, &projectPipeline, &isTome, &element, false);
 	

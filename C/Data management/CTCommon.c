@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#define getData(isTome, dataInject, index)	ACCESS_DATA(isTome, ((int*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+#define getData(isTome, dataInject, index)	ACCESS_DATA(isTome, ((uint*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
 
 void nullifyCTPointers(PROJECT_DATA * project)
 {
@@ -35,14 +35,14 @@ void getCTInstalled(PROJECT_DATA * project, bool isTome)
 		getChapterInstalled(project, NULL);
 }
 
-bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data)
+bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data)
 {
     if(isTome)
         return checkTomeReadable(projectDB, data);
     return checkChapterReadable(projectDB, data);
 }
 
-void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
+void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 {
     if(isTome)
         internalDeleteTome(projectDB, selection, true);
@@ -81,7 +81,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection)
 			}
 			else
 			{
-				uint sizeOfData = ACCESS_DATA(isTome, sizeof(int), sizeof(META_TOME));
+				uint sizeOfData = ACCESS_DATA(isTome, sizeof(uint), sizeof(META_TOME));
 				void * dataField = malloc((length - 1) * sizeOfData);
 
 				if(dataField == NULL)
@@ -135,7 +135,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 			nbElemBase = project->nombreChapitreRemote;
 			dataBase = project->chapitresRemote;
 
-			sizeOfType = sizeof(int);
+			sizeOfType = sizeof(uint);
 		}
 		else
 		{
@@ -186,12 +186,11 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 					//Ok, we now merge. We work backward to we don't have to deal with offsets as we insert into the list
 					for(uint posInject = 0; posInject < nbElemToInject; posInject++)
 					{
-						int dataToInject = getData(isTome, dataInject, posInject);
-						uint posLowestDiff = 0;
 						//Okay, we look for the closest value in the list
-						for(uint posBase = 1, newDiff, lowestDiff = llabs(getData(isTome, outputData, 0) - dataToInject); posBase < nbElemBase; posBase++)
+						uint dataToInject = getData(isTome, dataInject, posInject), posLowestDiff = 0;
+						for(uint posBase = 1, newDiff, lowestDiff = getData(isTome, outputData, 0) - dataToInject; posBase < nbElemBase; posBase++)
 						{
-							newDiff = llabs(getData(isTome, outputData, posBase) - dataToInject);
+							newDiff = getData(isTome, outputData, posBase) - dataToInject;
 							if(newDiff < lowestDiff)
 							{
 								posLowestDiff = posBase;
@@ -216,8 +215,8 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						}
 
 						//We have the position of the element to inject in posLowestDiff
-						int nextValue = getData(isTome, outputData, (posLowestDiff + 1 >= currentLength ? posLowestDiff : posLowestDiff + 1));
-						int previousValue = getData(isTome, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
+						uint nextValue = getData(isTome, outputData, (posLowestDiff + 1 >= currentLength ? posLowestDiff : posLowestDiff + 1));
+						uint previousValue = getData(isTome, outputData, (posLowestDiff == 0 ? posLowestDiff : posLowestDiff - 1));
 						bool increasing = nextValue >= previousValue;	//increasing, we got after the value
 						bool goNext = increasing == (getData(isTome, outputData, posLowestDiff) < dataToInject);
 
@@ -251,17 +250,17 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 								//We insert
 								if(goNext)
 								{
-									((int *) outputData)[posLowestDiff + 1] = dataToInject;
+									((uint *) outputData)[posLowestDiff + 1] = dataToInject;
 								}
 								else
 								{
-									((int *) outputData)[posLowestDiff + 1] = ((int *) outputData)[posLowestDiff];
+									((uint *) outputData)[posLowestDiff + 1] = ((uint *) outputData)[posLowestDiff];
 
-									((int *) outputData)[posLowestDiff] = dataToInject;
+									((uint *) outputData)[posLowestDiff] = dataToInject;
 								}
 							}
 							else
-								((int *) outputData)[currentLength++] = dataToInject;
+								((uint *) outputData)[currentLength++] = dataToInject;
 						}
 						else
 						{
@@ -336,11 +335,11 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	//O(n^2) because I'm busy for now
 	for(uint pos = 0; pos < lengthLocale; pos++)
 	{
-		int value = getData(isTome, dataSet, pos);
+		uint value = getData(isTome, dataSet, pos);
 
 		if(lengthSearch != 0)
 		{
-			if(value == INVALID_SIGNED_VALUE)
+			if(value == INVALID_VALUE)
 				continue;
 
 			//First, ensure items in the local store are not in the remote list
@@ -350,9 +349,9 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 				if(getData(isTome, dataSetSearch, posSearch) == value)
 				{
 					if(isTome)
-						project->tomeLocal[pos].ID = INVALID_SIGNED_VALUE;
+						project->tomeLocal[pos].ID = INVALID_VALUE;
 					else
-						project->chapitresLocal[pos] = INVALID_SIGNED_VALUE;
+						project->chapitresLocal[pos] = INVALID_VALUE;
 
 					finalLength--;
 					break;
@@ -360,7 +359,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 			}
 		}
 
-		if(value == INVALID_SIGNED_VALUE)
+		if(value == INVALID_VALUE)
 			continue;
 
 		//We also look for duplicates
@@ -369,9 +368,9 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 			if(getData(isTome, dataSet, posDuplicate) == value)
 			{
 				if(isTome)
-					project->tomeLocal[posDuplicate].ID = INVALID_SIGNED_VALUE;
+					project->tomeLocal[posDuplicate].ID = INVALID_VALUE;
 				else
-					project->chapitresLocal[posDuplicate] = INVALID_SIGNED_VALUE;
+					project->chapitresLocal[posDuplicate] = INVALID_VALUE;
 
 				finalLength--;
 			}
@@ -396,14 +395,14 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	for(uint pos = 0; pos < lengthLocale; pos++)
 	{
 		//Eh, we have to delete it
-		int entry = getData(isTome, dataSet, pos);
+		uint entry = getData(isTome, dataSet, pos);
 
-		if(entry != INVALID_SIGNED_VALUE && !checkReadable(cachedProject, isTome, entry))
+		if(entry != INVALID_VALUE && !checkReadable(cachedProject, isTome, entry))
 		{
 			if(isTome)
-				project->tomeLocal[pos].ID = INVALID_SIGNED_VALUE;
+				project->tomeLocal[pos].ID = INVALID_VALUE;
 			else
-				project->chapitresLocal[pos] = INVALID_SIGNED_VALUE;
+				project->chapitresLocal[pos] = INVALID_VALUE;
 			finalLength--;
 		}
 	}
@@ -435,7 +434,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 		//Compact in static buffer
 		for(uint pos = 0, posFinal = 0; pos < lengthLocale && posFinal < finalLength; pos++)
 		{
-			if(project->tomeLocal[pos].ID != INVALID_SIGNED_VALUE)
+			if(project->tomeLocal[pos].ID != INVALID_VALUE)
 				data[posFinal++] = project->tomeLocal[pos];
 			else
 				free(project->tomeLocal[pos].details);
@@ -452,11 +451,11 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	}
 	else
 	{
-		int data[finalLength];
+		uint data[finalLength];
 
 		for(uint pos = 0, posFinal = 0; pos < lengthLocale && posFinal < finalLength; pos++)
 		{
-			if(project->chapitresLocal[pos] != INVALID_SIGNED_VALUE)
+			if(project->chapitresLocal[pos] != INVALID_VALUE)
 				data[posFinal++] = project->chapitresLocal[pos];
 		}
 
@@ -477,7 +476,7 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 	if(fullData == NULL || installed == NULL || nbInstalled == 0)
 		return NULL;
 	
-	void * output = calloc(nbInstalled + 1, (isTome ? sizeof(META_TOME) : sizeof(int)));
+	void * output = calloc(nbInstalled + 1, (isTome ? sizeof(META_TOME) : sizeof(uint)));
 	
 	if(output != NULL)
 	{
@@ -486,14 +485,14 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 			for(uint i = 0; i < nbInstalled; i++)
 				((META_TOME*)output)[i].ID = ((META_TOME*)fullData)[installed[i]].ID;
 			
-			((META_TOME*)output)[nbInstalled].ID = INVALID_SIGNED_VALUE;
+			((META_TOME *) output)[nbInstalled].ID = INVALID_VALUE;
 		}
 		else
 		{
 			for(uint i = 0; i < nbInstalled; i++)
-				((int*)output)[i] = ((int*)fullData)[installed[i]];
+				((uint *) output)[i] = ((uint *) fullData)[installed[i]];
 
-			((int*)output)[nbInstalled] = INVALID_SIGNED_VALUE;
+			((uint *) output)[nbInstalled] = INVALID_VALUE;
 		}
 
 	}

@@ -120,6 +120,7 @@
 
 		NSNumber * isTome = objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]), * entityID = objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]);
 
+		//We can lack a contentID if this is a volume (the case of an imported volume)
 		if(isTome == nil || entityID == nil)
 			continue;
 
@@ -132,7 +133,7 @@
 				continue;
 
 			uint lengthVolumeData;
-			volumeData = getVolumes(@[volDetail], &lengthVolumeData, YES);
+			volumeData = getVolumes(@[volDetail], &lengthVolumeData, YES, NO);
 			if(volumeData == NULL || lengthVolumeData != 1)
 			{
 				freeTomeList(volumeData, lengthVolumeData, true);
@@ -152,19 +153,23 @@
 		item.issue = IMPORT_PROBLEM_NONE;
 		item.path = [dirName stringByAppendingString:@"/"];
 		item.isTome = [isTome boolValue];
-		item.contentID = [entityID intValue];
+		item.contentID = [entityID unsignedIntValue];
 
 		//We insert into the structure the metadata of the volume
 		PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 		if([isTome boolValue])
 		{
-			volumeData->ID = item.contentID;
+			if(isLocalVolumeID((uint) item.contentID))
+			   volumeData->ID = INVALID_VALUE;
+			else
+			   volumeData->ID = (uint) item.contentID;
+			
 			projectData.data.tomeLocal = volumeData;
 			projectData.data.nombreTomeLocal = 1;
 		}
 		else
 		{
-			projectData.data.chapitresLocal = malloc(sizeof(int));
+			projectData.data.chapitresLocal = malloc(sizeof(uint));
 			if(projectData.data.chapitresLocal != NULL)
 			{
 				*projectData.data.chapitresLocal = item.contentID;

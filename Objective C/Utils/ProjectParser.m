@@ -34,7 +34,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 		void* tmp;
 		
 		BOOL isPrivateIfVolume = NO;
-		uint typeSize = isChapter ? sizeof(int) : sizeof(CONTENT_TOME);
+		uint typeSize = isChapter ? sizeof(uint) : sizeof(CONTENT_TOME);
 		
 		if(nbElem != NULL)		counter = nbElem;
 		else					counter = &counterVar;
@@ -62,12 +62,12 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 					
 					if(isChapter)
 					{
-						if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+						if(entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(uint))) != NULL)
 						{
 							*chaptersPrice = tmp;
 							
 							if(entry2 == nil)
-								memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
+								memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(uint));
 							else
 							{
 								uint count = *counter;
@@ -98,10 +98,10 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 						if(ARE_CLASSES_DIFFERENT(entry3, [NSNumber class]))
 							continue;
 						
-						int value = [entry3 integerValue];
+						uint value = [entry3 unsignedIntValue];
 						
 #ifdef DEV_VERSION
-						if(value == (int) 0xdeadbead)
+						if(value == 0xdeadbead)
 						{
 							//This value is used to signal a deallocated memory area, it'd crash if ran in debugger
 							logR("Error: this value (-559038803) is forbiden, moved by one");
@@ -109,7 +109,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 						}
 #endif
 						if(isChapter)
-							((int *)output)[pos++] = value;
+							((uint *)output)[pos++] = value;
 						else
 						{
 							((CONTENT_TOME *) output)[pos].ID = value;
@@ -150,9 +150,9 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 
 						//The first element have to be initialized early
 						((CONTENT_TOME *) output)[pos].isPrivate = isPrivateIfVolume;
-						for (((CONTENT_TOME *) output)[pos++].ID = first; pos < *counter; pos++)
+						for (((CONTENT_TOME *) output)[pos++].ID = (uint) first; pos < *counter; pos++)
 						{
-							((CONTENT_TOME *) output)[pos].ID = ((CONTENT_TOME *) output)[pos - 1].ID + jump;
+							((CONTENT_TOME *) output)[pos].ID = (uint) (((int) ((CONTENT_TOME *) output)[pos - 1].ID) + jump);
 							((CONTENT_TOME *) output)[pos].isPrivate = isPrivateIfVolume;
 						}
 					}
@@ -163,7 +163,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 					}
 				}
 				
-				if(isChapter && entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(int))) != NULL)
+				if(isChapter && entry2 != nil && (tmp = realloc(*chaptersPrice, *counter * sizeof(uint))) != NULL)
 				{
 					*chaptersPrice = tmp;
 					
@@ -176,7 +176,7 @@ void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapte
 							(*chaptersPrice)[pricePos++] = price;
 					}
 					else
-						memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(int));
+						memset(&((*chaptersPrice)[pricePos]), 0, (*counter - pricePos) * sizeof(uint));
 				}
 			}
 		}
@@ -217,7 +217,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 		{
 			currentNativeIfNotChap = ((CONTENT_TOME *) structure)[0].isPrivate;
 			
-			for(uint i = 0; i < length; [currentDetail addObject:@(((CONTENT_TOME *) structure)[i++].ID)])
+			for(uint i = 0; i < length; [currentDetail addObject:@((int) ((CONTENT_TOME *) structure)[i++].ID)])
 			{
 				if(((CONTENT_TOME *) structure)[i].isPrivate != currentNativeIfNotChap)
 				{
@@ -246,7 +246,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 		else
 		{
 			for(uint i = 0; i < length-1; i++)
-				diff[i] = ((CONTENT_TOME *) structure)[i+1].ID - ((CONTENT_TOME *) structure)[i].ID;
+				diff[i] = (int) ((CONTENT_TOME *) structure)[i+1].ID - (int) ((CONTENT_TOME *) structure)[i].ID;
 
 			currentNativeIfNotChap = ((CONTENT_TOME *) structure)[0].isPrivate;
 		}
@@ -282,7 +282,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 					//However, it gets a bit tricky thanks to currentNativeState (!isChapter only, thankfully)
 					if(!isChapter)
 					{
-						[output addObject:[NSDictionary dictionaryWithObjects:@[@(((CONTENT_TOME *) structure)[pos - counter].ID), @(((CONTENT_TOME *) structure)[pos].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
+						[output addObject:[NSDictionary dictionaryWithObjects:@[@((int) ((CONTENT_TOME *) structure)[pos - counter].ID), @((int) ((CONTENT_TOME *) structure)[pos].ID), @(repeatingDiff)] forKeys:@[JSON_PROJ_CHAP_FIRST, JSON_PROJ_CHAP_LAST, JSON_PROJ_CHAP_JUMP]]];
 						if(pos != length - 1)
 							currentNativeIfNotChap = ((CONTENT_TOME *) structure)[pos + 1].isPrivate;
 					}
@@ -296,7 +296,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 				}
 				else
 				{
-					[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : ((CONTENT_TOME *) structure)[pos].ID)];
+					[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : (int) ((CONTENT_TOME *) structure)[pos].ID)];
 					if(pricesValid)
 						[pricesInBurst addObject:@(chapterPrices[pos])];
 
@@ -332,7 +332,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 			}
 			else
 			{
-				[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : ((CONTENT_TOME *) structure)[pos].ID)];
+				[currentBurst addObject:@(isChapter ? ((int *) structure)[pos] : (int) ((CONTENT_TOME *) structure)[pos].ID)];
 				
 				if(pricesValid)
 					[pricesInBurst addObject:@(chapterPrices[pos])];
@@ -355,7 +355,7 @@ NSArray * recoverChapterStructure(void * structure, BOOL isChapter, uint * chapt
 	return [NSArray arrayWithArray:output];
 }
 
-META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
+META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent, BOOL remoteData)
 {
 	if(nbElem == NULL)
 		return NULL;
@@ -385,7 +385,12 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			if(ARE_CLASSES_DIFFERENT(dict, [NSDictionary class]))	continue;
 
 			internalID = objectForKey(dict, JSON_PROJ_VOL_INTERNAL_ID, @"Internal ID", [NSNumber class]);
-			if(internalID == nil)	continue;
+			if(internalID == nil)
+				continue;
+			
+			//The internal ID submitted by a remote source have to be below 2^31, as number after this one are reserved for imported volumes
+			if(remoteData && ([internalID intValue] < 0 || [internalID unsignedIntValue] > INT_MAX))
+				continue;
 
 			//The reading ID need some post-processing
 			readingID = objectForKey(dict, JSON_PROJ_VOL_READING_ID, @"Reading ID", [NSNumber class]);
@@ -410,7 +415,7 @@ META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent)
 			if(output[cache].details == NULL)
 				continue;
 			
-			output[cache].ID = [internalID intValue];
+			output[cache].ID = [internalID unsignedIntValue];
 			output[cache].readingID = [readingID intValue];
 			
 			if(readingName == nil)			output[cache].readingName[0] = 0;
@@ -453,7 +458,7 @@ NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent)
 	
 	for(uint pos = 0; pos < length; pos++)
 	{
-		if(volume[pos].ID == INVALID_SIGNED_VALUE)
+		if(volume[pos].ID == INVALID_VALUE)
 			break;
 
 		dict = [NSMutableDictionary dictionaryWithObject:@(volume[pos].ID) forKey:JSON_PROJ_VOL_INTERNAL_ID];
@@ -506,8 +511,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 {
 	PROJECT_DATA data = getEmptyProject();
 	
-	int * chapters = NULL;
-	uint * chaptersPrices = NULL;
+	uint * chapters = NULL, * chaptersPrices = NULL;
 	uint nbChapters = 0, nbVolumes = 0;
 	META_TOME * volumes = NULL;
 	
@@ -541,7 +545,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	BOOL isPaidContent = paidContent == nil ? NO : [paidContent boolValue];
 	
 	chapters = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAPTERS, @"chapters", [NSArray class]), &nbChapters, YES, isPaidContent, &chaptersPrices);
-	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes", [NSArray class]), &nbVolumes, isPaidContent);
+	volumes = getVolumes(objectForKey(bloc, JSON_PROJ_VOLUMES, @"volumes", [NSArray class]), &nbVolumes, isPaidContent, NO);
 
 	if(nbChapters == 0)
 	{
@@ -721,8 +725,8 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 
 	output.chapitresRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreRemote, YES, NO, NULL);
 	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_LOCAL, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
-	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO);
-	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO);
+	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO, YES);
+	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO, NO);
 
 	BOOL needRebuildCT = NO;
 
@@ -732,7 +736,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 		//Hum, let's try to copy what can be copied
 		output.nombreChapitreLocal = 0;
 
-		output.chapitresLocal = malloc(output.project.nombreChapitre * sizeof(int));
+		output.chapitresLocal = malloc(output.project.nombreChapitre * sizeof(uint));
 		if(output.chapitresLocal != NULL)
 		{
 			//We move what is installed
@@ -755,16 +759,16 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 			//Need to reduce our allocation and update chapitresFull
 			else if(output.nombreChapitreLocal < output.project.nombreChapitre)
 			{
-				void * tmp = realloc(output.chapitresLocal, output.nombreChapitreLocal * sizeof(int));
+				void * tmp = realloc(output.chapitresLocal, output.nombreChapitreLocal * sizeof(uint));
 				if(tmp != NULL)
 					output.chapitresLocal = tmp;
 
 				output.project.nombreChapitre = output.nombreChapitreLocal;
-				tmp = realloc(output.project.chapitresFull, output.project.nombreChapitre * sizeof(int));
+				tmp = realloc(output.project.chapitresFull, output.project.nombreChapitre * sizeof(uint));
 				if(tmp != NULL)
 					output.project.chapitresFull = tmp;
 
-				memcpy(output.project.chapitresFull, output.chapitresLocal, output.nombreChapitreLocal * sizeof(int));
+				memcpy(output.project.chapitresFull, output.chapitresLocal, output.nombreChapitreLocal * sizeof(uint));
 			}
 		}
 	}
@@ -794,7 +798,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 		}
 		else if(length < output.nombreChapitreLocal)
 		{
-			void * tmp = realloc(output.chapitresLocal, length * sizeof(int));
+			void * tmp = realloc(output.chapitresLocal, length * sizeof(uint));
 			if(tmp != NULL)
 				output.chapitresLocal = tmp;
 

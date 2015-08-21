@@ -163,7 +163,7 @@ enum
 
 		isTome.target = self;
 		isTome.action = @selector(changedIsTome);
-
+		
 		workingSize = isTome.bounds.size;
 		[isTome setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_LARGE_INTERLINE_BORDER)];
 		[self addSubview:isTome];
@@ -932,22 +932,29 @@ enum
 	NSNumber * number = getNumberForString(contentID.stringValue);
 	NSString * string = contentName.stringValue;
 
-	int checkedContentID = INVALID_SIGNED_VALUE;
+	uint checkedContentID = INVALID_VALUE;
 
-	//Valid number ID
-	if(number != nil && [number longLongValue] <= INT_MAX && [number longLongValue] >= INT_MIN && [number intValue] != INVALID_SIGNED_VALUE)
-	{
-		checkedContentID = [number intValue];
-		validInput = YES;
-	}
 
-	//Valid name
+	//Valid name and reading ID
 	if(wantTome)
 	{
+		if(number != nil && [number longLongValue] <= INT_MAX && [number longLongValue] >= INT_MIN && [number intValue] != INVALID_SIGNED_VALUE)
+		{
+			checkedContentID = (uint) [number intValue];
+			validInput = YES;
+		}
+		
 		if(string != nil && [string length] > 0)
 			validInput = YES;
 		else
 			string = nil;
+	}
+
+	//Valid number ID
+	else if(number != nil && [number unsignedIntValue] != INVALID_VALUE)
+	{
+		checkedContentID = [number unsignedIntValue];
+		validInput = YES;
 	}
 
 	//No valid data :(
@@ -960,22 +967,31 @@ enum
 	{
 		META_TOME tomeData;
 
-#warning "Can not possibly last"
-		tomeData.ID = checkedContentID;
-		tomeData.readingID = checkedContentID;
+		tomeData.ID = getVolumeIDForImport(_item.projectData.data.project);
+		tomeData.readingID = (int) checkedContentID;
 		wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));
 
 		PROJECT_DATA_EXTRA project = _item.projectData;
 
-		uint nbTomes = project.data.nombreTomeLocal++;
+		uint nbTomes = project.data.nombreTomeLocal, slot = 0;
+        for(; slot < nbTomes && project.data.tomeLocal[slot].ID != INVALID_VALUE; ++slot);
 
-		void * tmp = realloc(project.data.tomeLocal, (nbTomes + 1) * sizeof(META_TOME));
-		if(tmp != NULL)
-		{
-			project.data.tomeLocal = tmp;
-			project.data.tomeLocal[nbTomes] = tomeData;
-			_item.projectData = project;
-		}
+        if(slot == nbTomes) //No slot found
+        {
+            void * tmp = realloc(project.data.tomeLocal, (nbTomes + 1) * sizeof(META_TOME));
+            if(tmp != NULL)
+            {
+                ++project.data.nombreTomeLocal;
+                project.data.tomeLocal = tmp;
+                project.data.tomeLocal[nbTomes] = tomeData;
+                _item.projectData = project;
+            }
+        }
+        else
+        {
+            project.data.tomeLocal[slot] = tomeData;
+            _item.projectData = project;
+        }
 	}
 
 	[self close];

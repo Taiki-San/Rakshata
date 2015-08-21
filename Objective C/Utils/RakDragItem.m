@@ -13,7 +13,7 @@
 typedef struct //project_data_for_drag_drop
 {
 	PROJECT_DATA data;
-	int selection;
+	uint selection;
 	BOOL isTome;
 	BOOL fullProject;
 	BOOL canDL;
@@ -22,7 +22,7 @@ typedef struct //project_data_for_drag_drop
 
 @implementation RakDragItem
 
-- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (int) element
+- (void) setDataProject : (PROJECT_DATA) project fullProject : (BOOL) fullProject isTome : (BOOL) isTome element : (uint) element
 {
 	self.project = project;
 	self.isTome = isTome;
@@ -110,9 +110,9 @@ typedef struct //project_data_for_drag_drop
 	return YES;
 }
 
-+ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (int) element
++ (BOOL) canDL : (PROJECT_DATA) project isTome : (BOOL) isTome element : (uint) element
 {
-	if(element == INVALID_SIGNED_VALUE)
+	if(element == INVALID_VALUE)
 	{
 		if(isTome)
 			return (project.nombreTomes != INVALID_VALUE && project.nombreTomes != project.nombreTomesInstalled);
@@ -120,7 +120,7 @@ typedef struct //project_data_for_drag_drop
 		return (project.nombreChapitre != INVALID_VALUE && project.nombreChapitre != project.nombreChapitreInstalled);
 	}
 	
-	return !checkReadable(project, isTome, element);
+	return !checkReadable(project, isTome, (uint) element);
 }
 
 + (BOOL) defineIsTomePriority : (PROJECT_DATA*) project  alreadyRefreshed : (BOOL) refreshed

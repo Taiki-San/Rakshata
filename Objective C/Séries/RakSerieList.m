@@ -440,7 +440,7 @@
 	if(tmp.nombreTomes != 0)
 		getUpdatedCTList(&tmp, true);
 	
-	[RakTabView broadcastUpdateContext: content : tmp : NO : INVALID_SIGNED_VALUE];
+	[RakTabView broadcastUpdateContext: content : tmp : NO : INVALID_VALUE];
 	
 	releaseCTData(tmp);
 	
@@ -701,7 +701,7 @@
 	if(pbData == nil)
 		return NO;
 	
-	[pbData setDataProject : project fullProject:YES isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_SIGNED_VALUE];
+	[pbData setDataProject : project fullProject:YES isTome: [[pbData class] defineIsTomePriority:&project alreadyRefreshed:YES]  element: INVALID_VALUE];
 	
 	return [pboard setData:[pbData getData] forType:PROJECT_PASTEBOARD_TYPE];
 }

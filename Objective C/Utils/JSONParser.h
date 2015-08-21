@@ -13,7 +13,7 @@
 id objectForKey(NSDictionary * dict, NSString * ID, NSString * fullName, Class expectedClass);
 
 //Project parser
-META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent);
+META_TOME * getVolumes(NSArray* volumeBloc, uint * nbElem, BOOL paidContent, BOOL remoteData);
 NSArray * recoverVolumeBloc(META_TOME * volume, uint length, BOOL paidContent);
 void * parseChapterStructure(NSArray * chapterBloc, uint * nbElem, BOOL isChapter, BOOL paidContent, uint ** chaptersPrice);
 PROJECT_DATA parseBloc(NSDictionary * bloc);

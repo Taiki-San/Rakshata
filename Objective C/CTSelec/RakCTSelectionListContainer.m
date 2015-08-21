@@ -292,7 +292,7 @@
 	return retValue;
 }
 
-- (NSInteger) getIndexOfElement : (NSInteger) element	{	return [_content getIndexOfElement:element];	}
+- (NSInteger) getIndexOfElement : (uint) element	{	return [_content getIndexOfElement:element];	}
 - (void) selectIndex : (uint) index	{	[_content selectIndex:index];	}
 - (void) jumpScrollerToIndex : (uint) index
 {

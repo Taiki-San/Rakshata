@@ -12,7 +12,7 @@
 
 #include "lecteur.h"
 
-uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection, bool isTome)
+uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection, bool isTome)
 {
 	uint curPosIntoStruct;
 		
@@ -46,7 +46,7 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection,
     }
 	
 	//On vérifie que l'entrée est valide
-	if(!checkReadable(projectDB, isTome, isTome ? projectDB.tomesInstalled[curPosIntoStruct].ID: currentSelection))
+	if(!checkReadable(projectDB, isTome, ACCESS_ID(isTome, currentSelection, projectDB.tomesInstalled[curPosIntoStruct].ID)))
 	{
 		if(!reader_getNextReadableElement(projectDB, isTome, &curPosIntoStruct))
 		{
@@ -58,7 +58,7 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, int currentSelection,
 	return curPosIntoStruct;
 }
 
-bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, int currentSelection)
+bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, uint currentSelection)
 {
 	if(isTome && projectDB.tomesInstalled != NULL)
 	{

@@ -469,23 +469,23 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	if(data.chapitresFull != NULL)
 	{
-		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(int));
+		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(uint));
 		if(newData.chapitresFull != NULL)
-			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(int));
+			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(uint));
 	}
 	
 	if(data.chapitresPrix != NULL)
 	{
 		newData.chapitresPrix = malloc(data.nombreChapitre * sizeof(uint));
 		if(newData.chapitresPrix != NULL)
-			memcpy(newData.chapitresPrix, data.chapitresPrix, data.nombreChapitre * sizeof(int));
+			memcpy(newData.chapitresPrix, data.chapitresPrix, data.nombreChapitre * sizeof(uint));
 	}
 	
 	if(data.chapitresInstalled != NULL)
 	{
-		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(int));
+		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(uint));
 		if(newData.chapitresInstalled != NULL)
-			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(int));
+			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(uint));
 	}
 	
 	if(data.tomesFull != NULL)
@@ -548,12 +548,12 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 		else if(!strncmp(entry->d_name, CHAPTER_PREFIX, lengthChapterPrefix) && strlen(entry->d_name) > lengthChapterPrefix)
 		{
 			if(isNbr(entry->d_name[lengthChapterPrefix]))
-				retValue = checkChapterReadable(project, atoi(&(entry->d_name[lengthChapterPrefix])) * 10);
+				retValue = checkChapterReadable(project, atol(&(entry->d_name[lengthChapterPrefix])) * 10);
 		}
 		else if(!strncmp(entry->d_name, VOLUME_PREFIX, lengthVolPrefix) && strlen(entry->d_name) > lengthVolPrefix)
 		{
 			if(isNbr(entry->d_name[lengthVolPrefix]))
-				retValue = checkTomeReadable(project, atoi(&(entry->d_name[lengthVolPrefix])));
+				retValue = checkTomeReadable(project, atol(&(entry->d_name[lengthVolPrefix])));
 		}
 	}
 	

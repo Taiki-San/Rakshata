@@ -101,9 +101,9 @@
 		return _item.path;
 	}
 
-	int content = _item.contentID;
+	uint content = _item.contentID;
 
-	if(content == INVALID_SIGNED_VALUE)
+	if(content == INVALID_VALUE)
 		return _item.path;
 
 	return getStringForChapter(content);

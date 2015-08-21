@@ -121,7 +121,8 @@ enum
 	{
 		META_TOME tome;
 
-		tome.readingID = (*todoList)->identifier;
+		tome.ID = (*todoList)->identifier;
+		tome.readingID = (*todoList)->tomeID;
 		wstrncpy(tome.readingName, MAX_TOME_NAME_LENGTH, (*todoList)->tomeName);
 		tome.readingName[MAX_TOME_NAME_LENGTH] = 0;
 

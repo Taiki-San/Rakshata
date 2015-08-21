@@ -273,7 +273,7 @@ enum
 		PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
 		
 		if(dataToSend.isInitialized)
-			[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_SIGNED_VALUE];
+			[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_VALUE];
 	}
 	else if(_reason == SUGGESTION_REASON_AUTHOR && NSPointInRect(point, projectAuthor.frame))
 	{

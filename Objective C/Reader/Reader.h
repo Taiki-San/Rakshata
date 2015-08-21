@@ -24,7 +24,7 @@
 	RakReaderControllerUIQuery * newStuffsQuery;
 	
 	BOOL queryHidden;
-	int * _queryArrayData;
+	uint * _queryArrayData;
 	size_t _queryArraySize;
 	
 	//Page management
@@ -55,7 +55,7 @@
 	BOOL dataLoaded;
 	DATA_LECTURE _data;
 	
-	int _currentElem;
+	uint _currentElem;
 	uint _posElemInStructure;
 	
 	//Cache data
@@ -72,7 +72,7 @@
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
-- (void) startReading : (PROJECT_DATA) project : (int) elemToRead : (BOOL) isTome : (uint) startPage;
+- (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;
 - (void) willLeaveReader;
 - (void) willOpenReader;
@@ -89,7 +89,7 @@
 - (void) fadeBottomBar : (CGFloat) alpha;
 
 - (PROJECT_DATA) activeProject;
-- (int) currentElem;
+- (uint) currentElem;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;

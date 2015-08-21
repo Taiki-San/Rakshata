@@ -22,19 +22,19 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         output = internalCraftBaseURL(*data.datas->repo, &length);
         if(output != NULL)
         {
-            if(data.partOfTome == INVALID_SIGNED_VALUE || data.subFolder == false)
+            if(data.partOfTome == INVALID_VALUE || data.subFolder == false)
             {
                 if(data.chapitre % 10)
-                    snprintf(output, length, "%s/%d/"CHAPTER_PREFIX"%d.%d.zip", output, data.datas->projectID, data.chapitre / 10, data.chapitre % 10);
+                    snprintf(output, length, "%s/%d/"CHAPTER_PREFIX"%u.%u.zip", output, data.datas->projectID, data.chapitre / 10, data.chapitre % 10);
                 else
-                    snprintf(output, length, "%s/%d/"CHAPTER_PREFIX"%d.zip", output, data.datas->projectID, data.chapitre / 10);
+                    snprintf(output, length, "%s/%d/"CHAPTER_PREFIX"%u.zip", output, data.datas->projectID, data.chapitre / 10);
             }
             else
             {
                 if(data.chapitre % 10)
-                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10, data.chapitre % 10);
+                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10, data.chapitre % 10);
                 else
-                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10);
+                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10);
             }
         }
     }
@@ -51,7 +51,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
         output = malloc(length);
         if(output != NULL)
 		{
-            snprintf(output, length, SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->repo->URL, data.datas->projectID, data.chapitre, (data.partOfTome != INVALID_SIGNED_VALUE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
+            snprintf(output, length, SERVEUR_URL"/main_controler.php?ver="CURRENTVERSIONSTRING"&target=%s&project=%d&chapter=%d&isTome=%d&mail=%s&pass=%s", data.datas->repo->URL, data.datas->projectID, data.chapitre, (data.partOfTome != INVALID_VALUE && data.subFolder != false ? 1 : 0), COMPTE_PRINCIPAL_MAIL, saltedPass);
         }
     }
 
@@ -128,8 +128,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 
     if(*nombreProjectTotal)
     {
-		uint posLine, projectID, posPtr = 0;
-		int chapitreTmp, posCatalogue = 0;
+		uint posLine, projectID, posPtr = 0, chapitreTmp, posCatalogue = 0;
 		char ligne[2*LONGUEUR_COURT + 20], type[2];
 
 		//Create the new structure, initialized at NULL
@@ -229,7 +228,7 @@ DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainL
 	return mainList;
 }
 
-DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
+DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element)
 {
 	if(data == NULL || isLocalProject(*data))
 		return NULL;
@@ -259,6 +258,8 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, int element)
 
 			if(data->tomesFull[index].readingName[0])
 				output->tomeName = wstrdup(data->tomesFull[index].readingName);
+			
+			output->tomeID = data->tomesFull[index].readingID;
 
 			output->nbElemList = data->tomesFull[index].lengthDetails;
 			output->listChapitreOfTome = malloc(output->nbElemList * sizeof(CONTENT_TOME));
@@ -286,9 +287,9 @@ void MDLFlushElement(DATA_LOADED * element)
 	free(element);
 }
 
-uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int IDChap, uint *posIndexTome)
+uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint IDChap, uint *posIndexTome)
 {
-	if(IDChap == -1)
+	if(IDChap == INVALID_VALUE)
 		return ERROR_CHECK;
 	
 	char pathConfig[LENGTH_PROJECT_NAME * 2 + 256], *encodedPath = getPathForProject(projectData);
@@ -305,22 +306,22 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 		if(projectData.tomesFull == NULL || posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes)
 			return ERROR_CHECK;
 		
-		int IDTome = projectData.tomesFull[*posIndexTome].ID;
-		if(IDTome == INVALID_SIGNED_VALUE)
+		uint IDTome = projectData.tomesFull[*posIndexTome].ID;
+		if(IDTome == INVALID_VALUE)
 			return ERROR_CHECK;
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d/"CONFIGFILE, encodedPath, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10, IDChap % 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d.%d/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d/"CONFIGFILE, encodedPath, IDTome, IDChap / 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%d/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10);
 #endif
 		}
 		
@@ -342,9 +343,9 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	free(encodedPath);
 	
 	if(IDChap % 10)
-		snprintf(nameChapter, sizeof(nameChapter), CHAPTER_PREFIX"%d.%d", IDChap / 10, IDChap % 10);
+		snprintf(nameChapter, sizeof(nameChapter), CHAPTER_PREFIX"%u.%u", IDChap / 10, IDChap % 10);
 	else
-		snprintf(nameChapter, sizeof(nameChapter), CHAPTER_PREFIX"%d", IDChap / 10);
+		snprintf(nameChapter, sizeof(nameChapter), CHAPTER_PREFIX"%u", IDChap / 10);
 	
 	//On regarde si le chapitre est déjà installé
 	snprintf(pathConfig, sizeof(pathConfig), "%s/%s/%s", basePath, nameChapter, CONFIGFILE);
@@ -406,9 +407,9 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, int 
 	return NOT_INSTALLED;
 }
 
-void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
+void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 {
-	if(tomeID >= data.nombreTomes || data.tomesFull == NULL)
+	if(tomeID >= data.nombreTomes || data.tomesFull == NULL || chapitreID == INVALID_VALUE)
 		return;
 	
 	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedPath = getPathForProject(data);
@@ -417,9 +418,9 @@ void MDL_createSharedFile(PROJECT_DATA data, int chapitreID, uint tomeID)
 		return;
 	
 	if(chapitreID % 10)
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d.%d/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10, chapitreID % 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10, chapitreID % 10);
 	else
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%d/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10);
+		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10);
 	
 	free(encodedPath);
 	
@@ -477,7 +478,7 @@ int sortProjectsToDownload(const void *a, const void *b)
             return -1;
         else if(struc2->listChapitreOfTome != NULL)
             return 1;
-        return struc1->identifier - struc2->identifier;
+        return (int) struc1->identifier - (int) struc2->identifier;
     }
 
     //Projets différents, on les classe
@@ -518,12 +519,10 @@ bool dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 	return loginRequired;
 }
 
-bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, int element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
+bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
 {
-	if(list == NULL || status == NULL || !nbElem)
+	if(list == NULL || status == NULL || !nbElem || element == INVALID_VALUE)
 		return false;
-	else if(element == INVALID_SIGNED_VALUE)
-		return true;
 	
 	for(uint i = 0; i < nbElem; i++)
 	{

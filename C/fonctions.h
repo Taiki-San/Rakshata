@@ -12,11 +12,11 @@
 
 /**Chapitre.c**/
 void refreshChaptersList(PROJECT_DATA *projectDB);
-bool checkChapterReadable(PROJECT_DATA projectDB, int chapitre);
-void getChapterInstalled(PROJECT_DATA *projectDB, int *dernierLu);
+bool checkChapterReadable(PROJECT_DATA projectDB, uint chapitre);
+void getChapterInstalled(PROJECT_DATA *projectDB, uint *dernierLu);
 void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled);
-void internalDeleteChapitre(PROJECT_DATA projectDB, int chapitreDelete, bool careAboutLinkedChapters);
-bool isChapterShared(char *path, PROJECT_DATA data, int ID);
+void internalDeleteChapitre(PROJECT_DATA projectDB, uint chapitreDelete, bool careAboutLinkedChapters);
+bool isChapterShared(char *path, PROJECT_DATA data, uint ID);
 
 /**check.c**/
 void networkAndVersionTest();
@@ -24,12 +24,13 @@ bool checkNetworkState(int state);
 
 /**CTCommon.c**/
 #define ACCESS_DATA(isTome, dataChap, dataTome) (isTome ? dataTome : dataChap)
+#define ACCESS_ID(isTome, dataChap, dataTome) (isTome ? dataTome : (uint) dataChap)
 void nullifyCTPointers(PROJECT_DATA * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 void getCTInstalled(PROJECT_DATA * project, bool isTome);
 void generateCTUsable(PROJECT_DATA_PARSED * project);
-bool checkReadable(PROJECT_DATA projectDB, bool isTome, int data);
-void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, int selection);
+bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data);
+void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection);
 bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome);
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);
 void releaseParsedData(PROJECT_DATA_PARSED data);
@@ -50,7 +51,7 @@ void memoryError(size_t size);
 bool checkIfFaved(PROJECT_DATA* projectDB, char **favs);
 bool setFavorite(PROJECT_DATA* projectDB);
 void updateFavorites();
-bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, int * elementInPipeline, bool checkOnly);
+bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, uint * elementInPipeline, bool checkOnly);
 void getNewFavs();
 
 /**JSONParser.m**/
@@ -108,7 +109,7 @@ byte defineTypeRepo(char *URL);
 void decryptPage(void *password, rawData *buffer_int, rawData *buffer_out, size_t length);
 void generateFingerPrint(unsigned char output[SHA256_DIGEST_LENGTH+1]);
 void getFileDate(const char *filename, char *date, void* internalData);
-IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, int numeroChapitre, uint page);
+IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, uint numeroChapitre, uint page);
 void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 void KSTriggered(REPO_DATA team);
@@ -129,16 +130,16 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
 bool isThreadStillRunning(THREAD_TYPE hThread);
 
 /**Tome.c**/
-uint getPosForID(PROJECT_DATA data, bool installed, int ID);
+uint getPosForID(PROJECT_DATA data, bool installed, uint ID);
 void refreshTomeList(PROJECT_DATA *projectDB);
-void setTomeReadable(PROJECT_DATA projectDB, int ID);
-bool checkTomeReadable(PROJECT_DATA projectDB, int ID);
-void getTomeInstalled(PROJECT_DATA *project, int *dernierLu);
+void setTomeReadable(PROJECT_DATA projectDB, uint ID);
+bool checkTomeReadable(PROJECT_DATA projectDB, uint ID);
+void getTomeInstalled(PROJECT_DATA *project, uint *dernierLu);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);
 void freeSingleTome(META_TOME data);
-void internalDeleteTome(PROJECT_DATA projectDB, int tomeDelete, bool careAboutLinkedChapters);
+void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutLinkedChapters);
 
 /**Unzip.c**/
 bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail);

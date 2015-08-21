@@ -108,7 +108,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		{
 			output->chapitresPrix = malloc(output->nombreChapitre * sizeof(uint));
 			if(output->chapitresPrix != NULL)
-				memcpy(output->chapitresPrix, buffer, output->nombreChapitre * sizeof(int));
+				memcpy(output->chapitresPrix, buffer, output->nombreChapitre * sizeof(uint));
 			else
 				output->chapitresPrix = NULL;
 		}
@@ -118,10 +118,10 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 		if(buffer != NULL)
 		{
-			output->chapitresFull = malloc(output->nombreChapitre * sizeof(int));
+			output->chapitresFull = malloc(output->nombreChapitre * sizeof(uint));
 			if(output->chapitresFull != NULL)
 			{
-				memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(int));
+				memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(uint));
 				output->chapitresInstalled = NULL;
 				getChapterInstalled(output, NULL);
 			}
@@ -194,9 +194,9 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bo
 	void * buffer = (void*) sqlite3_column_int64(state, RDB_chapitreLocal-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->chapitresLocal = malloc(output->nombreChapitreLocal * sizeof(int));
+		output->chapitresLocal = malloc(output->nombreChapitreLocal * sizeof(uint));
 		if(output->chapitresLocal != NULL)
-			memcpy(output->chapitresLocal, buffer, output->nombreChapitreLocal * sizeof(int));
+			memcpy(output->chapitresLocal, buffer, output->nombreChapitreLocal * sizeof(uint));
 	}
 	else
 	{
@@ -211,9 +211,9 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bo
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitreRemote-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->chapitresRemote = malloc(output->nombreChapitreRemote * sizeof(int));
+		output->chapitresRemote = malloc(output->nombreChapitreRemote * sizeof(uint));
 		if(output->chapitresRemote != NULL)
-			memcpy(output->chapitresRemote, buffer, output->nombreChapitreRemote * sizeof(int));
+			memcpy(output->chapitresRemote, buffer, output->nombreChapitreRemote * sizeof(uint));
 	}
 	else
 	{
@@ -571,17 +571,17 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 
 			if(output != NULL)
 			{
-				((META_TOME*)output)[nbElemOut].ID = INVALID_SIGNED_VALUE;		//Whatever copyTomeList may do, the array is valid by now
+				((META_TOME*)output)[nbElemOut].ID = INVALID_VALUE;		//Whatever copyTomeList may do, the array is valid by now
 				copyTomeList((META_TOME*) input, nbElemOut, output);
 			}
 		}
 		else
 		{
-			output = malloc((nbElemOut + 1) * sizeof(int));
+			output = malloc((nbElemOut + 1) * sizeof(uint));
 			if(output != NULL)
 			{
-				memcpy(output, (int*) input, nbElemOut * sizeof(int));
-				((int*) output)[nbElemOut] = INVALID_SIGNED_VALUE;				//In the case it was missing (kinda like a canary)
+				memcpy(output, (int*) input, nbElemOut * sizeof(uint));
+				((uint*) output)[nbElemOut] = INVALID_VALUE;				//In the case it was missing (kinda like a canary)
 			}
 
 			if(price != NULL)
@@ -592,7 +592,7 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 					*price = malloc(nbElemOut * sizeof(uint));
 					if(*price != NULL)
 					{
-						memcpy(*price, data, nbElemOut * sizeof(int));
+						memcpy(*price, data, nbElemOut * sizeof(uint));
 					}
 				}
 				else
