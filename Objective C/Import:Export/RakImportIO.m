@@ -144,3 +144,53 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 
 	return [NSArray arrayWithArray:output];
 }
+
+void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
+{
+    if(path == nil || filenames == NULL || nbFiles == 0)
+        return;
+    
+    NSString * currentString, * extension;
+    NSMutableArray * array = [NSMutableArray new];
+    NSArray * formats = @[@"png", @"jpg", @"jpeg", @"pdf", @"tiff", @"gif"];
+    
+    //Look for files with valid formats
+    for(uint i = 0; i < nbFiles; ++i)
+    {
+        if(filenames[i] == NULL)
+            continue;
+        
+        currentString = [NSString stringWithUTF8String:filenames[i]];
+        
+        if(currentString == nil)
+            continue;
+        
+        extension = [currentString pathExtension];
+        
+        for(NSString * currentExtension in formats)
+        {
+            if([extension caseInsensitiveCompare:currentExtension])
+            {
+                [array addObject:[currentString lastPathComponent]];
+                break;
+            }
+        }
+    }
+    
+    //No file
+    if([array count] == 0 || [array count] > UINT_MAX)
+        return;
+    
+    //We craft the config.dat
+    FILE * config = fopen([[NSString stringWithFormat:@"%@/"CONFIGFILE, path] UTF8String], "w+");
+    
+    if(config == NULL)
+        return;
+    
+    fprintf(config, "%u\nN", (uint) [array count]);
+    
+    for(NSString * file in array)
+        fprintf(config, "\n%s", [file UTF8String]);
+    
+    fclose(config);
+}

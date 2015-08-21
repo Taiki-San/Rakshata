@@ -156,4 +156,9 @@
 	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, (__bridge void *) self);
 }
 
+- (void) generateConfigDatInPath : (NSString *) path
+{
+    createIOConfigDatForData(path, filenames, nbFiles);
+}
+
 @end

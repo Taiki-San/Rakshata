@@ -454,4 +454,6 @@
 	return output;
 }
 
+- (void) generateConfigDatInPath : (NSString *) path    {}
+
 @end

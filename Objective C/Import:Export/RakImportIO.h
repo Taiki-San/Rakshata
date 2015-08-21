@@ -32,6 +32,9 @@ typedef struct import_io_node_for_analysis IMPORT_NODE;
 //Get the state of the node
 - (IMPORT_NODE) getNode;
 
+//Generate the config.dat file if needed
+- (void) generateConfigDatInPath : (NSString * __nonnull) path;
+
 @optional
 //Used by the zip layer to move to the begining
 - (void) willStartEvaluateFromScratch;
@@ -100,3 +103,4 @@ struct import_io_node_for_analysis
 
 id <RakImportIO> __nullable createIOForFilename(NSString * __nonnull filename);
 NSArray <RakImportItem *> * __nullable getManifestForIOs(NSArray <id <RakImportIO>> * __nonnull IOControllers);
+void createIOConfigDatForData(NSString * __nonnull path, char * __nonnull * __nonnull filenames, uint nbFiles);

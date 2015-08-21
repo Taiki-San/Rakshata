@@ -34,7 +34,7 @@
 		filenames = tmp;
 		for(uint i = nbFiles; i-- > 0;)
 			filenames[i + 1] = filenames[i];
-
+        
 		//Add / at the end if needed
 		if([filename UTF8String][[filename length] - 1] != '/')
 			filename = [filename stringByAppendingString:@"/"];
@@ -125,6 +125,11 @@
 - (IMPORT_NODE) getNode
 {
 	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, (__bridge void *) self);
+}
+
+- (void) generateConfigDatInPath : (NSString *) path
+{
+    createIOConfigDatForData(path, filenames, nbFiles);
 }
 
 @end
