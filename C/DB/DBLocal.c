@@ -260,6 +260,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 	}
 }
 
+static uint cachedVolumeID = 0x80000000 - 1;
 uint getVolumeIDForImport(PROJECT_DATA project)
 {
 	if(!project.isInitialized)
@@ -270,18 +271,31 @@ uint getVolumeIDForImport(PROJECT_DATA project)
 		return INVALID_VALUE;
 	
 	char dirVol[2*LENGTH_PROJECT_NAME + 100];
-	uint ID = 0x80000000 - 1;
+	bool loopedOnce = false;
 
 	//Check for an empty slot
 	do
 	{
-		snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/", encodedRepo, ++ID);
+		if(cachedVolumeID < 0x80000000 - 1)
+		{
+			cachedVolumeID = 0x80000000 - 1;
+			
+			if(loopedOnce)
+			{
+				free(encodedRepo);
+				return INVALID_VALUE;
+			}
+			else
+				loopedOnce = true;
+		}
+		
+		snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/", encodedRepo, ++cachedVolumeID);
 
 	} while(checkDirExist(dirVol));
 	
 	free(encodedRepo);
 	
-	return ID;
+	return cachedVolumeID;
 }
 
 bool isLocalVolumeID(uint ID)
