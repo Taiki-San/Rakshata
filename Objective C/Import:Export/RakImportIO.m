@@ -195,17 +195,27 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
     //No file
     if([array count] == 0 || [array count] > UINT_MAX)
         return;
+	
+	path = [path stringByAppendingString:@"/"];
     
     //We craft the config.dat
-    FILE * config = fopen([[NSString stringWithFormat:@"%@/"CONFIGFILE, path] UTF8String], "w+");
+    FILE * config = fopen([[path stringByAppendingString:@CONFIGFILE] UTF8String], "w+");
     
     if(config == NULL)
         return;
     
     fprintf(config, "%u\nN", (uint) [array count]);
+	
+	uint counter = 0;
     
     for(NSString * file in array)
-        fprintf(config, "\n%s", [file UTF8String]);
-    
+	{
+		//We need to rename the file with a cleaner name
+		NSString * newFile = [NSString stringWithFormat:@"%d.%@", counter++, [file pathExtension]];
+		rename([[path stringByAppendingString:file] UTF8String], [[path stringByAppendingString:newFile] UTF8String]);
+		
+		fprintf(config, "\n0 %s", [newFile UTF8String]);
+	}
+	
     fclose(config);
 }
