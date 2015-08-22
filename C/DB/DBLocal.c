@@ -263,8 +263,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 static uint cachedVolumeID = 0x80000000 - 1;
 uint getVolumeIDForImport(PROJECT_DATA project)
 {
-	if(!project.isInitialized)
-		return INVALID_VALUE;
+	//Used in a scenario where isInitialized is not set (cf RakImportIO) so we can't check it
 	
 	char *encodedRepo = getPathForProject(project);
 	if(encodedRepo == NULL)

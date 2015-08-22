@@ -175,15 +175,15 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, uint chapitreDelete, bool ca
 			if(IDTomeLinked != INVALID_VALUE)	//On en extrait des données valables
 			{
 				char dirVol[2*LENGTH_PROJECT_NAME + 100];
-				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CONFIGFILETOME, encodedRepo, IDTomeLinked);
+				snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CONFIGFILETOME, encodedRepo, IDTomeLinked);
 				if(checkFileExist(dirVol))	//On se réfère à un tome installé
 				{
 					//On crée le dossier
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR, encodedRepo, IDTomeLinked);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR, encodedRepo, IDTomeLinked);
 					mkdirR(dirVol);
 					
 					//On craft le nouveau nom
-					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", encodedRepo, IDTomeLinked, chapitreDelete);
+					snprintf(dirVol, sizeof(dirVol), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", encodedRepo, IDTomeLinked, chapitreDelete);
 					rename(dir, dirVol);
 					
 					//On supprime le fichier shared

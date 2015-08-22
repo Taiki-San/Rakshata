@@ -122,12 +122,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					
 					if(todoListTmp.chapitre % 10)
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u", encodedPath, todoListTmp.chapitre / 10, todoListTmp.chapitre % 10);
 					}
 					else
 					{
-						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
+						snprintf(oldPath, sizeof(oldPath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", encodedPath, todoListTmp.datas->tomesFull[posTomeInStruct].ID, todoListTmp.chapitre / 10);
 						snprintf(newPath, sizeof(newPath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u", encodedPath, todoListTmp.chapitre / 10);
 					}
 					free(encodedPath);
@@ -387,16 +387,16 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, uint ch
 		if(subFolder)
 		{
 			if(chapitre % 10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u/", encodedPath, tome, chapitre / 10, chapitre % 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u/", encodedPath, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u/", encodedPath, tome, chapitre / 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", encodedPath, tome, chapitre / 10);
 		}
 		else
 		{
 			if(chapitre % 10)
-				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u/", encodedPath, tome, chapitre / 10, chapitre % 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u/", encodedPath, tome, chapitre / 10, chapitre % 10);
 			else
-				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u/", encodedPath, tome, chapitre / 10);
+				snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u/", encodedPath, tome, chapitre / 10);
 		}
     }
     else

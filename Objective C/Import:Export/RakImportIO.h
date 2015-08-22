@@ -18,7 +18,7 @@ typedef struct import_io_node_for_analysis IMPORT_NODE;
 - (BOOL) canLocateFile : (NSString * __nonnull) file;
 
 //Iterate a directory with a block, after first calling a block with the number of item to be evaluate (UI feedback)
-- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock;
+- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock;
 
 //Copy a file from the entity to a directory
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toDir : (NSString * __nonnull) dirName;

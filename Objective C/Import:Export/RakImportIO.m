@@ -98,6 +98,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 
 			//We try to find if we can easily match a project
 			extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
+			extraProject.data.project.isInitialized = true;
 
 			//No luck ¯\_(ツ)_/¯
 			if(extraProject.data.project.cacheDBID == INVALID_VALUE)
@@ -116,9 +117,24 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 				extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
 				if(extraProject.data.tomeLocal != NULL)
 				{
-					extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
-					extraProject.data.tomeLocal[0].readingID = (int) item.contentID;
-					extraProject.data.nombreTomeLocal++;
+					CONTENT_TOME * content = malloc(sizeof(CONTENT_TOME));
+					if(content != NULL)
+					{
+						content->ID = CHAPTER_FOR_IMPORTED_VOLUMES;
+						content->isPrivate = true;
+						
+						extraProject.data.tomeLocal[0].details = content;
+						extraProject.data.tomeLocal[0].lengthDetails = 1;
+						extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
+						extraProject.data.tomeLocal[0].readingID = item.contentID == INVALID_VALUE ? INVALID_SIGNED_VALUE : (int) item.contentID;
+						extraProject.data.nombreTomeLocal++;
+					}
+					else
+					{
+						memoryError(sizeof(CONTENT_TOME));
+						free(extraProject.data.tomeLocal);
+						extraProject.data.tomeLocal = NULL;
+					}
 				}
 			}
 			else

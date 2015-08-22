@@ -66,9 +66,9 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 			if(localBuffer[nombreTours].isPrivate)
 			{
 				if(chapterRequestedForVolume % 10)
-					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 				else
-					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
+					snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
 			}
 			else
 			{
@@ -82,9 +82,9 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 				else
 				{
 					if(chapterRequestedForVolume % 10)
-						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", IDRequested, chapterRequestedForVolume / 10, chapterRequestedForVolume % 10);
 					else
-						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
+						snprintf(name, LONGUEUR_NOM_PAGE, VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", IDRequested, chapterRequestedForVolume / 10);
 				}
 				
 			}

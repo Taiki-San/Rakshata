@@ -40,12 +40,13 @@ NSString * getStringForWchar(const charType * string)
 	return output;
 }
 
+//don't support displaying -0.*
 NSString * getStringForChapter(uint _chapID)
 {
 	int chapID = (int) _chapID;
 	
 	if(chapID % 10)
-		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapID / 10, chapID % 10];
+		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapID / 10, abs(chapID % 10)];
 
 	return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), chapID / 10];
 }
@@ -53,7 +54,7 @@ NSString * getStringForChapter(uint _chapID)
 NSString * getStringForVolume(int volID)
 {
 	if(volID % 10)
-		return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d.%d", nil), volID / 10, volID % 10];
+		return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d.%d", nil), volID / 10, abs(volID % 10)];
 
 	return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), volID / 10];
 }

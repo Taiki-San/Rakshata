@@ -32,9 +32,9 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
             else
             {
                 if(data.chapitre % 10)
-                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10, data.chapitre % 10);
+                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10, data.chapitre % 10);
                 else
-                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10);
+                    snprintf(output, length, "%s/%d/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.zip", output, data.datas->projectID, data.partOfTome, data.chapitre / 10);
             }
         }
     }
@@ -312,16 +312,16 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 		
 		if(IDChap % 10)
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10, IDChap % 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10, IDChap % 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10, IDChap % 10);
 #endif
 		}
 		else
 		{
-			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10);
+			snprintf(pathConfig, sizeof(pathConfig), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/"CONFIGFILE, encodedPath, IDTome, IDChap / 10);
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10);
+			snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/"CHAPITER_INSTALLING_TOKEN, encodedPath, IDTome, IDChap / 10);
 #endif
 		}
 		
@@ -390,11 +390,11 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 				if(posIndexTome != NULL)
 					*posIndexTome = pos;
 				
-				snprintf(pathConfig, sizeof(pathConfig), "%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/%s/%s", basePath, projectData.tomesFull[pos].ID, nameChapter, CONFIGFILE);
+				snprintf(pathConfig, sizeof(pathConfig), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/%s", basePath, projectData.tomesFull[pos].ID, nameChapter, CONFIGFILE);
 				if(checkFileExist(pathConfig))
 				{
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-					snprintf(pathInstall, sizeof(pathInstall), "%s/"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/%s/"CHAPITER_INSTALLING_TOKEN, basePath, projectData.tomesFull[pos].ID, nameChapter);
+					snprintf(pathInstall, sizeof(pathInstall), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/"CHAPITER_INSTALLING_TOKEN, basePath, projectData.tomesFull[pos].ID, nameChapter);
 					return checkFileExist(pathInstall) ? INSTALLING : ALTERNATIVE_INSTALLED;
 #else
 					return ALTERNATIVE_INSTALLED;

@@ -41,8 +41,8 @@ void setTomeReadable(PROJECT_DATA projectDB, uint ID)
 	
 	if(encodedPath != NULL)
 	{
-		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CONFIGFILETOME".tmp", encodedPath, ID);
-		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/"CONFIGFILETOME, encodedPath, ID);
+		snprintf(pathWithTemp, sizeof(pathWithTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CONFIGFILETOME".tmp", encodedPath, ID);
+		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CONFIGFILETOME, encodedPath, ID);
 		rename(pathWithTemp, pathWithoutTemp);
 		
 		projectDB.tomesFull = projectDB.tomesInstalled = NULL;
@@ -92,9 +92,9 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 		if(cache[posDetails].isPrivate)
 		{
 			if(cache[posDetails].ID % 10)
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 			else
-				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
+				snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
 		}
 		else
 		{
@@ -107,9 +107,9 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 			if(!checkFileExist(fullPath))
 			{
 				if(cache[posDetails].ID % 10)
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u.%u", ID, cache[posDetails].ID / 10, cache[posDetails].ID % 10);
 				else
-					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
+					snprintf(intermediaryDirectory, sizeof(intermediaryDirectory), VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", ID, cache[posDetails].ID / 10);
 			}
 			else
 			{
@@ -285,7 +285,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutL
 	}
 	
 	char dir[1024];
-    snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d/", encodedPath, tomeDelete);
+    snprintf(dir, sizeof(dir), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/", encodedPath, tomeDelete);
 	removeFolder(dir);
 
 	free(encodedPath);

@@ -447,9 +447,9 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 						snprintf(chapterID, sizeof(chapterID), "%d", volumeContent.ID / 10);
 
 					if(volumeContent.isPrivate)
-						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%d/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
+						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
 					else
-						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%d/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
+						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
 
 					baseInzipPath = strdup(baseInzipPathTmp);
 				}
