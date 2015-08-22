@@ -231,12 +231,9 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 	
 	fscanf(fileInput, "%d", nombrePage);
 	
-	//We got to the next line
-	while((current = fgetc(fileInput)) != EOF)
-	{
-		if(current == '\n' || current == '\r')
-			break;
-	}
+	//We go to the next line
+	while((current = fgetc(fileInput)) != EOF && current != '\n' && current != '\r');
+	while((current = fgetc(fileInput)) != EOF && (current == '\n' || current == '\r'));
 	
 	//We extract the data from the file
 	if(current != EOF)
@@ -285,6 +282,12 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				
 				break;
 			}
+			
+			//We go to the next line
+			while((current = fgetc(fileInput)) != EOF && current != '\n' && current != '\r');
+			while((current = fgetc(fileInput)) != EOF && (current == '\n' || current == '\r'));
+			if(current != EOF)
+				fseek(fileInput, -1, SEEK_CUR);
 		}
 	}
 	else
