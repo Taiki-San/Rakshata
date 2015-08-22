@@ -72,11 +72,10 @@
 				
 				//Perfect! now, all we have to do is to sanitize last few data :D
 				
-				uint elemToRead;
+				uint elemToRead, page;
 				BOOL isTome;
-				uint page;
 				
-				elemToRead = [[dataState objectAtIndex:3] unsignedIntValue];
+				elemToRead = [[dataState objectAtIndex:3] longLongValue];
 				isTome = [[dataState objectAtIndex:4] boolValue];
 				page = [[dataState objectAtIndex:5] longLongValue];
 				

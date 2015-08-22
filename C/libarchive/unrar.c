@@ -126,7 +126,7 @@ ARCHIVE * openArchiveFromFile(const char * path)
 		if(archive_entry_size(entry) == 0)
 		{
 			uint length = strlen(filename[currentPos]);
-			void * tmp = realloc(filename[currentPos], length + 1);
+			void * tmp = realloc(filename[currentPos], length + 2);
 
 			if(tmp != NULL)
 			{
