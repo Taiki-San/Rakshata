@@ -16,6 +16,9 @@
 {
 	if(!_isTome)
 		return checkReadable(_projectData.data.project, false, _contentID);
+	
+	if(_projectData.data.nombreTomeLocal == 0)
+		return false;
 
 	//The volume must be in the list
 	META_TOME * tomeFull = _projectData.data.project.tomesFull;
@@ -24,7 +27,7 @@
 	_projectData.data.project.tomesFull = _projectData.data.tomeLocal;
 	_projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
 
-	bool output = checkReadable(_projectData.data.project, true, _contentID);
+	bool output = checkReadable(_projectData.data.project, true, _projectData.data.tomeLocal[0].ID);
 
 	_projectData.data.project.tomesFull = tomeFull;
 	_projectData.data.project.nombreTomes = lengthTomeFull;
@@ -81,12 +84,31 @@
 		[_IOController willStartEvaluateFromScratch];
 
 	__block BOOL foundOneThing = NO;
-	NSString * basePathObj = [NSString stringWithUTF8String:basePath];
+	__block NSString * basePathObj = [NSString stringWithUTF8String:basePath];
 
-	[_IOController evaluateItemFromDir:_path withInitBlock:^(uint nbItems) {
+	[_IOController evaluateItemFromDir:_path withInitBlock:^(uint nbItems, BOOL wantBroadWriteAccess) {
 
 		if(UI != nil)
 			UI.nbElementInEntry = nbItems;
+		
+		//.rak need to write in the whole dir, to handle shared CT
+		//However, arbitrary imports want a more focused decompression
+		if(!wantBroadWriteAccess)
+		{
+			META_TOME tomeData = self.projectData.data.tomeLocal[0];
+			uint chapID = tomeData.details[0].ID;
+			
+			if(chapID % 10)
+				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u/", tomeData.ID, chapID / 10, chapID % 10]];
+			else
+				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+		}
+		
+		//We create the path if needed
+		if(!checkDirExist([basePathObj UTF8String]))
+		{
+			createPath([basePathObj UTF8String]);
+		}
 
 	} andWithBlock:^(id<RakImportIO> controller, NSString * filename, uint index, BOOL * stop)
 	{
@@ -101,6 +123,8 @@
 		else
 			*stop = YES;
 	}];
+	
+	[_IOController generateConfigDatInPath:basePathObj];
 
 	//Decompression is over, now, we need to ensure everything is fine
 	if((UI != nil && [UI haveCanceled]) || !foundOneThing || ![self isReadable])
@@ -110,7 +134,7 @@
 			logR("Uh? Invalid import :|");
 
 		if(_isTome)
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%d", projectPath, _contentID);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u", projectPath, _contentID);
 
 		removeFolder(basePath);
 		free(projectPath);
@@ -165,7 +189,8 @@
 		_issue = IMPORT_PROBLEM_METADATA;
 
 	//We have a valid targer
-	else if(_contentID == INVALID_VALUE || (_isTome && _projectData.data.tomeLocal[0].ID == INVALID_VALUE))
+	else if(_contentID == INVALID_VALUE || (_isTome && _projectData.data.tomeLocal[0].readingID == INVALID_SIGNED_VALUE
+											&& _projectData.data.tomeLocal[0].readingName[0] == 0))
 		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
 
 	//Quick check we're not already installed
@@ -177,7 +202,12 @@
 		_issue = IMPORT_PROBLEM_INSTALL_ERROR;
 
 	else
+	{
+		[self processThumbs];
+		[self registerProject];
+
 		_issue = IMPORT_PROBLEM_NONE;
+	}
 }
 
 - (void) deleteData

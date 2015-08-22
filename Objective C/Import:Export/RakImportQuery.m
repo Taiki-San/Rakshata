@@ -189,6 +189,18 @@ enum
 
 		[contentIDTitle setFrameOrigin:NSMakePoint(0, currentY + currentHeight / 2 - titleSize.height / 2)];
 		[contentID setFrameOrigin:NSMakePoint(maxWidthTitles + META_BORDER_WIDTH + 4, currentY + currentHeight / 2 - workingSize.height / 2)];
+		
+		PROJECT_DATA_PARSED projectData = _item.projectData.data;
+		if(_item.isTome)
+		{
+			if(projectData.nombreTomeLocal > 0 && projectData.tomeLocal[0].readingID != INVALID_SIGNED_VALUE)
+				contentID.stringValue = getStringForVolume(projectData.tomeLocal[0].readingID);
+		}
+		else
+		{
+			if(projectData.nombreChapitreLocal > 0 && projectData.chapitresLocal[0] != INVALID_VALUE)
+				contentID.stringValue = getStringForChapter(projectData.chapitresLocal[0]);
+		}
 
 		[self addSubview:contentID];
 		[self addSubview:contentIDTitle];
@@ -203,6 +215,14 @@ enum
 	if(contentName != nil)
 	{
 		contentName.maxLength = MAX_TOME_NAME_LENGTH;
+		
+		if(_item.isTome)
+		{
+			PROJECT_DATA_PARSED projectData = _item.projectData.data;
+			if(projectData.nombreTomeLocal > 0 && projectData.tomeLocal[0].readingName[0])
+				contentID.stringValue = getStringForWchar(projectData.tomeLocal[0].readingName);
+		}
+		
 		contentName.nextKeyView = contentID;
 		[self addSubview:contentName];
 	}
@@ -929,11 +949,10 @@ enum
 {
 	BOOL wantTome = _item.isTome = isTome.selectedSegment != 0, validInput = NO;
 
-	NSNumber * number = getNumberForString(contentID.stringValue);
+	NSNumber * number = @([getNumberForString(contentID.stringValue) intValue] * 10);
 	NSString * string = contentName.stringValue;
 
 	uint checkedContentID = INVALID_VALUE;
-
 
 	//Valid name and reading ID
 	if(wantTome)
@@ -966,32 +985,50 @@ enum
 	if(wantTome)
 	{
 		META_TOME tomeData;
-
-		tomeData.ID = getVolumeIDForImport(_item.projectData.data.project);
-		tomeData.readingID = (int) checkedContentID;
-		wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));
-
 		PROJECT_DATA_EXTRA project = _item.projectData;
+		
+		//Somehow, the volume wasn't registered ¯\_(ツ)_/¯
+		if(project.data.nombreTomeLocal == 0)
+		{
+			tomeData.ID = getVolumeIDForImport(_item.projectData.data.project);
+			if(tomeData.ID != INVALID_VALUE)
+			{
+				tomeData.readingID = (int) checkedContentID;
+				wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));
+				
+				tomeData.details = malloc(sizeof(CONTENT_TOME));
+				if(tomeData.details != NULL)
+				{
+					tomeData.details[0].ID = CHAPTER_FOR_IMPORTED_VOLUMES;
+					tomeData.details[0].isPrivate = true;
+					tomeData.lengthDetails = 1;
+				}
+				
+				project.data.tomeLocal = malloc(sizeof(META_TOME));
+				if(project.data.tomeLocal != NULL)
+				{
+					project.data.nombreTomeLocal = 1;
+					project.data.tomeLocal[0] = tomeData;
+					
+					//If it migrated, we remove the other entry
+					if(project.data.nombreChapitreLocal > 0)
+					{
+						project.data.nombreChapitreLocal = 0;
+						free(project.data.chapitresLocal);
+						project.data.chapitresLocal = NULL;
+					}
+				}
+			}
+			else
+				logR("Couldn't grab a volume ID ಠ_ಠ\nYou should restart Rakshata and/or import smaller chuncks (and send us an email)");
+		}
+		else
+		{
+			project.data.tomeLocal[0].readingID = (int) checkedContentID;
+			wstrncpy(project.data.tomeLocal[0].readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));			
+		}
 
-		uint nbTomes = project.data.nombreTomeLocal, slot = 0;
-        for(; slot < nbTomes && project.data.tomeLocal[slot].ID != INVALID_VALUE; ++slot);
-
-        if(slot == nbTomes) //No slot found
-        {
-            void * tmp = realloc(project.data.tomeLocal, (nbTomes + 1) * sizeof(META_TOME));
-            if(tmp != NULL)
-            {
-                ++project.data.nombreTomeLocal;
-                project.data.tomeLocal = tmp;
-                project.data.tomeLocal[nbTomes] = tomeData;
-                _item.projectData = project;
-            }
-        }
-        else
-        {
-            project.data.tomeLocal[slot] = tomeData;
-            _item.projectData = project;
-        }
+		_item.projectData = project;
 	}
 
 	[self close];

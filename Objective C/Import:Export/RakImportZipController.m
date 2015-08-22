@@ -65,7 +65,7 @@
 	return unzLocateFile(archive, [file UTF8String], true) == UNZ_OK;
 }
 
-- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
+- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
 	const char * startExpectedPath = [dirName UTF8String];
 	uint lengthExpected = strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
@@ -83,7 +83,7 @@
 	if(nbFileToEvaluate == 0)
 		return;
 
-	initBlock(nbFileToEvaluate);
+	initBlock(nbFileToEvaluate, [self class] == [RakImportDotRakController class]);
 
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)

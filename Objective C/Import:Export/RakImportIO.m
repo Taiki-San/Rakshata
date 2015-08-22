@@ -98,7 +98,6 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 
 			//We try to find if we can easily match a project
 			extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
-			extraProject.data.project.isInitialized = true;
 
 			//No luck ¯\_(ツ)_/¯
 			if(extraProject.data.project.cacheDBID == INVALID_VALUE)
@@ -125,8 +124,8 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 						
 						extraProject.data.tomeLocal[0].details = content;
 						extraProject.data.tomeLocal[0].lengthDetails = 1;
-						extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
 						extraProject.data.tomeLocal[0].readingID = item.contentID == INVALID_VALUE ? INVALID_SIGNED_VALUE : (int) item.contentID;
+						item.contentID = extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
 						extraProject.data.nombreTomeLocal++;
 					}
 					else
@@ -185,7 +184,7 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
         
         for(NSString * currentExtension in formats)
         {
-            if([extension caseInsensitiveCompare:currentExtension])
+            if([extension caseInsensitiveCompare:currentExtension] == NSOrderedSame)
             {
                 [array addObject:[currentString lastPathComponent]];
                 break;

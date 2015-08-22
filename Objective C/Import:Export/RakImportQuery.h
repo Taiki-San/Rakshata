@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define CHAPTER_FOR_IMPORTED_VOLUMES 42
+
 @interface RakImportQuery : RakPopoverView
 
 @property RakImportItem * itemOfQueryForMetadata;
