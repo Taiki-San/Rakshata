@@ -38,9 +38,9 @@
 - (void) setSliderPos : (NSPoint) newPos;
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
-- (void) changePage : (byte) switchType;
+- (BOOL) changePage : (byte) switchType;
 - (void) jumpToPage : (uint) newPage;
-- (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
+- (BOOL) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (void) updateCTTab;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;

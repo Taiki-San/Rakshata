@@ -367,9 +367,9 @@
 	[self nextPage:NO];
 }
 
-- (void) nextPage : (BOOL) animated
+- (BOOL) nextPage : (BOOL) animated
 {
-	[self changePage:READER_ETAT_NEXTPAGE:animated];
+	return [self changePage:READER_ETAT_NEXTPAGE:animated];
 }
 
 - (void) prevPage
@@ -377,9 +377,9 @@
 	[self prevPage:NO];
 }
 
-- (void) prevPage : (BOOL) animated
+- (BOOL) prevPage : (BOOL) animated
 {
-	[self changePage:READER_ETAT_PREVPAGE : animated];
+	return [self changePage:READER_ETAT_PREVPAGE : animated];
 }
 
 - (void) nextChapter
@@ -607,19 +607,18 @@
 	return output;
 }
 
-- (void) changePage : (byte) switchType
+- (BOOL) changePage : (byte) switchType
 {
-	[self changePage:switchType :NO];
+	return [self changePage:switchType :NO];
 }
 
-- (void) changePage : (byte) switchType : (BOOL) animated
+- (BOOL) changePage : (byte) switchType : (BOOL) animated
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
 		if(_data.pageCourante + 1 >= _data.nombrePage)
 		{
-			[self changeChapter : YES : YES];
-			return;
+			return [self changeChapter : YES : YES];
 		}
 		_data.pageCourante++;
 	}
@@ -627,8 +626,7 @@
 	{
 		if(_data.pageCourante < 1)
 		{
-			[self changeChapter : NO : YES];
-			return;
+			return [self changeChapter : NO : YES];
 		}
 		_data.pageCourante--;
 	}
@@ -673,6 +671,8 @@
 		
 		[self optimizeCache : nil];
 	}
+	
+	return YES;
 }
 
 - (void) jumpToPage : (uint) newPage
@@ -693,113 +693,16 @@
 	}
 }
 
-- (void) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage
+- (BOOL) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage
 {
 	uint newPosIntoStruct = _posElemInStructure;
 	
 	MUTEX_LOCK(cacheMutex);
 	
-	if(changeChapter(&_project, self.isTome, &_currentElem, &newPosIntoStruct, goToNext))
+	if(!changeChapter(&_project, self.isTome, &_currentElem, &newPosIntoStruct, goToNext))
 	{
 		MUTEX_UNLOCK(cacheMutex);
-
-		cacheSession++;
-		_posElemInStructure = newPosIntoStruct;
 		
-		[self updateTitleBar:_project :self.isTome :_posElemInStructure];
-		[self updateCTTab];
-		
-		if((goToNext && nextDataLoaded && _nextData.IDDisplayed == _currentElem) || (!goToNext && previousDataLoaded && _previousData.IDDisplayed == _currentElem))
-		{
-			uint currentPage;
-			
-			if(goToNext)
-			{
-				if(previousDataLoaded)
-					releaseDataReader(&_previousData);
-	
-				currentPage = _data.nombrePage + 1;
-				
-				_previousData = _data;
-				previousDataLoaded = dataLoaded;
-				
-				_data = _nextData;
-				_data.pageCourante = 0;
-				dataLoaded = nextDataLoaded;
-				
-				nextDataLoaded = NO;
-				
-			}
-			else
-			{
-				if(nextDataLoaded)
-					releaseDataReader(&_nextData);
-	
-				currentPage = 0;
-				
-				_nextData = _data;
-				nextDataLoaded = dataLoaded;
-				
-				memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
-				
-				if(byChangingPage)
-					_data.pageCourante = _data.nombrePage - 1;
-				else
-					_data.pageCourante = 0;
-				
-				dataLoaded = previousDataLoaded;
-				
-				previousDataLoaded = NO;
-			}
-			
-			id currentPageView = mainScroller.arrangedObjects[currentPage];
-			
-			[self updateContext : YES];
-			
-			if(byChangingPage)
-			{
-				//We inject the page we already loaded inside mainScroller
-				NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
-				
-				[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
-				
-				MUTEX_LOCK(cacheMutex);
-				mainScroller.arrangedObjects = array;
-				MUTEX_UNLOCK(cacheMutex);
-			}
-		}
-		else
-		{
-			if(goToNext && nextDataLoaded)
-			{
-				nextDataLoaded = NO;
-				releaseDataReader(&_nextData);
-			}
-			else if(!goToNext && previousDataLoaded)
-			{
-				previousDataLoaded = NO;
-				releaseDataReader(&_previousData);
-			}
-			
-			if(dataLoaded)
-			{
-				dataLoaded = NO;
-				releaseDataReader(&_data);
-			}
-			
-			if(!byChangingPage)
-				_data.pageCourante = 0;
-			
-			[self updateContext : NO];
-			
-			if(byChangingPage)
-				[self jumpToPage : _data.nombrePage - 1];
-		}
-	}
-	else
-	{
-		MUTEX_UNLOCK(cacheMutex);
-
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 		//Trying to go to the next page from the last available page
 		if(goToNext && byChangingPage && self.distractionFree)
@@ -807,7 +710,105 @@
 			[self switchDistractionFree];
 		}
 #endif
+		return NO;
 	}
+
+	MUTEX_UNLOCK(cacheMutex);
+	
+	cacheSession++;
+	_posElemInStructure = newPosIntoStruct;
+	
+	[self updateTitleBar:_project :self.isTome :_posElemInStructure];
+	[self updateCTTab];
+	
+	if((goToNext && nextDataLoaded && _nextData.IDDisplayed == _currentElem) || (!goToNext && previousDataLoaded && _previousData.IDDisplayed == _currentElem))
+	{
+		uint currentPage;
+		
+		if(goToNext)
+		{
+			if(previousDataLoaded)
+				releaseDataReader(&_previousData);
+			
+			currentPage = _data.nombrePage + 1;
+			
+			_previousData = _data;
+			previousDataLoaded = dataLoaded;
+			
+			_data = _nextData;
+			_data.pageCourante = 0;
+			dataLoaded = nextDataLoaded;
+			
+			nextDataLoaded = NO;
+			
+		}
+		else
+		{
+			if(nextDataLoaded)
+				releaseDataReader(&_nextData);
+			
+			currentPage = 0;
+			
+			_nextData = _data;
+			nextDataLoaded = dataLoaded;
+			
+			memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
+			
+			if(byChangingPage)
+				_data.pageCourante = _data.nombrePage - 1;
+			else
+				_data.pageCourante = 0;
+			
+			dataLoaded = previousDataLoaded;
+			
+			previousDataLoaded = NO;
+		}
+		
+		id currentPageView = mainScroller.arrangedObjects[currentPage];
+		
+		[self updateContext : YES];
+		
+		if(byChangingPage)
+		{
+			//We inject the page we already loaded inside mainScroller
+			NSMutableArray * array = [mainScroller.arrangedObjects mutableCopy];
+			
+			[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:currentPageView];
+			
+			MUTEX_LOCK(cacheMutex);
+			mainScroller.arrangedObjects = array;
+			MUTEX_UNLOCK(cacheMutex);
+		}
+	}
+	else
+	{
+		if(goToNext && nextDataLoaded)
+		{
+			nextDataLoaded = NO;
+			releaseDataReader(&_nextData);
+		}
+		else if(!goToNext && previousDataLoaded)
+		{
+			previousDataLoaded = NO;
+			releaseDataReader(&_previousData);
+		}
+		
+		if(dataLoaded)
+		{
+			dataLoaded = NO;
+			releaseDataReader(&_data);
+		}
+		
+		if(!byChangingPage)
+			_data.pageCourante = 0;
+		
+		[self updateContext : NO];
+		
+		if(byChangingPage)
+			[self jumpToPage : _data.nombrePage - 1];
+	}
+	
+	return YES;
 }
 
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
@@ -1057,9 +1058,8 @@
 				
 				[self prevPage : YES];
 			}
-			else
+			else if([self nextPage : YES])
 			{
-				[self nextPage : YES];
 				[self scrollToExtreme : _scrollView : YES];
 			}
 		}

@@ -51,7 +51,7 @@
 
 - (void) scrollToBeginningOfDocument
 {
-	NSPoint sliderStart = NSMakePoint(0, READER_PAGE_TOP_BORDER);
+	NSPoint sliderStart = NSMakePoint(self.contentView.bounds.origin.x , READER_PAGE_TOP_BORDER);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
 	
 	if(_pageTooHigh)
