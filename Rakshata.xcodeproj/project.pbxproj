@@ -12,6 +12,7 @@
 		B6013F491B5C4C5A0007F864 /* RakImportStatusListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F481B5C4C5A0007F864 /* RakImportStatusListRowView.m */; };
 		B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */; };
 		B6013F4E1B5C4E4F0007F864 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */; };
+		B602DA8A1BA56E3D00F247B4 /* NSImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */; settings = {ASSET_TAGS = (); }; };
 		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
 		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
@@ -263,6 +264,8 @@
 		B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportStatusListItem.m; path = "Import:Export/RakImportStatusListItem.m"; sourceTree = "<group>"; };
 		B6013F4C1B5C4E4F0007F864 /* RakPrefsAddRepoList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsAddRepoList.h; path = "Divers Windows/RakPrefsAddRepoList.h"; sourceTree = "<group>"; };
 		B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsAddRepoList.m; path = "Divers Windows/RakPrefsAddRepoList.m"; sourceTree = "<group>"; };
+		B602DA881BA56E3D00F247B4 /* NSImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+Tint.h"; path = "Utils/NSImage+Tint.h"; sourceTree = "<group>"; };
+		B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Tint.m"; path = "Utils/NSImage+Tint.m"; sourceTree = "<group>"; };
 		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
 		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
 		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
@@ -1234,6 +1237,8 @@
 				B6ED38511AF14557007293E5 /* Animation */,
 				B62935DE1A803AD800DE20E2 /* Button */,
 				B6694F55194A8A8200D656A9 /* Drag'n Drop */,
+				B602DA881BA56E3D00F247B4 /* NSImage+Tint.h */,
+				B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */,
 				B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */,
 				B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */,
 				B642480919D57DF000679D78 /* RakGradientView.h */,
@@ -1785,6 +1790,7 @@
 				B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */,
 				B6D7EC0D1B682D33009FCE64 /* unrar.c in Sources */,
 				B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */,
+				B602DA8A1BA56E3D00F247B4 /* NSImage+Tint.m in Sources */,
 				B6AA41941B6856DD008A7521 /* moduleDL2.c in Sources */,
 				B69FBE921A756472009ACBEF /* RakSRHeader.m in Sources */,
 				B642480B19D57DF000679D78 /* RakGradientView.m in Sources */,

@@ -26,6 +26,7 @@ NSString * getRepoName(REPO_DATA * repo);
 #import "RakSheetView.h"
 #import "RakAnimationController.h"
 
+#import "NSImage+Tint.h"
 #import "RakTextCell.h"
 #import "RakText.h"
 #import "RakButton.h"
