@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-typedef struct import_io_node_for_analysis IMPORT_NODE;
+@class RakImportNode;
 
 @protocol RakImportIO <NSObject>
 
@@ -30,7 +30,7 @@ typedef struct import_io_node_for_analysis IMPORT_NODE;
 - (BOOL) copyItemOfName : (NSString * __nullable) name toData : (NSData * __nullable * __nonnull) data;
 
 //Get the state of the node
-- (IMPORT_NODE) getNode;
+- (RakImportNode * __nonnull) getNode;
 
 //Generate the config.dat file if needed
 - (void) generateConfigDatInPath : (NSString * __nonnull) path;
@@ -41,23 +41,22 @@ typedef struct import_io_node_for_analysis IMPORT_NODE;
 
 @end
 
-//This structure is used to map the directory structure and infer metadata
+//This object/structure (required to have a strong relation with IOController) is used to map the directory structure and infer metadata
 //TL;DR: Shaddy shit
-struct import_io_node_for_analysis
-{
-	IMPORT_NODE * __nullable children;
-	void * __nonnull IOController;	//id <RakImportIO>
+@interface RakImportNode : NSObject
 
-	char * __nonnull nodeName;
+@property NSArray<RakImportNode *> * __nullable children;
+@property id <RakImportIO> __nonnull IOController;
 
-	uint nbChildren;
-	uint nbImages;
-	
-	bool isFlatCT;
-	bool couldBeComplexT;
-	bool isValid;
+@property NSString * __nonnull nodeName;
 
-};
+@property uint nbImages;
+
+@property bool isFlatCT;
+@property bool couldBeComplexT;
+@property bool isValid;
+
+@end
 
 @interface RakImportZipController : NSObject <RakImportIO>
 {

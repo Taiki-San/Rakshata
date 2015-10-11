@@ -71,9 +71,14 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 		}
 
 		//We get the node
-		IMPORT_NODE node = [IOController getNode];
+		RakImportNode * node = [IOController getNode];
 		if(!node.isValid)
+		{
+#ifdef DEV_VERSION
+			logR("Invalid node");
+#endif
 			continue;
+		}
 
 		//Easy case, no analysis needed
 		if(node.isFlatCT)
@@ -83,7 +88,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 				continue;
 
 			item.issue = IMPORT_PROBLEM_METADATA;
-			item.path = [NSString stringWithUTF8String:node.nodeName];
+			item.path = node.nodeName;
 			item.projectData = getEmptyExtraProject();
 			item.IOController = IOController;
 
@@ -219,3 +224,6 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 	
     fclose(config);
 }
+
+@implementation RakImportNode
+@end

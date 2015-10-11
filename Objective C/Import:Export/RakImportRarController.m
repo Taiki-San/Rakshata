@@ -105,9 +105,9 @@
 	rarJumpBackAtBegining(archive);
 }
 
-- (IMPORT_NODE) getNode
+- (RakImportNode *) getNode
 {
-	return importDataForFiles(strdup([archiveFileName UTF8String]), archive->fileList, archive->nbFiles, (__bridge void *) self);
+	return importDataForFiles(strdup([archiveFileName UTF8String]), archive->fileList, archive->nbFiles, self);
 }
 
 - (void) generateConfigDatInPath : (NSString *) path

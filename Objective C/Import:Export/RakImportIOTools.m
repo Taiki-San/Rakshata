@@ -30,14 +30,14 @@ enum
 	MAX_DEPTH = 5
 };
 
-IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFiles, void * IOController, uint depth)
+RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nbFiles, id <RakImportIO> IOController, uint depth)
 {
 	if(dirName == NULL || files == NULL || !nbFiles || IOController == NULL || depth >= MAX_DEPTH)
 		return getEmptyImportNode();
 
-	IMPORT_NODE output = getEmptyImportNode();
+	RakImportNode * output = getEmptyImportNode();
 
-	output.nodeName = dirName;
+	output.nodeName = [NSString stringWithUTF8String:dirName];
 
 	bool onlyImages = true, imagesAndFlatCT = true;
 	const char * supportedFormat[] = {"png", "jpg", "dat", "jpeg", "pdf", "tiff", "gif"};
@@ -65,16 +65,15 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 			if(basePosDir == pos)
 				continue;
 
-			IMPORT_NODE newNode = _importDataForFiles(files[basePosDir], &(files[basePosDir + 1]), pos - basePosDir, IOController, depth + 1);
+			RakImportNode * newNode = _importDataForFiles(files[basePosDir], &(files[basePosDir + 1]), pos - basePosDir, IOController, depth + 1);
 
 			if(!newNode.isValid)
 				continue;
 
-			void * tmp = realloc(output.children, (output.nbChildren + 1) * sizeof(IMPORT_NODE));
-			if(tmp != NULL)
+			id tmp = [output.children arrayByAddingObject:newNode];
+			if(tmp != nil)
 			{
 				output.children = tmp;
-				output.children[output.nbChildren++] = newNode;
 
 				onlyImages = false;
 
@@ -136,21 +135,17 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 	}
 
 	//Empty shell around one dir
-	if(nbImages == 0 && output.nbChildren == 1)
+	if(nbImages == 0 && [output.children count] == 1)
 	{
-		free(output.nodeName);
-		IMPORT_NODE newNode = output.children[0];
-
-		free(output.children);
-		output = newNode;
+		output = output.children[0];
 	}
 	else
 	{
 		output.isFlatCT = onlyImages;
-		output.couldBeComplexT = !onlyImages && imagesAndFlatCT && output.nbChildren > 1;
+		output.couldBeComplexT = !onlyImages && imagesAndFlatCT && [output.children count] > 1;
 		output.nbImages = nbImages;
 
-		if(output.isFlatCT || output.nbChildren)
+		if(output.isFlatCT || [output.children count])
 		{
 			output.isValid = true;
 			output.IOController = IOController;
@@ -160,26 +155,17 @@ IMPORT_NODE _importDataForFiles(char * dirName, char ** files, const uint nbFile
 	return output;
 }
 
-IMPORT_NODE importDataForFiles(char * dirName, char ** files, const uint nbFiles, void * IOController)
+RakImportNode * importDataForFiles(char * dirName, char ** files, const uint nbFiles, id <RakImportIO> IOController)
 {
 	return _importDataForFiles(dirName, files, nbFiles, IOController, 0);
 }
 
-IMPORT_NODE getEmptyImportNode()
+RakImportNode * getEmptyImportNode()
 {
-	IMPORT_NODE node;
-
-	memset(&node, 0, sizeof(node));
-
-	return node;
+	return [[RakImportNode alloc] init];
 }
 
-void freeImportNode(IMPORT_NODE node)
+void freeImportNode(RakImportNode * node)
 {
-	for(uint i = 0; i < node.nbChildren; i++)
-	{
-		freeImportNode(node.children[i]);
-	}
-
-	free(node.nodeName);
+	node.children = nil;
 }

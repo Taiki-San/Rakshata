@@ -122,9 +122,9 @@
 	return *data != nil;
 }
 
-- (IMPORT_NODE) getNode
+- (RakImportNode *) getNode
 {
-	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, (__bridge void *) self);
+	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, self);
 }
 
 - (void) generateConfigDatInPath : (NSString *) path

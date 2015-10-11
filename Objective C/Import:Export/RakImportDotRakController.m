@@ -442,13 +442,13 @@
 	return manifest;
 }
 
-- (IMPORT_NODE) getNode
+- (RakImportNode *) getNode
 {
-	IMPORT_NODE output = getEmptyImportNode();
+	RakImportNode * output = getEmptyImportNode();
 
-	output.nodeName = strdup([archiveFileName UTF8String]);
+	output.nodeName = archiveFileName;
 	output.isFlatCT = true;
-	output.IOController = (__bridge void *) self;
+	output.IOController = self;
 	output.isValid = true;
 
 	return output;
