@@ -10,6 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-RakImportNode * importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController);
-RakImportNode * getEmptyImportNode();
-void freeImportNode(RakImportNode * node);
+@implementation RakImportBaseController
+
+@end

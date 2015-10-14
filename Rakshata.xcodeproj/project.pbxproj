@@ -12,7 +12,7 @@
 		B6013F491B5C4C5A0007F864 /* RakImportStatusListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F481B5C4C5A0007F864 /* RakImportStatusListRowView.m */; };
 		B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */; };
 		B6013F4E1B5C4E4F0007F864 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */; };
-		B602DA8A1BA56E3D00F247B4 /* NSImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */; settings = {ASSET_TAGS = (); }; };
+		B602DA8A1BA56E3D00F247B4 /* NSImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */; };
 		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
 		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
 		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
@@ -230,6 +230,7 @@
 		B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ED38561AF183B8007293E5 /* RakAnimationController.m */; };
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
+		B6EF52D51BCE971400EEEE6A /* RakImportBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */; };
 		B6F131341B372E4100042F8C /* RakImportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F131331B372E4100042F8C /* RakImportController.m */; };
 		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
 		B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD118A3001400E3B55B /* rakshata.c */; };
@@ -618,6 +619,7 @@
 		B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsTabDeepData.h; path = Prefs/tools/RakPrefsTabDeepData.h; sourceTree = "<group>"; };
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
+		B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportBaseController.m; path = "Import:Export/RakImportBaseController.m"; sourceTree = "<group>"; };
 		B6F131321B372E4100042F8C /* RakImportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImportController.h; path = "Import:Export/RakImportController.h"; sourceTree = "<group>"; };
 		B6F131331B372E4100042F8C /* RakImportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportController.m; path = "Import:Export/RakImportController.m"; sourceTree = "<group>"; };
 		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
@@ -905,6 +907,7 @@
 		B674648A1B641BF300F4A929 /* IO manager */ = {
 			isa = PBXGroup;
 			children = (
+				B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */,
 				B69E35F51B6E3DE50022C466 /* RakImportDirController.m */,
 				B67464871B64179600F4A929 /* RakImportDotRakController.m */,
 				B67464891B64182300F4A929 /* RakImportIO.h */,
@@ -1863,6 +1866,7 @@
 				B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */,
 				B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */,
 				B6BC73051A90015300018BE9 /* RakSRProjectView.m in Sources */,
+				B6EF52D51BCE971400EEEE6A /* RakImportBaseController.m in Sources */,
 				B67845A319631311007372C7 /* encoding.c in Sources */,
 				B6A0EDFC1B126994009DFC03 /* RakListItemView.m in Sources */,
 				B6AA41961B6856DD008A7521 /* moduleDLUnzip.c in Sources */,

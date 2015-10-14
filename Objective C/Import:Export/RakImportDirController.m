@@ -32,7 +32,7 @@
 
 		//Offset everything
 		filenames = tmp;
-		for(uint i = nbFiles; i-- > 0;)
+		for(uint i = nbFiles++; i-- > 0;)
 			filenames[i + 1] = filenames[i];
         
 		//Add / at the end if needed
@@ -70,13 +70,16 @@
 
 - (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
-	const char * startExpectedPath = [dirName UTF8String];
-	uint lengthExpected = strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
+	const char * startExpectedPath = dirName == nil ? NULL : [dirName UTF8String];
+	uint lengthExpected = startExpectedPath == NULL ? 0 : strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
 
 	//We gather the indexes of the files we'll evaluate
 	for(uint pos = 0; pos < nbFiles; pos++)
 	{
-		if(!strncmp(filenames[pos], startExpectedPath, lengthExpected) && filenames[pos][lengthExpected] != '\0')
+		//If dirName == NULL, we send everything
+		//The comparaison must be performed in this order because it'll prevent shorter filename to get tested for
+		//	being precisely the dir we are trying to probe for (possibly a subdir of the directory that was listed)
+		if(startExpectedPath == NULL || (!strncmp(filenames[pos], startExpectedPath, lengthExpected) && filenames[pos][lengthExpected] != '\0'))
 		{
 			indexOfFiles[nbFileToEvaluate++] = pos;
 		}
@@ -86,7 +89,8 @@
 	if(nbFileToEvaluate == 0)
 		return;
 
-	initBlock(nbFileToEvaluate, NO);
+	if(initBlock != nil)
+		initBlock(nbFileToEvaluate, NO);
 
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)

@@ -12,7 +12,7 @@
 
 #define THREESOLD_IMAGES_FOR_VOL 80
 
-id <RakImportIO> createIOForFilename(NSString * filename)
+RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 {
 	NSString * extension = [filename pathExtension];
 
@@ -54,14 +54,17 @@ id <RakImportIO> createIOForFilename(NSString * filename)
 	return nil;
 }
 
-NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOControllers)
+NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <RakImportIO> * > * _IOControllers)
 {
+	if(_IOControllers == nil || [_IOControllers count] == 0)
+		return nil;
+	
 	NSMutableArray <RakImportItem *> * output = [NSMutableArray array];
 
 	//We iterate input files, we perform independant analysis on each of them
 	//We don't try to merge different input files (eg, all flat CT) because it would be an issues
 	//	if the reader was importing the daily releases of various projects in one take
-	for(id <RakImportIO> IOController in _IOControllers)
+	for(RakImportBaseController <RakImportIO> * IOController in _IOControllers)
 	{
 		//Cool, simplified analysis available
 		if([IOController respondsToSelector:@selector(getManifest)])
@@ -71,94 +74,144 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <id <RakImportIO>> * _IOCo
 		}
 
 		//We get the node
-		RakImportNode * node = [IOController getNode];
-		if(!node.isValid)
+		RakImportNode * _node = [IOController getNode];
+		if(!_node.isValid)
 		{
 #ifdef DEV_VERSION
-			logR("Invalid node");
+			logR("Invalid root node");
 #endif
 			continue;
 		}
+		
+		NSArray <RakImportNode *> * nodes = [_node getNodesIncludingChildren];
 
-		//Easy case, no analysis needed
-		if(node.isFlatCT)
+		for(RakImportNode * node in nodes)
 		{
-			RakImportItem * item = [RakImportItem new];
-			if(item == nil)
+			if(!node.isValid)
+			{
+#ifdef DEV_VERSION
+				logR("Invalid node");
+				NSLog(@"%@", node);
+#endif
 				continue;
-
-			item.issue = IMPORT_PROBLEM_METADATA;
-			item.path = node.nodeName;
-			item.projectData = getEmptyExtraProject();
-			item.IOController = IOController;
-
-			item.contentID = INVALID_VALUE;
-			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
-			NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
-
-			PROJECT_DATA_EXTRA extraProject = item.projectData;
-
-			if(inferedName == nil)
-				inferedName = [item.path lastPathComponent];
-
-			//We try to find if we can easily match a project
-			extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
-
-			//No luck ¯\_(ツ)_/¯
-			if(extraProject.data.project.cacheDBID == INVALID_VALUE)
+			}
+			
+			//Easy case, no analysis needed
+			if(node.isFlatCT)
 			{
-				wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
-				extraProject.data.project.locale = true;
-				extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
+				RakImportItem * item = [RakImportItem new];
+				if(item == nil)
+					continue;
+				
+				item.issue = IMPORT_PROBLEM_METADATA;
+				item.path = node.nodeName;
+				item.projectData = getEmptyExtraProject();
+				item.IOController = IOController;
+				
+				item.contentID = INVALID_VALUE;
+				item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
+				NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
+				
+				PROJECT_DATA_EXTRA extraProject = item.projectData;
+				
+				if(inferedName == nil)
+					inferedName = [item.path lastPathComponent];
+				
+				//We try to find if we can easily match a project
+				extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
+				
+				//No luck ¯\_(ツ)_/¯
+				if(extraProject.data.project.cacheDBID == INVALID_VALUE)
+				{
+					wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
+					extraProject.data.project.locale = true;
+					extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
+				}
+				else
+				{
+					extraProject.data.project = getProjectByID(extraProject.data.project.cacheDBID);
+				}
+				
+				if(item.isTome)
+				{
+					extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
+					if(extraProject.data.tomeLocal != NULL)
+					{
+						CONTENT_TOME * content = malloc(sizeof(CONTENT_TOME));
+						if(content != NULL)
+						{
+							content->ID = CHAPTER_FOR_IMPORTED_VOLUMES;
+							content->isPrivate = true;
+							
+							extraProject.data.tomeLocal[0].details = content;
+							extraProject.data.tomeLocal[0].lengthDetails = 1;
+							extraProject.data.tomeLocal[0].readingID = item.contentID == INVALID_VALUE ? INVALID_SIGNED_VALUE : (int) item.contentID;
+							item.contentID = extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
+							extraProject.data.nombreTomeLocal++;
+						}
+						else
+						{
+							memoryError(sizeof(CONTENT_TOME));
+							free(extraProject.data.tomeLocal);
+							extraProject.data.tomeLocal = NULL;
+						}
+					}
+				}
+				else
+				{
+					extraProject.data.chapitresLocal = malloc(sizeof(uint));
+					if(extraProject.data.chapitresLocal != NULL)
+					{
+						extraProject.data.chapitresLocal[0] = item.contentID;
+						extraProject.data.nombreChapitreLocal++;
+					}
+				}
+				
+				item.projectData = extraProject;
+				
+				[output addObject:item];
+			}
+			//If plain directory, we will go the extra mile
+			else if([IOController isKindOfClass:[RakImportDirController class]])
+			{
+				//Okay, first, look for archives
+				NSMutableArray <RakImportBaseController <RakImportIO> *> * newIOControllers = [NSMutableArray new];
+				NSString * dirToLookup = [node.nodeName stringByDeletingPathExtension];
+				
+				//Some files were already converted
+				NSArray <NSString *> * childrenNames = [node getChildrenNames];
+				
+				[IOController evaluateItemFromDir:node.nodeName withInitBlock:nil andWithBlock:^(id<RakImportIO> controller, NSString * filename, uint index, BOOL * stop)
+				 {
+					 //File in a subdir?
+					 //This also happen to remove the current dir because stringByDeletingLastPathComponent is more agressive than stringByDeletingPathExtension :)
+					 if(![dirToLookup isEqualToString:[filename stringByDeletingLastPathComponent]])
+						 return;
+					 
+					 //The file is a directory, so already linearized
+					 if([childrenNames indexOfObject:filename] != NSNotFound)
+						 return;
+					 
+					 //We check if this is an archive
+					 RakImportBaseController <RakImportIO> * item = createIOForFilename(filename);
+					 if(item != nil)
+						 [newIOControllers addObject:item];
+				 }];
+				
+				//Great, we now insert the new IOControllers in output
+				NSArray <RakImportItem *> * items = getManifestForIOs(newIOControllers);
+				if(items != nil)
+					[output addObjectsFromArray:items];
+				
+				//And we process the children
+				items = getManifestForIOs([node getChildrenIOControllers]);
+				if(items != nil)
+					[output addObjectsFromArray:items];
 			}
 			else
 			{
-				extraProject.data.project = getProjectByID(extraProject.data.project.cacheDBID);
+				[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:@"Ok :c" otherButton:@"Ok :c" informativeTextWithFormat:@"WIP"] runModal];
 			}
-
-			if(item.isTome)
-			{
-				extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
-				if(extraProject.data.tomeLocal != NULL)
-				{
-					CONTENT_TOME * content = malloc(sizeof(CONTENT_TOME));
-					if(content != NULL)
-					{
-						content->ID = CHAPTER_FOR_IMPORTED_VOLUMES;
-						content->isPrivate = true;
-						
-						extraProject.data.tomeLocal[0].details = content;
-						extraProject.data.tomeLocal[0].lengthDetails = 1;
-						extraProject.data.tomeLocal[0].readingID = item.contentID == INVALID_VALUE ? INVALID_SIGNED_VALUE : (int) item.contentID;
-						item.contentID = extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
-						extraProject.data.nombreTomeLocal++;
-					}
-					else
-					{
-						memoryError(sizeof(CONTENT_TOME));
-						free(extraProject.data.tomeLocal);
-						extraProject.data.tomeLocal = NULL;
-					}
-				}
-			}
-			else
-			{
-				extraProject.data.chapitresLocal = malloc(sizeof(uint));
-				if(extraProject.data.chapitresLocal != NULL)
-				{
-					extraProject.data.chapitresLocal[0] = item.contentID;
-					extraProject.data.nombreChapitreLocal++;
-				}
-			}
-
-			item.projectData = extraProject;
-
-			[output addObject:item];
-		}
-		else
-		{
-			[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:@"Ok :c" otherButton:@"Ok :c" informativeTextWithFormat:@"WIP"] runModal];
-			break;
 		}
 	}
 
@@ -226,4 +279,45 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 }
 
 @implementation RakImportNode
+
+- (NSArray <NSString *> *) getChildrenNames
+{
+	if([_children count] == 0)
+		return [NSArray new];
+	
+	NSMutableArray <NSString *> * childrenNames = [NSMutableArray new];
+	for(RakImportNode * child in _children)
+		[childrenNames addObject:child.nodeName];
+	
+	return [NSArray arrayWithArray:childrenNames];
+}
+
+- (NSArray <RakImportBaseController <RakImportIO> *> *) getChildrenIOControllers
+{
+	if([_children count] == 0)
+		return [NSArray new];
+	
+	NSMutableArray <RakImportBaseController <RakImportIO> *> * childrenNames = [NSMutableArray new];
+	for(RakImportNode * child in _children)
+	{
+		if(child.IOController != self.IOController)
+			[childrenNames addObject:child.IOController];
+	}
+	
+	return [NSArray arrayWithArray:childrenNames];
+}
+
+- (NSArray <RakImportNode *> *) getNodesIncludingChildren
+{
+	if([self.children count] == 0)
+		return @[self];
+	
+	NSMutableArray <RakImportNode *> * output = [NSMutableArray arrayWithObject:self];
+
+	for(RakImportNode * child in _children)
+		[output addObjectsFromArray:[child getNodesIncludingChildren]];
+
+	return [NSArray arrayWithArray:output];
+}
+
 @end

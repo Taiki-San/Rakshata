@@ -30,7 +30,7 @@ enum
 	MAX_DEPTH = 5
 };
 
-RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nbFiles, id <RakImportIO> IOController, uint depth)
+RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController, uint depth)
 {
 	if(dirName == NULL || files == NULL || !nbFiles || IOController == NULL || depth >= MAX_DEPTH)
 		return getEmptyImportNode();
@@ -70,7 +70,7 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 			if(!newNode.isValid)
 				continue;
 
-			id tmp = [output.children arrayByAddingObject:newNode];
+			id tmp = output.children == nil ? @[newNode] : [output.children arrayByAddingObject:newNode];
 			if(tmp != nil)
 			{
 				output.children = tmp;
@@ -155,7 +155,7 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 	return output;
 }
 
-RakImportNode * importDataForFiles(char * dirName, char ** files, const uint nbFiles, id <RakImportIO> IOController)
+RakImportNode * importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController)
 {
 	return _importDataForFiles(dirName, files, nbFiles, IOController, 0);
 }

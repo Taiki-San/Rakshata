@@ -169,7 +169,7 @@
 	}
 
 	//Okay, file Import
-	id <RakImportIO> IOController = createIOForFilename(filename);
+	RakImportBaseController <RakImportIO> * IOController = createIOForFilename(filename);
 
 	if(IOController != nil)
 		[RakImportController importFile:@[IOController]];
@@ -185,7 +185,7 @@
 
 	for(NSString * filename in filenames)
 	{
-		id <RakImportIO> IOController = createIOForFilename(filename);
+		RakImportBaseController <RakImportIO> * IOController = createIOForFilename(filename);
 
 		if(IOController != nil)
 			[collector addObject:IOController];

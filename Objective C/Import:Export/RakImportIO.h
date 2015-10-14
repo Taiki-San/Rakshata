@@ -41,12 +41,17 @@
 
 @end
 
+//This is a base class that does the standard work no matter the actual file behind the entity
+@interface RakImportBaseController : NSObject
+
+@end
+
 //This object/structure (required to have a strong relation with IOController) is used to map the directory structure and infer metadata
 //TL;DR: Shaddy shit
 @interface RakImportNode : NSObject
 
 @property NSArray<RakImportNode *> * __nullable children;
-@property id <RakImportIO> __nonnull IOController;
+@property RakImportBaseController <RakImportIO> * __nonnull IOController;
 
 @property NSString * __nonnull nodeName;
 
@@ -56,9 +61,13 @@
 @property bool couldBeComplexT;
 @property bool isValid;
 
+- (NSArray <NSString *> * __nullable) getChildrenNames;
+- (NSArray <RakImportBaseController <RakImportIO> *> * __nullable) getChildrenIOControllers;
+- (NSArray <RakImportNode *> * __nonnull) getNodesIncludingChildren;
+
 @end
 
-@interface RakImportZipController : NSObject <RakImportIO>
+@interface RakImportZipController : RakImportBaseController <RakImportIO>
 {
 	unzFile * archive;
 	NSString * archiveFileName;
@@ -78,7 +87,7 @@
 
 @end
 
-@interface RakImportRarController : NSObject <RakImportIO>
+@interface RakImportRarController : RakImportBaseController <RakImportIO>
 {
 	ARCHIVE * archive;
 	NSString * archiveFileName;
@@ -88,7 +97,7 @@
 
 @end
 
-@interface RakImportDirController : NSObject <RakImportIO>
+@interface RakImportDirController : RakImportBaseController <RakImportIO>
 {
 	NSString * archiveFileName;
 
@@ -100,6 +109,6 @@
 
 @end
 
-id <RakImportIO> __nullable createIOForFilename(NSString * __nonnull filename);
-NSArray <RakImportItem *> * __nullable getManifestForIOs(NSArray <id <RakImportIO>> * __nonnull IOControllers);
+RakImportBaseController <RakImportIO> * __nullable createIOForFilename(NSString * __nonnull filename);
+NSArray <RakImportItem *> * __nullable getManifestForIOs(NSArray <RakImportBaseController <RakImportIO> * > * __nonnull IOControllers);
 void createIOConfigDatForData(NSString * __nonnull path, char * __nonnull * __nonnull filenames, uint nbFiles);

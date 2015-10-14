@@ -37,7 +37,7 @@
 	}
 }
 
-+ (void) importFile : (NSArray <id <RakImportIO>> *) IOController withUI : (RakImportStatusController *) UI
++ (void) importFile : (NSArray <RakImportBaseController <RakImportIO> * > *) IOController withUI : (RakImportStatusController *) UI
 {
 	//We first try to open the file, so we can eventually start working with it
 	NSArray * manifest = getManifestForIOs(IOController);
