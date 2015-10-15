@@ -725,6 +725,10 @@ typedef enum {
    servers, a user can this way allow the vulnerability back. */
 #define CURLSSLOPT_ALLOW_BEAST (1<<0)
 
+/* - NO_REVOKE tells libcurl to disable certificate revocation checks for those
+   SSL backends where such behavior is present. */
+#define CURLSSLOPT_NO_REVOKE (1<<1)
+
 #ifndef CURL_NO_OLDIES /* define this to test if your app builds with all
                           the obsolete stuff removed! */
 
@@ -1632,6 +1636,18 @@ typedef enum {
   /* Do not squash dot-dot sequences */
   CINIT(PATH_AS_IS, LONG, 234),
 
+  /* Proxy Service Name */
+  CINIT(PROXY_SERVICE_NAME, OBJECTPOINT, 235),
+
+  /* Service Name */
+  CINIT(SERVICE_NAME, OBJECTPOINT, 236),
+
+  /* Wait/don't wait for pipe/mutex to clarify */
+  CINIT(PIPEWAIT, LONG, 237),
+
+  /* Set the protocol used when curl is given a URL without a protocol */
+  CINIT(DEFAULT_PROTOCOL, OBJECTPOINT, 238),
+
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;
 
@@ -1685,6 +1701,11 @@ enum {
 
   CURL_HTTP_VERSION_LAST /* *ILLEGAL* http version */
 };
+
+/* Convenience definition simple because the name of the version is HTTP/2 and
+   not 2.0. The 2_0 version of the enum name was set while the version was
+   still planned to be 2.0 and we stick to it for compatibility. */
+#define CURL_HTTP_VERSION_2 CURL_HTTP_VERSION_2_0
 
 /*
  * Public API enums for RTSP requests
@@ -2070,6 +2091,7 @@ struct curl_tlssessioninfo {
 #define CURLINFO_LONG     0x200000
 #define CURLINFO_DOUBLE   0x300000
 #define CURLINFO_SLIST    0x400000
+#define CURLINFO_SOCKET   0x500000
 #define CURLINFO_MASK     0x0fffff
 #define CURLINFO_TYPEMASK 0xf00000
 
@@ -2118,9 +2140,10 @@ typedef enum {
   CURLINFO_LOCAL_IP         = CURLINFO_STRING + 41,
   CURLINFO_LOCAL_PORT       = CURLINFO_LONG   + 42,
   CURLINFO_TLS_SESSION      = CURLINFO_SLIST  + 43,
+  CURLINFO_ACTIVESOCKET     = CURLINFO_SOCKET + 44,
   /* Fill in new entries below here! */
 
-  CURLINFO_LASTONE          = 43
+  CURLINFO_LASTONE          = 44
 } CURLINFO;
 
 /* CURLINFO_RESPONSE_CODE is the new name for the option previously known as
