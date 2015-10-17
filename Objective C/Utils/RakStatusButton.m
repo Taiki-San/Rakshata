@@ -101,6 +101,12 @@ enum
 
 - (void) mouseDown:(nonnull NSEvent *)theEvent
 {
+	if([self convertPoint:theEvent.locationInWindow fromView:nil].x < [self getMinX])
+	{
+		clickingInside = NO;
+		return [super mouseDown:theEvent];
+	}
+	
 	clickingInside = YES;
 	text.textColor = [self fontPressedColor];
 }
