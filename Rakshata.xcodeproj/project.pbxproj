@@ -13,10 +13,6 @@
 		B6013F4B1B5C4D300007F864 /* RakImportStatusListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4A1B5C4D300007F864 /* RakImportStatusListItem.m */; };
 		B6013F4E1B5C4E4F0007F864 /* RakPrefsAddRepoList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */; };
 		B602DA8A1BA56E3D00F247B4 /* NSImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */; };
-		B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCA18E4617000750226 /* libcrypto.a */; };
-		B6033BD018E4617000750226 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCB18E4617000750226 /* libcurl.a */; };
-		B6033BD118E4617000750226 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCC18E4617000750226 /* libsqlite.a */; };
-		B6033BD318E4617000750226 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6033BCE18E4617000750226 /* libz.a */; };
 		B606EB261B6854F900DDBBBD /* DBCacheInit.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB191B6854F900DDBBBD /* DBCacheInit.c */; };
 		B606EB271B6854F900DDBBBD /* DBCacheInstalled.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1A1B6854F900DDBBBD /* DBCacheInstalled.c */; };
 		B606EB281B6854F900DDBBBD /* DBCacheIO.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1B1B6854F900DDBBBD /* DBCacheIO.c */; };
@@ -51,8 +47,6 @@
 		B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */; };
 		B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
-		B611254D1B6688A7007ED137 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B611254C1B6688A7007ED137 /* libssl.a */; };
-		B611254F1B6689CA007ED137 /* libtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B611254E1B6689CA007ED137 /* libtls.a */; };
 		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
@@ -200,7 +194,6 @@
 		B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */; };
 		B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */; };
 		B6D127031AC72062003FFEC6 /* DotRakSourceParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */; };
-		B6D7EC071B682614009FCE64 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D7EC061B682614009FCE64 /* libarchive.a */; };
 		B6D7EC091B682B90009FCE64 /* RakImportRarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC081B682B90009FCE64 /* RakImportRarController.m */; };
 		B6D7EC0D1B682D33009FCE64 /* unrar.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC0C1B682D33009FCE64 /* unrar.c */; };
 		B6D9043F1AB8C8AD001A2D6B /* RakPrefsGeneralView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */; };
@@ -239,6 +232,13 @@
 		B6F6ED1718A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE318A3001400E3B55B /* unzip.c */; };
 		B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */; };
 		B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */; };
+		B6FBD8BA1BD3E5EC00A0A7A5 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */; };
+		B6FBD8BB1BD3E5EC00A0A7A5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */; };
+		B6FBD8BC1BD3E5EC00A0A7A5 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */; };
+		B6FBD8BD1BD3E5EC00A0A7A5 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */; };
+		B6FBD8BE1BD3E5EC00A0A7A5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */; };
+		B6FBD8BF1BD3E5EC00A0A7A5 /* libtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */; };
+		B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */; };
 		B6FBE6CF1B385D3D005D2CC6 /* RakImportItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */; };
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 /* End PBXBuildFile section */
@@ -267,10 +267,6 @@
 		B6013F4D1B5C4E4F0007F864 /* RakPrefsAddRepoList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsAddRepoList.m; path = "Divers Windows/RakPrefsAddRepoList.m"; sourceTree = "<group>"; };
 		B602DA881BA56E3D00F247B4 /* NSImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+Tint.h"; path = "Utils/NSImage+Tint.h"; sourceTree = "<group>"; };
 		B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Tint.m"; path = "Utils/NSImage+Tint.m"; sourceTree = "<group>"; };
-		B6033BCA18E4617000750226 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = "<group>"; };
-		B6033BCB18E4617000750226 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = "<group>"; };
-		B6033BCC18E4617000750226 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/libsqlite.a; sourceTree = "<group>"; };
-		B6033BCE18E4617000750226 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = "<group>"; };
 		B606EB171B6854EB00DDBBBD /* db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = db.h; path = C/DB/db.h; sourceTree = "<group>"; };
 		B606EB181B6854F900DDBBBD /* dbCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dbCache.h; path = C/DB/dbCache.h; sourceTree = "<group>"; };
 		B606EB191B6854F900DDBBBD /* DBCacheInit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBCacheInit.c; path = C/DB/DBCacheInit.c; sourceTree = "<group>"; };
@@ -314,8 +310,6 @@
 		B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCustomButton.m; path = Utils/RakCustomButton.m; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
-		B611254C1B6688A7007ED137 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = "<group>"; };
-		B611254E1B6689CA007ED137 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = Libraries/libtls.a; sourceTree = "<group>"; };
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
@@ -572,7 +566,6 @@
 		B6D126FF1AC713F7003FFEC6 /* RakAddRepoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAddRepoController.h; path = Utils/RakAddRepoController.h; sourceTree = "<group>"; };
 		B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAddRepoController.m; path = Utils/RakAddRepoController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = "Objective C/Utils/DotRakSourceParser.m"; sourceTree = "<group>"; };
-		B6D7EC061B682614009FCE64 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = Libraries/libarchive.a; sourceTree = "<group>"; };
 		B6D7EC081B682B90009FCE64 /* RakImportRarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportRarController.m; path = "Import:Export/RakImportRarController.m"; sourceTree = "<group>"; };
 		B6D7EC0C1B682D33009FCE64 /* unrar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unrar.c; path = C/libarchive/unrar.c; sourceTree = "<group>"; };
 		B6D7EC0E1B682DD2009FCE64 /* libarchivewrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libarchivewrapper.h; path = C/libarchive/libarchivewrapper.h; sourceTree = "<group>"; };
@@ -643,6 +636,13 @@
 		B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagRail.m; path = "Séries/RakSRTagRail.m"; sourceTree = "<group>"; };
 		B6FB5C081A79958E00EF99E6 /* RakSRTagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagItem.h; path = "Séries/RakSRTagItem.h"; sourceTree = "<group>"; };
 		B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagItem.m; path = "Séries/RakSRTagItem.m"; sourceTree = "<group>"; };
+		B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = Libraries/lib/libarchive.a; sourceTree = "<group>"; };
+		B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/lib/libcrypto.a; sourceTree = "<group>"; };
+		B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/lib/libcurl.a; sourceTree = "<group>"; };
+		B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/lib/libsqlite.a; sourceTree = "<group>"; };
+		B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/lib/libssl.a; sourceTree = "<group>"; };
+		B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = Libraries/lib/libtls.a; sourceTree = "<group>"; };
+		B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/lib/libz.a; sourceTree = "<group>"; };
 		B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportItem.m; path = "Import:Export/RakImportItem.m"; sourceTree = "<group>"; };
 		B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTProjectSynopsis.h; path = CTSelec/RakCTProjectSynopsis.h; sourceTree = "<group>"; };
 		B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTProjectSynopsis.m; path = CTSelec/RakCTProjectSynopsis.m; sourceTree = "<group>"; };
@@ -654,18 +654,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6D7EC071B682614009FCE64 /* libarchive.a in Frameworks */,
+				B6FBD8BE1BD3E5EC00A0A7A5 /* libssl.a in Frameworks */,
+				B6FBD8BD1BD3E5EC00A0A7A5 /* libsqlite.a in Frameworks */,
+				B6FBD8BA1BD3E5EC00A0A7A5 /* libarchive.a in Frameworks */,
 				B694B8681A732F3500391B62 /* Foundation.framework in Frameworks */,
 				B694B8661A732F2800391B62 /* AppKit.framework in Frameworks */,
-				B611254D1B6688A7007ED137 /* libssl.a in Frameworks */,
 				B694B8641A732F1B00391B62 /* Cocoa.framework in Frameworks */,
+				B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
-				B6033BD118E4617000750226 /* libsqlite.a in Frameworks */,
-				B6033BD018E4617000750226 /* libcurl.a in Frameworks */,
-				B611254F1B6689CA007ED137 /* libtls.a in Frameworks */,
-				B6033BD318E4617000750226 /* libz.a in Frameworks */,
-				B6033BCF18E4617000750226 /* libcrypto.a in Frameworks */,
+				B6FBD8BF1BD3E5EC00A0A7A5 /* libtls.a in Frameworks */,
+				B6FBD8BC1BD3E5EC00A0A7A5 /* libcurl.a in Frameworks */,
 				B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */,
+				B6FBD8BB1BD3E5EC00A0A7A5 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1286,13 +1286,13 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B6D7EC061B682614009FCE64 /* libarchive.a */,
-				B6033BCA18E4617000750226 /* libcrypto.a */,
-				B6033BCB18E4617000750226 /* libcurl.a */,
-				B6033BCC18E4617000750226 /* libsqlite.a */,
-				B611254C1B6688A7007ED137 /* libssl.a */,
-				B611254E1B6689CA007ED137 /* libtls.a */,
-				B6033BCE18E4617000750226 /* libz.a */,
+				B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */,
+				B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */,
+				B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */,
+				B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */,
+				B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */,
+				B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */,
+				B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */,
 				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
 				B6EBD8091953934600642EB8 /* INPopoverController.framework */,
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
@@ -2042,7 +2042,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/include",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -2052,6 +2052,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/lib",
 				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -2128,7 +2129,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/include",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -2138,6 +2139,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"$(PROJECT_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/lib",
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;

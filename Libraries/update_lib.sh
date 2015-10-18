@@ -353,10 +353,10 @@ do
 			
 			for file in "${LIBRESSL_FILES[@]}"
 			do
-				cp ../../$file ../libressl_crafted/lib/
+				cp ../../lib/$file ../libressl_crafted/lib/
 			done
 			
-			cp -R ../../openssl ../libressl_crafted/include/
+			cp -R ../../include/openssl ../libressl_crafted/include/
 		else
 			CRAFTED_LIBRESSL_DIR=$LIBRESSL_DIR
 		fi
