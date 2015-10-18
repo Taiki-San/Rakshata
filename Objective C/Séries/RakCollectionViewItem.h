@@ -10,8 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#import "RakSRProjectView.h"
-
 @interface RakCollectionViewItem : RakSRProjectView
 {
 	uint * _sharedActive;
