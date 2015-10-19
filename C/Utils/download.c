@@ -27,7 +27,7 @@ static CURLcode ssl_add_rsp_certificate(CURL * curl, void * sslctx, void * parm)
 static CURLcode sslAddRSPAndRepoCertificate(CURL * curl, void * sslctx, void * parm);
 static void defineUserAgent(CURL *curl);
 
-/** DNS cache **/
+#pragma mark - DNS cache
 
 void initializeDNSCache()
 {
@@ -55,7 +55,7 @@ void releaseDNSCache()
 	curl_global_cleanup();
 }
 
-/** Chapter download **/
+#pragma mark - Chapter download
 
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler)
 {
@@ -142,60 +142,14 @@ static void downloadChapterCore(DL_DATA *data)
 
 	CURLcode res; //Get return from download
 
-	//Check if a proxy is configured
-	bool isProxyConfigured = false;
-	char IPProxy[40] = {0}; // 4 * 3 + 3 = 15 pour IPv4, 8 * 4 + 7 pour IPv6
-	FILE *proxyFile = fopen("proxy", "r"); //Check proxy
-	if(proxyFile != NULL)
-	{
-		byte lengthProxy = 0, pos;
-		char c;
-
-		while(lengthProxy < sizeof(IPProxy) && (c = fgetc(proxyFile)) != EOF)
-		{
-			if(c == '.' || c == ':' || isHexa(c))
-				IPProxy[lengthProxy++] = c;
-		}
-		IPProxy[lengthProxy] = 0;
-		fclose(proxyFile);
-
-		//On assume que libcurl est capable de proprement parser le proxy
-		//On vérifie juste la cohérence IPv4/IPv6
-
-		bool couldBeIPv4 = true, couldBeIPv6 = true;
-		short separatorCount = 0;
-
-		for (pos = 0; pos < lengthProxy && (couldBeIPv4 || couldBeIPv6); pos++)
-		{
-			if(IPProxy[pos] == '.')
-			{
-				if(couldBeIPv6)
-					couldBeIPv6 = false;
-				else
-					separatorCount++;
-			}
-			else if(IPProxy[pos] == ':')
-			{
-				if(couldBeIPv4)
-					couldBeIPv4 = false;
-				else
-					separatorCount++;
-			}
-			else if(couldBeIPv4 && !isNbr(IPProxy[pos]) && isHexa(IPProxy[pos]))
-				couldBeIPv4 = false;
-		}
-
-		if((couldBeIPv4 && separatorCount == 3) || (couldBeIPv6 && separatorCount == 7))
-			isProxyConfigured = true;
-	}
-
 	//Start the main work
 
 	CURL* curl = curl_easy_init();
 	if(curl != NULL)
 	{
-		if(isProxyConfigured)
-			curl_easy_setopt(curl, CURLOPT_PROXY, IPProxy); //Proxy
+		char * proxy = NULL;
+		if(getSystemProxy(&proxy))
+			curl_easy_setopt(curl, CURLOPT_PROXY, proxy); //Proxy
 
 		curl_easy_setopt(curl, CURLOPT_URL, data->outputContainer->URL); //URL
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -221,6 +175,8 @@ static void downloadChapterCore(DL_DATA *data)
 		res = curl_easy_perform(curl);
 		*(data->curlHandler) = NULL;
 		curl_easy_cleanup(curl);
+		
+		free(proxy);
 
 		if(res != CURLE_OK) //Si problème
 		{
@@ -245,7 +201,8 @@ static void downloadChapterCore(DL_DATA *data)
 	quit_thread(0);
 }
 
-/** Chapter download utilities **/
+#pragma mark - Chapter download utilities
+
 static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
 {
 	if(quit)						//Global message to quit
@@ -379,6 +336,10 @@ static int internal_download_easy(char* adresse, char* POST, bool printToAFile, 
 		logR("Memory error");
 		return CODE_RETOUR_INTERNAL_FAIL;
 	}
+	
+	char * proxy = NULL;
+	if(getSystemProxy(&proxy))
+		curl_easy_setopt(curl, CURLOPT_PROXY, proxy); //Proxy
 
 	curl_easy_setopt(curl, CURLOPT_URL, adresse);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -425,6 +386,7 @@ static int internal_download_easy(char* adresse, char* POST, bool printToAFile, 
 
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
+	free(proxy);
 
 	if(output != NULL && printToAFile)
 		fclose(output);
@@ -442,7 +404,8 @@ static int internal_download_easy(char* adresse, char* POST, bool printToAFile, 
 	return CODE_RETOUR_OK;
 }
 
-/**Parsing functions**/
+#pragma mark - Parsing functions
+
 static size_t save_data_easy(void *ptr, size_t size, size_t nmemb, void *buffer_dl_void)
 {
 	const size_t blockSize = size * nmemb;
@@ -481,7 +444,7 @@ static void defineUserAgent(CURL *curl)
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, PROJECT_NAME"_"BUILD);
 }
 
-/** SSL related portion **/
+#pragma mark - SSL related portion
 
 BIO * getBIORSPCertificate()
 {

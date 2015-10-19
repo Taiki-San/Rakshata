@@ -366,3 +366,53 @@ void notifyDownloadOver()
 		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 	}
 }
+
+/*****************************************
+ **										**
+ **				   Proxy				**
+ **										**
+ *****************************************/
+
+#import <SystemConfiguration/SystemConfiguration.h>
+
+bool getSystemProxy(char ** _proxyAddress)
+{
+	CFDictionaryRef proxies = SCDynamicStoreCopyProxies(NULL);
+	
+	const void * isActivated;
+	bool isActivatedValue;
+	
+	CFStringRef constants [4][2] = {{kSCPropNetProxiesSOCKSEnable, kSCPropNetProxiesHTTPSEnable},
+									{kSCPropNetProxiesSOCKSProxy, kSCPropNetProxiesHTTPSProxy},
+									{kSCPropNetProxiesSOCKSPort, kSCPropNetProxiesHTTPSPort},
+									{CFSTR("socks5://%@:%@"), CFSTR("https://%@:%@")}};
+
+	//SOCKS then HTTPS
+	for(byte i = 0; i < 2; ++i)
+	{
+		//Check if
+		if((isActivated = CFDictionaryGetValue(proxies, constants[0][i])) != NULL)
+		{
+			if(CFNumberGetValue(isActivated, kCFNumberCharType, &isActivatedValue) && isActivatedValue)
+			{
+				const CFStringRef * proxyAddress = CFDictionaryGetValue(proxies, constants[1][i]);
+				const CFNumberRef * proxyPort = CFDictionaryGetValue(proxies, constants[2][i]);
+				const char * tmpProxyAddress;
+				
+				if(proxyAddress != NULL && proxyPort != NULL)
+				{
+					CFStringRef proxy = CFStringCreateWithFormat(NULL, NULL, constants[3][i], proxyAddress, proxyPort);
+					
+					if(proxyAddress != NULL && (tmpProxyAddress = CFStringGetCStringPtr(proxy, kCFStringEncodingUTF8)) != NULL)
+						*_proxyAddress = strdup(tmpProxyAddress);
+					
+					CFRelease(proxy);
+					
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
