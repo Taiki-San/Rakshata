@@ -97,6 +97,9 @@ char ** listDir(const char * dirName, uint * nbElements);
 void ouvrirSite(const char *URL);
 #define checkFileExist(filename) (access(filename, F_OK) != -1)
 bool checkDirExist(const char *dirname);
+void createPath(const char *output);
+uint32_t getFileSize(const char *filename);
+uint64_t getFileSize64(const char * filename);
 
 /**Repo.c**/
 bool getRepoData(byte type, char * repoURL, char ** output, size_t * sizeOutput);
@@ -124,6 +127,15 @@ void updatePrefs(char* flag, char *stringToAdd);
 bool loadEmailProfile();
 char* loadLargePrefs(char* flag);
 
+/**Sorting.c**/
+int sortNumbers(const void *a, const void *b);
+int sortTomes(const void *a, const void *b);
+int sortProjects(const void *a, const void *b);
+int sortRepo(const void *a, const void *b);
+int sortRootRepo(const void *a, const void *b);
+bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b);
+int strnatcmp(const void *a, const void *b);
+
 /**Thread.c**/
 void createNewThread(void *function, void *arg);
 THREAD_TYPE createNewThreadRetValue(void *function, void *arg);
@@ -144,25 +156,14 @@ void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutL
 /**Unzip.c**/
 bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail);
 
-/**Utilitaires.c**/
-#define crashTemp(string, length) bzero(string, length)
-int sortNumbers(const void *a, const void *b);
-int sortTomes(const void *a, const void *b);
-int sortProjects(const void *a, const void *b);
-int sortRepo(const void *a, const void *b);
-int sortRootRepo(const void *a, const void *b);
-int strnatcmp(const void *a, const void *b);
-bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b);
-uint positionnementApresChar(char* input, char *stringToFind);
+/**Utilitaires**/
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
-void createPath(const char *output);
 IMG_DATA* readFile(char * path);
-#define isHexa(caract) (((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F')) ? 1 : 0)
+bool isDownloadValid(char *input);
+
+#define crashTemp(string, length) bzero(string, length)
+#define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))
 #define isNbr(caract) isdigit(caract)
 #define MIN(a, b) (a < b ? a : b)
-bool isDownloadValid(char *input);
-int isJPEG(void *input);
-int isPNG(void *input);
-void addToRegistry(bool firstStart);
-uint32_t getFileSize(const char *filename);
-uint64_t getFileSize64(const char * filename);
+#define isJPEG(input) (((rawData *) input)[0] == (rawData) '\xff' && ((rawData *) input)[1] == (rawData) '\xd8')
+#define isPNG(input) (((rawData *) input)[0] == (rawData) '\x89' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'N' && ((rawData *) input)[3] == (rawData) 'G')

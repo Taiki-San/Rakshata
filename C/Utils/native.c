@@ -10,8 +10,6 @@
 **                                                                                          **
 *********************************************************************************************/
 
-#include <stdarg.h>
-
 int mkdirR(char *path)
 {
 #ifdef _WIN32
@@ -337,3 +335,111 @@ bool checkDirExist(const char *dirname)
 #endif
 }
 
+void createPath(const char *output)
+{
+	uint longueur_output = 0, i = 0;
+	char folder[512];
+	while(output[longueur_output])
+	{
+		for(; output[longueur_output] && output[longueur_output] != '/' && output[longueur_output] != '\\' && i < sizeof(folder); folder[i++] = output[longueur_output++]);
+		folder[i] = 0;
+		if(output[longueur_output]) //On est pas au bout du path
+		{
+			mkdirR(folder);
+			folder[i++] = '/'; //On ajoute un / au path à construire
+			longueur_output++;
+#ifdef _WIN32
+			if(output[longueur_output] == '\\')
+				for(; output[longueur_output] && output[longueur_output] == '\\'; longueur_output++); //Sous windows, il y a deux \\ .
+#endif
+		}
+	}
+}
+
+uint32_t getFileSize(const char *filename)
+{
+	return getFileSize64(filename) & 0xffffffff;
+}
+
+uint64_t getFileSize64(const char * filename)
+{
+#ifdef _WIN32
+	HANDLE hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if(hFile == INVALID_HANDLE_VALUE)
+		return 0; // error condition, could call GetLastError to find out more
+	
+	LARGE_INTEGER size;
+	if(!GetFileSizeEx(hFile, &size))
+	{
+		CloseHandle(hFile);
+		return 0; // error condition, could call GetLastError to find out more
+	}
+	
+	CloseHandle(hFile);
+	return size.QuadPart;
+	
+#else
+	struct stat st;
+	
+	if(stat(filename, &st) == 0 && st.st_size > 0)
+		return (uint64_t) st.st_size;
+	
+	return 0;
+#endif
+}
+
+#ifdef _WIN32
+void addToRegistry(bool firstStart)
+{
+	if(!firstStart)
+		return;
+	else
+		remove("firstLaunchAddRegistry");
+	
+	HKEY hkey;
+	
+	if( RegOpenKey(HKEY_CURRENT_USER,"Software\\Classes\\.rak",&hkey) == ERROR_SUCCESS)
+	{
+		RegCloseKey(hkey);
+		return;
+	}
+	
+	int ret_value;
+	char localization[SIZE_TRAD_ID_29][TRAD_LENGTH];
+	SDL_MessageBoxData alerte;
+	SDL_MessageBoxButtonData bouton[2];
+	loadTrad(localization, 29);
+	
+	bouton[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+	bouton[0].buttonid = 1; //Valeur retournée
+	bouton[0].text = localization[2]; //ajouter
+	bouton[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+	bouton[1].buttonid = 0;
+	bouton[1].text = localization[3]; //refuser
+	
+	alerte.flags = SDL_MESSAGEBOX_INFORMATION;
+	alerte.title = localization[0];
+	alerte.message = localization[1];
+	alerte.numbuttons = 2;
+	alerte.buttons = bouton;
+	alerte.window = window;
+	alerte.colorScheme = NULL;
+	SDL_ShowMessageBox(&alerte, &ret_value);
+	
+	if(ret_value != 1)
+		return;
+	
+	char *desc="Fichier d'ajout automatique de depot Rakshata";         // file type description
+	char *bin= calloc(1, strlen(REPERTOIREEXECUTION) + 100);
+	
+	RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\Classes\\.rak",0,0,0,KEY_ALL_ACCESS ,0,&hkey,0);// 1: Create subkey for extension
+	RegSetValueEx(hkey,"",0,REG_SZ,(BYTE *)desc,strlen(desc)); // default vlaue is description of file extension
+	RegCloseKey(hkey);
+	
+	snprintf(bin, strlen(REPERTOIREEXECUTION) + 100, "%s\\Rakshata.exe %%1", REPERTOIREEXECUTION);
+	RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.rak\\shell\\Ajouter a Rakshata\\command\\", 0, 0, 0, KEY_ALL_ACCESS, 0, &hkey, 0); // 2: Create Subkeys for action ( "Open with my program" )
+	RegSetValueEx(hkey, "", 0, REG_SZ, (BYTE *)bin, strlen(bin));
+	RegCloseKey(hkey);
+	free(bin);
+}
+#endif
