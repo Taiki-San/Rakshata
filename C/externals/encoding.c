@@ -135,37 +135,47 @@ unsigned char *base64_decode(const char *data, size_t input_length, size_t *outp
 {
 	if(decoding_table[0] == 255)	//build table
 	{
-		decoding_table[0] = 0;
+		memset(decoding_table, 0xFF, sizeof(decoding_table));
 		
-		for (int i = 0; i < 64; i++)
+		for (byte i = 0; i < sizeof(encoding_table); i++)
 			decoding_table[(unsigned char) encoding_table[i]] = i;
 	}
 	
-	if(input_length % 4 != 0) return NULL;
+	if(input_length % 4 != 0)
+		input_length -= input_length % 4;
 	
 	*output_length = input_length / 4 * 3;
 	if(data[input_length - 1] == '=') (*output_length)--;
 	if(data[input_length - 2] == '=') (*output_length)--;
 	
-	unsigned char *decoded_data = malloc(*output_length+1);
+	unsigned char *decoded_data = malloc(*output_length + 1);
 	if(decoded_data == NULL) return NULL;
 	
-	for (size_t i = 0, j = 0; i < input_length;) {
+	uint currentLength = 0;
+	
+	for (size_t i = 0; i < input_length;)
+	{
+		uint32_t sextet[4] = {0};
 		
-		uint32_t sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-		uint32_t sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-		uint32_t sextet_c = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-		uint32_t sextet_d = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+		for(byte pos = 0, c; pos < 4 && i < input_length; ++i)
+		{
+			//Ignore invalid characters
+			if((c = decoding_table[data[i]]) != 0xFF)
+				sextet[pos++] = c;
+
+			else if(data[i] == '=')
+				++pos;
+		}
 		
-		uint32_t triple = (sextet_a << 3 * 6)
-		+ (sextet_b << 2 * 6)
-		+ (sextet_c << 1 * 6)
-		+ (sextet_d << 0 * 6);
+		uint32_t triple = (sextet[0] << 3 * 6) + (sextet[1] << 2 * 6) + (sextet[2] << 1 * 6) + (sextet[3] << 0 * 6);
 		
-		if(j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
-		if(j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
-		if(j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
+		if(currentLength < *output_length) decoded_data[currentLength++] = (triple >> 2 * 8) & 0xFF;
+		if(currentLength < *output_length) decoded_data[currentLength++] = (triple >> 1 * 8) & 0xFF;
+		if(currentLength < *output_length) decoded_data[currentLength++] = (triple >> 0 * 8) & 0xFF;
 	}
+	
+	if(currentLength < *output_length)
+		*output_length = currentLength;
 	
 	decoded_data[*output_length] = 0;
 	return decoded_data;
