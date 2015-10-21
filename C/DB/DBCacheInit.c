@@ -202,7 +202,6 @@ uint setupBDDCache()
 							fprintf(output, "Validated %ls ~ %p - %p - %p\n", projects[pos].projectName, projects[pos].chapitresFull, projects[pos].chapitresPrix, projects[pos].tomesFull);
 							fclose(output);
 						}
-
 #endif
 						projects[pos].project.cacheDBID = cacheID++;
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos].project);
