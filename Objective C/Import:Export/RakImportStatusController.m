@@ -171,6 +171,11 @@ enum
 			frame.origin.y -= oldWindowSize.height;
 			views[i].animator.frame = frame;
 		}
+		
+		//Try to fix the bug that made the window display the expired, midanimation, UI
+		[[NSAnimationContext currentContext] setCompletionHandler:^{
+			[queryWindow.contentView setNeedsDisplay:YES];
+		}];
 
 		[NSAnimationContext endGrouping];
 	}];
