@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-uint locateString(const char* input, const char *stringToFind);
+uint locateEndString(const char* input, const char *stringToFind);
 
 char *loadPrefFile()
 {
@@ -139,7 +139,7 @@ bool loadEmailProfile()
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
-		const uint start = locateString(prefs, "<"SETTINGS_EMAIL_FLAG">"), end = start + locateString(&prefs[start], "</"SETTINGS_EMAIL_FLAG">");
+		const uint start = locateEndString(prefs, "<"SETTINGS_EMAIL_FLAG">"), end = start + locateEndString(&prefs[start], "</"SETTINGS_EMAIL_FLAG">");
 		if(start != 0 && end > 6 && start < end - 6)
         {
 			const uint delta = end - 6 - start;
@@ -173,10 +173,10 @@ char* loadLargePrefs(char* flag)
 	{
 		uint i;
 		size_t bufferSize = 0;
-		char flag_db[10];
+		char flagDB[10];
 		
-		snprintf(flag_db, 10, "<%s>", flag);
-		if((i = locateString(prefs, flag_db)) && *(prefs+i) != '<' && *(prefs+i+1) != '/')
+		snprintf(flagDB, sizeof(flagDB), "<%s>\n", flag);
+		if((i = locateEndString(prefs, flagDB)) != 0 && prefs[i] != '<' && prefs[i + 1] != '/')
 		{
 			prefs += i;
 			while(prefs[++bufferSize] && (prefs[bufferSize] != '<' || prefs[bufferSize+1] != '/' || prefs[bufferSize+2] != flag[0] || prefs[bufferSize+3] != '>'));
@@ -221,11 +221,11 @@ char* loadLargePrefs(char* flag)
 
 //Small util only used there
 
-inline uint locateString(const char* input, const char *stringToFind)
+inline uint locateEndString(const char* input, const char *stringToFind)
 {
 	const char * posInString = strstr(input, stringToFind);
 	
-	return posInString == NULL ? 0 : (posInString - input);
+	return posInString == NULL ? 0 : (posInString - input + (long) strlen(stringToFind));
 }
 
 /*****************************************************
