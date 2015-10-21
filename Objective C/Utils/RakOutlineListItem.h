@@ -21,8 +21,7 @@
 
 @property BOOL expanded;
 @property (readonly, getter=getHeight) CGFloat height;
-
-- (BOOL) isRootItem;
+@property (readonly, getter=isRootItem) BOOL rootItem;
 
 - (uint) getNbChildren;
 

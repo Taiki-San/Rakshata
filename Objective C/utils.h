@@ -22,6 +22,13 @@ NSString * getRepoName(REPO_DATA * repo);
 @interface RakFlippedView : NSView
 @end
 
+@interface NSArray (dataConversion)
+
+- (NSData*) convertToData;
++ (NSArray*) arrayWithData:(NSData*) data;
+
+@end
+
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"

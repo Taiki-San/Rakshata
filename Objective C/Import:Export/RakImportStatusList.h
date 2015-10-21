@@ -32,6 +32,8 @@
 {
 	NSArray * _dataSet;
 	NSArray * rootItems;
+	
+	PROJECT_DATA _draggedProject;
 }
 
 @property (readonly) BOOL haveDuplicate;

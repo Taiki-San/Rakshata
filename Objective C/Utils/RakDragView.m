@@ -136,6 +136,8 @@
 	if(view == nil)
 		return nil;
 	
+	[self finalPostProcessing];
+	
 	[view setWantsLayer:YES];
 	[view.layer setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_DRAG_AND_DROP:nil].CGColor];
 	[view.layer setCornerRadius:5];

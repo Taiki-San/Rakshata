@@ -19,6 +19,34 @@
 
 @end
 
+@implementation NSArray (dataConversion)
+
+/** Convert to NSData, NOT encoding the including objects (only pointers) */
+- (NSData*) convertToData
+{
+	uint n = [self count];
+	NSMutableData* data = [NSMutableData dataWithLength: sizeof(uint) + sizeof(id) * n];
+	void * p = [data mutableBytes];
+	
+	* (uint *) p++ = n;
+	[self getObjects: (id __unsafe_unretained *) p];
+	
+	return data;
+}
+
+/** Reciprocal of convertToData */
++ (NSArray*) arrayWithData:(NSData*) data
+{
+	void * p = (void *) [data bytes];
+
+	uint n = * (uint *) p++;
+	
+	return [NSArray arrayWithObjects:(id __unsafe_unretained *) p count:n];
+}
+
+@end
+
+
 NSString * getStringForWchar(const charType * string)
 {
 	if(string == NULL)
