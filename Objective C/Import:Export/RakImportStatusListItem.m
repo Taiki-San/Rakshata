@@ -54,11 +54,6 @@
 	return self;
 }
 
-- (void) addItemAsChild : (RakImportItem *) item
-{
-	[children addObject:[[RakImportStatusListItem alloc] initWithItem:item]];
-}
-
 - (void) commitFinalList
 {
 	[children sortUsingComparator:^NSComparisonResult(RakImportStatusListItem * obj1, RakImportStatusListItem * obj2) {
@@ -97,6 +92,53 @@
 - (BOOL) metadataProblem
 {
 	return _isRootItem ? cachedMetadataProblem : _itemForChild.issue == IMPORT_PROBLEM_METADATA;
+}
+
+#pragma mark - Kindergarten
+
+- (void) addItemAsChild : (RakImportItem *) item
+{
+	[children addObject:[[RakImportStatusListItem alloc] initWithItem:item]];
+	_nbChildren = [children count];
+}
+
+- (void) insertItemAsChild : (RakImportItem *) item atIndex : (uint) index
+{
+	[children insertObject:[[RakImportStatusListItem alloc] initWithItem:item] atIndex:index];
+	_nbChildren = [children count];
+}
+
+- (BOOL) removeItemFromChildren : (RakImportItem *) item
+{
+	if(!_isRootItem)
+		return NO;
+	
+	__block uint itemIndex = INVALID_VALUE;
+	
+	[children enumerateObjectsUsingBlock:^(RakImportStatusListItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+		
+		if([item isEqualTo:obj.itemForChild])
+		{
+			itemIndex = idx;
+			*stop = YES;
+		}
+	}];
+	
+	if(itemIndex == INVALID_VALUE)
+		return NO;
+	
+	_indexOfLastRemoved = itemIndex;
+	
+	[children removeObjectAtIndex:itemIndex];
+	_nbChildren = [children count];
+	[self checkRefreshStatusRoot];
+	
+	return YES;
+}
+
+- (void) sortChildren
+{
+	
 }
 
 #pragma mark - Content update

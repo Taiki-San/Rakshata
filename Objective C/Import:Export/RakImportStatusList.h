@@ -21,10 +21,15 @@
 @property byte status;
 @property (readonly) BOOL metadataProblem;
 
+@property uint indexOfLastRemoved;
+
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 - (void) addItemAsChild : (RakImportItem *) item;
+- (void) insertItemAsChild : (RakImportItem *) item atIndex : (uint) index;
+- (BOOL) removeItemFromChildren : (RakImportItem *) item;
 - (void) commitFinalList;
 - (byte) checkStatusFromChildren;
+- (void) checkRefreshStatusRoot;
 
 @end
 

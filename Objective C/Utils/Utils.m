@@ -28,7 +28,9 @@
 	NSMutableData* data = [NSMutableData dataWithLength: sizeof(uint) + sizeof(id) * n];
 	void * p = [data mutableBytes];
 	
-	* (uint *) p++ = n;
+	* (uint *) p = n;
+	p += sizeof(uint);
+	
 	[self getObjects: (id __unsafe_unretained *) p];
 	
 	return data;
@@ -39,7 +41,8 @@
 {
 	void * p = (void *) [data bytes];
 
-	uint n = * (uint *) p++;
+	uint n = * (uint *) p;
+	p += sizeof(uint);
 	
 	return [NSArray arrayWithObjects:(id __unsafe_unretained *) p count:n];
 }

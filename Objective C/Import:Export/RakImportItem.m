@@ -265,6 +265,22 @@
 	registerImportEntry(_projectData.data, _isTome);
 }
 
+- (BOOL) isEqualTo : (id) object
+{
+	if(![object isKindOfClass:[self class]])
+		return [super isEqualTo:object];
+	
+	RakImportItem * item = object;
+	
+	if([_path isEqualToString:item.path] && _IOController == item.IOController
+	   && areProjectsIdentical(_projectData.data, item.projectData.data)
+	   && _contentID == item.contentID && _isTome == item.isTome
+	   && _issue == item.issue)
+		return YES;
+	
+	return NO;
+}
+
 #pragma mark - Metadata inference
 
 //If hinted, and we can't figure anything ourselves, we relax the search

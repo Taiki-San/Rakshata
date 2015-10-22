@@ -64,6 +64,8 @@ enum
 		[self initializeMain:NSMakeRect(0, 0, LIST_WIDTH, 200)];
 		[content setHeaderView:nil];
 		[content setAllowsMultipleSelection:YES];
+		
+		content.wantUpdateScrollview = YES;
 
 		//Expand what have to be
 		[rootCollector enumerateObjectsUsingBlock:^(RakImportStatusListItem * obj, NSUInteger idx, BOOL * stop) {
@@ -142,10 +144,10 @@ enum
 
 #pragma mark Drag & Drop
 
-+ (NSArray <RakImportItem *> *) linearizeItem : (RakImportStatusListItem *) item
++ (NSArray <NSDictionary *> *) linearizeItem : (RakImportStatusListItem *) item ofParent : (RakImportStatusListItem *) parent
 {
 	if(!item.rootItem)
-		return @[item.itemForChild];
+		return @[@{@"item" : item.itemForChild, @"root" : parent}];
 	
 	else if([item getNbChildren] == 0)
 		return nil;
@@ -154,7 +156,7 @@ enum
 	
 	for(uint i = 0; i < [item getNbChildren]; ++i)
 	{
-		NSArray * new = [[self class] linearizeItem:[item getChildAtIndex:i]];
+		NSArray * new = [[self class] linearizeItem:[item getChildAtIndex:i] ofParent:item];
 		if(new != nil)
 			[collector addObjectsFromArray:new];
 	}
@@ -162,9 +164,9 @@ enum
 	return [NSArray arrayWithArray:collector];
 }
 
-- (void) updateDraggingProject : (NSArray <RakImportItem *> *) array
+- (void) updateDraggingProject : (NSArray <NSDictionary *> *) array
 {
-	RakImportItem * item = [array objectAtIndex:0];
+	RakImportItem * item = [[array objectAtIndex:0] objectForKey:@"item"];
 	if([array count] > 1)
 	{
 		//We check if it is not all the same project
@@ -173,7 +175,7 @@ enum
 		
 		for(uint i = 1, length = [array count]; i < length; ++i)
 		{
-			item = [array objectAtIndex:i];
+			item = [[array objectAtIndex:i] objectForKey:@"item"];
 			
 			if(wasFirstLocal != item.projectData.data.project.locale || projectID != item.projectData.data.project.projectID || cacheID != item.projectData.data.project.cacheDBID)
 			{
@@ -185,7 +187,7 @@ enum
 			}
 		}
 		
-		item = [array objectAtIndex:0];
+		item = [[array objectAtIndex:0] objectForKey:@"item"];
 	}
 	
 	_draggedProject = item.projectData.data.project;
@@ -198,12 +200,12 @@ enum
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pboard
 {
-	NSMutableArray <RakImportItem *> * collector = [NSMutableArray new];
+	NSMutableArray <NSDictionary *> * collector = [NSMutableArray new];
 	
 	//We only drag
 	for(RakImportStatusListItem * item in items)
 	{
-		NSArray * new = [[self class] linearizeItem : item];
+		NSArray * new = [[self class] linearizeItem : item ofParent:[outlineView parentForItem:item]];
 		if(new != nil)
 			[collector addObjectsFromArray:new];
 	}
@@ -222,26 +224,120 @@ enum
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
 {
-	currentDraggedItem = [draggedItems objectAtIndex:0];
-	
 	[self beginDraggingSession:session willBeginAtPoint:screenPoint forRowIndexes:[NSIndexSet indexSetWithIndex:42] withParent:outlineView];
+}
+
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index
+{
+	if([targetItem isKindOfClass:[RakImportStatusListItem class]] && ((RakImportStatusListItem *)  targetItem).isRootItem)
+		return NSDragOperationMove;
 	
-	currentDraggedItem = nil;
+	return NSDragOperationNone;
 }
 
-- (NSArray<NSString *> *)outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedItems:(NSArray *)items
+- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item : (RakImportStatusListItem *) finalItem childIndex:(NSInteger)finalIndex
 {
-	return nil;
-}
+	NSPasteboard * pasteboard = [info draggingPasteboard];
+	if(pasteboard == nil || finalItem == nil || !finalItem.rootItem || [finalItem getNbChildren] == 0)
+		return NO;
+	
+	NSMutableArray * itemsNeedingUpdate = [NSMutableArray new];
+	NSMutableIndexSet * indexToRemove = [NSMutableIndexSet new];
+	NSArray * array = [NSArray arrayWithData:[pasteboard dataForType:IMPORT_ENTRY_PB_TYPE]];
+	if(array == nil)
+		return NO;
+	
+	//We process each entries
+	uint count = 0;
+	PROJECT_DATA_EXTRA sampleProject = ((RakImportStatusListItem *) [finalItem getChildAtIndex:0]).itemForChild.projectData, oldProject;
+	nullifyCTPointers(&sampleProject.data.project);
+	
+	for (NSDictionary * entry in array)
+	{
+		RakImportItem * item = [entry objectForKey:@"item"];
+		RakImportStatusListItem * root = [entry objectForKey:@"root"];
+		
+		if(item == nil || root == nil || finalItem == root)
+			continue;
+		
+		//We remote the item from its root and add it to the new item
+		if(![root removeItemFromChildren:item])
+		{
+#ifdef DEV_VERSION
+			NSLog(@"Uh, we misidentified the root?!");
+#endif
+		}
+		
+		//We update the item
+		if(finalIndex == NSOutlineViewDropOnItemIndex)
+			[finalItem addItemAsChild:item];
+		else
+			[finalItem insertItemAsChild:item atIndex: finalIndex + count++];
+		
+		NSDictionary * entryID = @{@"index": @(root.indexOfLastRemoved), @"root": root};
 
-- (void) outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
-{
-	[RakList propagateDragAndDropChangeState :NO : [RakDragItem canDL:[session draggingPasteboard]]];
-}
+		//Remove the old root if needed
+		if([root getNbChildren] == 0)
+		{
+			uint index = [rootItems indexOfObject:root];
+			
+			if(index != NSNotFound)
+				[indexToRemove addIndex:index];
+			
+			//We remove any item of this root from the itemsNeedingUpdate
+			NSMutableIndexSet * indexes = [NSMutableIndexSet new];
+			
+			[itemsNeedingUpdate enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+				
+				if([obj objectForKey:@"root"] == root)
+					[indexes addIndex:idx];
+			}];
+			
+			if([indexes count] > 0)
+				[itemsNeedingUpdate removeObjectsAtIndexes:indexes];
+		}
+		else if([itemsNeedingUpdate indexOfObject:entryID] == NSNotFound)
+			[itemsNeedingUpdate addObject:entryID];
+		
+		//Update the project
+		oldProject = item.projectData;
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
-{
-	return NO;
+		sampleProject.data.project.chapitresFull = oldProject.data.project.chapitresFull;
+		sampleProject.data.project.nombreChapitre = oldProject.data.project.nombreChapitre;
+		sampleProject.data.project.tomesFull = oldProject.data.project.tomesFull;
+		sampleProject.data.project.nombreTomes = oldProject.data.project.nombreTomes;
+		oldProject.data.project = sampleProject.data.project;
+		
+		item.projectData = oldProject;
+	}
+	
+	[NSAnimationContext beginGrouping];
+	
+	//Remove independant entries
+	for(NSDictionary * dict in itemsNeedingUpdate)
+	{
+		[outlineView removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:[(NSNumber *) [dict objectForKey:@"index"] unsignedIntegerValue]] inParent:[dict objectForKey:@"root"] withAnimation:NSTableViewAnimationSlideLeft];
+	}
+	
+	//Remove empty root
+	NSMutableArray * mutable = [NSMutableArray arrayWithArray:rootItems];
+	if(mutable != nil)
+	{
+		[mutable removeObjectsAtIndexes:indexToRemove];
+		id new = [NSArray arrayWithArray:mutable];
+		if(new != nil)
+			rootItems = new;
+		
+		[outlineView removeItemsAtIndexes:indexToRemove inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
+	}
+
+	//Reload the receiver
+	[finalItem checkRefreshStatusRoot];
+	[outlineView reloadItem:finalItem reloadChildren:YES];
+	
+	[NSAnimationContext endGrouping];
+	
+	return YES;
 }
 
 #pragma mark Internal Utils
