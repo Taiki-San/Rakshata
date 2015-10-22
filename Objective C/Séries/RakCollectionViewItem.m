@@ -65,6 +65,11 @@ enum	{	BORDER_BOTTOM	= 7	};
 
 #pragma mark - Mouse handling
 
+- (BOOL) mouseDownCanMoveWindow
+{
+	return NO;
+}
+
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	if(!_selected)
