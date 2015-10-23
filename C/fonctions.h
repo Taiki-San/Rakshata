@@ -26,6 +26,7 @@ bool checkNetworkState(int state);
 #define ACCESS_DATA(isTome, dataChap, dataTome) (isTome ? dataTome : dataChap)
 #define ACCESS_ID(isTome, dataChap, dataTome) (isTome ? dataTome : (uint) dataChap)
 void nullifyCTPointers(PROJECT_DATA * project);
+void nullifyParsedPointers(PROJECT_DATA_PARSED * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 void getCTInstalled(PROJECT_DATA * project, bool isTome);
 void generateCTUsable(PROJECT_DATA_PARSED * project);

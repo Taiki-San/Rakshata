@@ -19,6 +19,14 @@ void nullifyCTPointers(PROJECT_DATA * project)
 	project->chapitresPrix = NULL;
 }
 
+void nullifyParsedPointers(PROJECT_DATA_PARSED * project)
+{
+	nullifyCTPointers(&project->project);
+	project->chapitresLocal = project->chapitresRemote = NULL;
+	project->tomeLocal = project->tomeRemote = NULL;
+	project->nombreChapitreLocal = project->nombreChapitreRemote = project->nombreTomeLocal = project->nombreTomeRemote = 0;
+}
+
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
 {
     if(isTome)
