@@ -32,12 +32,17 @@ enum
 
 RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController, uint depth)
 {
-	if(dirName == NULL || files == NULL || !nbFiles || IOController == NULL || depth >= MAX_DEPTH)
-		return getEmptyImportNode();
-
 	RakImportNode * output = getEmptyImportNode();
 
-	output.nodeName = [NSString stringWithUTF8String:dirName];
+	if(dirName == NULL || files == NULL || !nbFiles || IOController == NULL || depth >= MAX_DEPTH)
+		return output;
+
+	NSString * nodeName = [NSString stringWithUTF8String:dirName];
+	
+	if([nodeName hasPrefix:@"__MACOSX/"])
+		return output;
+	
+	output.nodeName = nodeName;
 
 	bool onlyImages = true, imagesAndFlatCT = true;
 	const char * supportedFormat[] = {"png", "jpg", "dat", "jpeg", "pdf", "tiff", "gif"};
