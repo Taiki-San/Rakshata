@@ -194,12 +194,12 @@ enum
 		if(_item.isTome)
 		{
 			if(projectData.nombreTomeLocal > 0 && projectData.tomeLocal[0].readingID != INVALID_SIGNED_VALUE)
-				contentID.stringValue = getStringForVolume(projectData.tomeLocal[0].readingID);
+				contentID.stringValue = getStringForCTID(projectData.tomeLocal[0].readingID);
 		}
 		else
 		{
 			if(projectData.nombreChapitreLocal > 0 && projectData.chapitresLocal[0] != INVALID_VALUE)
-				contentID.stringValue = getStringForChapter(projectData.chapitresLocal[0]);
+				contentID.stringValue = getStringForCTID((int) projectData.chapitresLocal[0]);
 		}
 
 		[self addSubview:contentID];

@@ -72,22 +72,22 @@ NSString * getStringForWchar(const charType * string)
 }
 
 //don't support displaying -0.*
+NSString * getStringForCTID(int ID)
+{
+	if(ID % 10)
+		return [NSString stringWithFormat:@"%d.%d", ID / 10, abs(ID % 10)];
+	
+	return [NSString stringWithFormat:@"%d", ID / 10];
+}
+
 NSString * getStringForChapter(uint _chapID)
 {
-	int chapID = (int) _chapID;
-	
-	if(chapID % 10)
-		return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d.%d", nil), chapID / 10, abs(chapID % 10)];
-
-	return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%d", nil), chapID / 10];
+	return [NSString stringWithFormat:NSLocalizedString(@"CHAPTER-%@", nil), getStringForCTID((int) _chapID)];
 }
 
 NSString * getStringForVolume(int volID)
 {
-	if(volID % 10)
-		return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d.%d", nil), volID / 10, abs(volID % 10)];
-
-	return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%d", nil), volID / 10];
+	return [NSString stringWithFormat:NSLocalizedString(@"VOLUME-%@", nil), getStringForCTID(volID)];
 }
 
 NSString * getStringForVolumeFull(META_TOME tome)

@@ -4,16 +4,16 @@
 "CHAPTER" = "Chapitre";
 "CHAPTERS" = "Chapitres";
 "CHAPTER-NO-CAP" = "chapitre";
-"CHAPTER-%d" = "Chapitre %1$d";
-"CHAPTER-%d.%d" = "Chapitre %1$d.%2$d";
+"CHAPTER-%@" = "Chapitre %1$@";
 
 "VOLUME%c" = "Tome%1$c";
 "%u-VOLUME%c" = "%1$zu Tome%2$c";
 "VOLUME" = "Tome";
 "VOLUMES" = "Tomes";
 "VOLUME-NO-CAP" = "tome";
-"VOLUME-%d" = "Tome %1$d";
-"VOLUME-%d.%d" = "Tome %1$d.%2$d";
+"VOLUME-%@" = "Tome %1$@";
+
+"CTID-%d.%d" = "%1$d.%2$d";
 
 "FREE" = "Gratuit";
 "REMIND" = "S'en souvenir";
