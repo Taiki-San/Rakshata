@@ -434,7 +434,7 @@
 		return @[];
 	}
 	
-	//We determine the begining of the last typed word
+	//We determine the begining of the last typed word (what the completion will replace)
 	uint length = strlen(partialString);
 	while(length > 0 && partialString[length - 1] != ' ')
 		length -= 1;
@@ -472,13 +472,18 @@
 
 - (void) textDidChange:(nonnull NSNotification *)obj
 {
+	BOOL didComplete;
+	
 	//Auto completion
 	if(_wantCompletion && !autoCompleting)
 	{
 		autoCompleting = YES;
 		[obj.object complete:nil];
 		autoCompleting = NO;
+		didComplete = YES;
 	}
+	else
+		didComplete = NO;
 
 	if(_enableMultiLine)
 		[self updateMultilineHeight];
@@ -489,7 +494,7 @@
 		if(!_enableMultiLine)
 			[self validateEditing];
 
-		self.callbackOnChange(obj);
+		self.callbackOnChange(obj, didComplete);
 	}
 }
 

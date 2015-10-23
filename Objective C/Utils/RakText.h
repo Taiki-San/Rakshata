@@ -33,7 +33,7 @@
 @property SEL clicAction;
 @property (copy) void (^callbackOnClic) (RakText * textField);
 
-@property (copy) void (^callbackOnChange)(NSNotification * notification);
+@property (copy) void (^callbackOnChange)(NSNotification * notification, BOOL didComplete);
 
 //Completion
 @property BOOL wantCompletion;

@@ -34,6 +34,11 @@
 	RakButton * detailConfirm;
 	RakSegmentedControl * isTome;
 	CGFloat maxContentIDWidth;
+	
+	bool originalIsArchived;
+	uint guessedCacheID;
+	PROJECT_DATA archivedProject;
+	NSArray * archivedThumbs;
 }
 
 @end
@@ -231,7 +236,7 @@ enum
 	if(contentID != nil || contentName != nil)
 	{
 		__unsafe_unretained id weakSelf = self;
-		contentName.callbackOnChange = contentID.callbackOnChange = ^(NSNotification * notification) {
+		contentName.callbackOnChange = contentID.callbackOnChange = ^(NSNotification * notification, BOOL didComplete) {
 			[weakSelf updateButtonStateByFields];
 		};
 	}
@@ -626,6 +631,12 @@ enum
 			{
 				name = inputField;
 				name.wantCompletion = YES;
+				
+				__block id cpSelf = self;
+				
+				name.callbackOnChange = ^(NSNotification * notification, BOOL didComplete) {
+					[cpSelf handleCompletion];
+				};
 			}
 			else if(i == 1)
 				author = inputField;
@@ -857,6 +868,151 @@ enum
 	[super additionalUpdateOnThemeChange];
 }
 
+#pragma mark - Metadata completion helper
+
+- (void) handleCompletion
+{
+	const char * projectName = [[name.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" "]] UTF8String];
+	
+	if(!haveOneOrLessMatchForNameStartingWith(projectName))
+		return;
+	
+	uint cacheID = getProjectByName(projectName);
+	if(cacheID == INVALID_VALUE)
+		return [self restoreOldContext];
+	else if(cacheID == guessedCacheID)
+		return;
+	
+	PROJECT_DATA project = getProjectByID(cacheID);
+	if(!project.isInitialized)
+		return [self restoreOldContext];
+	
+	if(!originalIsArchived)
+	{
+		NSArray * tmp;
+		archivedProject = [self exfilterProject:&tmp];
+		archivedThumbs = tmp;
+		originalIsArchived = true;
+	}
+	else
+		releaseCTData(_project);
+	
+	_project = project;
+	
+	[self configureProject:project withImages:nil];
+	[self setDefaultThumbFor:dropCT withID:THUMB_INDEX_HEAD2X fallBack : THUMBID_HEAD];
+	[self setDefaultThumbFor:dropSR withID:THUMB_INDEX_SR2X fallBack : THUMBID_SRGRID];
+	[self setDefaultThumbFor:dropDD withID:THUMB_INDEX_DD2X fallBack : THUMBID_DD];
+}
+
+- (void) restoreOldContext
+{
+	if(!originalIsArchived)
+		return;
+
+	releaseCTData(_project);
+	guessedCacheID = INVALID_VALUE;
+	originalIsArchived = false;
+	
+	_project = archivedProject;
+	archivedProject = getEmptyProject();
+	
+	[self configureProject:_project withImages:archivedThumbs];
+}
+
+- (PROJECT_DATA) exfilterProject : (NSArray **) images
+{
+	PROJECT_DATA data = _project;
+	
+	//We linearize the data from all the fields
+	wcsncpy(data.projectName, (charType*) [name.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
+	wcsncpy(data.authorName, (charType*) [author.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
+	wcsncpy(data.description, (charType*) [description.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
+	data.rightToLeft = rightToLeft.selectedSegment == 1;
+	
+	data.status = status.indexOfSelectedItem;
+	data.mainTag = (tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem > nbTags) ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem - 1].ID;
+	data.category = (catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem > nbCats) ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem - 1].ID;
+	
+	data.tags = malloc(sizeof(TAG));
+	if(data.tags != NULL)
+	{
+		data.nbTags = 1;
+		data.tags[0].ID = data.mainTag;
+	}
+	else
+		data.nbTags = 0;
+	
+	NSMutableArray * overridenImages = [NSMutableArray array];
+	
+	if(!dropCT.defaultImage && dropCT.image != nil)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_HEAD2X), @"data" : dropCT.image}];
+	
+	if(!dropDD.defaultImage && dropDD.image != nil)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_DD2X), @"data" : dropDD.image}];
+	
+	if(!dropSR.defaultImage && dropSR.image != nil)
+		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_SR2X), @"data" : dropSR.image}];
+	
+	*images = [NSArray arrayWithArray:overridenImages];
+	
+	return data;
+}
+
+- (void) configureProject : (PROJECT_DATA) project withImages : (NSArray *) array
+{
+	author.stringValue = getStringForWchar(project.authorName);
+	description.stringValue = getStringForWchar(project.description);
+	
+	[rightToLeft setSelectedSegment:project.rightToLeft];
+	[status selectItemAtIndex:project.status];
+	
+	if(project.mainTag != CAT_NO_VALUE)
+	{
+		for(uint i = 0; i < nbTags; i++)
+		{
+			if(tags[i].ID == project.mainTag)
+			{
+				[tagList selectItemAtIndex:i];
+				break;
+			}
+		}
+	}
+	
+	if(project.category)
+	{
+		for(uint i = 0; i < nbCats; i++)
+		{
+			if(cats[i].ID == project.category)
+			{
+				[catList selectItemAtIndex:i];
+				break;
+			}
+		}
+	}
+	
+	if(array == nil)
+		return;
+	
+	for(NSDictionary * dict in array)
+	{
+		switch ([[dict objectForKey:@"code"] unsignedIntegerValue])
+		{
+			case THUMB_INDEX_HEAD2X:
+				dropCT.image = [dict objectForKey:@"data"];
+				break;
+				
+			case THUMB_INDEX_SR2X:
+				dropSR.image = [dict objectForKey:@"data"];
+				break;
+				
+			case THUMB_INDEX_DD2X:
+				dropDD.image = [dict objectForKey:@"data"];
+				break;
+		}
+	}
+}
+
 #pragma mark - Button responder
 
 - (void) changedIsTome
@@ -910,39 +1066,9 @@ enum
 
 - (void) validateField
 {
-	PROJECT_DATA data = _project;
+	NSArray * overridenImages;
 
-	//We linearize the data from all the fields
-	wcsncpy(data.projectName, (charType*) [name.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
-	wcsncpy(data.authorName, (charType*) [author.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
-	wcsncpy(data.description, (charType*) [description.stringValue cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_DESCRIPTION);
-	data.rightToLeft = rightToLeft.selectedSegment == 1;
-
-	data.status = status.indexOfSelectedItem;
-	data.mainTag = (tagList.indexOfSelectedItem == 0 || tagList.indexOfSelectedItem > nbTags) ? CAT_NO_VALUE : tags[tagList.indexOfSelectedItem - 1].ID;
-	data.category = (catList.indexOfSelectedItem == 0 || catList.indexOfSelectedItem > nbCats) ? CAT_NO_VALUE : cats[catList.indexOfSelectedItem - 1].ID;
-
-	data.tags = malloc(sizeof(TAG));
-	if(data.tags != NULL)
-	{
-		data.nbTags = 1;
-		data.tags[0].ID = data.mainTag;
-	}
-	else
-		data.nbTags = 0;
-
-	NSMutableArray * overridenImages = [NSMutableArray array];
-
-	if(!dropCT.defaultImage && dropCT.image != nil)
-		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_HEAD2X), @"data" : dropCT.image}];
-
-	if(!dropDD.defaultImage && dropDD.image != nil)
-		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_DD2X), @"data" : dropDD.image}];
-
-	if(!dropSR.defaultImage && dropSR.image != nil)
-		[overridenImages addObject:@{@"code" : @(THUMB_INDEX_SR2X), @"data" : dropSR.image}];
-
-	if([_controller reflectMetadataUpdate:data withImages:[NSArray arrayWithArray:overridenImages] forItem:_itemOfQueryForMetadata])
+	if([_controller reflectMetadataUpdate:[self exfilterProject:&overridenImages] withImages:overridenImages forItem:_itemOfQueryForMetadata])
 		[self close];
 }
 

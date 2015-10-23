@@ -241,7 +241,7 @@ enum
 
 - (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item
 {
-	char * referencePath = getPathForProject(project);
+	char * referencePath = getPathForProject(item.projectData.data.project);
 	if(referencePath == NULL)
 		return NO;
 

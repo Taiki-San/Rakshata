@@ -872,3 +872,22 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	
 	return output;
 }
+
+bool haveOneOrLessMatchForNameStartingWith(const char * start)
+{
+	bool oneOrLess = false;
+	uint length = strlen(start);
+	char requestText[length + 200];
+	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", start);
+	
+	sqlite3_stmt * request;
+	
+	if((request = createRequest(cache, requestText)) == NULL)
+		return false;
+	
+	oneOrLess = (sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) <= 1);
+	
+	destroyRequest(request);
+
+	return oneOrLess;
+}
