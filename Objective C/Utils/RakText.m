@@ -425,21 +425,28 @@
 		return _callbackOnCompletion();
 
 	uint nbElem;
-	char ** output = getProjectNameStartingWith([textView.string UTF8String], &nbElem);
+	const char * partialString = [textView.string UTF8String];
+	char ** output = getProjectNameStartingWith(partialString, &nbElem);
 
 	if(output == NULL || nbElem == 0)
 	{
 		free(output);
 		return @[];
 	}
+	
+	//We determine the begining of the last typed word
+	uint length = strlen(partialString);
+	while(length > 0 && partialString[length - 1] != ' ')
+		length -= 1;
 
 	NSMutableArray * array = [NSMutableArray array];
 
 	for(uint i = 0; i < nbElem; i++)
 	{
-		[array addObject:[NSString stringWithUTF8String:output[i]]];
+		[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
 		free(output[i]);
 	}
+	
 	free(output);
 
 	return array;
