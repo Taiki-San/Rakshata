@@ -93,7 +93,7 @@
 		
 		//.rak need to write in the whole dir, to handle shared CT
 		//However, arbitrary imports want a more focused decompression
-		if(!wantBroadWriteAccess)
+		if(!wantBroadWriteAccess && self.isTome)
 		{
 			META_TOME tomeData = self.projectData.data.tomeLocal[0];
 			uint chapID = tomeData.details[0].ID;
