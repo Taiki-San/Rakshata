@@ -17,8 +17,23 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 {
 	uint maxValue = isTome ? projectDB.nombreTomesInstalled : projectDB.nombreChapitreInstalled;
 	
-	for((*currentPosIntoStructure)++;	*currentPosIntoStructure < maxValue
-		&& !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chapitresInstalled[*currentPosIntoStructure], projectDB.tomesInstalled[*currentPosIntoStructure].ID));		(*currentPosIntoStructure)++);
+	//No item, nothing to look for, nothing to find
+	if(maxValue == 0)
+	{
+		*currentPosIntoStructure = INVALID_VALUE;
+		return false;
+	}
+	
+	//Can go forward, and doesn't want to stall
+	else if(*currentPosIntoStructure + 1 < maxValue)
+		++(*currentPosIntoStructure);
+
+	//Too far, probably deletions
+	else if(*currentPosIntoStructure >= maxValue)
+		*currentPosIntoStructure = maxValue - 1;
+	
+	while(*currentPosIntoStructure < maxValue && !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chapitresInstalled[*currentPosIntoStructure], projectDB.tomesInstalled[*currentPosIntoStructure].ID)))
+		(*currentPosIntoStructure)++;
 	
 	return *currentPosIntoStructure < maxValue;
 }
