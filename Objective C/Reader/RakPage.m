@@ -524,7 +524,7 @@
 	_cacheBeingBuilt = NO;
 	
 	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
-	if(_posElemInStructure == UINT_MAX)
+	if(_posElemInStructure == INVALID_VALUE)
 	{
 		[self failure];
 		return NO;
@@ -959,31 +959,30 @@
 	
 	deleteProject(_project, _currentElem, self.isTome);
 	
-	if(_posElemInStructure != INVALID_VALUE && _posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
+	if(_posElemInStructure != INVALID_VALUE)
 	{
-		if(_posElemInStructure > 0)
+		if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 		{
-			_posElemInStructure--;
-			[self nextChapter];
+			if(_posElemInStructure > 0)
+			{
+				_posElemInStructure--;
+				return [self nextChapter];
+			}
+			else
+			{
+				_posElemInStructure++;
+				return [self prevChapter];
+			}
 		}
-		else
-		{
-			_posElemInStructure++;
-			[self prevChapter];
-		}
+		else if(_posElemInStructure > 0)
+			return [self prevChapter];
 	}
-	else if(_posElemInStructure != INVALID_VALUE && _posElemInStructure > 0)
-	{
-		[self prevChapter];
-	}
-	else
-	{
-		_data.pageCourante = 0;
-		_data.nombrePage = 1;
-		[self failure : 0];
-		mainScroller.selectedIndex = 1;
-		[[[NSApp delegate] CT] ownFocus];
-	}
+
+	_data.pageCourante = 0;
+	_data.nombrePage = 1;
+	[self failure : 0];
+	mainScroller.selectedIndex = 1;
+	[[[NSApp delegate] CT] ownFocus];
 }
 
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView
@@ -1119,12 +1118,12 @@
 		//Encore de la place dans le cache
 		else if([self nbEntryRemaining : *data])
 		{
-			char move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1, i;	//Next page by default
+			int move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1, i;	//Next page by default
 			uint max = _data.nombrePage;
 			int64_t basePage = _data.pageCourante;
 			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
-			for(i = 1; i <= 5 && (basePage >= i * move || basePage + i * move < max); i++)
+			for(i = 1; i <= 5 && (move == 1 || basePage > abs(i * move)) && basePage + i * move < max; i++)
 			{
 				if(![self entryValid : *data : basePage + 1 + i * move])
 				{
@@ -1145,7 +1144,7 @@
 			
 			//We cache the previous page, in the case the user want to go back
 			//First, we check if we are in the general case
-			if(basePage - move < max)
+			if((move == -1 || basePage > move) && basePage - move < max)
 			{
 				if(![self entryValid : *data :basePage + 1 - move])
 				{
