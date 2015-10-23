@@ -301,12 +301,12 @@ enum
 		
 		//Update the project
 		oldProject = item.projectData;
-
-		sampleProject.data.project.chapitresFull = oldProject.data.project.chapitresFull;
-		sampleProject.data.project.nombreChapitre = oldProject.data.project.nombreChapitre;
-		sampleProject.data.project.tomesFull = oldProject.data.project.tomesFull;
-		sampleProject.data.project.nombreTomes = oldProject.data.project.nombreTomes;
+		
+		releaseCTData(oldProject.data.project);
+		nullifyCTPointers(&oldProject.data.project);
 		oldProject.data.project = sampleProject.data.project;
+		
+		generateCTUsable(&oldProject.data);
 		
 		item.projectData = oldProject;
 	}

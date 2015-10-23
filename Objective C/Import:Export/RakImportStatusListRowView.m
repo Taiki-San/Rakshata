@@ -140,6 +140,9 @@
 
 	button.stringValue = [self determineMessageForStatus : button.status andItem:listItem];
 
+	projectName.stringValue = [self getLineName : listItem];
+	[projectName sizeToFit];
+
 	if(oldStatus != button.status)
 		[self setNeedsDisplay:YES];
 
@@ -149,30 +152,31 @@
 
 - (void) getDetails
 {
-	if(isRoot && !listItem.metadataProblem)
-		return;
-
-	if(listItem.metadataProblem)
+	if(isRoot)
 	{
-		_list.query = alert = [[RakImportQuery alloc] autoInitWithMetadata:listItem.projectData];
-		if(alert != nil)
+		if(listItem.metadataProblem)
 		{
-			if(isRoot)
+			_list.query = alert = [[RakImportQuery alloc] autoInitWithMetadata:listItem.projectData];
+			if(alert != nil)
 			{
-				RakImportStatusListItem * child = [listItem getChildAtIndex:0];
-				if(child != nil)
-					alert.itemOfQueryForMetadata = child.itemForChild;
+				if(isRoot)
+				{
+					RakImportStatusListItem * child = [listItem getChildAtIndex:0];
+					if(child != nil)
+						alert.itemOfQueryForMetadata = child.itemForChild;
+				}
+				else
+					alert.itemOfQueryForMetadata = _item;
 			}
-			else
-				alert.itemOfQueryForMetadata = _item;
 		}
 	}
+
 	else if(_item.issue == IMPORT_PROBLEM_DUPLICATE)
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDuplicate:_item];
 
-	else if(_item.issue == IMPORT_PROBLEM_METADATA_DETAILS)
+	else	//_item.issue == IMPORT_PROBLEM_METADATA_DETAILS || listItem.metadataProblem
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDetails:_item];
-
+	
 	[alert launchPopover:button :self];
 }
 

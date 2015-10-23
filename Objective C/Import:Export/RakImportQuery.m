@@ -68,7 +68,7 @@ enum
 - (instancetype) _autoInitWithDuplicate : (RakImportItem *) item
 {
 	_item = item;
-	issue = _item.issue;
+	issue = IMPORT_PROBLEM_DUPLICATE;
 	return self;
 }
 
@@ -116,7 +116,7 @@ enum
 
 - (instancetype) autoInitWithDetails : (RakImportItem *) item
 {
-	if(item == nil || item.issue != IMPORT_PROBLEM_METADATA_DETAILS)
+	if(item == nil)
 		return nil;
 
 	return [[self initWithFrame:NSMakeRect(0, 0, 300, 143)] _autoInitWithDetails:item];
@@ -125,7 +125,7 @@ enum
 - (instancetype) _autoInitWithDetails : (RakImportItem *) item
 {
 	_item = item;
-	issue = _item.issue;
+	issue = IMPORT_PROBLEM_METADATA_DETAILS;
 	return self;
 }
 
@@ -261,7 +261,8 @@ enum
 	detailConfirm = [RakButton allocWithText:NSLocalizedString(@"CONFIRM", nil)];
 	if(detailConfirm != nil)
 	{
-		detailConfirm.enabled = NO;
+		[self updateButtonStateByFields];
+
 		detailConfirm.target = self;
 		detailConfirm.action = @selector(validateDetail);
 
@@ -947,7 +948,7 @@ enum
 
 - (void) validateDetail
 {
-	BOOL wantTome = _item.isTome = isTome.selectedSegment != 0, validInput = NO;
+	BOOL wantTome = isTome.selectedSegment != 0, validInput = NO;
 
 	NSNumber * number = @([getNumberForString(contentID.stringValue) intValue] * 10);
 	NSString * string = contentName.stringValue;
@@ -980,12 +981,12 @@ enum
 	if(!validInput)
 		return;
 
+	PROJECT_DATA_EXTRA project = _item.projectData;
 	_item.contentID = checkedContentID;
 
 	if(wantTome)
 	{
 		META_TOME tomeData;
-		PROJECT_DATA_EXTRA project = _item.projectData;
 		
 		//Somehow, the volume wasn't registered ¯\_(ツ)_/¯
 		if(project.data.nombreTomeLocal == 0)
@@ -1018,6 +1019,8 @@ enum
 						project.data.chapitresLocal = NULL;
 					}
 				}
+				else
+					free(tomeData.details);
 			}
 			else
 				logR("Couldn't grab a volume ID ಠ_ಠ\nYou should restart Rakshata and/or import smaller chuncks (and send us an email)");
@@ -1030,7 +1033,23 @@ enum
 
 		_item.projectData = project;
 	}
+	else if(_item.isTome != wantTome)
+	{
+		releaseParsedData(project.data);
+		nullifyParsedPointers(&project.data);
+		
+		project.data.chapitresLocal = malloc(sizeof(uint));
+		if(project.data.chapitresLocal != NULL)
+		{
+			project.data.nombreChapitreLocal = 1;
+			project.data.chapitresLocal[0] = _item.contentID;
+			generateCTUsable(&project.data);
+		}
 
+		_item.projectData = project;
+	}
+
+	_item.isTome = wantTome;
 	[self close];
 
 	[_item refreshState];
