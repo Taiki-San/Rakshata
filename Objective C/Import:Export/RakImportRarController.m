@@ -45,7 +45,7 @@
 - (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
 	const char * startExpectedPath = dirName == nil ? NULL : [dirName UTF8String];
-	uint lengthExpected = strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[archive->nbFiles];
+	uint lengthExpected = startExpectedPath != NULL ? strlen(startExpectedPath) : 0, nbFileToEvaluate = 0, indexOfFiles[archive->nbFiles];
 
 	//We gather the indexes of the files we'll evaluate
 	for(uint pos = 0; pos < archive->nbFiles; pos++)

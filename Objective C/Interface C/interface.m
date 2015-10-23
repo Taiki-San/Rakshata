@@ -407,12 +407,13 @@ bool getSystemProxy(char ** _proxyAddress)
 						*_proxyAddress = strdup(tmpProxyAddress);
 					
 					CFRelease(proxy);
-					
+					CFRelease(proxies);
 					return true;
 				}
 			}
 		}
 	}
 
+	CFRelease(proxies);
 	return false;
 }
