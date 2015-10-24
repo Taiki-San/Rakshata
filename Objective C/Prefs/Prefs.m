@@ -159,13 +159,19 @@ enum
 		}
 		case GET_FONT_STANDARD:
 		{
-			output = @"Helvetica";
+			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
+				output = @".AppleSystemUIFont";
+			else
+				output = @"Helvetica";
 			break;
 		}
 		case GET_FONT_TAGS:
 		case GET_FONT_PLACEHOLDER:
 		{
-			output = @"Helvetica-Oblique";
+			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
+				output = @".AppleSystemUIFontItalic";
+			else
+				output = @"Helvetica-Oblique";
 			break;
 		}
 		case GET_FONT_RD_BUTTONS:
@@ -173,7 +179,10 @@ enum
 		case GET_FONT_ABOUT:
 		case GET_FONT_PREFS_TITLE:
 		{
-			output = @"Helvetica-Bold";
+			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
+				output = @".AppleSystemUIFontBold";
+			else
+				output = @"Helvetica-Bold";
 			break;
 		}
 	}

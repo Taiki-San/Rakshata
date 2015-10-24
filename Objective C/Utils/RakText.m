@@ -136,24 +136,25 @@
 	if(_forcedOffsetY)
 		newOrigin.y -= _forcedOffsetY;
 	
-	//On non-retina display, the text will be blurry if not on a round origin relative to the window, yeah, awesome...
+	NSRect rectOnScreen;
+	CGFloat factor;
+	
+	//The text will be blurry if not on a round origin relative to the display, yeah, awesome...
 	if(self.window == nil)
 	{
-		if([[(RakAppDelegate *) [NSApp delegate] window] backingScaleFactor] == 1)
-		{
-			NSRect rectOnScreen = [[(RakAppDelegate *) [NSApp delegate] window] convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
-			
-			newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
-			newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
-		}
+		rectOnScreen = [[(RakAppDelegate *) [NSApp delegate] window] convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+		factor = [[(RakAppDelegate *) [NSApp delegate] window] backingScaleFactor];		
 	}
-	else if([self.window backingScaleFactor] == 1)
+	else
 	{
-		NSRect rectOnScreen = [self.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
-		
-		newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
-		newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
+		rectOnScreen = [self.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+		factor = [self.window backingScaleFactor];
 	}
+	
+	if(factor == 0)	factor = 1;
+
+	newOrigin.x += roundf(rectOnScreen.origin.x * factor) / factor - rectOnScreen.origin.x;
+	newOrigin.y += roundf(rectOnScreen.origin.y * factor) / factor - rectOnScreen.origin.y;
 	
 	[super setFrameOrigin: (_currentFrame.origin = newOrigin)];
 }
