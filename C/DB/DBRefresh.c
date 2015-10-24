@@ -232,11 +232,11 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 					moveProjectExtraToParsed(projects[pos], &projectShort[pos]);
 					
 #ifdef PAID_CONTENT_ONLY_FOR_PAID_REPO
-					if(projectShort[pos].isPaid && !paidRepo)
+					if(projectShort[pos].project.isPaid && !paidRepo)
 					{
-						projectShort[pos].isPaid = false;
-						free(projectShort[pos].chapitresPrix);
-						projectShort[pos].chapitresPrix = NULL;
+						projectShort[pos].project.isPaid = false;
+						free(projectShort[pos].project.chapitresPrix);
+						projectShort[pos].project.chapitresPrix = NULL;
 					}
 #endif
 				}

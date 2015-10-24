@@ -200,6 +200,8 @@
 		B6D7EC0D1B682D33009FCE64 /* unrar.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC0C1B682D33009FCE64 /* unrar.c */; };
 		B6D9043F1AB8C8AD001A2D6B /* RakPrefsGeneralView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */; };
 		B6D904421AB8D7C7001A2D6B /* RakSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */; };
+		B6DDBB071BDBED5E00B9E6AC /* INPopoverController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */; };
+		B6DDBB081BDBED7300B9E6AC /* INPopoverController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6DFE1A71B1D007000D65E68 /* settings in Resources */ = {isa = PBXBuildFile; fileRef = B6DFE1A51B1D007000D65E68 /* settings */; };
 		B6DFE1A81B1D007000D65E68 /* backupTags.db in Resources */ = {isa = PBXBuildFile; fileRef = B6DFE1A61B1D007000D65E68 /* backupTags.db */; };
 		B6E07A1C1B3575F60016C9B0 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E07A1A1B3575F60016C9B0 /* zip.c */; };
@@ -217,8 +219,6 @@
 		B6EB260619841E2500D678B3 /* auth.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6EB260519841E2500D678B3 /* auth.xib */; };
 		B6EB260919845E2100D678B3 /* RakAuthController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB260819845E2100D678B3 /* RakAuthController.m */; };
 		B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBD80419538B6B00642EB8 /* RakPopover.m */; };
-		B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; };
-		B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6EBD8091953934600642EB8 /* INPopoverController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC482218E5E03E00288C3B /* RakChapterView.m */; };
 		B6ECCB211B29BBFE0073D10B /* RakForegroundBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECCB201B29BBFD0073D10B /* RakForegroundBackgroundView.m */; };
 		B6ECCB251B29BF480073D10B /* RakAuthForegroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECCB241B29BF480073D10B /* RakAuthForegroundView.m */; };
@@ -252,7 +252,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B6EBD80C1953942C00642EB8 /* INPopoverController.framework in Embed Frameworks */,
+				B6DDBB081BDBED7300B9E6AC /* INPopoverController.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -577,6 +577,7 @@
 		B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsGeneralView.m; path = "Divers Windows/RakPrefsGeneralView.m"; sourceTree = "<group>"; };
 		B6D904401AB8D7C7001A2D6B /* RakSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedControl.h; path = Utils/RakSegmentedControl.h; sourceTree = "<group>"; };
 		B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSegmentedControl.m; path = Utils/RakSegmentedControl.m; sourceTree = "<group>"; };
+		B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
 		B6DFE1A51B1D007000D65E68 /* settings */ = {isa = PBXFileReference; lastKnownFileType = file; path = settings; sourceTree = "<group>"; };
 		B6DFE1A61B1D007000D65E68 /* backupTags.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = backupTags.db; sourceTree = "<group>"; };
 		B6E07A1A1B3575F60016C9B0 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
@@ -604,7 +605,6 @@
 		B6EB260819845E2100D678B3 /* RakAuthController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAuthController.m; path = Prefs/RakAuthController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EBD80319538B6B00642EB8 /* RakPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakPopover.h; path = Reader/RakPopover.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6EBD80419538B6B00642EB8 /* RakPopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPopover.m; path = Reader/RakPopover.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6EBD8091953934600642EB8 /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
 		B6EC482118E5E03E00288C3B /* RakChapterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakChapterView.h; path = CTSelec/RakChapterView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6EC482218E5E03E00288C3B /* RakChapterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakChapterView.m; path = CTSelec/RakChapterView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6ECCB1F1B29BBFD0073D10B /* RakForegroundBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakForegroundBackgroundView.h; path = Foreground/RakForegroundBackgroundView.h; sourceTree = "<group>"; };
@@ -669,8 +669,8 @@
 				B68EAF751BD5180C00F6AB97 /* Foundation.framework in Frameworks */,
 				B68EAF741BD5180C00F6AB97 /* Cocoa.framework in Frameworks */,
 				B6FBD8BC1BD3E5EC00A0A7A5 /* libcurl.a in Frameworks */,
-				B6EBD80A1953934600642EB8 /* INPopoverController.framework in Frameworks */,
 				B6FBD8BB1BD3E5EC00A0A7A5 /* libcrypto.a in Frameworks */,
+				B6DDBB071BDBED5E00B9E6AC /* INPopoverController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1291,6 +1291,7 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */,
 				B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */,
 				B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */,
@@ -1299,7 +1300,6 @@
 				B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */,
 				B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */,
 				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
-				B6EBD8091953934600642EB8 /* INPopoverController.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2007,6 +2007,7 @@
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
+				CLANG_WARN_ASSIGN_ENUM = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
@@ -2029,6 +2030,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Framework/",
+					"$(PROJECT_DIR)/Framework",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -2055,7 +2057,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				INFOPLIST_FILE = info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
@@ -2065,7 +2067,7 @@
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -2090,8 +2092,8 @@
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_USE_OPTIMIZATION_PROFILE = YES;
-				CLANG_WARN_ASSIGN_ENUM = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
+				CLANG_WARN_ASSIGN_ENUM = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -2115,6 +2117,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Framework/",
+					"$(PROJECT_DIR)/Framework",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -2142,7 +2145,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				INFOPLIST_FILE = info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
@@ -2152,8 +2155,8 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.taiki.$(PRODUCT_NAME:rfc1034identifier)";
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
