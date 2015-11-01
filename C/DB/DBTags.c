@@ -358,7 +358,7 @@ charType * getNameForRequestAndCode(sqlite3_stmt * request, uint32_t code)
 
 charType * getCatNameForCode(uint32_t catID)
 {
-	if(cache == NULL)
+	if(cache == NULL || catID == CAT_NO_VALUE)
 		return NULL;
 	
 	sqlite3_stmt * request;
@@ -393,7 +393,7 @@ bool doesCatOfIDExist(uint32_t catID)
 
 charType * getTagNameForCode(uint32_t tagID)
 {
-	if(cache == NULL)
+	if(cache == NULL || tagID == CAT_NO_VALUE)
 		return NULL;
 	
 	sqlite3_stmt * request;

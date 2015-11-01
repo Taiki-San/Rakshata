@@ -60,6 +60,9 @@ int wstrcmp(const charType * a, const charType * b)
 
 charType * wstrdup(const charType * input)
 {
+	if(input == NULL)
+		return NULL;
+	
 	size_t length = wstrlen(input);
 
 	if(length == 0)

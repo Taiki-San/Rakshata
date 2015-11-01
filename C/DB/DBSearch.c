@@ -288,10 +288,6 @@ uint _getFromSearch(void * _table, byte type, void * data)
 
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 {
-	//Some sanity checks first
-	if((type == INSERT_TAG && project.mainTag == CAT_NO_VALUE) || (type == INSERT_CAT && project.category == CAT_NO_VALUE))
-		return false;
-	   
 	SEARCH_JUMPTABLE table = _table;
 	
 	if(_table == NULL)
@@ -742,6 +738,9 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	}
 	
 	destroyRequest(request);
+
+	if(*dataLength != pos)
+		*dataLength = pos;
 	
 	return codes;
 }
@@ -804,7 +803,6 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		}
 			
 		snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest, "MAIN_CACHE" cache ON cache."DBNAMETOID(RDB_ID)" = list."DBNAMETOID(RDB_ID)" WHERE ((SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)")) %s INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", additionnalRequest);
-
 	}
 	
 	if((request = createRequest(cache, requestString)) == NULL)
