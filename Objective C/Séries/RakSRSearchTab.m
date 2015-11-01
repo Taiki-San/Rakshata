@@ -67,7 +67,7 @@
 		[self addSubview:source];
 	}
 	
-	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_TYPE];
+	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_CAT];
 	if(type != nil)
 	{
 		type.alphaValue = 0;

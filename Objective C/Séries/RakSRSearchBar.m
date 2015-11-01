@@ -120,6 +120,27 @@
 	return self;
 }
 
+- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData
+{
+	self = [self initWithFrame:frameRect :ID];
+
+	if(self != nil)
+	{
+		NSMutableArray * array = [NSMutableArray new];
+		if(array == nil)
+			return self;
+		
+		for(uint i = 0; i < nbData; ++i)
+		{
+			[array addObject:getStringForWchar(names[i])];
+		}
+		
+		data = [NSArray arrayWithArray:array];
+	}
+	
+	return self;
+}
+
 - (void) initCell
 {
 	NSSearchFieldCell * cell = self.cell;
@@ -199,7 +220,7 @@
 	else if(_ID == SEARCH_BAR_ID_TAG)
 		return NSLocalizedString(@"PROJ-SEARCH-TAGS", nil);
 	
-	else if(_ID == SEARCH_BAR_ID_TYPE)
+	else if(_ID == SEARCH_BAR_ID_CAT)
 		return NSLocalizedString(@"PROJ-SEARCH-TYPE", nil);
 	
 	NSLog(@"Not supported yet");
@@ -273,23 +294,38 @@
 
 - (NSArray *)control:(NSControl *)control textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
-	uint nbElem;
-	char ** output = getProjectNameStartingWith([textView.string UTF8String], &nbElem);
-	
-	if(output == NULL || nbElem == 0)
-	{
-		free(output);
-		return @[];
-	}
-	
 	NSMutableArray * array = [NSMutableArray array];
+	NSString * prefix = textView.string;
 	
-	for(uint i = 0; i < nbElem; i++)
+	if(_ID == SEARCH_BAR_ID_MAIN)
 	{
-		[array addObject:[NSString stringWithUTF8String:output[i]]];
-		free(output[i]);
+		uint nbElem;
+		char ** output = getProjectNameStartingWith([prefix UTF8String], &nbElem);
+
+		if(output == NULL || nbElem == 0)
+		{
+			free(output);
+			return @[];
+		}
+		
+		for(uint i = 0; i < nbElem; i++)
+		{
+			[array addObject:[NSString stringWithUTF8String:output[i]]];
+			free(output[i]);
+		}
+		free(output);
 	}
-	free(output);
+	
+	else if(_ID == SEARCH_BAR_ID_AUTHOR || _ID == SEARCH_BAR_ID_SOURCE || _ID == SEARCH_BAR_ID_TAG || _ID == SEARCH_BAR_ID_CAT)
+	{
+		[data enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
+		{
+			if([obj hasPrefix:prefix caseInsensitive:YES])
+			{
+				[array addObject:obj];
+			}
+		}];
+	}
 	
 	return array;
 }

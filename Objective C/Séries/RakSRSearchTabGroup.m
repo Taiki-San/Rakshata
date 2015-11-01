@@ -32,11 +32,13 @@ enum
 		
 		if(_ID != SEARCH_BAR_ID_EXTRA)
 		{
-			list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] :[self getRDBSCodeForID]];
+			[self loadDataForListAndSearch];
+			
+			list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] ofType:_ID withData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(list != nil)
 				[self addSubview:[list getContent]];
 			
-			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] :_ID];
+			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList];
 			if(searchBar != nil)
 			{
 				[self addSubview:searchBar];
@@ -100,7 +102,7 @@ enum
 		return RDBS_TYPE_SOURCE;
 	else if(_ID == SEARCH_BAR_ID_TAG)
 		return RDBS_TYPE_TAG;
-	else if(_ID == SEARCH_BAR_ID_TYPE)
+	else if(_ID == SEARCH_BAR_ID_CAT)
 		return RDBS_TYPE_CAT;
 	
 	NSLog(@"Not supported yet");
@@ -177,6 +179,66 @@ enum
 	frame.origin.y = 0;
 	
 	return frame;
+}
+
+#pragma mark - Controller
+
+- (void) loadDataForListAndSearch
+{
+	byte type = [self getRDBSCodeForID];
+	if(type != RDBS_TYPE_SOURCE)
+	{
+		indexesData = getSearchData(type, &listData, &nbDataList);
+		return;
+	}
+
+	BOOL fail = NO;
+	uint nbElem;
+	REPO_DATA ** repo = (REPO_DATA **) getCopyKnownRepo(&nbElem, NO);
+	
+	if(repo != NULL)
+	{
+		uint64_t * _indexes = malloc(nbElem * sizeof(uint64_t));
+		charType ** output = malloc(nbElem * sizeof(charType *));
+		if(output != NULL && _indexes != NULL)
+		{
+			qsort(repo, nbElem, sizeof(REPO_DATA *), sortRepo);
+			
+			for(uint i = 0; i < nbElem; i++)
+			{
+				output[i] = malloc(REPO_NAME_LENGTH * sizeof(charType));
+				if(output[i] == NULL)
+				{
+					while (i-- > 0)
+						free(output[i]);
+					
+					fail = YES;
+					break;
+				}
+				wstrncpy(output[i], REPO_NAME_LENGTH, repo[i]->name);
+				_indexes[i] = getRepoID(repo[i]);
+			}
+			
+			if(fail)
+			{
+				free(_indexes);
+				free(output);
+			}
+			else
+			{
+				nbDataList = nbElem;
+				listData = output;
+				indexesData = _indexes;
+			}
+		}
+		else
+		{
+			free(_indexes);
+			free(output);
+		}
+		
+		freeRepo(repo);
+	}
 }
 
 #pragma mark - Color

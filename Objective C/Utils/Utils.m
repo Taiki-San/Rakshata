@@ -49,6 +49,20 @@
 
 @end
 
+@implementation NSString (comparaison)
+
+- (BOOL) hasPrefix:(NSString *)str caseInsensitive : (BOOL) caseInsensitive
+{
+	if(!caseInsensitive)
+		return [self hasPrefix:str];
+	
+	NSRange prefixRange = [self rangeOfString:str options:NSAnchoredSearch|NSCaseInsensitiveSearch];
+
+	return prefixRange.location == 0 && prefixRange.length > 0;
+}
+
+@end
+
 
 NSString * getStringForWchar(const charType * string)
 {

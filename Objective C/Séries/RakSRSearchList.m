@@ -12,8 +12,11 @@
 
 @implementation RakSRSearchList
 
-- (instancetype) init : (NSRect) frame : (byte) type
+- (instancetype) init : (NSRect) frame ofType : (byte) type withData: (charType **) dataList ofSize : (uint) nbDataList andIndexes : (uint64_t *) inputIndexes
 {
+	if(inputIndexes == NULL || dataList == NULL)
+		return nil;
+	
 	self = [self init];
 	
 	if(self != nil)
@@ -21,62 +24,9 @@
 		_type = type;
 		_manualSelection = NO;
 		
-		if(_type != RDBS_TYPE_SOURCE)
-		{
-			indexes = getSearchData(type, (charType ***) &_data, &_nbData);
-			if(indexes == NULL)
-				return nil;
-		}
-		else
-		{
-			BOOL fail = NO;
-			uint nbElem;
-			REPO_DATA ** repo = (REPO_DATA **) getCopyKnownRepo(&nbElem, NO);
-			
-			if(repo != NULL)
-			{
-				uint64_t * _indexes = malloc(nbElem * sizeof(uint64_t));
-				charType ** output = malloc(nbElem * sizeof(charType *));
-				if(output != NULL && _indexes != NULL)
-				{
-					qsort(repo, nbElem, sizeof(REPO_DATA *), sortRepo);
-					
-					for(uint i = 0; i < nbElem; i++)
-					{
-						output[i] = malloc(REPO_NAME_LENGTH * sizeof(charType));
-						if(output[i] == NULL)
-						{
-							while (i-- > 0)
-								free(output[i]);
-							
-							fail = YES;
-							break;
-						}
-						wstrncpy(output[i], REPO_NAME_LENGTH, repo[i]->name);
-						_indexes[i] = getRepoID(repo[i]);
-					}
-					
-					if(fail)
-					{
-						free(_indexes);
-						free(output);
-						freeRepo(repo);
-					}
-					else
-					{
-						_nbData = nbElem;
-						_data = output;
-						indexes = _indexes;
-					}
-				}
-				else
-				{
-					free(_indexes);
-					free(output);
-					freeRepo(repo);
-				}
-			}
-		}
+		indexes = inputIndexes;
+		_data = dataList;
+		_nbData = nbDataList;
 		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
@@ -206,16 +156,16 @@
 
 - (NSString *) getNotificationName
 {
-	if(_type == RDBS_TYPE_AUTHOR)
+	if(_type == SEARCH_BAR_ID_AUTHOR)
 		return SR_NOTIFICATION_AUTHOR;
 	
-	else if(_type == RDBS_TYPE_SOURCE)
+	else if(_type == SEARCH_BAR_ID_SOURCE)
 		return SR_NOTIFICATION_SOURCE;
 	
-	else if(_type == RDBS_TYPE_TAG)
+	else if(_type == SEARCH_BAR_ID_TAG)
 		return SR_NOTIFICATION_TAG;
 	
-	else if(_type == RDBS_TYPE_CAT)
+	else if(_type == SEARCH_BAR_ID_CAT)
 		return SR_NOTIFICATION_TYPE;
 	
 	return nil;

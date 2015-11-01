@@ -17,7 +17,7 @@ enum
 	SEARCH_BAR_ID_AUTHOR	= 1,
 	SEARCH_BAR_ID_SOURCE	= 2,
 	SEARCH_BAR_ID_TAG		= 3,
-	SEARCH_BAR_ID_TYPE		= 4,
+	SEARCH_BAR_ID_CAT		= 4,
 	SEARCH_BAR_ID_EXTRA		= 5		//Unused in the search bar, but to stick to the scheme
 };
 
@@ -42,9 +42,12 @@ enum
 	byte _ID;
 	
 	BOOL noRecursive, normalKeyPressed;
+	
+	NSArray <NSString *> * data;
 }
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (byte) ID;
+- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData;
 
 + (void) triggeringSearchBar : (BOOL) goingIn : (byte) ID;
 

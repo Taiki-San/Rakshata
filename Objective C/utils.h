@@ -30,6 +30,12 @@ NSString * getRepoName(REPO_DATA * repo);
 
 @end
 
+@interface NSString (comparaison)
+
+- (BOOL) hasPrefix:(NSString *)str caseInsensitive : (BOOL) caseInsensitive;
+
+@end
+
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"

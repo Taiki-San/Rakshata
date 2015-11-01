@@ -21,6 +21,6 @@
 	NSMutableArray * selection;
 }
 
-- (instancetype) init : (NSRect) frame : (byte) type;
+- (instancetype) init : (NSRect) frame ofType : (byte) type withData: (charType **) dataList ofSize : (uint) nbDataList andIndexes : (uint64_t *) indexes;
 
 @end

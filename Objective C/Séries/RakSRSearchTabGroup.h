@@ -21,6 +21,10 @@
 	RakButton * close;
 	RakSwitchButton * freeSwitch;
 	RakText * freeText;
+	
+	charType ** listData;
+	uint nbDataList;
+	uint64_t * indexesData;
 }
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;
