@@ -138,6 +138,7 @@
 	[internalRows1 removeFromSuperview];
 	[internalRows2 removeFromSuperview];
 	[firstResponder removeFromSuperview];
+	[Prefs deRegisterForChanges:self];
 }
 
 #pragma mark - Positioning
