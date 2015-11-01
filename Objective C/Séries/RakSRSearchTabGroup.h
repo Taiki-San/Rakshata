@@ -30,4 +30,6 @@
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;
 - (void) resizeAnimation:(NSRect)frameRect;
 
+- (RakSRSearchBar *) searchBar;
+
 @end

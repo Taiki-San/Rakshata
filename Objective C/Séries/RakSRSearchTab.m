@@ -90,6 +90,11 @@
 		extra.hidden = YES;
 		[self addSubview:extra];
 	}
+	
+	[author searchBar].nextKeyView = [source searchBar];
+	[source searchBar].nextKeyView = [type searchBar];
+	[type searchBar].nextKeyView = [tag searchBar];
+	[tag searchBar].nextKeyView = [author searchBar];
 }
 
 - (void) dealloc

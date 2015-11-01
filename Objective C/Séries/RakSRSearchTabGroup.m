@@ -241,6 +241,8 @@ enum
 	}
 }
 
+- (RakSRSearchBar *) searchBar	{	return searchBar;	}
+
 #pragma mark - Color
 
 - (NSColor *) textColor

@@ -22,6 +22,7 @@
 	self.movable = YES;
 	self.movableByWindowBackground = YES;
 	self.titlebarAppearsTransparent = YES;
+	self.autorecalculatesKeyViewLoop = NO;
 }
 
 - (BOOL) canBecomeKeyWindow		{ return YES; }
@@ -228,6 +229,17 @@
 	_imatureFirstResponder = old;
 	
 	return retValue;
+}
+
+#pragma mark - Workaround
+
+//This function initiate some dark magic with nextKeyView things to magically "update" everything
+//Considering we manage all this manually, this is only getting in the way
+//We only force it to respect the flag though
+- (void) recalculateKeyViewLoop
+{
+	if(self.autorecalculatesKeyViewLoop)
+		[super recalculateKeyViewLoop];
 }
 
 @end

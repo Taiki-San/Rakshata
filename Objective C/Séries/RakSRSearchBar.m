@@ -349,7 +349,13 @@
 {
 	BOOL result = NO;
 	
-	if([textView respondsToSelector:commandSelector])
+	if(commandSelector == @selector(insertTab:))
+	{
+		if(textView.nextKeyView != self.nextKeyView)
+			textView.nextKeyView = self.nextKeyView;
+	}
+	
+	else if([textView respondsToSelector:commandSelector])
 	{
 		noRecursive = YES;
 		
