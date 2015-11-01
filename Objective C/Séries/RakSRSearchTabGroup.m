@@ -38,7 +38,7 @@ enum
 			if(list != nil)
 				[self addSubview:[list getContent]];
 			
-			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList];
+			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(searchBar != nil)
 			{
 				[self addSubview:searchBar];

@@ -499,7 +499,7 @@ bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DA
 
 bool insertRestriction(uint64_t code, byte type)
 {
-	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_CAT))
+	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_CAT) || haveRestriction(code, type))
 		return false;
 	
 	sqlite3_stmt * request;
@@ -530,6 +530,26 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	notifyRestrictionChanged();
 	
+	return output;
+}
+
+bool haveRestriction(uint64_t code, byte type)
+{
+	if(cache == NULL || code == UINT_MAX || (type != RDBS_TYPE_AUTHOR && type != RDBS_TYPE_SOURCE && type != RDBS_TYPE_TAG && type != RDBS_TYPE_CAT))
+		return false;
+	
+	sqlite3_stmt * request;
+	
+	if((request = createRequest(cache, "SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "DBNAMETOID(RDBS_dataType)" = ?1 AND "DBNAMETOID(RDBS_dataID)" = ?2;")) == NULL)
+		return false;
+	
+	sqlite3_bind_int(request, 1, type);
+	sqlite3_bind_int64(request, 2, (int64_t) code);
+	
+	bool output = sqlite3_step(request) == SQLITE_ROW && (uint32_t) sqlite3_column_int(request, 0) >= 1;
+	
+	destroyRequest(request);
+
 	return output;
 }
 

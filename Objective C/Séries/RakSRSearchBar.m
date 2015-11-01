@@ -120,7 +120,7 @@
 	return self;
 }
 
-- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData
+- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes
 {
 	self = [self initWithFrame:frameRect :ID];
 
@@ -135,6 +135,7 @@
 			[array addObject:getStringForWchar(names[i])];
 		}
 		
+		indexes = listIndexes;
 		data = [NSArray arrayWithArray:array];
 	}
 	
@@ -246,6 +247,9 @@
 
 - (void) cancelProxy
 {
+	if(self.cell.stringValue != nil && ![self.cell.stringValue isEqualToString:@""])
+		self.cell.stringValue = @"";
+
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self.window makeFirstResponder:[[NSApp delegate] serie]];
 	});
@@ -284,6 +288,17 @@
 	if(normalKeyPressed)
 	{
 		normalKeyPressed = NO;
+		
+		if(_ID == SEARCH_BAR_ID_AUTHOR || _ID == SEARCH_BAR_ID_SOURCE || _ID == SEARCH_BAR_ID_TAG || _ID == SEARCH_BAR_ID_CAT)
+		{
+			NSString * string = self.cell.stringValue;
+			
+			NSUInteger index = [data indexOfObject:string];
+			if(index != NSNotFound)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:[RakSRSearchList getNotificationName:_ID] object:string userInfo:@{SR_NOTIF_CACHEID : @(indexes[index]), SR_NOTIF_OPTYPE : @(YES)}];
+			}
+		}
 	}
 	else
 	{
@@ -296,6 +311,12 @@
 {
 	NSMutableArray * array = [NSMutableArray array];
 	NSString * prefix = textView.string;
+	
+	uint length = [prefix length];
+	const char * prefixChar = [prefix UTF8String];
+
+	while(length > 0 && prefixChar[length - 1] != ' ')
+		length -= 1;
 	
 	if(_ID == SEARCH_BAR_ID_MAIN)
 	{
@@ -310,7 +331,7 @@
 		
 		for(uint i = 0; i < nbElem; i++)
 		{
-			[array addObject:[NSString stringWithUTF8String:output[i]]];
+			[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
 			free(output[i]);
 		}
 		free(output);
@@ -322,7 +343,7 @@
 		{
 			if([obj hasPrefix:prefix caseInsensitive:YES])
 			{
-				[array addObject:obj];
+				[array addObject:[obj substringFromIndex:length]];
 			}
 		}];
 	}

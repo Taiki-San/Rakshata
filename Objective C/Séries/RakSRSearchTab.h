@@ -35,3 +35,5 @@
 - (void) resizeAnimation : (NSRect) frameRect;
 
 @end
+
+byte getRestrictionTypeForSBID(byte searchBarID);

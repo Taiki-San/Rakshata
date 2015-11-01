@@ -115,6 +115,10 @@
 	if(view != nil && [view class] == [RakText class])
 	{
 		lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
+		
+		if(lastWasSelected == haveRestriction(indexes[rowIndex], getRestrictionTypeForSBID(_type)))
+			return NO;
+		
 		if(lastWasSelected)
 		{
 			view.textColor = (normal != nil ? normal : [self getTextColor:0 :rowIndex]);
@@ -156,16 +160,21 @@
 
 - (NSString *) getNotificationName
 {
-	if(_type == SEARCH_BAR_ID_AUTHOR)
+	return [[self class] getNotificationName:_type];
+}
+
++ (NSString *) getNotificationName : (byte) type
+{
+	if(type == SEARCH_BAR_ID_AUTHOR)
 		return SR_NOTIFICATION_AUTHOR;
 	
-	else if(_type == SEARCH_BAR_ID_SOURCE)
+	else if(type == SEARCH_BAR_ID_SOURCE)
 		return SR_NOTIFICATION_SOURCE;
 	
-	else if(_type == SEARCH_BAR_ID_TAG)
+	else if(type == SEARCH_BAR_ID_TAG)
 		return SR_NOTIFICATION_TAG;
 	
-	else if(_type == SEARCH_BAR_ID_CAT)
+	else if(type == SEARCH_BAR_ID_CAT)
 		return SR_NOTIFICATION_TYPE;
 	
 	return nil;

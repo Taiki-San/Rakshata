@@ -165,6 +165,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength);
 bool updateProjectSearch(void * _table, PROJECT_DATA project);
 
 bool insertRestriction(uint64_t code, byte type);
+bool haveRestriction(uint64_t code, byte type);
 bool removeRestriction(uint64_t code, byte type);
 bool flushRestriction();
 

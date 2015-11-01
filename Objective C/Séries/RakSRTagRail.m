@@ -108,7 +108,7 @@
 {
 	if(insertion)
 	{
-		if(![object isKindOfClass:[NSString class]])
+		if(![object isKindOfClass:[NSString class]] || haveRestriction(ID, dataType))
 			return;
 		
 		[self addTag:object];
@@ -132,7 +132,7 @@
 
 #pragma mark - Tag management
 
-- (void) addTag : (NSString *) tagName
+- (BOOL) addTag : (NSString *) tagName
 {
 	uint tagLength = [tagList count], length;
 	NSRect frame;
@@ -166,6 +166,8 @@
 	}
 	
 	[NSAnimationContext endGrouping];
+	
+	return YES;
 }
 
 - (void) updateContext

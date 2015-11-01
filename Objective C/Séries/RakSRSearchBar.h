@@ -43,11 +43,12 @@ enum
 	
 	BOOL noRecursive, normalKeyPressed;
 	
+	uint64_t * indexes;
 	NSArray <NSString *> * data;
 }
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (byte) ID;
-- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData;
+- (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes;
 
 + (void) triggeringSearchBar : (BOOL) goingIn : (byte) ID;
 
