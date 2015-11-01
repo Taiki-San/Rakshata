@@ -288,6 +288,10 @@ uint _getFromSearch(void * _table, byte type, void * data)
 
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 {
+	//Some sanity checks first
+	if((type == INSERT_TAG && project.mainTag == CAT_NO_VALUE) || (type == INSERT_CAT && project.category == CAT_NO_VALUE))
+		return false;
+	   
 	SEARCH_JUMPTABLE table = _table;
 	
 	if(_table == NULL)

@@ -344,7 +344,10 @@ charType * getNameForRequestAndCode(sqlite3_stmt * request, uint32_t code)
 	sqlite3_bind_int(request, 1, (int32_t) code);
 	
 	if(sqlite3_step(request) != SQLITE_ROW)
+	{
+		destroyRequest(request);
 		return L"Unknown";
+	}
 	
 	charType * output = getStringFromUTF8(sqlite3_column_text(request, 0));
 	
