@@ -288,12 +288,29 @@
 					break;
 				}
 					
+				//Magnification
+					
 				case '0':
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
 						_scrollView.animator.magnification = 1;
 					break;
 				}
+					
+				case '+':
+				{
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && _scrollView.magnification < 3)
+						_scrollView.animator.magnification += (_scrollView.magnification > 1.5) ? 0.5f : 0.25f;
+					break;
+				}
+					
+				case '-':
+				{
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && round(_scrollView.magnification * 4) > 1)
+						_scrollView.animator.magnification -= (_scrollView.magnification > 1.5) ? 0.5f : 0.25f;;
+					break;
+				}
+					
 					
 				default:
 					break;
