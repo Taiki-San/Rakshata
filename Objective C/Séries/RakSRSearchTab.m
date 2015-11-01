@@ -381,20 +381,3 @@ enum
 }
 
 @end
-
-byte getRestrictionTypeForSBID(byte searchBarID)
-{
-	if(searchBarID == SEARCH_BAR_ID_AUTHOR)
-		return RDBS_TYPE_AUTHOR;
-	
-	else if(searchBarID == SEARCH_BAR_ID_SOURCE)
-		return RDBS_TYPE_SOURCE;
-	
-	else if(searchBarID == SEARCH_BAR_ID_TAG)
-		return RDBS_TYPE_TAG;
-	
-	else if(searchBarID == SEARCH_BAR_ID_CAT)
-		return RDBS_TYPE_CAT;
-	
-	return 0;
-}

@@ -296,7 +296,7 @@
 			NSUInteger index = [data indexOfObject:string];
 			if(index != NSNotFound)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:[RakSRSearchList getNotificationName:_ID] object:string userInfo:@{SR_NOTIF_CACHEID : @(indexes[index]), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:getNotificationNameForSBID(_ID) object:string userInfo:@{SR_NOTIF_CACHEID : @(indexes[index]), SR_NOTIF_OPTYPE : @(YES)}];
 			}
 		}
 	}

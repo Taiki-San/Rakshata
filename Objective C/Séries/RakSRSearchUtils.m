@@ -10,31 +10,36 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define SR_NOTIF_NAME_SEARCH_TRIGGERED @"RakSearchFieldWasTriggered"
-#define SR_NOTIF_NEW_STATE @"newState"
-
-#define SRSEARCHTAB_DEFAULT_HEIGHT 1
-#define SR_SEARCH_TAB_INITIAL_HEIGHT 40
-#define SR_SEARCH_TAB_EXPANDED_HEIGHT 150
-
-#import "RakSRSearchList.h"
-#import "RakSRSearchTabGroup.h"
-
-@interface RakSRSearchTab : NSView
+byte getRestrictionTypeForSBID(byte searchBarID)
 {
-	BOOL _isVisible;
-	BOOL _collapsed;
-		
-	RakText * placeholder;
+	if(searchBarID == SEARCH_BAR_ID_AUTHOR)
+		return RDBS_TYPE_AUTHOR;
 	
-	RakSRSearchTabGroup * author, *source, *tag, * type, *extra;
+	else if(searchBarID == SEARCH_BAR_ID_SOURCE)
+		return RDBS_TYPE_SOURCE;
+	
+	else if(searchBarID == SEARCH_BAR_ID_TAG)
+		return RDBS_TYPE_TAG;
+	
+	else if(searchBarID == SEARCH_BAR_ID_CAT)
+		return RDBS_TYPE_CAT;
+	
+	return 0;
 }
 
-@property CGFloat height;
-
-- (void) resizeAnimation : (NSRect) frameRect;
-
-@end
-
-byte getRestrictionTypeForSBID(byte searchBarID);
-NSString * getNotificationNameForSBID(byte searchBarID);
+NSString * getNotificationNameForSBID(byte searchBarID)
+{
+	if(searchBarID == SEARCH_BAR_ID_AUTHOR)
+		return SR_NOTIFICATION_AUTHOR;
+	
+	else if(searchBarID == SEARCH_BAR_ID_SOURCE)
+		return SR_NOTIFICATION_SOURCE;
+	
+	else if(searchBarID == SEARCH_BAR_ID_TAG)
+		return SR_NOTIFICATION_TAG;
+	
+	else if(searchBarID == SEARCH_BAR_ID_CAT)
+		return SR_NOTIFICATION_TYPE;
+	
+	return nil;
+}

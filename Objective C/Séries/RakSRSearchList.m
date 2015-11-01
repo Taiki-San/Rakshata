@@ -160,24 +160,7 @@
 
 - (NSString *) getNotificationName
 {
-	return [[self class] getNotificationName:_type];
-}
-
-+ (NSString *) getNotificationName : (byte) type
-{
-	if(type == SEARCH_BAR_ID_AUTHOR)
-		return SR_NOTIFICATION_AUTHOR;
-	
-	else if(type == SEARCH_BAR_ID_SOURCE)
-		return SR_NOTIFICATION_SOURCE;
-	
-	else if(type == SEARCH_BAR_ID_TAG)
-		return SR_NOTIFICATION_TAG;
-	
-	else if(type == SEARCH_BAR_ID_CAT)
-		return SR_NOTIFICATION_TYPE;
-	
-	return nil;
+	return getNotificationNameForSBID(_type);
 }
 
 - (void) triggerFired : (NSNotification *) notification
