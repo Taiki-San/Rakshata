@@ -71,6 +71,8 @@
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
 		B63805E91B6BD9F90029418C /* RakImportIOTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B63805E81B6BD9F90029418C /* RakImportIOTools.m */; };
+		B63A5D951BE81C83005E6EBC /* lecteur_sharedStruct.m in Sources */ = {isa = PBXBuildFile; fileRef = B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */; };
+		B63A5D971BE81D3C005E6EBC /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B63A5D961BE81D3C005E6EBC /* Quartz.framework */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
@@ -357,6 +359,8 @@
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B63805E81B6BD9F90029418C /* RakImportIOTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportIOTools.m; path = "Import:Export/RakImportIOTools.m"; sourceTree = "<group>"; };
 		B63805EA1B6C4A060029418C /* RakImportIOController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportIOController.h; path = "Import:Export/RakImportIOController.h"; sourceTree = "<group>"; };
+		B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lecteur_sharedStruct.m; sourceTree = "<group>"; };
+		B63A5D961BE81D3C005E6EBC /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = ../../../../System/Library/Frameworks/Quartz.framework; sourceTree = "<group>"; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -667,6 +671,7 @@
 				B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
 				B68EAF731BD5180C00F6AB97 /* AppKit.framework in Frameworks */,
+				B63A5D971BE81D3C005E6EBC /* Quartz.framework in Frameworks */,
 				B6FBD8BF1BD3E5EC00A0A7A5 /* libtls.a in Frameworks */,
 				B68EAF751BD5180C00F6AB97 /* Foundation.framework in Frameworks */,
 				B68EAF741BD5180C00F6AB97 /* Cocoa.framework in Frameworks */,
@@ -1217,6 +1222,7 @@
 				B6B870BC1981D672005D705E /* Popovers */,
 				B62DBB891A118AEF007EBAC6 /* RakDRM.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
+				B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
 				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
 				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
@@ -1313,6 +1319,7 @@
 				B68EAF701BD5180C00F6AB97 /* AppKit.framework */,
 				B68EAF711BD5180C00F6AB97 /* Cocoa.framework */,
 				B68EAF721BD5180C00F6AB97 /* Foundation.framework */,
+				B63A5D961BE81D3C005E6EBC /* Quartz.framework */,
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
 				B68EAF6E1BD517E800F6AB97 /* SystemConfiguration.framework */,
 			);
@@ -1763,6 +1770,7 @@
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B6AA41861B685692008A7521 /* Rijndael.c in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,
+				B63A5D951BE81C83005E6EBC /* lecteur_sharedStruct.m in Sources */,
 				B62044E01B596AFB00B8244C /* RakImportQuery.m in Sources */,
 				B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */,
 				B68B522B191AE38D0057F35A /* RakProgressBar.m in Sources */,
