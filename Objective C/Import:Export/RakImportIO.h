@@ -105,7 +105,8 @@
 	uint nbFiles;
 }
 
-- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
+- (instancetype __nullable) initWithDirname : (NSString * __nonnull) dirname;
+- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;	//Initialize with a single file
 
 @end
 

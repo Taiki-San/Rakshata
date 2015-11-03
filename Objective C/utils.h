@@ -33,12 +33,13 @@ NSString * getRepoName(REPO_DATA * repo);
 @interface NSString (comparaison)
 
 - (BOOL) hasPrefix:(NSString *)str caseInsensitive : (BOOL) caseInsensitive;
+- (BOOL) isDirectory;
 
 @end
 
 @interface PDFDocument (dumpData)
 
-- (NSArray *) getPages;
+- (NSArray <PDFPage *> *) getPages;
 
 @end
 

@@ -1127,10 +1127,10 @@
 		[dict setObject:array forKey:pageName];
 	}
 	
-	if([array count] >= data->nameID[posData])
+	if(data->nameID[posData] >= [array count])
 		return nil;
 	
-	return [array objectAtIndex:data->nameID[posData]];
+	return [[array objectAtIndex:data->nameID[posData]] dataRepresentation];
 }
 
 #pragma mark - Cache generation

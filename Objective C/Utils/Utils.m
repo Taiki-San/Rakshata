@@ -61,11 +61,16 @@
 	return prefixRange.location == 0 && prefixRange.length > 0;
 }
 
+- (BOOL) isDirectory
+{
+	return [self characterAtIndex:[self length] - 1] == '/';
+}
+
 @end
 
 @implementation PDFDocument (dumpData)
 
-- (NSArray *) getPages
+- (NSArray <PDFPage *> *) getPages
 {
 	NSUInteger pdfPageCount = [self pageCount];
 	if(pdfPageCount == 0)

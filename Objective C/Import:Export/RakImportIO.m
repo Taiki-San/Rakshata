@@ -22,7 +22,7 @@ RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 
 	//Import a directory
 	if([extension isEqualToString:@""] && checkDirExist([filename UTF8String]))
-		return [[RakImportDirController alloc] initWithFilename:filename];
+		return [[RakImportDirController alloc] initWithDirname:filename];
 
 	//Look for Rar
 	BOOL foundIt = NO;
@@ -50,6 +50,9 @@ RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 
 	if(foundIt)
 		return [[RakImportZipController alloc] initWithFilename:filename];
+	
+	if([extension caseInsensitiveCompare:@"pdf"] == NSOrderedSame)
+		return [[RakImportDirController alloc] initWithFilename:filename];
 
 	return nil;
 }
@@ -235,7 +238,7 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
         
         currentString = [NSString stringWithUTF8String:filenames[i]];
         
-        if(currentString == nil)
+        if(currentString == nil || [currentString isEqualToString:@""])
             continue;
         
         extension = [currentString pathExtension];
@@ -254,17 +257,18 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
     if([array count] == 0 || [array count] > UINT_MAX)
         return;
 	
-	path = [path stringByAppendingString:@"/"];
+	if(![path isDirectory])
+		path = [path stringByAppendingString:@"/"];
     
     //We craft the config.dat
     FILE * config = fopen([[path stringByAppendingString:@CONFIGFILE] UTF8String], "w+");
     
     if(config == NULL)
         return;
-    
-    fprintf(config, "%u\nN", (uint) [array count]);
 	
-	uint counter = 0;
+	NSMutableString * outputData = [NSMutableString new];
+	
+	uint counter = 0, additionnalPages = 0;
     
     for(NSString * file in array)
 	{
@@ -272,9 +276,28 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 		NSString * newFile = [NSString stringWithFormat:@"%d.%@", counter++, [file pathExtension]];
 		rename([[path stringByAppendingString:file] UTF8String], [[path stringByAppendingString:newFile] UTF8String]);
 		
-		fprintf(config, "\n0 %s", [newFile UTF8String]);
+		if([[file pathExtension] caseInsensitiveCompare:@"pdf"] != NSEqualToComparison)
+		{
+			[outputData appendFormat:@"\n0 %@", newFile];
+		}
+		else
+		{
+			PDFDocument * document = [[PDFDocument alloc] initWithData:[NSData dataWithContentsOfFile:[path stringByAppendingString:newFile]]];
+			if(document != NULL)
+			{
+				NSArray * list = [document getPages];
+				if(list != nil)
+				{
+					additionnalPages += [list count] - 1;
+					for(uint i = 0, length = [list count]; i < length; ++i)
+						[outputData appendFormat:@"\n%d %@", i, newFile];
+				}
+			}
+		}
 	}
 	
+	fprintf(config, "%u\nN", (uint) [array count] + additionnalPages);
+	fwrite([outputData UTF8String], [outputData length], 1, config);
     fclose(config);
 }
 

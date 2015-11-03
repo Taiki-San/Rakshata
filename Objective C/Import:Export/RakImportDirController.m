@@ -12,16 +12,16 @@
 
 @implementation RakImportDirController
 
-- (instancetype) initWithFilename : (NSString *) filename
+- (instancetype) initWithDirname : (NSString *) dirname
 {
-	if([filename length] == 0)
+	if([dirname length] == 0)
 		return nil;
 
 	self = [super init];
 
 	if(self != nil)
 	{
-		filenames = listDir([filename UTF8String], &nbFiles);
+		filenames = listDir([dirname UTF8String], &nbFiles);
 		if(filenames == NULL || nbFiles == 0 || nbFiles + 1 < nbFiles)
 			return nil;
 
@@ -36,17 +36,56 @@
 			filenames[i + 1] = filenames[i];
         
 		//Add / at the end if needed
-		if([filename UTF8String][[filename length] - 1] != '/')
-			filename = [filename stringByAppendingString:@"/"];
+		if([dirname UTF8String][[dirname length] - 1] != '/')
+			dirname = [dirname stringByAppendingString:@"/"];
 
-		filenames[0] = strdup([filename UTF8String]);
+		filenames[0] = strdup([dirname UTF8String]);
 		if(filenames[0] == NULL)
 			return nil;
 
 		qsort(filenames, nbFiles, sizeof(char *), strnatcmp);
-		archiveFileName = filename;
+		archiveFileName = dirname;
 	}
 
+	return self;
+}
+
+- (instancetype) initWithFilename : (NSString *) filename
+{
+	if([filename length] == 0 || !checkFileExist([filename UTF8String]))
+		return nil;
+	
+	NSString * dirname = [filename stringByDeletingLastPathComponent];
+	if([dirname length] == 0 || !checkDirExist([dirname UTF8String]))
+		return nil;
+	
+	self = [super init];
+	
+	if(self != nil)
+	{
+		filenames = malloc(2 * sizeof(char *));
+		if(filenames == NULL)
+			return nil;
+		
+		if(![dirname isDirectory])
+			dirname = [dirname stringByAppendingString:@"/"];
+		
+		filenames[0] = strdup([dirname UTF8String]);
+		if(filenames[0] == NULL)
+			return nil;
+		
+		filenames[1] = strdup([filename UTF8String]);
+		if(filenames[1] == NULL)
+		{
+			free(filenames);
+			return nil;
+		}
+		
+		nbFiles = 2;
+		
+		archiveFileName = dirname;
+	}
+	
 	return self;
 }
 
