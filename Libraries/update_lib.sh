@@ -394,7 +394,7 @@ do
 	if [ $i = 1 ]
 	then
 		rm -rf $ARCHIVE_DIR
-		rm unzip.log
+		rm unzip_sqlite.log
 	elif [ $i = 2 ]
 	then
 		if [ $libcurl = 1 ]
