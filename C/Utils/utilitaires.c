@@ -77,3 +77,35 @@ inline bool isDownloadValid(char *input)
     for(; input[i] && (input[i] <= ' ' || input[i] > '~') && i < 10; i++);
     return (i < 10 && input[i] != '<' && input[i]);
 }
+
+bool haveSuffixCaseInsensitive(const char *input, const char * stringToFind)
+{
+	if(input == NULL || *input == 0 || stringToFind == NULL || *stringToFind == 0)
+		return false;
+	
+	char c;
+	uint cursor;
+
+	//The *input != 0 is performed at the end to prevent an extra test in the case two string start the same way
+	//We already checked *stringToFind != 0
+	while(1)
+	{
+		//Start with the same letter
+		if((c = *input) == *stringToFind)
+		{
+			//Ignoring the first letter, are the two string identical from then on?
+			for(cursor = 1; stringToFind[cursor] && tolower(input[cursor]) == stringToFind[cursor]; ++cursor);
+			
+			//We are leaving either because the character are not equal (so this is false)
+			//	either because we are at the end of stringToFind, and thus this equality indicate
+			//	if we are at the end of input, and thus if this was a suffix
+			if(input[cursor] == stringToFind[cursor])
+				return true;
+		}
+		//Reached the end
+		else if(c == 0)
+			return false;
+
+		++input;
+	}
+}

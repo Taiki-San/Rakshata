@@ -12,17 +12,13 @@
 
 bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader)
 {
-	uint nombreToursRequis = 1, nombrePageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
-	uint chapterRequestedForVolume = INVALID_VALUE;
+	uint nombreToursRequis, nombrePageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
+	uint chapterRequestedForVolume = INVALID_VALUE, *tmpNameID;
 	char name[LONGUEUR_NOM_PAGE], input_path[LONGUEUR_NOM_PAGE], **nomPagesTmp = NULL, *encodedPath = getPathForProject(projectDB);
 	CONTENT_TOME *localBuffer = NULL;
 	void * intermediaryPtr;
 	
-	dataReader->nombrePage = 0;
-	dataReader->nomPages = dataReader->path = NULL;
-	dataReader->pathNumber = NULL;
-	dataReader->chapitreTomeCPT = NULL;
-	dataReader->pageCouranteDuChapitre = NULL;
+	memset(dataReader, 0, sizeof(DATA_LECTURE));
 	
 	if(encodedPath == NULL)
 		return false;
@@ -84,37 +80,60 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 		
 		snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/%s", encodedPath, name, CONFIGFILE);
 		
-		nomPagesTmp = loadChapterConfigDat(input_path, &nombrePageInChunck);
+		nomPagesTmp = loadChapterConfigDat(input_path, &nombrePageInChunck, &tmpNameID);
 		if(nomPagesTmp != NULL)
 		{
+			byte failureCounter = 0;
 			/*On réalloue la mémoire en utilisant un buffer intermédiaire*/
 			dataReader->nombrePage += nombrePageInChunck;
+			
+			//nameID, used in PDF
+			intermediaryPtr = realloc(dataReader->nameID, dataReader->nombrePage * sizeof(uint));
+			if(intermediaryPtr != NULL)
+			{
+				dataReader->nameID = intermediaryPtr;
+				++failureCounter;
+			}
+			else
+				goto memoryFail;
 			
 			///pathNumber
 			intermediaryPtr = realloc(dataReader->pathNumber, dataReader->nombrePage * sizeof(uint));
 			if(intermediaryPtr != NULL)
+			{
 				dataReader->pathNumber = intermediaryPtr;
+				++failureCounter;
+			}
 			else
 				goto memoryFail;
 			
 			///pageCouranteDuChapitre
 			intermediaryPtr = realloc(dataReader->pageCouranteDuChapitre, (dataReader->nombrePage+1) * sizeof(uint));
 			if(intermediaryPtr != NULL)
+			{
 				dataReader->pageCouranteDuChapitre = intermediaryPtr;
+				++failureCounter;
+			}
 			else
 				goto memoryFail;
 			
 			///nomPages
 			intermediaryPtr = realloc(dataReader->nomPages, dataReader->nombrePage * sizeof(char*));
 			if(intermediaryPtr != NULL)
+			{
 				dataReader->nomPages = intermediaryPtr;
+				++failureCounter;
+			}
 			else
 				goto memoryFail;
 			
 			///chapitreTomeCPT
 			intermediaryPtr = realloc(dataReader->chapitreTomeCPT, (nombreTours + 2) * sizeof(uint));
 			if(intermediaryPtr != NULL)
+			{
 				dataReader->chapitreTomeCPT = intermediaryPtr;
+				++failureCounter;
+			}
 			else
 				goto memoryFail;
 			
@@ -124,6 +143,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 			{
 				dataReader->path = intermediaryPtr;
 				dataReader->path[nombreTours] = malloc(LONGUEUR_NOM_PAGE);
+				++failureCounter;
 				
 				if(dataReader->path[nombreTours] == NULL)
 					goto memoryFail;
@@ -136,8 +156,10 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 			if(0)  //Si on a eu un problème en allouant de la mémoire
 			{
 			memoryFail:
+
 				if(dataReader->pathNumber == NULL || dataReader->pageCouranteDuChapitre == NULL || dataReader->nomPages == NULL || dataReader->chapitreTomeCPT == NULL || dataReader->path == NULL || dataReader->path[nombreTours] == NULL)
 				{
+					free(dataReader->nameID);					dataReader->nameID = NULL;
 					free(dataReader->pathNumber);				dataReader->pathNumber = NULL;
 					free(dataReader->pageCouranteDuChapitre);	dataReader->pageCouranteDuChapitre = NULL;
 					free(dataReader->nomPages);					dataReader->nomPages = NULL;
@@ -148,7 +170,13 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 					
 					free(dataReader->path);						dataReader->path = NULL;
 				}
-				dataReader->nombrePage -= nombrePageInChunck;
+				
+#ifdef DEV_VERSION
+				char tmpError[100];
+				snprintf(tmpError, sizeof(tmpError), "Oh, shit... Memory allocation failure >< %d", failureCounter);
+				logR(tmpError);
+#endif
+				dataReader->nombrePage = 0;
 				nombreTours--;
 			}
 			else
@@ -161,7 +189,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 				
 				lengthBasePath = strlen(dataReader->path[posID]);
 				
-				for(uint i = 0; prevPos < dataReader->nombrePage; prevPos++) //Réinintialisation
+				for(uint i = 0; prevPos < dataReader->nombrePage; ++prevPos) //Réinintialisation
 				{
 					if(nomPagesTmp[i] == NULL)
 					{
@@ -176,6 +204,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 					{
 						snprintf(dataReader->nomPages[prevPos], lengthFullPath, "%s/%s", dataReader->path[posID], nomPagesTmp[i]);
 						dataReader->pathNumber[prevPos] = posID;
+						dataReader->nameID[prevPos] = tmpNameID[i];
 						dataReader->pageCouranteDuChapitre[prevPos] = i++;
 					}
 					else    //Si problème d'allocation
@@ -208,8 +237,8 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 
 void releaseDataReader(DATA_LECTURE *data)
 {
-	data->PDFArrayForNames = nil;
-	
+	AntiARCRelease(data->PDFArrayForNames);	data->PDFArrayForNames = nil;	
+	free(data->nameID);						data->nameID = NULL;
 	free(data->pathNumber);					data->pathNumber = NULL;
 	free(data->pageCouranteDuChapitre);		data->pageCouranteDuChapitre = NULL;
 	free(data->chapitreTomeCPT);			data->chapitreTomeCPT = NULL;

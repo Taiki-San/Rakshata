@@ -581,9 +581,6 @@
 
 - (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
 {
-	if(_data.path == NULL || posData >= data->nombrePage)
-		return nil;
-	
 	IMG_DATA * dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
 	
 	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
@@ -945,7 +942,15 @@
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
 {
-	NSData * imageData = [self getPage : page : data];
+	if(_data.path == NULL || page >= data->nombrePage)
+		return nil;
+	
+	NSData * imageData;
+	//PDF
+	if(haveSuffixCaseInsensitive(data->nomPages[page], ".pdf"))
+		imageData = [self getPDF:page :data];
+	else
+		imageData = [self getPage : page : data];
 	
 	if(imageData == nil || imageData.length == 0)
 		return nil;
@@ -1087,6 +1092,45 @@
 			[self moveSliderY : height];
 		}
 	}
+}
+
+#pragma mark - PDF loading
+
+- (NSData *) getPDF : (uint) posData : (DATA_LECTURE *) data
+{
+	NSString * pageName = [NSString stringWithUTF8String:data->nomPages[posData]];
+	
+	NSArray * array;
+	NSMutableDictionary * dict = data->PDFArrayForNames;
+	if(dict == nil || (array = [dict objectForKey:pageName]))
+	{
+		//Enable us to support encrypted PDF cheapily
+		NSData * pdfData = [self getPage:posData :data];
+		if(pdfData == nil)
+			return nil;
+		
+		PDFDocument * PDF = [[PDFDocument alloc] initWithData:pdfData];
+		if(PDF == nil)
+			return nil;
+		
+		array = [PDF getPages];
+		if(array == nil || [array count] == 0)
+			return nil;
+		
+		if(dict == nil)
+		{
+			dict = [NSMutableDictionary new];
+			AntiARCRetain(dict);
+			data->PDFArrayForNames = dict;
+		}
+		
+		[dict setObject:array forKey:pageName];
+	}
+	
+	if([array count] >= data->nameID[posData])
+		return nil;
+	
+	return [array objectAtIndex:data->nameID[posData]];
 }
 
 #pragma mark - Cache generation

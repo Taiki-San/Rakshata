@@ -40,8 +40,9 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 
 /**	Load the reader data	**/
 
-char ** loadChapterConfigDat(char* input, uint *nombrePage)
+char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 {
+	bool haveNameID = nameID != NULL;
 	char ** output, current;
 	FILE* fileInput = fopen(input, "r");
 	
@@ -66,8 +67,13 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 		}
 		
 		output = calloc(*nombrePage, sizeof(char*));
+		if(haveNameID)
+		{
+			*nameID = calloc(*nombrePage, sizeof(uint));
+			haveNameID = *nameID != NULL;
+		}
 		
-		for(uint i = 0, j; i < *nombrePage; i++)
+		for(uint i = 0, j; i < *nombrePage; ++i)
 		{
 			output[i] = malloc(LONGUEUR_NOM_PAGE+1);
 			if(output[i] == NULL)
@@ -102,6 +108,9 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				break;
 			}
 			
+			if(haveNameID)
+				(*nameID)[i] = j;
+			
 			//We go to the next line
 			while((current = fgetc(fileInput)) != EOF && current != '\n' && current != '\r');
 			while((current = fgetc(fileInput)) != EOF && (current == '\n' || current == '\r'));
@@ -128,6 +137,9 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 			else
 				snprintf(output[i], 20, "%d.jpg", i);	//Sadly, legacy, use png as a default would have been more clever
 		}
+		
+		if(haveNameID)
+			*nameID = NULL;
 	}
 	
 	fclose(fileInput);
@@ -173,6 +185,9 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 				{
 					output[validEntries] = output[carry];
 					output[carry] = NULL;
+					
+					if(haveNameID)
+						nameID[validEntries] = nameID[carry];
 				}
 			}
 		}
@@ -180,6 +195,13 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage)
 		void * tmp = realloc(output, validEntries * sizeof(char *));
 		if(tmp != NULL)
 			output = tmp;
+		
+		if(haveNameID)
+		{
+			tmp = realloc(*nameID, validEntries * sizeof(uint));
+			if(tmp != NULL)
+				*nameID = tmp;
+		}
 		
 		*nombrePage = validEntries;
 	}

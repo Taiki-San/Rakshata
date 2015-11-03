@@ -16,21 +16,24 @@
 
 #ifdef __OBJC__
 
+#define AntiARCRetain(...) void *retainedThing = (__bridge_retained void *)__VA_ARGS__; retainedThing = retainedThing
+#define AntiARCRelease(...) void *retainedThing = (__bridge void *) __VA_ARGS__; id unretainedThing = (__bridge_transfer id)retainedThing; unretainedThing = nil
+
 typedef struct
 {
-    uint nombrePage;
+	uint nombrePage;	//Contexte
     uint pageCourante;
     uint *pageCouranteDuChapitre;
 
-    uint *pathNumber; //Correspondance entre nomPage et path
+    uint *pathNumber;	//Correspondance entre nomPage et path
     char **nomPages;
-    char **path;
+	char **path;		//Path de l'image, utilisé pour les tomes où les fichiers sont dans plusieurs répertoires
+	uint * nameID;		//Utilisé par les PDF pour padder
 
-    uint IDDisplayed;
+	uint IDDisplayed;
     uint *chapitreTomeCPT; //Pour la crypto
 	
-	//Objective C PDF Cache
-	NSDictionary * PDFArrayForNames;
+	__unsafe_unretained NSMutableDictionary * PDFArrayForNames;	//Objective C PDF Cache, manually retained/freeed
 	
 } DATA_LECTURE;
 
@@ -57,11 +60,6 @@ bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, uint currentSelectio
 
 /*Mouvements*/
 #define PAGE_MOVE 50
-#define DEPLACEMENT_BIG positionSlide.h - BORDURE_CONTROLE_LECTEUR
-#define DEPLACEMENT_SOURIS 7
-#define DEPLACEMENT_LATERAL_PAGE 5
-#define DEPLACEMENT_HORIZONTAL_PAGE 5
-#define TOLERANCE_CLIC_PAGE 10
 
 /*Limites buffers*/
 #define LONGUEUR_NOM_PAGE 1024

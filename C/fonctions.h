@@ -80,8 +80,8 @@ byte createSecurePasswordDB(unsigned char *key_sent);
 bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
-/**Lecteur.c**/
-char ** loadChapterConfigDat(char* input, uint *nombrePage);
+/**lecteur_loading**/
+char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID);
 
 /**Native.c**/
 int mkdirR(char *path);
@@ -161,6 +161,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 IMG_DATA* readFile(char * path);
 bool isDownloadValid(char *input);
+bool haveSuffixCaseInsensitive(const char *input, const char * stringToFind);
 
 #define crashTemp(string, length) bzero(string, length)
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))
