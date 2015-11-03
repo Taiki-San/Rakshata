@@ -36,6 +36,7 @@
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>
 	#import <Cocoa/Cocoa.h>
+	#import <Quartz/Quartz.h>
 	#import <QuartzCore/QuartzCore.h>
 	#import <INPopoverController/INPopoverController.h>
 

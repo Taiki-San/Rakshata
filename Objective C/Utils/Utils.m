@@ -63,6 +63,25 @@
 
 @end
 
+@implementation PDFDocument (dumpData)
+
+- (NSArray *) getPages
+{
+	NSUInteger pdfPageCount = [self pageCount];
+	if(pdfPageCount == 0)
+		return nil;
+	
+	NSMutableArray * mutablePageArray = [NSMutableArray arrayWithCapacity:pdfPageCount];
+	
+	// Add each page of the PDF document to the array.
+	for (NSUInteger i = 0; i < pdfPageCount; ++i)
+		[mutablePageArray addObject : [self pageAtIndex:i]];
+
+	return [NSArray arrayWithArray:mutablePageArray];
+}
+
+@end
+
 
 NSString * getStringForWchar(const charType * string)
 {

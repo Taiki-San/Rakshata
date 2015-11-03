@@ -36,6 +36,12 @@ NSString * getRepoName(REPO_DATA * repo);
 
 @end
 
+@interface PDFDocument (dumpData)
+
+- (NSArray *) getPages;
+
+@end
+
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"
