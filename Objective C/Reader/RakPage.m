@@ -946,8 +946,9 @@
 		return nil;
 	
 	NSData * imageData;
+	BOOL isPDF = haveSuffixCaseInsensitive(data->nomPages[page], ".pdf");
 	//PDF
-	if(haveSuffixCaseInsensitive(data->nomPages[page], ".pdf"))
+	if(isPDF)
 		imageData = [self getPDF:page :data];
 	else
 		imageData = [self getPage : page : data];
@@ -971,6 +972,17 @@
 	
 	[self addPageToView:image :output];
 	output.page = page;
+	
+	if(isPDF)
+	{
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+		
+		((NSImageView *) output.documentView).wantsLayer = YES;
+		((NSImageView *) output.documentView).layer.backgroundColor = [NSColor whiteColor].CGColor;
+
+		[CATransaction commit];
+	}
 	
 	return output;
 }
