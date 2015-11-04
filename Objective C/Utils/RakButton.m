@@ -79,7 +79,7 @@
 	self = [super init];
 
 	//El Capitan
-	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_3)
+	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
 
 	return self;
@@ -99,6 +99,11 @@
 		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
 	
 	[self setNeedsDisplay];
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChanges:self];
 }
 
 - (void) sizeToFit
@@ -432,7 +437,7 @@
 	}
 
 	//El Capitan
-	if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_10_3)
+	if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_10_5)
 	{
 		[[self getBackgroundColor] setFill];
 		NSRectFill(cellFrame);

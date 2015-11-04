@@ -10,7 +10,14 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakSegmentedControl : NSSegmentedControl
+@interface RakMinimalSegmentedControl : NSSegmentedControl
+
+- (NSRect) getButtonFrame : (NSRect) superviewFrame;
+- (void) resizeAnimation : (NSRect) frameRect;
+
+@end
+
+@interface RakSegmentedControl : RakMinimalSegmentedControl
 {
 	id animationController;
 }
@@ -20,9 +27,6 @@
 
 - (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
 
-- (NSRect) getButtonFrame : (NSRect) superviewFrame;
-
-- (void) resizeAnimation : (NSRect) frameRect;
 - (void) updateSelectionWithoutAnimation : (NSInteger) newState;
 - (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 

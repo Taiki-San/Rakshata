@@ -28,7 +28,7 @@
 
 @end
 
-@interface RakQuerySegmentedControl : NSSegmentedControl
+@interface RakQuerySegmentedControl : RakMinimalSegmentedControl
 
 - (instancetype) initWithData : (NSRect) frame : (NSString *) agree : (NSString *) disagree;
 

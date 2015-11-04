@@ -15,6 +15,52 @@ enum
 	BORDER_BUTTON = 20
 };
 
+
+@implementation RakMinimalSegmentedControl
+
+#pragma mark - Init
+
++ (Class)cellClass
+{
+	return [RakSegmentedButtonCell class];
+}
+
+#pragma mark - Resizing
+
+- (NSRect) getButtonFrame : (NSRect) superviewFrame
+{
+	return superviewFrame;
+}
+
+- (void) setFrame:(NSRect)frameRect
+{
+	NSRect newFrame = [self getButtonFrame:frameRect];
+	[super setFrame: newFrame];
+	
+	if(newFrame.size.width == frameRect.size.width)
+	{
+		[self sizeToFit];
+		newFrame = [self getButtonFrame:frameRect];
+		[super setFrame: newFrame];
+	}
+}
+
+- (void) resizeAnimation : (NSRect) frameRect
+{
+	[self.animator setFrame : [self getButtonFrame:frameRect]];
+}
+
+#pragma mark - Workaround
+
+- (void) didAddSubview:(NSView *)subview
+{
+	//Hide the text 10.11 added which broke our customization with undocumented classes, yay \o/
+	if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
+		subview.hidden = YES;
+}
+
+@end
+
 @implementation RakSegmentedControl
 
 - (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessages
@@ -56,45 +102,10 @@ enum
 	return self;
 }
 
-- (NSRect) getButtonFrame : (NSRect) superviewFrame
-{
-	return superviewFrame;
-}
-
 - (void) setLabel:(NSString *)label forSegment:(NSInteger)segment
 {
 	[super setLabel:label forSegment:segment];
 	[self sizeToFit];
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	NSRect newFrame = [self getButtonFrame:frameRect];
-	[super setFrame: newFrame];
-	
-	if(newFrame.size.width == frameRect.size.width)
-	{
-		[self sizeToFit];
-		newFrame = [self getButtonFrame:frameRect];
-		[super setFrame: newFrame];
-	}
-}
-
-- (void) resizeAnimation : (NSRect) frameRect
-{
-	[self.animator setFrame : [self getButtonFrame:frameRect]];
-}
-
-- (void) didAddSubview:(NSView *)subview
-{
-	//Hide the text 10.11 added which broke our customization with undocumented classes, yay \o/
-	if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_3)
-		subview.hidden = YES;
-}
-
-+ (Class)cellClass
-{
-	return [RakSegmentedButtonCell class];
 }
 
 - (void) dealloc

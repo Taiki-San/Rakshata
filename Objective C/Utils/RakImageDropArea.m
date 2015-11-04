@@ -37,7 +37,7 @@ enum
 			content.alignment = NSTextAlignmentCenter;
 
 			//El Capitan
-			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_3)
+			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 				[content setFrameSize:NSMakeSize(WIDTH, content.bounds.size.height)];
 			
 			[content setFrameOrigin : NSCenterPoint(_bounds, content.bounds)];

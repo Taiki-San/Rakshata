@@ -222,28 +222,5 @@
 	return frame;
 }
 
-- (void) setFrame:(NSRect)frameRect
-{
-	NSRect newFrame = [self getButtonFrame:frameRect];
-	[super setFrame: newFrame];
-	
-	if(newFrame.size.width == frameRect.size.width)
-	{
-		[self sizeToFit];
-		newFrame = [self getButtonFrame:frameRect];
-		[super setFrame: newFrame];
-	}
-}
-
-- (void) resizeAnimation : (NSRect) frameRect
-{
-	[self.animator setFrame : [self getButtonFrame:frameRect]];
-}
-
-+ (Class)cellClass
-{
-	return [RakSegmentedButtonCell class];
-}
-
 @end
 
