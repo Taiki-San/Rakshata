@@ -12,12 +12,6 @@
 
 Prefs * __strong prefsCache;
 
-// Contexte
-static uint mainThread = TAB_SERIES;
-static uint stateTabsReader = STATE_READER_TAB_DEFAULT;
-static bool favoriteAutoDL = true;
-static byte activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
-
 enum
 {
 	SERIESMODE_MAX_WIDTH_WHEN_INACTIVE = 225,
@@ -39,7 +33,7 @@ enum
 	else if(data != nil)
 		[prefsCache updateContext:data];
 	
-	((RakAppDelegate *) [NSApp delegate]).haveDistractionFree = mainThread == TAB_READER;
+	((RakAppDelegate *) [NSApp delegate]).haveDistractionFree = prefsCache.mainThread == TAB_READER;
 }
 
 + (NSString *) dumpPrefs
@@ -50,27 +44,6 @@ enum
 + (void) deletePrefs
 {
 	prefsCache = nil;
-}
-
-+ (uint) getCurrentTheme : (id) registerForChanges
-{
-	if(prefsCache == nil)
-		[self initCache];
-	
-	if(registerForChanges != nil)
-	{
-		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
-	}
-	
-	return prefsCache.themeCode;
-}
-
-+ (void) deRegisterForChanges : (id) object
-{
-	if(prefsCache != nil && object != nil)
-	{
-		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
-	}
 }
 
 + (void) setCurrentTheme : (uint) newTheme
@@ -213,21 +186,21 @@ enum
 		case PREFS_GET_MAIN_THREAD:
 		{
 			uint* output = outputContainer;
-			*output = mainThread;
+			*output = _mainThread;
 			break;
 		}
 			
 		case PREFS_GET_TAB_SERIE_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabSerieSize getDataTab: mainThread : stateTabsReader].size.width;
+			*output = [tabSerieSize getDataTab: _mainThread : _stateTabsReader].size.width;
 			
 			if(additionalData != NULL)
 			{
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread != TAB_SERIES ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, _mainThread != TAB_SERIES ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : -1);
 				
 				//The CT tab may be reduced, so we need to keep that in mind when defining our width
-				if(mainThread == TAB_SERIES)
+				if(_mainThread == TAB_SERIES)
 				{
 					CGFloat width = 0;
 					[self getPrefInternal:PREFS_GET_TAB_CT_WIDTH :&width :NULL];
@@ -244,23 +217,23 @@ enum
 		case PREFS_GET_TAB_CT_WIDTH:
 		{
 			CGFloat * output = outputContainer;
-			*output = [tabCTSize getDataTab: mainThread : stateTabsReader].size.width;
+			*output = [tabCTSize getDataTab: _mainThread : _stateTabsReader].size.width;
 			
 			if(additionalData != NULL)
-				*output = percToSize(*output, (*(NSSize *) additionalData).width, mainThread == TAB_READER ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : (mainThread == TAB_SERIES ? SERIESMODE_MAX_WIDTH_WHEN_INACTIVE : -1));
+				*output = percToSize(*output, (*(NSSize *) additionalData).width, _mainThread == TAB_READER ? READERMODE_MAX_WIDTH_WHEN_INACTIVE : (_mainThread == TAB_SERIES ? SERIESMODE_MAX_WIDTH_WHEN_INACTIVE : -1));
 			
 			break;
 		}
 			
 		case PREFS_GET_TAB_CT_POSX:
 		{
-			if(mainThread == TAB_READER && stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
+			if(_mainThread == TAB_READER && _stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
 			{
 				[self getPrefInternal:PREFS_GET_TAB_SERIE_WIDTH :outputContainer :additionalData];
 			}
 			else
 			{
-				NSRect frame = [tabCTSize getDataTab: mainThread : stateTabsReader];
+				NSRect frame = [tabCTSize getDataTab: _mainThread : _stateTabsReader];
 				CGFloat * output = outputContainer;
 				*output = frame.origin.x;
 				
@@ -268,7 +241,7 @@ enum
 				{
 					*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
 					
-					if(mainThread == TAB_SERIES)
+					if(_mainThread == TAB_SERIES)
 					{
 						frame.size.width = percToSize(frame.size.width, (*(NSSize *) additionalData).width, -1);
 						if(frame.size.width > SERIESMODE_MAX_WIDTH_WHEN_INACTIVE)
@@ -283,7 +256,7 @@ enum
 		{
 			//Classical code
 			CGFloat * output = outputContainer;
-			*output = [tabReaderSize getDataTab: mainThread : stateTabsReader].origin.x;
+			*output = [tabReaderSize getDataTab: _mainThread : _stateTabsReader].origin.x;
 			
 			if(additionalData == NULL)
 				break;
@@ -291,11 +264,11 @@ enum
 			*output = percToSize(*output, (*(NSSize *) additionalData).width, -1);
 			
 			//Reader position is highly dependant of the width of either SER/CT tabs, we need to check we're not impacted if they were maximized
-			if(mainThread == TAB_READER && stateTabsReader & STATE_READER_NONE_COLLAPSED)
+			if(_mainThread == TAB_READER && _stateTabsReader & STATE_READER_NONE_COLLAPSED)
 			{
 				CGFloat data, percentage;
 				
-				if(stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
+				if(_stateTabsReader & (STATE_READER_TAB_SERIE_FOCUS | STATE_READER_TAB_MDL_FOCUS))
 				{
 					[self getPrefInternal:PREFS_GET_TAB_SERIE_WIDTH : &data : additionalData];
 					if(data == READERMODE_MAX_WIDTH_WHEN_INACTIVE)	//Maximized
@@ -306,7 +279,7 @@ enum
 				}
 				
 				//The same code for CT tab
-				if(stateTabsReader & STATE_READER_TAB_CT_FOCUS)
+				if(_stateTabsReader & STATE_READER_TAB_CT_FOCUS)
 				{
 					[self getPrefInternal:PREFS_GET_TAB_CT_WIDTH : &data : additionalData];
 					if(data == READERMODE_MAX_WIDTH_WHEN_INACTIVE)	//Maximized
@@ -344,13 +317,13 @@ enum
 			
 		case PREFS_GET_TAB_SERIE_FRAME:
 		{
-			NSRect data = [tabSerieSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabSerieSize getDataTab: _mainThread : _stateTabsReader];
 			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
 			
-			if(mainThread == TAB_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
+			if(_mainThread == TAB_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
 				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
 			
-			else if(mainThread == TAB_SERIES && additionalData != NULL)
+			else if(_mainThread == TAB_SERIES && additionalData != NULL)
 				[self getPrefInternal : PREFS_GET_TAB_SERIE_WIDTH : &(((NSRect *)outputContainer)->size.width) : additionalData];
 			
 			break;
@@ -358,15 +331,15 @@ enum
 			
 		case PREFS_GET_TAB_CT_FRAME:
 		{
-			NSRect data = [tabCTSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabCTSize getDataTab: _mainThread : _stateTabsReader];
 			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
 			
-			if(mainThread == TAB_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
+			if(_mainThread == TAB_READER && additionalData != NULL && ((NSRect*) outputContainer)->size.width > READERMODE_MAX_WIDTH_WHEN_INACTIVE)
 			{
 				((NSRect*) outputContainer)->size.width = READERMODE_MAX_WIDTH_WHEN_INACTIVE;
 				[self getPrefInternal : PREFS_GET_TAB_CT_POSX : &(((NSRect *)outputContainer)->origin.x) : additionalData];
 			}
-			else if(mainThread == TAB_SERIES && additionalData != NULL && ((NSRect*) outputContainer)->size.width > SERIESMODE_MAX_WIDTH_WHEN_INACTIVE)
+			else if(_mainThread == TAB_SERIES && additionalData != NULL && ((NSRect*) outputContainer)->size.width > SERIESMODE_MAX_WIDTH_WHEN_INACTIVE)
 			{
 				((NSRect*) outputContainer)->size.width = SERIESMODE_MAX_WIDTH_WHEN_INACTIVE;
 				[self getPrefInternal : PREFS_GET_TAB_CT_POSX : &(((NSRect *)outputContainer)->origin.x) : additionalData];
@@ -377,7 +350,7 @@ enum
 			
 		case PREFS_GET_TAB_READER_FRAME:
 		{
-			NSRect data = [tabReaderSize getDataTab: mainThread : stateTabsReader];
+			NSRect data = [tabReaderSize getDataTab: _mainThread : _stateTabsReader];
 			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
 			
 			[self getPrefInternal: PREFS_GET_TAB_READER_POSX : &(((NSRect *) outputContainer)->origin.x) : additionalData];
@@ -387,10 +360,10 @@ enum
 			
 		case PREFS_GET_MDL_FRAME:
 		{
-			NSRect data = [prefsPosMDL getData: mainThread : stateTabsReader];
+			NSRect data = [prefsPosMDL getData: _mainThread : _stateTabsReader];
 			*(NSRect *) outputContainer = additionalData == NULL ? data : prefsPercToFrame(data, *(NSSize*) additionalData);
 			
-			if(mainThread == TAB_READER && additionalData != NULL)
+			if(_mainThread == TAB_READER && additionalData != NULL)
 			{
 				CGFloat maxWidth = 0;
 				[self getPrefInternal: PREFS_GET_TAB_READER_POSX : &maxWidth : additionalData];
@@ -406,14 +379,14 @@ enum
 		case PREFS_GET_IS_READER_MT:
 		{
 			BOOL * data = outputContainer;
-			*data = (mainThread & TAB_READER) != 0;
+			*data = (_mainThread & TAB_READER) != 0;
 			break;
 		}
 			
 		case PREFS_GET_READER_TABS_STATE:
 		{
 			uint * output = outputContainer;
-			*output = stateTabsReader;
+			*output = _stateTabsReader;
 			break;
 		}
 			
@@ -425,13 +398,25 @@ enum
 			
 		case PREFS_GET_FAVORITE_AUTODL:
 		{
-			* (bool *) outputContainer = favoriteAutoDL;
+			* (bool *) outputContainer = _favoriteAutoDL;
 			break;
 		}
 			
 		case PREFS_GET_ACTIVE_PREFS_PANEL:
 		{
-			* (byte *) outputContainer = activePrefsPanel;
+			* (byte *) outputContainer = _activePrefsPanel;
+			break;
+		}
+			
+		case PREFS_GET_SAVE_MAGNIFICATION:
+		{
+			* (BOOL *) outputContainer = _saveMagnification;
+			break;
+		}
+			
+		case PREFS_GET_HAVE_PDF_BACKGROUND:
+		{
+			* (BOOL *) outputContainer = _havePDFBackground;
 			break;
 		}
 			
@@ -453,13 +438,13 @@ enum
 	{
 		case PREFS_SET_OWNMAINTAB:
 		{
-			ret_value = mainThread != (uint) value;
+			ret_value = prefsCache.mainThread != (uint) value;
 			if(ret_value)
 			{
-				mainThread = value & TAB_MASK;
+				prefsCache.mainThread = value & TAB_MASK;
 				[prefsCache refreshFirstResponder];
 				
-				[[NSApp delegate] setHaveDistractionFree : mainThread == TAB_READER];
+				[[NSApp delegate] setHaveDistractionFree : prefsCache.mainThread == TAB_READER];
 			}
 			
 			break;
@@ -467,31 +452,36 @@ enum
 			
 		case PREFS_SET_FAVORITE_AUTODL:
 		{
-			ret_value = favoriteAutoDL != (bool) value;
-			favoriteAutoDL = value;
+			ret_value = prefsCache.favoriteAutoDL != (bool) value;
+
+			if(ret_value)
+				prefsCache.favoriteAutoDL = value;
 			
 			break;
 		}
 			
 		case PREFS_SET_READER_TABS_STATE:
 		{
-			ret_value = stateTabsReader != (uint) value;
-			stateTabsReader = value & STATE_READER_TAB_MASK;
-			[prefsCache refreshFirstResponder];
+			ret_value = prefsCache.stateTabsReader != (uint) value;
+			if(ret_value)
+			{
+				prefsCache.stateTabsReader = value & STATE_READER_TAB_MASK;
+				[prefsCache refreshFirstResponder];
+			}
 			
 			break;
 		}
 			
 		case PREFS_SET_READER_DISTRACTION_FREE:
 		{
-			if(value && stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
+			if(value && prefsCache.stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
 			{
-				stateTabsReader = STATE_READER_TAB_DISTRACTION_FREE;
+				prefsCache.stateTabsReader = STATE_READER_TAB_DISTRACTION_FREE;
 				ret_value = YES;
 			}
-			else if(!value && stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
+			else if(!value && prefsCache.stateTabsReader == STATE_READER_TAB_DISTRACTION_FREE)
 			{
-				stateTabsReader = STATE_READER_TAB_ALL_COLLAPSED;
+				prefsCache.stateTabsReader = STATE_READER_TAB_ALL_COLLAPSED;
 				ret_value = YES;
 			}
 			break;
@@ -500,7 +490,7 @@ enum
 		case PREFS_SET_READER_TABS_STATE_FROM_CALLER:
 		{
 			//Only relevant in the reader
-			if(mainThread != TAB_READER)
+			if(prefsCache.mainThread != TAB_READER)
 				break;
 			
 			uint newValue = INVALID_VALUE;
@@ -535,10 +525,10 @@ enum
 			}
 			if(newValue != INVALID_VALUE)
 			{
-				if(stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
+				if(prefsCache.stateTabsReader != STATE_READER_TAB_DISTRACTION_FREE)
 				{
-					ret_value = stateTabsReader != newValue;
-					stateTabsReader = newValue;
+					ret_value = prefsCache.stateTabsReader != newValue;
+					prefsCache.stateTabsReader = newValue;
 				}
 			}
 #ifdef DEV_VERSION
@@ -552,8 +542,32 @@ enum
 			
 		case PREFS_SET_ACTIVE_PREFS_PANEL:
 		{
-			ret_value = activePrefsPanel != value;
-			activePrefsPanel = value;
+			ret_value = prefsCache.activePrefsPanel != value;
+			prefsCache.activePrefsPanel = value;
+			break;
+		}
+			
+		case PREFS_SET_SAVE_MAGNIFICATION:
+		{
+			value = value != 0;
+			
+			ret_value = prefsCache.saveMagnification != (BOOL) value;
+			
+			if(ret_value)
+				prefsCache.saveMagnification = value;
+			
+			break;
+		}
+			
+		case PREFS_SET_HAVE_PDF_BACKGROUND:
+		{
+			value = value != 0;
+			
+			ret_value = prefsCache.havePDFBackground != (BOOL) value;
+			
+			if(ret_value)
+				prefsCache.havePDFBackground = value;
+			
 			break;
 		}
 			
@@ -578,10 +592,10 @@ enum
 		return;
 	
 	if(mainThreadLocal == INVALID_VALUE)
-		mainThreadLocal = mainThread;
+		mainThreadLocal = _mainThread;
 	
 	if(stateTabsReaderLocal == INVALID_VALUE)
-		stateTabsReaderLocal = stateTabsReader;
+		stateTabsReaderLocal = _stateTabsReader;
 	
 	NSRect frame;
 	
@@ -604,7 +618,7 @@ enum
 		}
 		case QUERY_MDL:
 		{
-			frame = [prefsPosMDL getData: mainThread : stateTabsReaderLocal];
+			frame = [prefsPosMDL getData: _mainThread : stateTabsReaderLocal];
 			break;
 		}
 		default:
@@ -629,6 +643,44 @@ enum
 		*output = -1;
 }
 
+#pragma mark - KVO
+
++ (uint) getCurrentTheme : (id) registerForChanges
+{
+	if(prefsCache == nil)
+		[self initCache];
+	
+	if(registerForChanges != nil)
+	{
+		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
+	}
+	
+	return prefsCache.themeCode;
+}
+
++ (void) deRegisterForChanges : (id) object
+{
+	if(prefsCache != nil && object != nil)
+	{
+		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
+	}
+}
+
++ (void) registerMainThreadChange : (id) object
+{
+	if(prefsCache == nil)
+		[self initCache];
+	
+	if(object != nil)
+		[prefsCache addObserver:object forKeyPath:@"mainThread" options:NSKeyValueObservingOptionNew context:nil];
+}
+
++ (void) deRegisterMainThreadChange : (id) object
+{
+	if(prefsCache != nil && object != nil)
+		[prefsCache removeObserver:object forKeyPath:@"mainThread"];
+}
+
 /************		Private sections		************/
 
 char * loadPref(char request[3], unsigned int length, char defaultChar);
@@ -638,11 +690,18 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	self = [super init];
 	if(self != nil)
 	{
+		//Default
+		_mainThread = TAB_DEFAULT;
+		_stateTabsReader = STATE_READER_TAB_DEFAULT;
+		_favoriteAutoDL = true;
+		_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
+
 		if(data == nil)
 			self.themeCode = 1;
 		else
 			[self updateContext:data];
-		
+
+		//Main loading
 		uint expectedSize[] = { [RakSizeSeries getExpectedBufferSizeVirtual], [RakSizeCT getExpectedBufferSizeVirtual], [RakSizeReader getExpectedBufferSizeVirtual], [RakMDLSize getExpectedBufferSizeVirtual] };
 		uint bufferSize = expectedSize[0] + expectedSize[1] + expectedSize[2] + expectedSize[3];
 		char *input = loadPref("si", bufferSize, 'f'), recoveryBuffer[bufferSize];
@@ -699,7 +758,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			case 0:
 			{
 				if(value == TAB_SERIES || value == TAB_CT || value == TAB_READER)
-					mainThread = value;
+					_mainThread = value;
 				break;
 			}
 				
@@ -713,14 +772,26 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 				
 			case 2:
 			{
-				favoriteAutoDL = value;
+				prefsCache.favoriteAutoDL = value != 0;
 				break;
 			}
 			
 			case 3:
 			{
 				if(value >= PREFS_BUTTON_CODE_GENERAL && value <= PREFS_BUTTON_CODE_CUSTOM)
-					activePrefsPanel = value;
+					prefsCache.activePrefsPanel = value;
+				break;
+			}
+				
+			case 4:
+			{
+				prefsCache.saveMagnification = value != 0;
+				break;
+			}
+				
+			case 5:
+			{
+				prefsCache.havePDFBackground = value != 0;
 				break;
 			}
 		}
@@ -749,12 +820,12 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (NSString *) dumpPrefs
 {
-	return [NSString stringWithFormat:@"%d\n%d\n%d\n%d", mainThread, _themeCode, favoriteAutoDL, activePrefsPanel];
+	return [NSString stringWithFormat:@"%d\n%d\n%d\n%d\n%d\n%d", _mainThread, _themeCode, _favoriteAutoDL, _activePrefsPanel, _saveMagnification, _havePDFBackground];
 }
 
 - (void) refreshFirstResponder
 {
-	[firstResponder updateContext:mainThread :stateTabsReader];
+	[firstResponder updateContext:_mainThread :_stateTabsReader];
 }
 
 - (void) flushMemory : (BOOL) memoryError

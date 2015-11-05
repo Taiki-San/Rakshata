@@ -124,6 +124,9 @@
 "AUTO-DL-ONE-VOL" = "I noticed that\nthere is a volume\nnot downloaded\nafter this one.\nDo you want it?";
 "AUTO-DL-SEVERAL-VOL" = "I noticed that\nthere are volumes\nnot downloaded\nafter this one.\nDo you want them?";
 
+"READER-SETTING-KEEP-MAGNI" = "Keep the zoom setting through pages";
+"READER-SETTING-FORCE-BKGD" = "Draw white background (PDF)";
+
 //Prefs
 "PREFS-TITLE-GENERAL" = "General";
 "PREFS-TITLE-REPO" = "Sources";

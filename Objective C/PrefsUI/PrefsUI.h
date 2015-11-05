@@ -14,11 +14,21 @@
 @interface RakPrefsPopover : NSViewController
 {
 	NSView * mainView;
+	
+	uint mainThread;
+	
+	NSMutableArray * textFields;
+	
+	//UI Elements
+	//	Reader
+	
+	RakSwitchButton * forcePDFBackground, * saveMagnification;
 }
 
-@property (weak) NSPopover * popover;
+@property (nonatomic, weak) NSPopover * popover;
 
 - (instancetype) initWithFrame : (NSRect) frame;
+- (void) popoverClosed;
 
 @end
 
@@ -27,9 +37,10 @@
     RakPrefsPopover *viewControllerHUD;
     NSPopover *popover;
 
-	NSButton *anchor;    
+	NSButton *anchor;
 }
-- (void)showPopover;
+
+- (void) showPopover;
 - (void) setAnchor : (NSButton *) newAnchor;
 
 @end

@@ -355,7 +355,7 @@ enum
 		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
 		header.textColor = [self mainTitleColor];
 
-		header.cell.wraps = YES;
+		header.enableWraps = YES;
 		header.fixedWidth = selfSize.width - 20;
 		header.alignment = NSTextAlignmentCenter;
 
@@ -645,7 +645,7 @@ enum
 			{
 				description = inputField;
 
-				inputField.cell.wraps = YES;
+				inputField.enableWraps = YES;
 				inputField.fixedWidth = inputSize.width;
 				inputField.enableMultiLine = YES;
 
@@ -745,7 +745,7 @@ enum
 	{
 		if(maxWidth)
 		{
-			text.cell.wraps = YES;
+			text.enableWraps = YES;
 			text.fixedWidth = maxWidth;
 		}
 		else

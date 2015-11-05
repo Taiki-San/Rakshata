@@ -136,6 +136,12 @@ enum FONT_REQUEST {
 }
 
 @property uint themeCode;
+@property uint mainThread;
+@property uint stateTabsReader;
+@property byte activePrefsPanel;
+@property BOOL saveMagnification;
+@property BOOL havePDFBackground;
+@property BOOL favoriteAutoDL;
 
 + (void) initCache;
 + (void) initCache : (NSString *) data;
@@ -153,6 +159,9 @@ enum FONT_REQUEST {
 + (void) getPref : (uint) requestID : (void*) outputContainer;
 + (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;
 + (BOOL) setPref : (uint) requestID : (uint64) value;
+
++ (void) registerMainThreadChange : (id) object;
++ (void) deRegisterMainThreadChange : (id) object;
 
 //Semi-public, use of this method should be avoided when possible
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;

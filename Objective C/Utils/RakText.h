@@ -22,6 +22,7 @@
 @property CGFloat forcedOffsetY;
 
 @property (nonatomic) BOOL enableMultiLine;
+@property BOOL enableWraps;
 @property (nonatomic) CGFloat fixedWidth;
 
 @property BOOL discardHeight;

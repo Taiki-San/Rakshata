@@ -124,6 +124,9 @@
 "AUTO-DL-ONE-VOL" = "J'ai remarqué\nqu'il y a un tome\nnon-téléchargé après\ncelui-là. Voulez vous\nle télécharger?";
 "AUTO-DL-SEVERAL-VOL" = "J'ai remarqué\nqu'il y a des tomes\nnon-téléchargés après\ncelui-là. Voulez vous\nles télécharger?";
 
+"READER-SETTING-KEEP-MAGNI" = "Conserve les zoom à travers les pages";
+"READER-SETTING-FORCE-BKGD" = "Affiche un fond blanc (PDF)";
+
 //Prefs
 "PREFS-TITLE-GENERAL" = "Général";
 "PREFS-TITLE-REPO" = "Sources";

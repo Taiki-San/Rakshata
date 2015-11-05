@@ -184,7 +184,7 @@
 	
 	[super setStringValue : aString];
 	
-	if([self.cell wraps])
+	if([self enableWraps])
 		[self setFrameSize: _discardHeight ? NSZeroSize : [self intrinsicContentSize]];
 }
 
@@ -210,6 +210,16 @@
 
 #pragma mark - Handle wrap lines properly
 
+- (void) setEnableWraps : (BOOL) canWrap
+{
+	[self.cell setWraps:canWrap];
+}
+
+- (BOOL) enableWraps
+{
+	return [self.cell wraps];
+}
+
 - (void) setFixedWidth : (CGFloat)fixedWidth
 {
 	haveFixedWidth = fixedWidth != 0;
@@ -217,14 +227,14 @@
 	{
 		_fixedWidth = fixedWidth;
 		
-		if([self.cell wraps] && ![self.stringValue isEqualToString:@""])
+		if([self enableWraps] && ![self.stringValue isEqualToString:@""])
 			[self setFrameSize:[self intrinsicContentSize]];
 	}
 }
 
 - (NSSize) intrinsicContentSize
 {
-	if(![self.cell wraps])
+	if(![self enableWraps])
 		return [super intrinsicContentSize];
 	
 	NSRect frame = NSZeroRect;
