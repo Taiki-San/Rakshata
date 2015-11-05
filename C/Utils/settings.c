@@ -139,10 +139,10 @@ bool loadEmailProfile()
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
-		const uint start = locateEndString(prefs, "<"SETTINGS_EMAIL_FLAG">"), end = start + locateEndString(&prefs[start], "</"SETTINGS_EMAIL_FLAG">");
-		if(start != 0 && end > 6 && start < end - 6)
+		const uint start = locateEndString(prefs, "<"SETTINGS_EMAIL_FLAG">\n"), end = start + locateEndString(&prefs[start], "</"SETTINGS_EMAIL_FLAG">");
+		if(start != 0 && end > 5 && start < end - 5)
         {
-			const uint delta = end - 6 - start;
+			const uint delta = end - 5 - start;
 
 			COMPTE_PRINCIPAL_MAIL = malloc((delta + 1) * sizeof(char));
 			if(COMPTE_PRINCIPAL_MAIL != NULL)
