@@ -80,7 +80,10 @@
 
 	//El Capitan
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
+	{
 		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+		hasRegisteredThemeUpdates = YES;
+	}
 
 	return self;
 }
@@ -96,14 +99,15 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(self.layer.backgroundColor != nil)
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:nil].CGColor;
 	
 	[self setNeedsDisplay];
 }
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	if(hasRegisteredThemeUpdates)
+		[Prefs deRegisterForThemeChanges:self];
 }
 
 - (void) sizeToFit
@@ -198,8 +202,9 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS : self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS : hasRegisteredThemeUpdates ? nil :self].CGColor;
 		self.layer.cornerRadius = 4;
+		hasRegisteredThemeUpdates = YES;
 	}
 	haveBackground = !haveBackground;
 }
@@ -234,7 +239,7 @@
 		_imageName = [imageName copy];
 		
 		notAvailable = NO;
-		_activeAllowed = YES;
+		_activeAllowed = hasRegisteredThemeUpdates = YES;
 		
 		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
 		{
@@ -262,6 +267,7 @@
 			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
 			
 			[Prefs getCurrentTheme:self];	//Register to changes
+			hasRegisteredThemeUpdates = YES;
 		}
 	}
 	return self;
@@ -272,7 +278,8 @@
 	if(!textCell)
 		self.image = nil;
 	
-	[Prefs deRegisterForThemeChanges:self];
+	if(hasRegisteredThemeUpdates)
+		[Prefs deRegisterForThemeChanges:self];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

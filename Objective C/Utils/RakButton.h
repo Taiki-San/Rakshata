@@ -19,7 +19,7 @@
 
 @interface RakButton: NSButton
 {
-	BOOL haveBackground;
+	BOOL haveBackground, hasRegisteredThemeUpdates;
 }
 
 @property BOOL textButton;
@@ -38,7 +38,7 @@
 
 @interface RakButtonCell : NSButtonCell
 {
-	BOOL notAvailable;
+	BOOL notAvailable, hasRegisteredThemeUpdates;
 	
 	NSString * _imageName;
 	

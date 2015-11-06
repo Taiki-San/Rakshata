@@ -27,7 +27,7 @@
 
 @interface RakPageCounter : RakText
 {
-	Reader * _target;
+	Reader * __weak _target;
 	
 	uint currentPage;
 	uint pageMax;

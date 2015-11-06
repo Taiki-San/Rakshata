@@ -17,7 +17,7 @@
 	uint* _arraySelection;
 	uint _sizeArray;
 	
-	Reader* _tabReader;
+	Reader* __weak _tabReader;
 	
 	BOOL _remind;
 }

@@ -36,11 +36,6 @@ enum
 	return self;
 }
 
-- (void) dealloc
-{
-	[Prefs deRegisterForThemeChanges:self];
-}
-
 - (void) updateSynopsis : (charType *) synopsis
 {
 	if(placeholderString && synopsis[0] == 0)

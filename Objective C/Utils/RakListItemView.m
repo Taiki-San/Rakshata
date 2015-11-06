@@ -19,11 +19,6 @@ enum
 
 @implementation RakListItemView
 
-- (void) dealloc
-{
-	[Prefs deRegisterForThemeChanges:self];
-}
-
 #pragma mark - Sizing management
 
 - (void) setFrameSize:(NSSize)newSize

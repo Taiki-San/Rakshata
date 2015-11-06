@@ -15,7 +15,7 @@
 	BOOL _isTome;
 	BOOL _remind;
 	
-	Reader* _receiver;
+	Reader* __weak _receiver;
 }
 
 - (instancetype) autoInit;

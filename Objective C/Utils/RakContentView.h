@@ -28,6 +28,7 @@
 
 - (void) setupCtx : (Series*) tabSerie : (CTSelec*) tabCT : (Reader*) tabReader : (MDL*) tabMDL;
 - (void) updateContext : (uint) mainThread : (uint) stateTabsReader;
+- (void) cleanCtx;
 
 @end
 

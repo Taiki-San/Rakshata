@@ -16,7 +16,7 @@
 
 @interface RakAddRepoController : NSObject
 {
-	RakWindow * window;
+	RakWindow * __weak window;
 
 	uint nbRoot;
 	ROOT_REPO_DATA ** output;

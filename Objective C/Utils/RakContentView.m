@@ -375,6 +375,14 @@
 	_stateTabsReader = stateTabsReader;
 }
 
+- (void) cleanCtx
+{
+	_tabSerie = nil;
+	_tabCT = nil;
+	_tabReader = nil;
+	_tabMDL = nil;
+}
+
 - (void)keyDown:(NSEvent *)theEvent
 {
 	switch (_mainThread)

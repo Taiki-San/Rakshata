@@ -34,7 +34,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:self].CGColor;
+	self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:nil].CGColor;
 	[self setNeedsDisplay:YES];
 }
 

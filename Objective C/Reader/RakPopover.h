@@ -40,7 +40,7 @@
 	BOOL prefsRegistered;
 	BOOL additionalConfigRequired;
 	
-	NSView * _anchor;
+	NSView * __weak _anchor;
 
 	RakPopoverWrapper * popover;
 }

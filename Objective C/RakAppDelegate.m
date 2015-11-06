@@ -135,18 +135,33 @@
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
-	NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
-	
-	saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
-	saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
-	saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
-	saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
-	
-	[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
-									 series:saveSerie
-										 CT:saveCT
-									 reader:saveReader
-										MDL:saveMDL];
+#ifdef FLUSH_PREFS_PROPERLY
+	@autoreleasepool
+	{
+#endif
+		NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
+		
+		saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
+		saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
+		saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
+		saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
+		
+		[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
+										 series:saveSerie
+											 CT:saveCT
+										 reader:saveReader
+											MDL:saveMDL];
+		
+		[[self getContentView] cleanCtx];
+		
+		self.window.contentView = nil;
+		self.window.imatureFirstResponder = nil;
+		self.window.defaultDispatcher = nil;
+#ifdef FLUSH_PREFS_PROPERLY
+	}
+
+	[Prefs deletePrefs];
+#endif
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

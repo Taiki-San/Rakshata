@@ -71,6 +71,11 @@
 	[header updateHeaderProjectInternal :getCopyOfProjectData(newData)];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Resizing
 
 - (NSRect) frameByParent : (NSRect) parentFrame : (RakCTHeaderImage *) _header

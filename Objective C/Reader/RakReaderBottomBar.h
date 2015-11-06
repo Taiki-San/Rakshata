@@ -42,7 +42,7 @@
 	BOOL isFaved;
 	
 	//Used for distraction free mode
-	Reader * _parent;
+	Reader * __weak _parent;
 	NSTrackingArea * trackingArea;
 }
 

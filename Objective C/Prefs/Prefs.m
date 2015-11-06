@@ -12,6 +12,10 @@
 
 Prefs * __strong prefsCache;
 
+#ifdef FLUSH_PREFS_PROPERLY
+NSMutableDictionary * __strong garbageCollector;
+#endif
+
 enum
 {
 	SERIESMODE_MAX_WIDTH_WHEN_INACTIVE = 225,
@@ -652,6 +656,13 @@ enum
 	
 	if(registerForChanges != nil)
 	{
+#ifdef FLUSH_PREFS_PROPERLY
+		if([garbageCollector objectForKey:[NSString stringWithFormat:@"%@", @((uint64_t) registerForChanges)]] != nil)
+		{
+			NSLog(@"WTFFF!!!!!\n%@", [NSThread callStackSymbols]);
+		}
+		[garbageCollector setValue:[NSThread callStackSymbols] forKey:[NSString stringWithFormat:@"%@", @((uint64_t) registerForChanges)]];
+#endif
 		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
 	}
 	
@@ -662,6 +673,9 @@ enum
 {
 	if(prefsCache != nil && object != nil)
 	{
+#ifdef FLUSH_PREFS_PROPERLY
+		[garbageCollector removeObjectForKey:[NSString stringWithFormat:@"%@", @((uint64_t) object)]];
+#endif
 		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
 	}
 }
@@ -687,6 +701,9 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (instancetype) init : (NSString *) data
 {
+#ifdef FLUSH_PREFS_PROPERLY
+	garbageCollector = [NSMutableDictionary new];
+#endif
 	self = [super init];
 	if(self != nil)
 	{
@@ -861,6 +878,13 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 	}
 	return array;
 }
+
+#ifdef FLUSH_PREFS_PROPERLY
+- (void) dealloc
+{
+	NSLog(@"%@", garbageCollector);
+}
+#endif
 
 @end
 

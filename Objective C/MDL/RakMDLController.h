@@ -15,7 +15,7 @@
 
 @interface RakMDLController : NSObject
 {
-	MDL* _tabMDL;
+	MDL* __weak _tabMDL;
 	
 	PROJECT_DATA ** cache;
 	uint sizeCache;
