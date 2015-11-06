@@ -362,6 +362,11 @@ enum
 	}
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Button management
 
 - (void) buttonClicked

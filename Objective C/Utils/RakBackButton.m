@@ -85,6 +85,11 @@ enum
 	return [RakBackButtonCell class];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Color
 
 - (NSColor *) getColorBackground

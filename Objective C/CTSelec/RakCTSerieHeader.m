@@ -60,6 +60,11 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (RakText *) craftField : (NSString *) string
 {
 	RakText * output = [[RakText alloc] initWithText:_bounds : string :[self textColor]];

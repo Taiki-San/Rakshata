@@ -25,6 +25,11 @@
 	isFocusDrop = NO;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (NSString *) getContextToGTFO
 {
 	return STATE_EMPTY;

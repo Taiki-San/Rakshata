@@ -101,7 +101,7 @@
 	
 	releaseCTData(data);
 	
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 	[RakDBUpdate unRegister : self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }

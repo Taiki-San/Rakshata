@@ -21,6 +21,11 @@
 	[self updateGradient];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (BOOL) mouseDownCanMoveWindow
 {
 	return YES;

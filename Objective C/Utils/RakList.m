@@ -135,6 +135,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[_tableView removeFromSuperview];
 	[scrollView setDocumentView:nil];
 	

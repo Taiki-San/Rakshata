@@ -80,6 +80,11 @@
 	return [NSString stringWithFormat:NSLocalizedString(_content.isTome ? @"VOLUME%c" : @"CHAPTER%c", nil), (_content.nbElem > 1 ? 's' : '\0')];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Properties
 
 - (void) setCompactMode : (BOOL) compactMode

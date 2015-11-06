@@ -17,6 +17,11 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 160, 155)];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (void) launchPopover : (NSView *) anchor
 {
 	//We check if the user asked not to be annoyed again

@@ -31,6 +31,7 @@
 - (instancetype) initImages : (NSArray*) imageNames : (short) defaultState
 {
 	uint currentTheme = [Prefs getCurrentTheme : self];
+	didRegister = YES;
 	
 	if(![self updateImages:imageNames :currentTheme])
 		return nil;
@@ -40,6 +41,12 @@
 	_imageNames = [NSArray arrayWithArray:imageNames];
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	if(didRegister)
+		[Prefs deRegisterForThemeChanges:self];
 }
 
 #pragma mark - Context update

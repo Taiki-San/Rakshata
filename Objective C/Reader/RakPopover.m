@@ -127,7 +127,7 @@
 - (void) dealloc
 {
 	if(prefsRegistered)
-		[Prefs deRegisterForChanges:self];
+		[Prefs deRegisterForThemeChanges:self];
 }
 
 #pragma mark - Drawing

@@ -41,6 +41,11 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (BOOL) updateIcon
 {
 	if(close != nil)

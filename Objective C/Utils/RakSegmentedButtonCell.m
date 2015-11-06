@@ -197,6 +197,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[fields removeAllObjects];
 }
 

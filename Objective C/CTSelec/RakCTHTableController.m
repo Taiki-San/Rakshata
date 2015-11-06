@@ -42,6 +42,11 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Interface
 
 - (void) updateProject : (PROJECT_DATA) project

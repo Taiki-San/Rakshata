@@ -139,6 +139,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[RakDBUpdate unRegister : self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[self moreFlushing];

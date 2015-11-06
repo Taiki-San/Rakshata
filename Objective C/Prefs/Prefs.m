@@ -658,7 +658,7 @@ enum
 	return prefsCache.themeCode;
 }
 
-+ (void) deRegisterForChanges : (id) object
++ (void) deRegisterForThemeChanges : (id) object
 {
 	if(prefsCache != nil && object != nil)
 	{

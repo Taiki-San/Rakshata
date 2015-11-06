@@ -149,7 +149,7 @@ enum FONT_REQUEST {
 + (void) deletePrefs;
 
 + (uint) getCurrentTheme : (id) registerForChanges;
-+ (void) deRegisterForChanges : (id) object;
++ (void) deRegisterForThemeChanges : (id) object;
 + (void) setCurrentTheme : (uint) newTheme;
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;

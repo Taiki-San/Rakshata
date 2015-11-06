@@ -103,7 +103,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 }
 
 - (void) sizeToFit
@@ -272,7 +272,7 @@
 	if(!textCell)
 		self.image = nil;
 	
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

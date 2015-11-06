@@ -114,7 +114,7 @@ enum
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 }
 
 - (NSString *) emailString

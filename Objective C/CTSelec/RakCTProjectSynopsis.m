@@ -61,6 +61,11 @@
 	return [self generatedScrollView : [self frameForContent : self.bounds : _title != nil ? _title.bounds.size.height : 0]];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Resize
 
 - (void) setFrame : (NSRect) frameRect : (NSSize) headerSize

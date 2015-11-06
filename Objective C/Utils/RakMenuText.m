@@ -82,6 +82,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[self removeFromSuperview];
 }
 

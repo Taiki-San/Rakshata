@@ -21,7 +21,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 }
 
 #pragma mark - Sizing management

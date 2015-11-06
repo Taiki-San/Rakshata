@@ -33,6 +33,10 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
 
 - (void) attachToView
 {

@@ -99,6 +99,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

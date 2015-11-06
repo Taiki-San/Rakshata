@@ -59,7 +59,7 @@ uint _currentTheme;
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChanges:self];
+	[Prefs deRegisterForThemeChanges:self];
 }
 
 #pragma mark - Context update

@@ -185,6 +185,11 @@
 	return [RakSRSearchBarCell class];
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 #pragma mark - Interface
 
 + (NSColor *) getBackgroundColor

@@ -163,6 +163,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[RakDBUpdate unRegister : self];
 	
 	[bottomBar removeFromSuperview];

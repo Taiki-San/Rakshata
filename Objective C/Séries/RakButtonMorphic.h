@@ -18,6 +18,8 @@
 	short _defaultState;
 	
 	uint _activeCell;
+	
+	BOOL didRegister;
 }
 
 @property uint activeCell;

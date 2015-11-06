@@ -73,6 +73,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForThemeChanges:self];
 	[self releaseIcons];
 	
 	if(pageCount != nil)

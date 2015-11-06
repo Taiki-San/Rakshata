@@ -38,6 +38,11 @@ enum
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (void) setStatus:(byte)status
 {
 	_status = status;

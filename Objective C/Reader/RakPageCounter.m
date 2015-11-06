@@ -34,6 +34,11 @@
 	return self;
 }
 
+- (void) dealloc
+{
+	[Prefs deRegisterForThemeChanges:self];
+}
+
 - (void) updateContext
 {
 	[self setStringValue:[NSString stringWithFormat:@"%d/%d", currentPage, pageMax]];
