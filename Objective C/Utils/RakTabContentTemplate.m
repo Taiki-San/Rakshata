@@ -21,13 +21,13 @@
 	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 	self.layer.cornerRadius = 5.0;
 	
-	[Prefs getCurrentTheme:self];		//register to changes
+	[Prefs registerForChange:self forType:KVO_THEME];
 	isFocusDrop = NO;
 }
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (NSString *) getContextToGTFO

@@ -50,7 +50,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) rightMouseDown:(nonnull NSEvent *)theEvent

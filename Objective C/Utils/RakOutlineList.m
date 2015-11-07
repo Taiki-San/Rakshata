@@ -83,7 +83,7 @@
 
 - (void) initializeMain : (NSRect) frame
 {
-	[Prefs getCurrentTheme:self];		//register
+	[Prefs registerForChange:self forType:KVO_THEME];
 	
 	content = [[RakTreeView alloc] initWithFrame:frame];
 	
@@ -139,7 +139,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[RakDBUpdate unRegister : self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[self moreFlushing];

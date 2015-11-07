@@ -87,7 +87,7 @@
 
 - (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig
 {
-	[Prefs getCurrentTheme:self];
+	[Prefs registerForChange:self forType:KVO_THEME];
 	prefsRegistered = YES;
 	
 	[self setWantsLayer:YES];
@@ -127,7 +127,7 @@
 - (void) dealloc
 {
 	if(prefsRegistered)
-		[Prefs deRegisterForThemeChanges:self];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Drawing

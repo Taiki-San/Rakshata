@@ -52,7 +52,7 @@ enum
 	{
 		_responder = responder;
 		[self updateContent:isRoot :repo : NO];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
@@ -60,7 +60,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (NSRect) getFrame : (NSRect) parentFrame

@@ -22,7 +22,7 @@
 		self.autoresizesSubviews = NO;
 
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		data = getCopyOfProjectData(project);
 		
@@ -101,7 +101,7 @@
 	
 	releaseCTData(data);
 	
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[RakDBUpdate unRegister : self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }

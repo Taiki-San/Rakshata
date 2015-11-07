@@ -33,7 +33,7 @@
 		[self updateFocus:haveFocus ? TAB_SERIES : TAB_CT];
 		_noAnimation = NO;
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
@@ -41,7 +41,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) initView

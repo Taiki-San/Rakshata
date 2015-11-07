@@ -107,7 +107,7 @@
 - (void) dealloc
 {
 	if(hasRegisteredThemeUpdates)
-		[Prefs deRegisterForThemeChanges:self];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) sizeToFit
@@ -266,7 +266,7 @@
 			textCell.textColor = [self getFontColor];
 			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
 			
-			[Prefs getCurrentTheme:self];	//Register to changes
+			[Prefs registerForChange:self forType:KVO_THEME];
 			hasRegisteredThemeUpdates = YES;
 		}
 	}
@@ -279,7 +279,7 @@
 		self.image = nil;
 	
 	if(hasRegisteredThemeUpdates)
-		[Prefs deRegisterForThemeChanges:self];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

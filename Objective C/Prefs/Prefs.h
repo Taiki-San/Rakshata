@@ -115,6 +115,13 @@ enum FONT_REQUEST {
 	GET_FONT_PREFS_TITLE
 };
 
+enum KVO_REQUEST {
+	KVO_THEME,
+	KVO_MAIN_THREAD,
+	KVO_PDF_BACKGRND,
+	KVO_MAGNIFICATION
+};
+
 @interface Prefs : NSObject
 {
 	RakContentView* firstResponder;
@@ -149,7 +156,6 @@ enum FONT_REQUEST {
 + (void) deletePrefs;
 
 + (uint) getCurrentTheme : (id) registerForChanges;
-+ (void) deRegisterForThemeChanges : (id) object;
 + (void) setCurrentTheme : (uint) newTheme;
 
 + (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;
@@ -160,8 +166,10 @@ enum FONT_REQUEST {
 + (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;
 + (BOOL) setPref : (uint) requestID : (uint64) value;
 
-+ (void) registerMainThreadChange : (id) object;
-+ (void) deRegisterMainThreadChange : (id) object;
+//KVO
++ (void) registerForChange : (id) object forType : (byte) code;
++ (void) deRegisterForChange : (id) object forType : (byte) code;
++ (NSString *) getKeyPathForCode : (byte) code;
 
 //Semi-public, use of this method should be avoided when possible
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;

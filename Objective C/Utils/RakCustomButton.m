@@ -37,7 +37,7 @@
 	if(self != nil)
 	{
 		[self initColors];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		initialized = YES;
 	}
@@ -47,7 +47,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Color management

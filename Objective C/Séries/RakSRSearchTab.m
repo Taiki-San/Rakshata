@@ -24,7 +24,7 @@
 		_collapsed = YES;
 		_height = SRSEARCHTAB_DEFAULT_HEIGHT;
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		self.wantsLayer = YES;
 		self.layer.borderWidth = 1;
@@ -99,7 +99,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

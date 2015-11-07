@@ -22,7 +22,7 @@
 	{
 		isFaved = NO;
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[self setAutoresizesSubviews:NO];
 		
 		_parent = parent;
@@ -73,7 +73,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[self releaseIcons];
 	
 	if(pageCount != nil)

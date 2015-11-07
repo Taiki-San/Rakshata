@@ -91,7 +91,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (byte) getRDBSCodeForID

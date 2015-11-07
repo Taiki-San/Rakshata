@@ -43,7 +43,7 @@ enum
 
 - (void) initContent
 {
-	[Prefs getCurrentTheme:self];
+	[Prefs registerForChange:self forType:KVO_THEME];
 	
 	NSImage * image = loadImageGrid(_project);
 	if(image != nil)
@@ -59,7 +59,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

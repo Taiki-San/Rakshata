@@ -49,7 +49,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

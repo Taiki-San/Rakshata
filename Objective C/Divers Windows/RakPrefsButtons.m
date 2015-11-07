@@ -36,7 +36,7 @@ enum
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		responder = delegate;
 		
@@ -94,7 +94,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) drawRect : (NSRect) dirtyRect

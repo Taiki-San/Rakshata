@@ -27,7 +27,7 @@ enum
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[self updateGradient];
 		_projectHaveFocus = NO;
 		
@@ -62,7 +62,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (RakText *) craftField : (NSString *) string

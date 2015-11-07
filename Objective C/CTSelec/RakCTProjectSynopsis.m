@@ -20,7 +20,7 @@
 	{
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		_title = [[RakMenuText alloc] initWithText : _bounds : NSLocalizedString(@"CT-SYNOPSIS", nil)];
 		if(_title != nil)
@@ -63,7 +63,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Resize

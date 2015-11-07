@@ -22,7 +22,7 @@
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
 		
-		[Prefs getCurrentTheme:self];		//register for changes
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
 		[self initView : contentView : state];

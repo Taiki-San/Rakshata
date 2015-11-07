@@ -22,7 +22,7 @@
 	{
 		[self setFont:[NSFont boldSystemFontOfSize:13]];
 		[self updateSize:[superview bounds].size.height : posX];
-		[Prefs getCurrentTheme:self];	//register
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		currentPage = currentPageArg+1;
 		pageMax = pageMaxArg;
@@ -36,7 +36,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) updateContext

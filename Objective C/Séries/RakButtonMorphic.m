@@ -46,7 +46,7 @@
 - (void) dealloc
 {
 	if(didRegister)
-		[Prefs deRegisterForThemeChanges:self];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Context update

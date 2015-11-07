@@ -29,7 +29,7 @@ enum
 		[self.layer setCornerRadius:4];
 		cursorOnMe = NO;
 		
-		[Prefs getCurrentTheme:self];	//We register to theme change
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		//On initialise la cellule
 		[self.cell switchToNewContext: (isOneLevelBack ? @"back" : @"backback") : RB_STATE_STANDARD];
@@ -87,7 +87,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Color

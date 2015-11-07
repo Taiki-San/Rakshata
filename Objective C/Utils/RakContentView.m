@@ -58,7 +58,7 @@
 
 - (void) setupBorders
 {
-	[Prefs getCurrentTheme:self];
+	[Prefs registerForChange:self forType:KVO_THEME];
 	
 	backgroundColor = [self firstBorderColor];
 	NSRect frame = [self internalFrame];
@@ -138,7 +138,7 @@
 	[internalRows1 removeFromSuperview];
 	[internalRows2 removeFromSuperview];
 	[firstResponder removeFromSuperview];
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Positioning

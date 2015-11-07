@@ -27,7 +27,7 @@
 		[self setAutoresizesSubviews:NO];
 		[self.layer setBackgroundColor : [self getBackgroundColor].CGColor];
 		[self setAlphaValue:0];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
@@ -35,7 +35,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) attachToView

@@ -30,7 +30,7 @@ enum
 		mainView = [[NSView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	return self;
 }
@@ -46,7 +46,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Receive popover
@@ -214,7 +214,7 @@ enum
 		
 		viewControllerHUD.popover = popover;
 		
-		[Prefs registerMainThreadChange:self];
+		[Prefs registerForChange:self forType:KVO_MAIN_THREAD];
 	}
 }
 
@@ -230,7 +230,7 @@ enum
 {
 	[viewControllerHUD popoverClosed];
 	popover = nil;
-	[Prefs deRegisterMainThreadChange:self];
+	[Prefs deRegisterForChange:self forType:KVO_MAIN_THREAD];
 }
 
 #pragma mark - KVO and setting management

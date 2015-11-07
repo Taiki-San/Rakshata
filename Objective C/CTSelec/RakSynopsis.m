@@ -27,7 +27,7 @@ enum
 	{
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 4;
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		if([self setStringToSynopsis : getStringForWchar(synopsis)])
 			[self updateFrame : frame : NO];

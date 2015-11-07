@@ -22,7 +22,7 @@
 		self.haveBackgroundColor = YES;
 		self.drawGradient = NO;
 		
-		[Prefs getCurrentTheme:self];	//Register for changes
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[self setFont:[[self class] getFont : [self getFontSize]]];
 		[self defineBackgroundColor];
 		[self sizeToFit];
@@ -82,7 +82,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[self removeFromSuperview];
 }
 

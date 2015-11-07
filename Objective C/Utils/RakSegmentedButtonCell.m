@@ -18,7 +18,7 @@
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[self setTrackingMode:NSSegmentSwitchTrackingSelectOne];
 		fields = [NSMutableArray array];
 	}
@@ -197,7 +197,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[fields removeAllObjects];
 }
 

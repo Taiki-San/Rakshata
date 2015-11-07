@@ -36,7 +36,7 @@ enum
 	{
 		[self analyseCurrentProject : project];
 		[self craftTableView:frame];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
@@ -44,7 +44,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Interface

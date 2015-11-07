@@ -38,7 +38,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) startUI
@@ -48,7 +48,7 @@ enum
 	if(mainView != nil)
 	{
 		mainView.anchor = self;
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 
 		mainView.backgroundColor = [self backgroundColor];
 		[self setupBaseView:mainView];

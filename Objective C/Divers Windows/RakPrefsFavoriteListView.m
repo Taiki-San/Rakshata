@@ -28,7 +28,7 @@ enum
 		
 		[self updateContent:project];
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdate:)];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCallback) name:NOTIFICATION_FAVS_REPO_UPDATE object:nil];
 	}
@@ -38,7 +38,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[RakDBUpdate unRegister:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }

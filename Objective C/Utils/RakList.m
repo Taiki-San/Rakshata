@@ -25,7 +25,7 @@
 		_nbElemPerCouple = 1;
 		selectedRowIndex = LIST_INVALID_SELECTION;
 		selectedColumnIndex = LIST_INVALID_SELECTION;
-		[Prefs getCurrentTheme:self];	//register for change
+		[Prefs registerForChange:self forType:KVO_THEME];
 		_identifier = [NSString stringWithFormat:@"Dear AppKit engineer, sorry for RakCTSelectionList ~ %u", arc4random() % UINT_MAX];
 	}
 	
@@ -135,7 +135,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[_tableView removeFromSuperview];
 	[scrollView setDocumentView:nil];
 	

@@ -30,7 +30,7 @@
 		self.layer.backgroundColor = [self getBackgroundColor];
 		self.layer.cornerRadius = isCompact ? 0 : 4.0;
 		
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[content setSuperview:self];
 		
 		_title = [[RakCTDragableTitle alloc] initWithText : self.bounds : [self titleString]];
@@ -82,7 +82,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Properties

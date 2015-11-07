@@ -17,13 +17,13 @@
 	_gradientWidth = 0.1f;
 	_gradientMaxWidth = 60;
 	
-	[Prefs getCurrentTheme:self];
+	[Prefs registerForChange:self forType:KVO_THEME];
 	[self updateGradient];
 }
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (BOOL) mouseDownCanMoveWindow

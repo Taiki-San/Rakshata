@@ -222,7 +222,7 @@ enum
 	
 	if(self != nil)
 	{
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[self updateContent:isCompact :isDetailColumn :isRoot :repo :detailString];
 	}
 	
@@ -364,7 +364,7 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Button management

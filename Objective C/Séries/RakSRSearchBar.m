@@ -106,7 +106,7 @@
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		
 		[self updatePlaceholder:YES];
-		[Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		self.delegate = self;
 		[self.cell setSendsWholeSearchString:NO];
@@ -187,7 +187,7 @@
 
 - (void) dealloc
 {
-	[Prefs deRegisterForThemeChanges:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Interface

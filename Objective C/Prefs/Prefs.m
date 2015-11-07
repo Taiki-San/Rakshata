@@ -654,45 +654,60 @@ enum
 	if(prefsCache == nil)
 		[self initCache];
 	
+#ifdef FLUSH_PREFS_PROPERLY
 	if(registerForChanges != nil)
 	{
-#ifdef FLUSH_PREFS_PROPERLY
 		if([garbageCollector objectForKey:[NSString stringWithFormat:@"%@", @((uint64_t) registerForChanges)]] != nil)
 		{
 			NSLog(@"WTFFF!!!!!\n%@", [NSThread callStackSymbols]);
 		}
 		[garbageCollector setValue:[NSThread callStackSymbols] forKey:[NSString stringWithFormat:@"%@", @((uint64_t) registerForChanges)]];
-#endif
-		[prefsCache addObserver:registerForChanges forKeyPath:@"themeCode" options:NSKeyValueObservingOptionNew context:nil];
 	}
+#endif
+	
+	[self registerForChange:registerForChanges forType:KVO_THEME];
 	
 	return prefsCache.themeCode;
 }
 
-+ (void) deRegisterForThemeChanges : (id) object
-{
-	if(prefsCache != nil && object != nil)
-	{
-#ifdef FLUSH_PREFS_PROPERLY
-		[garbageCollector removeObjectForKey:[NSString stringWithFormat:@"%@", @((uint64_t) object)]];
-#endif
-		[prefsCache removeObserver:object forKeyPath:@"themeCode"];
-	}
-}
-
-+ (void) registerMainThreadChange : (id) object
++ (void) registerForChange : (id) object forType : (byte) code
 {
 	if(prefsCache == nil)
 		[self initCache];
 	
 	if(object != nil)
-		[prefsCache addObserver:object forKeyPath:@"mainThread" options:NSKeyValueObservingOptionNew context:nil];
+		[prefsCache addObserver:object forKeyPath:[self getKeyPathForCode:code] options:NSKeyValueObservingOptionNew context:nil];
 }
 
-+ (void) deRegisterMainThreadChange : (id) object
++ (void) deRegisterForChange : (id) object forType : (byte) code
 {
+#ifdef FLUSH_PREFS_PROPERLY
+	if(code == KVO_THEME)
+		[garbageCollector removeObjectForKey:[NSString stringWithFormat:@"%@", @((uint64_t) object)]];
+#endif
+	
 	if(prefsCache != nil && object != nil)
-		[prefsCache removeObserver:object forKeyPath:@"mainThread"];
+		[prefsCache removeObserver:object forKeyPath:[self getKeyPathForCode:code]];
+}
+
++ (NSString *) getKeyPathForCode : (byte) code
+{
+	switch (code)
+	{
+		case KVO_THEME:
+			return @"themeCode";
+			
+		case KVO_MAIN_THREAD:
+			return @"mainThread";
+			
+		case KVO_PDF_BACKGRND:
+			return @"havePDFBackground";
+			
+		case KVO_MAGNIFICATION:
+			return @"saveMagnification";
+	}
+	
+	return nil;
 }
 
 /************		Private sections		************/
