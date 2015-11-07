@@ -972,17 +972,7 @@
 	
 	[self addPageToView:image :output];
 	output.page = page;
-	
-	if(isPDF)
-	{
-		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
-		
-		((NSImageView *) output.documentView).wantsLayer = YES;
-		((NSImageView *) output.documentView).layer.backgroundColor = [NSColor whiteColor].CGColor;
-
-		[CATransaction commit];
-	}
+	output.isPDF = isPDF;
 	
 	return output;
 }

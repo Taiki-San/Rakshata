@@ -40,6 +40,12 @@
 {
 	self.documentView = nil;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
+	if(_isPDF)
+	{
+		[Prefs deRegisterForChange:self forType:KVO_PDF_BACKGRND];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
+	}
 }
 
 - (void) didMagnify
@@ -112,6 +118,58 @@
 {
 	self.hasHorizontalScroller = _pageTooLarge = pageTooLarge;
 	self.horizontalScroller.alphaValue = 0;
+}
+
+- (void) setIsPDF:(BOOL)isPDF
+{
+	if(_isPDF == isPDF)
+		return;
+	
+	if(isPDF)
+	{
+		[Prefs registerForChange:self forType:KVO_PDF_BACKGRND];
+		[Prefs registerForChange:self forType:KVO_THEME];
+	}
+	else
+	{
+		[Prefs deRegisterForChange:self forType:KVO_PDF_BACKGRND];
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
+	}
+	
+	_isPDF = isPDF;
+	[self refreshBackgroundState];
+}
+
+#pragma mark - PDF change
+
+- (void) refreshBackgroundState
+{
+	NSImageView * view = self.documentView;
+	BOOL needBackground = NO;
+	
+	if(_isPDF)
+		[Prefs getPref:PREFS_GET_HAVE_PDF_BACKGROUND :&needBackground];
+	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
+	if(needBackground && view.wantsLayer == NO)
+		((NSImageView *) self.documentView).wantsLayer = YES;
+
+	if(view.wantsLayer == YES)
+		((NSImageView *) self.documentView).layer.backgroundColor = (needBackground ? [Prefs getSystemColor:COLOR_BACKGROUND_PDF :nil] : [NSColor clearColor]).CGColor;
+	
+	[CATransaction commit];
+
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	if([keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_PDF_BACKGRND]] || [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_THEME]])
+		[self refreshBackgroundState];
 }
 
 @end

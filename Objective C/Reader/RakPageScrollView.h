@@ -17,6 +17,7 @@
 @property (nonatomic) BOOL pageTooLarge;
 @property (nonatomic) BOOL pageTooHigh;
 @property uint page;
+@property (nonatomic) BOOL isPDF;
 
 - (void) scrollToBeginningOfDocument;
 - (void) scrollToEndOfDocument;
