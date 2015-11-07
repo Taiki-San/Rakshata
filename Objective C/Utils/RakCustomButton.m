@@ -82,8 +82,12 @@
 				_animation.stage = _animation.animationFrame;
 			}
 		}
+		else
+			canceledAnimation = YES;
 		
+
 		[_animation startAnimation];
+		canceledAnimation = NO;
 	}
 	
 	[super setState:value];
@@ -91,6 +95,9 @@
 
 - (void) animationOver
 {
+	if(canceledAnimation)
+		return;
+
 	_animation = nil;
 	[self.controlView display];
 }
