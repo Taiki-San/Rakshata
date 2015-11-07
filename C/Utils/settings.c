@@ -22,7 +22,7 @@ char *loadPrefFile()
 		
 		if((filesize = getFileSize(SETTINGS_FILE)) == 0)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Empty file");
 #endif
 			return NULL;
@@ -39,7 +39,7 @@ char *loadPrefFile()
     {
         logR("Incorrect settings decryption");
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		logR(output);
 #endif
 		

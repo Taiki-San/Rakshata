@@ -80,7 +80,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 		RakImportNode * _node = [IOController getNode];
 		if(!_node.isValid)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Invalid root node");
 #endif
 			continue;
@@ -92,7 +92,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 		{
 			if(!node.isValid)
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				logR("Invalid node");
 				NSLog(@"%@", node);
 #endif

@@ -263,7 +263,7 @@ enum
 		//We remote the item from its root and add it to the new item
 		if(![root removeItemFromChildren:item])
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"Uh, we misidentified the root?!");
 #endif
 		}

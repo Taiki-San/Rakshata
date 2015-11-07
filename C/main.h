@@ -12,6 +12,13 @@
 
 #ifdef DEBUG
     #define DEV_VERSION
+	#define EXTENSIVE_LOGGING
+#else
+	#define EXTENSIVE_LOGGING
+#endif
+
+#if defined(EXTENSIVE_LOGGING) && !defined(DEV_VERSION)
+#warning "Compiling with extensive logging on!"
 #endif
 
 #define PROJECT_NAME "Rakshata"

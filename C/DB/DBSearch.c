@@ -827,7 +827,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	if((request = createRequest(cache, requestString)) == NULL)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		logR(requestString);
 #endif
 		free(output);

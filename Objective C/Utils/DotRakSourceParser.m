@@ -19,7 +19,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 	
 	if(parseError != nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"%@", parseError);
 #endif
 		return NULL;
@@ -62,7 +62,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 	{
 		if(entry == nil || ARE_CLASSES_DIFFERENT(entry, [NSDictionary class]))
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"Invalid entry: %@", entry);
 #endif
 			continue;

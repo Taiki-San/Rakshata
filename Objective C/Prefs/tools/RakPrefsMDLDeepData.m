@@ -52,7 +52,7 @@
 {
 	if(length < sizeInputBuffer)	//Taille du buffer
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"[%s]: Not enough room to save prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
 #endif
 		return;
@@ -86,7 +86,7 @@
 		case TAB_READER:
 			return [self getFocusReader:stateTabsReader];
 	}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	NSLog(@"[%s]: Couldn't identify request : %8x", __PRETTY_FUNCTION__, mainThread);
 #endif
 	

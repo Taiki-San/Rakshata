@@ -215,7 +215,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						//Collision, we drop the value
 						if(posLowestDiff == INVALID_VALUE)
 						{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 							logR("Duplicates in local, shouldn't happen o0");
 #endif
 							sumEntries--;

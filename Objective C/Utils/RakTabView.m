@@ -86,7 +86,7 @@
 	BOOL shouldFreeAfterward = NO;
 	if((project.tomesInstalled == NULL && project.nombreTomesInstalled != 0) || (project.chapitresInstalled == NULL && project.nombreChapitreInstalled != 0))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Incomplete structure received, trying to correct it");
 #endif
 		
@@ -274,7 +274,7 @@
 
 #pragma mark - Look for constraints
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 
 - (void) addConstraint:(NSLayoutConstraint *)constraint
 {
@@ -666,7 +666,7 @@
 {
 	if(NSEqualRects(newFrame, NSZeroRect))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Incorrect size requested by %@", self);
 #endif
 		return NO;

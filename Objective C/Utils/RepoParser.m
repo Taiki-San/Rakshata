@@ -469,7 +469,7 @@ ROOT_REPO_DATA * parseRemoteRepo(char * parseDataRaw)
 	
 	if(parseError != nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"%@", parseError);
 #endif
 		return NULL;
@@ -495,7 +495,7 @@ ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem)
 	
 	if(parseError != nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"%@", parseError);
 #endif
 		return NULL;

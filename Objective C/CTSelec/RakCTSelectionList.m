@@ -810,7 +810,7 @@
 	return output;
 }
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 #define EMPTY_MESSAGE @"Error :("
 #else
 #define EMPTY_MESSAGE @""

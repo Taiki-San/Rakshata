@@ -244,7 +244,7 @@ void initializeTags(void * mainCache)
 				
 				if(sqlite3_step(requestWrite) != SQLITE_DONE)
 				{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 1);
 					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];
@@ -285,7 +285,7 @@ void initializeTags(void * mainCache)
 				
 				if(sqlite3_step(requestWrite) != SQLITE_DONE)
 				{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 2);
 					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];

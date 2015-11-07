@@ -24,7 +24,7 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** _tags, uint * _nbTags,
 	
 	if(parseError != nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"%@", parseError);
 #endif
 		return false;

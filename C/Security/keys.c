@@ -289,7 +289,7 @@ byte checkLogin(const char *adresseEmail)
 		return 1;
 	}
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
     logR(output);
 #endif
 	free(output);
@@ -343,7 +343,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	FILE* bdd = fopen(SECURE_DATABASE, "a");
 	if(bdd == NULL)
     {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		logR("Couldn't write in our directory");
 #endif
         return GMK_RETVAL_INTERNALERROR;
@@ -363,7 +363,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	
 	if(date[0] == 0)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
         logR("Couldn't get date of file\n");
 #endif
         return GMK_RETVAL_INTERNALERROR;
@@ -374,7 +374,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	
 	if(filePass == NULL)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		memoryError(length);
 #endif
 		return GMK_RETVAL_INTERNALERROR;
@@ -429,7 +429,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
     }
 	else
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		logR("Couldn't write MK");
 #endif
 		return GMK_RETVAL_INTERNALERROR;
@@ -552,7 +552,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 		}
 		else if(COMPTE_PRINCIPAL_MAIL != NULL)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			char temp[1024];
 			snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
 			logR(temp);
@@ -580,7 +580,7 @@ bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH])
 
     if(download_mem(URL, NULL, (char **) &buffer_dl, &bufferLength, SSL_ON) != CODE_RETOUR_OK || bufferLength < 2 * SHA256_DIGEST_LENGTH || !strcmp((const char*) buffer_dl, "fail"))
     {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
         logR("Failed at get MK from server");
 #endif
 		crashTemp(key, SHA256_DIGEST_LENGTH);

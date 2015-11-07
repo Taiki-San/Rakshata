@@ -430,7 +430,7 @@ void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 		fprintf(file, "%d", data.tomesFull[tomeID].ID);
 		fclose(file);
 	}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	else
 	{
 		logR("Couldn't open the shared file");

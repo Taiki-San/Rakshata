@@ -131,7 +131,7 @@
 	[self mouseMoved:theEvent];
 }
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 //#define VERBOSE_HACK
 #endif
 

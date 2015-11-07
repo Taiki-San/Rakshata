@@ -191,7 +191,7 @@ static void downloadChapterCore(DL_DATA *data)
 				downloadChapterCore(data);
 			}
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			if(data->errorCode != CODE_RETOUR_DL_CLOSE)
 				logR(data->outputContainer->URL);
 #endif

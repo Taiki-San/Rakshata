@@ -106,7 +106,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 		
 		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]] ];
 	}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	else
 		NSLog(@"[%s] : Unknown index: %d", __PRETTY_FUNCTION__, index);
 #endif

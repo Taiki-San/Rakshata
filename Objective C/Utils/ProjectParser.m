@@ -523,7 +523,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	ID = objectForKey(bloc, JSON_PROJ_ID, @"ID", [NSNumber class]);
 	if(ID == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: couldn't find ID in %@", bloc);
 #endif
 		goto end;
@@ -532,7 +532,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	projectName = objectForKey(bloc, JSON_PROJ_PROJECT_NAME, @"projectName", [NSString class]);
 	if(projectName == nil || [projectName length] == 0)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: couldn't find name for ID %@ in %@", ID, bloc);
 #endif
 		goto end;
@@ -555,7 +555,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	if(nbChapters == 0 && nbVolumes == 0)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser warning: no chapter nor volumes for ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 	}
@@ -566,7 +566,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author", [NSString class]);
 	if(authors == nil || [authors length] == 0)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: no author for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -575,7 +575,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status", [NSNumber class]);
 	if(status == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: no status for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -584,7 +584,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	rightToLeft = objectForKey(bloc, JSON_PROJ_RIGHT_TO_LEFT , @"asian_order_of_reading", [NSNumber class]);
 	if(rightToLeft == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: invalid asian_order_of_reading for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -593,7 +593,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	category = objectForKey(bloc, JSON_PROJ_TAG_CATEGORY, @"category", [NSNumber class]);
 	if(category == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: invalid category for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -602,7 +602,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	tagData = objectForKey(bloc, JSON_PROJ_TAG_DATA , @"tagData", [NSArray class]);
 	if(tagData == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: invalid tag data for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -619,7 +619,7 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.category = [category unsignedIntValue];
 	if(!doesCatOfIDExist(data.category))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: valid category formating but still unknown for project of ID %@ (%@) in %@", ID, projectName, bloc);
 #endif
 		goto end;
@@ -947,7 +947,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 	
 	if(projects == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: invalid 'projects' in %@", remoteData);
 #endif
 		return NULL;
@@ -966,7 +966,7 @@ void* parseProjectJSON(REPO_DATA* repo, NSDictionary * remoteData, uint * nbElem
 				break;
 			else if(ARE_CLASSES_DIFFERENT(remoteData, [NSDictionary class]))
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				NSLog(@"Project parser error: invalid bloc %@", remoteData);
 #endif
 				continue;
@@ -1057,7 +1057,7 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 	
 	if(error != nil || remoteData == nil || ARE_CLASSES_DIFFERENT(remoteData, [NSArray class]))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Local project parser error: invalid 'projects' in %@", remoteData);
 #endif
 		return NULL;
@@ -1075,7 +1075,7 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 		repoID = objectForKey(remoteDataPart, JSON_PROJ_AUTHOR_ID, nil, [NSNumber class]);
 		if(repoID == nil)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"Project parser error: no authorID %@", remoteDataPart);
 #endif
 			continue;

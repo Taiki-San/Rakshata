@@ -59,7 +59,7 @@ uint setupBDDCache()
 		return 0;
 	}
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, NULL);
 #endif
 

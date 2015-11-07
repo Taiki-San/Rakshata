@@ -27,7 +27,7 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 	//Load current file metadata
 	if((err = unzGetCurrentFileInfo64(zipFile, &file_info, tmpFilenameInZip, sizeof(tmpFilenameInZip), NULL, 0, NULL, 0)) != UNZ_OK || (filenameExpected != NULL && strcmp(tmpFilenameInZip, filenameExpected)))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		char temp[100];
 		snprintf(temp, 100, "Invalid zip entry (%d)\n",err);
 		logR(temp);
@@ -93,7 +93,7 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 
 	if((err = unzOpenCurrentFile(zipFile)) != UNZ_OK)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		char temp[100];
 		snprintf(temp, 100, "Decompression error (%d)\n", err);
 		logR(temp);
@@ -110,7 +110,7 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 
 		if(outputFile == NULL)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			char temp[200];
 			snprintf(temp, 200, "Error creating path to %s\n", outputFilename);
 			logR(temp);
@@ -146,7 +146,7 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 		{
 			if((err = unzReadCurrentFile(zipFile, workingBuffer, BUFFER_SIZE)) < 0)
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				char temp[100];
 				snprintf(temp, 100, "Decompression error (%d)",err);
 				logR(temp);
@@ -194,7 +194,7 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 		{
 			if((err = unzReadCurrentFile(zipFile, workingBuffer, BUFFER_SIZE)) < 0)
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				char temp[100];
 				snprintf(temp, 100, "Decompression error (%d)",err);
 				logR(temp);
@@ -248,7 +248,7 @@ bool unzExtractOnefile(unzFile zipFile, char* filename, char* outputPath, bool e
 {
 	if(unzLocateFile(zipFile, filename, 0) != UNZ_OK)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		char temp[256];
 		snprintf(temp, 256, "File doesn't exist %s\n", filename);
 		logR(temp);

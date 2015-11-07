@@ -347,7 +347,7 @@ enum
 			return root->descriptions[i];
 	}
 	
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	NSLog(@"Couldn't find a proper language in %@", [NSLocale preferredLanguages]);
 #endif
 	

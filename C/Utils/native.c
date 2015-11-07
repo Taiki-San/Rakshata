@@ -102,13 +102,13 @@ void usstrcpy(void* output, size_t length, const void* input)
 
 /**Différent en fonction de l'OS**/
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	uint depth = 0;
 #endif
 
 void removeFolder(char *path)
 {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	if(!depth)
 	{
 		char temp[100 + strlen(path)];
@@ -138,7 +138,7 @@ void removeFolder(char *path)
 
 		if(entry->d_type & DT_DIR)	//Recursive call on a directory
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			depth++;
 			removeFolder(subdirName);
 			depth--;

@@ -85,7 +85,7 @@
 
 - (void) failure
 {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	NSLog(@"[%s] - Unrecoverable error, we need to abort!", __PRETTY_FUNCTION__);
 #endif
 }
@@ -611,7 +611,7 @@
 				}
 				@catch (NSException *exception)
 				{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 					NSLog(@"Failed the soft update :/\nNb element : %zu\nRemoved (%d):\n", _tableView.numberOfRows, oldElem);
 
 					[old enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
@@ -671,7 +671,7 @@
 
 - (BOOL) receiveDrop : (PROJECT_DATA) project : (BOOL) isTome : (uint) element : (uint) sender : (NSInteger)row : (NSTableViewDropOperation)operation
 {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	NSLog(@"Project: %@- isTome: %d - element: %d - sender: %d - row: %ld - operation: %lu", getStringForWchar(project.projectName), isTome, element, sender, (long)row, (unsigned long)operation);
 #endif
 	return YES;

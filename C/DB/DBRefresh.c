@@ -322,7 +322,7 @@ void updateProjects()
 							//Okay, the repo was probably deleted
 							if(posRepo == realNumberOfRepo)
 							{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 								char temp[100+LONGUEUR_URL];
 								snprintf(temp, sizeof(temp), "Repo deleted during refresh? %d - %d", oldData[posBase].project.repo->parentRepoID, oldData[posBase].project.repo->repoID);
 								logR(temp);

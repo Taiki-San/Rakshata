@@ -535,7 +535,7 @@ enum
 					prefsCache.stateTabsReader = newValue;
 				}
 			}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			else
 			{
 				NSLog(@"[%s]: Couldn't identify thread :%llu", __PRETTY_FUNCTION__, value);
@@ -627,7 +627,7 @@ enum
 		}
 		default:
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"%s: Received garbage", __PRETTY_FUNCTION__);
 #endif
 			*output = 0;
@@ -884,7 +884,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		}
 		default:
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"WTF! %s couldn't identify request: %d", __PRETTY_FUNCTION__, request);
 #endif
 			array = nil;

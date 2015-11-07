@@ -39,7 +39,7 @@
 
 - (uint) getSelfCode
 {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	NSLog(@"Default implementation shouldn't be used!");
 #endif
 	return TAB_MASK;

@@ -604,7 +604,7 @@ enum
 
 		newSize.height -= selfSize.height;
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Correcting height to %lf", newSize.height);
 #endif
 		[self setFrameSize:newSize];

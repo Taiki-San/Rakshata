@@ -249,7 +249,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutL
 {
 	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		logR("Incoherency when deleting volumes");
 #endif
 		return;

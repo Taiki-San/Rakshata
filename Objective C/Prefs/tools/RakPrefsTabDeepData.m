@@ -134,7 +134,7 @@
 {
 	if(length < sizeInputBuffer)	//Taille du buffer
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"[%s]: Not enough room to save prefs: %d < %d", __PRETTY_FUNCTION__, length, sizeInputBuffer);
 #endif
 		return;
@@ -190,7 +190,7 @@
 		[self initJumpTable:jumpTable];
 		[self setAtIndex:index : [self triggerJumpTableLocal: jumpTable[index]] ];
 	}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	else
 		NSLog(@"[%s] : Unknown index: %d", __PRETTY_FUNCTION__, index);
 #endif
@@ -267,7 +267,7 @@
 			
 		default:
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"%s : Couldn't identify the index", __PRETTY_FUNCTION__);
 #endif
 		}
@@ -316,7 +316,7 @@
 		}
 		default:
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			NSLog(@"[%s] : Couldn't identify the index: %d", __PRETTY_FUNCTION__, index);
 #endif
 		}

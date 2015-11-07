@@ -250,7 +250,7 @@
 			}
 			else
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				NSLog(@"Invalid item: %@", (*todoList)[IDToPosition[i]]->rowViewResponsible);
 #endif
 			}
@@ -447,7 +447,7 @@
 	
 	if(posStart > posEnd || posEnd >= discardedCount || (injectionPoint >= posStart && injectionPoint <= posEnd))
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Invalid data when reorder: posStart: %d, posEnd: %d, injectionPoint:%d, discardedCount: %d", posStart, posEnd, injectionPoint, discardedCount);
 #endif
 		return;

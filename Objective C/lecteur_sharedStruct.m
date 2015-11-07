@@ -171,7 +171,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 					free(dataReader->path);						dataReader->path = NULL;
 				}
 				
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				char tmpError[100];
 				snprintf(tmpError, sizeof(tmpError), "Oh, shit... Memory allocation failure >< %d", failureCounter);
 				logR(tmpError);

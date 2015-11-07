@@ -356,7 +356,7 @@
 		//Close call, but nop, invalid
 		if(posInChunk < length)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Close call, this chunk almost got me!");
 			NSLog(@"`%@` -> %s", tokens, simplifiedChunk);
 #endif

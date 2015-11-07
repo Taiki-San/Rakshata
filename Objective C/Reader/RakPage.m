@@ -958,7 +958,7 @@
 	
 	NSImage * image = [[NSImage alloc] initWithData : imageData];
 	
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	if(image == nil)
 		[imageData writeToFile:@"lol.png" atomically:NO];
 #endif

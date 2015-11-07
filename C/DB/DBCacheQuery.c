@@ -388,7 +388,7 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 
 		if(output != NULL && sqlite3_step(request) == SQLITE_ROW)
 		{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			printf("Project was %ls\n", wantParsed ? ((PROJECT_DATA_PARSED *) output)->project.projectName : ((PROJECT_DATA *) output)->projectName);
 #endif
 

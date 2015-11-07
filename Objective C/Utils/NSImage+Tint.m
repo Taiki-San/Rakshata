@@ -30,7 +30,7 @@
 		
 		[self unlockFocus];
 	}
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 	else if(color != nil)
 	{
 		NSLog(@"Hey, trying to tint an empty image, WTF?");

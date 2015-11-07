@@ -176,7 +176,7 @@
 {
 	if(aString == nil)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Hum, tried to set a nil string in RakText...");
 #endif
 		aString = @"";

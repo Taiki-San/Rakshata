@@ -50,7 +50,7 @@ int destroyRequest(sqlite3_stmt *pStmt)
 	return output;
 }
 
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 
 void errorLogCallback(void *pArg, int iErrCode, const char *zMsg)
 {

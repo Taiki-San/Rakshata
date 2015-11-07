@@ -51,7 +51,7 @@ bool isAppropriateNumberOfRepo(uint requestedNumber);
 /**DBDebug.c**/
 sqlite3_stmt * createRequest(sqlite3 *db, const char *zSql);
 int destroyRequest(sqlite3_stmt *pStmt);
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 void errorLogCallback(void *pArg, int iErrCode, const char *zMsg);
 #endif
 

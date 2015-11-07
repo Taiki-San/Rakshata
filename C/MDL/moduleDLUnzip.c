@@ -152,7 +152,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			//On va classer les fichier et les clées en ce basant sur config.dat
 			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile, NULL)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide && nombreFichierDansConfigFile != nombreFichierValide-1))
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				logR("config.dat invalid: encryption aborted.\n");
 #endif
 
@@ -208,7 +208,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			byte * hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
 			if(hugeBuffer == NULL)
 			{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 				logR("Failed at allocate memory to buffer\n");
 #endif
 				memoryError((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE);

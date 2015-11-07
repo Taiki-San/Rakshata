@@ -55,7 +55,7 @@ void createNewThread(void *function, void *arg)
         ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"), "ZwCreateThreadEx");
         if(ZwCreateThreadEx == NULL)
         {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
             logR("Failed at export primitives");
 #endif
 			exit(EXIT_FAILURE);
@@ -73,7 +73,7 @@ void createNewThread(void *function, void *arg)
 
     if(pthread_create(&thread, NULL, function, arg))
     {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
         logR("Failed at create thread\n");
 #endif
         exit(EXIT_FAILURE);
@@ -91,7 +91,7 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
         ZwCreateThreadEx = (FUNC)GetProcAddress(GetModuleHandle("ntdll.dll"),"ZwCreateThreadEx");
         if(ZwCreateThreadEx == NULL)
         {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Failed at create thread\n");
 #endif
 			exit(EXIT_FAILURE);
@@ -106,7 +106,7 @@ THREAD_TYPE createNewThreadRetValue(void *function, void *arg)
 
     if(pthread_create(&threadID, NULL, function, arg))
     {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
         logR("Failed at create thread\n");
 #endif
         exit(EXIT_FAILURE);

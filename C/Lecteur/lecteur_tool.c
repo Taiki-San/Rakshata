@@ -20,7 +20,7 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection
     {
         if(projectDB.chapitresInstalled == NULL)
         {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;
@@ -34,7 +34,7 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection
     {
         if(projectDB.tomesInstalled == NULL)
         {
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;

@@ -67,7 +67,7 @@ BOOL preventWindowCaptureForWindow(NSWindow *window)
 	CGError err = CGSGetWindowBounds(cid, wid, &windowRectOut);
 	if(err != kCGErrorSuccess)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Error: failed to get windows bounds with error %i", err);
 #endif
 		return NO;
@@ -78,7 +78,7 @@ BOOL preventWindowCaptureForWindow(NSWindow *window)
 	err = CGSNewRegionWithRect(&windowRectOut, &regionOut);
 	if(err != kCGErrorSuccess)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Error: failed to get create CGSRegion with error %i", err);
 #endif
 		return NO;
@@ -87,7 +87,7 @@ BOOL preventWindowCaptureForWindow(NSWindow *window)
 	err = CGSSetWindowCaptureExcludeShape(cid, wid, regionOut);
 	if(err != kCGErrorSuccess)
 	{
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Error: failed to set capture exclude shape for window with error %i", err);
 #endif
 		CGSReleaseRegion(regionOut);

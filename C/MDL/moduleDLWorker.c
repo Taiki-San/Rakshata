@@ -302,7 +302,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
             if(dataDL.length < 50 && dataDL.buf != NULL && isPaidProject(*input->todoList->datas))
             {
                 /*Output du RSP, à gérer*/
-#ifdef DEV_VERSION
+#ifdef EXTENSIVE_LOGGING
                 logR(firstTwentyBytesOfArchive);
 #endif
                 if(dataDL.buf != NULL)
