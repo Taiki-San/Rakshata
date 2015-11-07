@@ -512,7 +512,11 @@ uint getRandom()
 #endif
 }
 
-bool checkSignature(const char * input, const char * signature)
+#include <openssl/evp.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+
+bool checkSignature(const byte * input, const size_t inputLength, const byte * signature, const size_t signatureLength)
 {
 	char rsaKey [] = "-----BEGIN PUBLIC KEY-----\
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9myXNDcux7D0VSfKnCqR\
@@ -528,13 +532,80 @@ c2lWpF/DnVV5toi6Z0+OE1+Yezt0gf1fQ7pB4Lj8Rs9A/SH/JzF6qfDzJuQU9TEF\
 pNUF4/g8WbLj030k6Jbkwg3sdqgRckmqlRIDJMtQQJ0OPFis8YkjGYTB9r2AEz+a\
 v5IeyU3Od1c7t9oUIDgldesCAwEAAQ==\
 -----END PUBLIC KEY-----";
-
-	//We crafted the expected hash
-	char hashedInput[2 * WP_DIGEST_SIZE + 1];
-	whirlpool((const byte *) input, strlen(input), hashedInput, true);
-
-#warning "Need to implement signature verification"
-
 	
-	return rsaKey[0] == 0;
+	bool retValue = false;
+	
+	//We load the rsaKey in a LibreSSL structure
+	BIO *rsaKeyBio = BIO_new_mem_buf(rsaKey, -1);
+	if(rsaKeyBio == NULL)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed creating the BIO");
+#endif
+		return false;
+	}
+	
+	//We create the EVP_PKEY with the resulting key
+	//Because of the chaining, we also declare ctx
+	EVP_PKEY * pKey = PEM_read_bio_PUBKEY(rsaKeyBio, NULL, 0, NULL);
+	EVP_PKEY_CTX * ctx = NULL;
+
+	if(pKey == NULL)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed setting the pubkey");
+#endif
+	}
+	
+	//We create the context
+	else if((ctx = EVP_PKEY_CTX_new(pKey, NULL)) == NULL)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed setting the context");
+#endif
+	}
+	
+	//Initialise the verification
+	else if(EVP_PKEY_verify_init(ctx) <= 0)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed initializing the context");
+#endif
+	}
+
+	else if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed setting the padding");
+#endif
+	}
+	
+	else if (EVP_PKEY_CTX_set_signature_md(ctx, EVP_whirlpool()) <= 0)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Failed setting the signature");
+#endif
+	}
+
+	//And perform the check
+	else if(EVP_PKEY_verify(ctx, signature, signatureLength, input, inputLength) <= 0)
+	{
+#ifdef EXTENSIVE_LOGGING
+		logR("[SigCheck]: Verification failed");
+#endif
+	}
+	else
+	{
+		retValue = true;
+	}
+	
+	BIO_free(rsaKeyBio);
+	
+	if(pKey != NULL)
+		EVP_PKEY_free(pKey);
+
+	if(ctx != NULL)
+		EVP_PKEY_CTX_free(ctx);
+	
+	return retValue;
 }

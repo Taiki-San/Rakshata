@@ -128,9 +128,39 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 	if(expirency == nil || [expirency doubleValue] < [[NSDate date] timeIntervalSince1970])
 		return false;
 	
-	NSString * stringToHash = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
+	NSString * expectedString = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
 	
-	return checkSignature([stringToHash UTF8String], [signature UTF8String]);
+	//Get the raw bytes for the signature
+	size_t sigLength = [signature lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedSigLength;
+	if(sigLength == 0)
+		return false;
+	
+	byte * sigData = malloc(sigLength + 1);
+	if(sigData == NULL)
+		return false;
+	
+	//Get the raw
+	size_t expectedLength = [expectedString lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedExpectedLength;
+	
+	if(expectedLength == 0)
+		return false;
+	
+	byte * expectedData = malloc(expectedLength + 1);
+	if(expectedData != NULL)
+	{
+		free(sigData);
+		return false;
+	}
+	
+	[signature getBytes:&sigData maxLength:sigLength usedLength:&usedSigLength encoding:NSUTF8StringEncoding options:0 range:NSMakeRange(0, [signature length]) remainingRange:nil];
+	[expectedString getBytes:&expectedData maxLength:expectedLength usedLength:&usedExpectedLength encoding:NSUTF8StringEncoding options:0 range:NSMakeRange(0, [expectedString length]) remainingRange:nil];
+	
+	BOOL retValue = checkSignature(expectedData, usedExpectedLength, sigData, usedSigLength);
+	
+	free(sigData);
+	free(expectedData);
+	
+	return retValue;
 }
 
 REPO_DATA parseSingleSubRepo(NSDictionary * dict, uint parentID, bool isLocal, bool * error)

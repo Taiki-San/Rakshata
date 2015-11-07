@@ -118,7 +118,7 @@ void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_
 bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 void KSTriggered(REPO_DATA team);
 uint getRandom();
-bool checkSignature(const char * input, const char * signature);
+bool checkSignature(const byte * input, const size_t inputLength, const byte * signature, const size_t signatureLength);
 
 /**Settings.c**/
 char *loadPrefFile();
