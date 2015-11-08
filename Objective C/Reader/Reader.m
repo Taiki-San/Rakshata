@@ -23,7 +23,10 @@
 		gonnaReduceTabs = 0;
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
+		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		
+		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
 		
 		[self initView : contentView : state];
 		self.layer.cornerRadius = 0;

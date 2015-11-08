@@ -115,6 +115,9 @@
 		else if([view class] != [RakPageScrollView class])
 			return;
 		
+		if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+			((RakPageScrollView *) view).magnification = _scrollView.magnification;
+		
 		_scrollView = (id) view;
 	}
 	
@@ -375,6 +378,15 @@
 			[bottomBar favsUpdated:_project.favoris];
 		}
 	}
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_MAGNIFICATION]])
+		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
+	
+	else
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 #pragma mark - High level API
@@ -679,7 +691,14 @@
 	else
 	{
 		if([mainScroller.arrangedObjects[_data.pageCourante + 1] class] == [RakPageScrollView class])
-			_scrollView = mainScroller.arrangedObjects[_data.pageCourante + 1];
+		{
+			RakPageScrollView * view = mainScroller.arrangedObjects[_data.pageCourante + 1];
+			
+			if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+				view.magnification = _scrollView.magnification;
+			
+			_scrollView = view;
+		}
 		else
 			_scrollView = nil;
 		
@@ -1421,6 +1440,9 @@
 	
 	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
 	{
+		if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+			view.magnification = _scrollView.magnification;
+
 		_scrollView = view;
 	}
 	

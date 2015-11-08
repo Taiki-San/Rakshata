@@ -28,6 +28,7 @@
 	size_t _queryArraySize;
 	
 	//Page management
+	BOOL saveMagnification;
 	RakPageScrollView * _scrollView;
 	
 	NSPageController * mainScroller;
