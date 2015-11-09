@@ -12,6 +12,16 @@
 
 @implementation RakTreeView
 
+- (instancetype) init
+{
+	self = [super init];
+	
+	if(self != nil)
+		self.manualEventDispatching = NO;
+	
+	return self;
+}
+
 - (instancetype) makeViewWithIdentifier:(NSString *)identifier owner:(id)owner
 {
 	id view = [super makeViewWithIdentifier:identifier owner:owner];
@@ -63,6 +73,30 @@
 - (void) setDefaultFrame : (NSRect) frame
 {
 	_defaultFrame = frame;
+}
+
+#pragma mark - Buggy event handler management
+
+- (void) setManualEventDispatching:(BOOL)manualEventDispatching
+{
+	tryingToProxy = !manualEventDispatching;
+}
+
+- (BOOL) manualEventDispatching
+{
+	return !tryingToProxy;
+}
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+	if(self.window.firstResponder == self && !tryingToProxy)
+	{
+		tryingToProxy = YES;
+		[[self findSubviewAtCoordinate:[self convertPoint:[theEvent locationInWindow] fromView:nil]] mouseDown:theEvent];
+		tryingToProxy = NO;
+	}
+	else
+		[super mouseDown:theEvent];
 }
 
 @end

@@ -15,11 +15,13 @@
 @interface RakTreeView : NSOutlineView
 {
 	NSRect _defaultFrame;
+	BOOL tryingToProxy;
 }
 
 - (void) setDefaultFrame : (NSRect) frame;
 
 @property BOOL wantUpdateScrollview;
+@property BOOL manualEventDispatching;
 
 @end
 

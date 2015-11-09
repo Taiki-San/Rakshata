@@ -43,6 +43,12 @@ NSString * getRepoName(REPO_DATA * repo);
 
 @end
 
+@interface NSView (findChild)
+
+- (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates;
+
+@end
+
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"

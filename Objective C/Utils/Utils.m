@@ -87,6 +87,33 @@
 
 @end
 
+@implementation NSView (findChild)
+
+- (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates
+{
+	NSSize size = self.frame.size;
+
+	if(self.subviews == nil || [self.subviews count] == 0 || coordinates.x >= size.width || coordinates.y >= size.height)
+		return self;
+	
+	NSRect rect;
+	for(NSView * view in self.subviews)
+	{
+		rect = view.frame;
+		if(NSPointInRect(coordinates, rect))
+		{
+			coordinates.x -= rect.origin.x;
+			coordinates.y -= rect.origin.y;
+
+			return [view findSubviewAtCoordinate:coordinates];
+		}
+	}
+	
+	return self;
+}
+
+@end
+
 
 NSString * getStringForWchar(const charType * string)
 {

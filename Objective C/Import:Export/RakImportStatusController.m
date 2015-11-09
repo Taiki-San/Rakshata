@@ -80,7 +80,9 @@ enum
 	{
 		outlineList.controller = self;
 
-		NSView * view = [outlineList getContent];
+		RakTreeView * view = [outlineList getContent];
+		view.manualEventDispatching = YES;
+				
 		scrollview = [[RakListScrollView alloc] initWithFrame:NSMakeRect(0, 0, view.bounds.size.width, LIST_HEIGHT)];
 		if(scrollview != nil)
 		{
