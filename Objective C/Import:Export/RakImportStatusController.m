@@ -260,7 +260,6 @@ enum
 	}
 
 	//We look for items from the same project
-	BOOL updatedOne = NO;
 	for(RakImportItem * currentItem in _dataSet)
 	{
 		if(currentItem.issue != IMPORT_PROBLEM_METADATA)
@@ -271,15 +270,14 @@ enum
 			continue;
 
 		if(!strcmp(referencePath, currentPath))
-			updatedOne |= [currentItem updateProject:project];
+			[currentItem updateProject:project];
 
 		free(currentPath);
 	}
 
 	free(referencePath);
 
-	if(updatedOne)
-		[self postProcessUpdate];
+	[self postProcessUpdate];
 
 	return YES;
 }

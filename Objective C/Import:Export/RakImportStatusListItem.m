@@ -72,7 +72,7 @@
 
 - (byte) checkStatusFromChildren
 {
-	BOOL anythingWrong = NO, everythingWrong = YES;
+	BOOL anythingWrong = NO;
 	cachedMetadataProblem = NO;
 
 	for(RakImportStatusListItem * item in children)
@@ -80,13 +80,12 @@
 		BOOL itemStatus = item.itemForChild.issue != IMPORT_PROBLEM_NONE;
 
 		anythingWrong |= itemStatus;
-		everythingWrong &= itemStatus;
 
 		if(itemStatus && item.itemForChild.issue == IMPORT_PROBLEM_METADATA)
 			cachedMetadataProblem = YES;
 	}
 
-	return anythingWrong ? (everythingWrong ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;
+	return anythingWrong ? (cachedMetadataProblem ? STATUS_BUTTON_ERROR : STATUS_BUTTON_WARN) : STATUS_BUTTON_OK;
 }
 
 - (BOOL) metadataProblem

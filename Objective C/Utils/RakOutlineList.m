@@ -99,6 +99,18 @@
 		[super mouseDown:theEvent];
 }
 
+- (void) mouseUp:(NSEvent *)theEvent
+{
+	if(self.window.firstResponder == self && !tryingToProxy)
+	{
+		tryingToProxy = YES;
+		[[self findSubviewAtCoordinate:[self convertPoint:[theEvent locationInWindow] fromView:nil]] mouseUp:theEvent];
+		tryingToProxy = NO;
+	}
+	else
+		[super mouseUp:theEvent];
+}
+
 @end
 
 @implementation RakOutlineList
