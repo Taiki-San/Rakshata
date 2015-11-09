@@ -204,7 +204,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 					{
 						snprintf(dataReader->nomPages[prevPos], lengthFullPath, "%s/%s", dataReader->path[posID], nomPagesTmp[i]);
 						dataReader->pathNumber[prevPos] = posID;
-						dataReader->nameID[prevPos] = tmpNameID[i];
+						dataReader->nameID[prevPos] = tmpNameID == NULL ? 0 : tmpNameID[i];
 						dataReader->pageCouranteDuChapitre[prevPos] = i++;
 					}
 					else    //Si problème d'allocation
