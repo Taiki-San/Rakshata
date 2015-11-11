@@ -34,6 +34,7 @@
 - (BOOL) isValidIndex : (uint) index;
 - (uint) cacheIDForIndex : (uint) index;
 
+- (BOOL) needUpdateNumberColumn;
 - (uint) updateNumberColumn;
 
 @end

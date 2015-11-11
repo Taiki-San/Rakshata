@@ -128,49 +128,61 @@
 
 - (void) mouseEntered:(NSEvent *)theEvent
 {
+	if(!_resized && [self needUpdateNumberColumn])
+		_resized = YES;
+	
 	[self mouseMoved:theEvent];
 }
 
 #ifdef EXTENSIVE_LOGGING
 //#define VERBOSE_HACK
+#ifdef VERBOSE_HACK
+static bool verboseLog = false;
+#endif
 #endif
 
 - (void) mouseMoved:(NSEvent *)theEvent
 {
 #ifdef VERBOSE_HACK
-	NSLog(@"Mouse moved, starting the work");
+	if(verboseLog)
+		NSLog(@"Mouse moved, starting the work");
 #endif
 	
 	if(_clipView == nil)
 	{
 #ifdef VERBOSE_HACK
-		NSLog(@"Invalid context, re-building");
-#endif
+		if(verboseLog)
+			NSLog(@"Invalid context, re-building");
 		[self viewDidMoveToSuperview];
+#endif
 	}
 	
 	id oldElem = nil;
 	const NSPoint originalPoint = [theEvent locationInWindow], pointInDocument = [_clipView convertPoint:originalPoint fromView:nil];
 #ifdef VERBOSE_HACK
-	NSLog(@"Cursor at x:%lf, y:%lf ~ Position in document: x:%lf, y:%lf", originalPoint.x, originalPoint.y, pointInDocument.x, pointInDocument.y);
+	if(verboseLog)
+		NSLog(@"Cursor at x:%lf, y:%lf ~ Position in document: x:%lf, y:%lf", originalPoint.x, originalPoint.y, pointInDocument.x, pointInDocument.y);
 #endif
 	
 	if(selectedItem != nil)
 	{
 #ifdef VERBOSE_HACK
-		NSLog(@"Existing item: %@", selectedItem);
+		if(verboseLog)
+			NSLog(@"Existing item: %@", selectedItem);
 #endif
 		
 		if([self validateItem:selectedItem :originalPoint])
 		{
 #ifdef VERBOSE_HACK
-			NSLog(@"Still in area, we're good");
+			if(verboseLog)
+				NSLog(@"Still in area, we're good");
 #endif
 			return;
 		}
 		
 #ifdef VERBOSE_HACK
-		NSLog(@"Left, notificating");
+		if(verboseLog)
+			NSLog(@"Left, notificating");
 #endif
 		[selectedItem mouseExited:theEvent];
 		oldElem = selectedItem;
@@ -181,7 +193,8 @@
 	{
 		nbColumn = [self updateNumberColumn];
 #ifdef VERBOSE_HACK
-		NSLog(@"Invalidated nbColumn, new number: %d", nbColumn);
+		if(verboseLog)
+			NSLog(@"Invalidated nbColumn, new number: %d", nbColumn);
 #endif
 		_resized = NO;
 	}
@@ -190,7 +203,8 @@
 	if(!nbColumn || nbElem == 0)
 	{
 #ifdef VERBOSE_HACK
-		NSLog(@"No element, aborting");
+		if(verboseLog)
+			NSLog(@"No element, aborting");
 #endif
 		if(oldElem != nil)
 			[oldElem updateFocus];
@@ -216,14 +230,16 @@
 			{
 				rowMax = currentRow - 1;
 #ifdef VERBOSE_HACK
-				NSLog(@"Element %lld (row %lld) too high", currentRow * nbColumn, currentRow);
+				if(verboseLog)
+					NSLog(@"Element %lld (row %lld) too high", currentRow * nbColumn, currentRow);
 #endif
 			}
 
 			else if(NSMaxY(item.frame) > pointInDocument.y)	//We found the row
 			{
 #ifdef VERBOSE_HACK
-				NSLog(@"Element %lld (row %lld) seems okay", currentRow * nbColumn, currentRow);
+				if(verboseLog)
+					NSLog(@"Element %lld (row %lld) seems okay", currentRow * nbColumn, currentRow);
 #endif
 				break;
 			}
@@ -231,8 +247,10 @@
 			else											//The goal is lower than this cell
 			{
 				rowMin = currentRow + 1;
+
 #ifdef VERBOSE_HACK
-				NSLog(@"Element %lld (row %lld) too low", currentRow * nbColumn, currentRow);
+				if(verboseLog)
+					NSLog(@"Element %lld (row %lld) too low", currentRow * nbColumn, currentRow);
 #endif
 			}
 
@@ -255,7 +273,8 @@
 			if(item.frame.origin.x > pointInDocument.x)		//We went too far, this is an invalid clic
 			{
 #ifdef VERBOSE_HACK
-				NSLog(@"Element %d (column %d) too far :/", index, i);
+				if(verboseLog)
+					NSLog(@"Element %d (column %d) too far :/", index, i);
 #endif
 				break;
 			}
@@ -263,13 +282,15 @@
 			else if(NSMaxX(item.frame) > pointInDocument.x)	//Good element?
 			{
 #ifdef VERBOSE_HACK
-				NSLog(@"Element %d (column %d) may be good", index, i);
+				if(verboseLog)
+					NSLog(@"Element %d (column %d) may be good", index, i);
 #endif
 				
 				if([self validateItem:item :originalPoint])
 				{
 #ifdef VERBOSE_HACK
-					NSLog(@"Yep, confirmed");
+					if(verboseLog)
+						NSLog(@"Yep, confirmed");
 #endif
 					selectedItem = item;
 					[item mouseEntered:theEvent];
@@ -277,19 +298,20 @@
 				else	//In the view area, but out of the actual content
 				{
 #ifdef VERBOSE_HACK
-					NSLog(@"And, nop, we're out of it");
+					if(verboseLog)
+						NSLog(@"And, nop, we're out of it");
 #endif
 					break;
 				}
 			}
 		}
 	}
-	else
-	{
 #ifdef VERBOSE_HACK
+	else if(verboseLog)
+	{
 		NSLog(@"Invalid cursor position");
-#endif
 	}
+#endif
 	
 	if(oldElem != nil)
 		[oldElem updateFocus];
@@ -308,6 +330,16 @@
 		[selectedItem updateFocus];
 		selectedItem = nil;
 	}
+}
+
+- (BOOL) needUpdateNumberColumn
+{
+	if(nbColumn == 0)
+		return YES;
+	
+	//We validate the number of columns
+	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbColumn].view, *lastOfFirstLine = [self itemAtIndex:nbColumn - 1].view;
+	return first.frame.origin.y == lastOfFirstLine.frame.origin.y && first.frame.origin.y != nextLine.frame.origin.y;
 }
 
 - (uint) updateNumberColumn
