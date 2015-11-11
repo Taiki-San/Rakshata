@@ -631,15 +631,30 @@ enum
 			{
 				name = inputField;
 				name.wantCompletion = YES;
+				name.wantCustomBorder = [name.stringValue isEqualToString:@""];
+				name.customBorderColor = [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
 				
 				__block id cpSelf = self;
+				__weak RakText * cpName = name;
 				
 				name.callbackOnChange = ^(NSNotification * notification, BOOL didComplete) {
+					cpName.wantCustomBorder = [cpName.stringValue isEqualToString:@""];
 					[cpSelf handleCompletion];
 				};
 			}
 			else if(i == 1)
+			{
 				author = inputField;
+				
+				author.wantCustomBorder = [author.stringValue isEqualToString:@""];
+				author.customBorderColor = [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
+				
+				__weak RakText * copyAuthor = author;
+				
+				author.callbackOnChange = ^(NSNotification * notification, BOOL didComplete){
+					copyAuthor.wantCustomBorder = [copyAuthor.stringValue isEqualToString:@""];
+				};
+			}
 			//Synopsis, this one is slightly different
 			else if(i == 2)
 			{

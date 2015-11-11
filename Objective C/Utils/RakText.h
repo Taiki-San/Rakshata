@@ -19,6 +19,7 @@
 }
 
 @property BOOL wantCustomBorder;
+@property NSColor * customBorderColor;
 @property CGFloat forcedOffsetY;
 
 @property (nonatomic) BOOL enableMultiLine;
