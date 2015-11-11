@@ -21,7 +21,6 @@
 		if(![self initModel])
 			return nil;
 		
-		_nbData = 10;
 		[self applyContext:frame : selectedRowIndex : -1];
 		
 		scrollView.verticalScroller.alphaValue = 0;
@@ -43,13 +42,22 @@
 		return NO;
 	}
 	
-	NSMutableArray * array = [NSMutableArray arrayWithCapacity:10];
+	_nbData = MIN(nbElem, 10);
+
+	NSMutableArray * array = [NSMutableArray arrayWithCapacity:10], * usedID = [NSMutableArray arrayWithCapacity:10];
 	
-	for (uint i = 0; i < 10; i++)
+	for (uint i = 0, value; i < _nbData; i++)
 	{
-		ID[i] = getRandom() % nbElem;
+		//Prevent reusing IDs
+		value = getRandom() % nbElem;
+		while([usedID indexOfObject:@(value)] != NSNotFound)
+		{
+			++value;
+			value %= nbElem;
+		}
 		
-		[array addObject:getStringForWchar(cache[ID[i]].projectName)];
+		[usedID addObject:@(value)];
+		[array addObject:getStringForWchar(cache[(ID[i] = value)].projectName)];
 	}
 	
 	names = [NSArray arrayWithArray:array];

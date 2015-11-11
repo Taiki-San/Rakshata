@@ -48,7 +48,7 @@ uint _currentTheme;
 		_wantNumber = NO;
 		_project = project;
 		
-		rating = (getRandom() % 50) / 10.0f;
+		rating = 0;//(getRandom() % 50) / 10.0f;
 		
 		[self setFrameSize : NSMakeSize(WIDTH, HEIGHT)];
 		basePoint = NSZeroPoint;
@@ -78,7 +78,7 @@ uint _currentTheme;
 	}
 	
 	_project = project;
-	rating = (getRandom() % 50) / 10.0f;
+	rating = 0;//(getRandom() % 50) / 10.0f;
 	
 	[self setNeedsDisplay:YES];
 }
@@ -122,7 +122,7 @@ uint _currentTheme;
 	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
 	[formatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	return [formatter stringFromNumber: @(getRandom() % 10000)];
+	return [formatter stringFromNumber: @(0)];//getRandom() % 10000)];
 }
 
 - (void) refreshFrame
