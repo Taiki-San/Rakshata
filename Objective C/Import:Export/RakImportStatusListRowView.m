@@ -112,25 +112,25 @@
 - (NSString *) determineMessageForStatus : (byte) status andItem : (RakImportStatusListItem *) item
 {
 	if(status == STATUS_BUTTON_OK)
-		return @"Tout est bon 😊";
+		return NSLocalizedString(@"IMPORT-STATUS-OK", nil);
 
 	if(item.isRootItem && item.metadataProblem)
-		return @"Données incomplètes 😱";
+		return NSLocalizedString(@"IMPORT-STATUS-ROOT-METADATA", nil);
 
 	else if(item.isRootItem || status == STATUS_BUTTON_WARN)
-		return @"Problèmes detectés 😕";
+		return NSLocalizedString(@"IMPORT-STATUS-ROOT-WARN", nil);
 
 	//Ok, error
 	else if(item.itemForChild.issue == IMPORT_PROBLEM_DUPLICATE)
-		return @"Duplicat detecté 😱";
+		return NSLocalizedString(@"IMPORT-STATUS-DUPLICATE", nil);
 
 	else if(item.itemForChild.issue == IMPORT_PROBLEM_INSTALL_ERROR)
-		return [NSString stringWithFormat:@"%@ corrompu 😡", NSLocalizedString(_item.isTome ? @"VOLUME" : @"CHAPTER", nil)];
-
+		return [NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-STATUS-%@-CORRUPTED", nil), NSLocalizedString(_item.isTome ? @"VOLUME" : @"CHAPTER", nil)];
+	
 	else if(item.itemForChild.issue == IMPORT_PROBLEM_METADATA_DETAILS)
-		return @"Détails manquants 😔";
+		return NSLocalizedString(@"IMPORT-STATUS-CHILD-METADATA", nil);
 
-	return @"Données incomplètes 😱";
+	return NSLocalizedString(@"IMPORT-STATUS-MISSING-DATA", nil);
 }
 
 - (void) checkRefreshStatus

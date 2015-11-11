@@ -206,6 +206,13 @@
 "IMPORT-DET-HEAD-VOL" = "Nom ou numéro du tome manquants";
 "IMPORT-DET-PH-NUMBER" = "Numéro";
 "IMPORT-DET-PH-NAME" = "Nom";
+"IMPORT-STATUS-OK" = "Tout est bon 😊";
+"IMPORT-STATUS-ROOT-METADATA" = "Données incomplètes 😱";
+"IMPORT-STATUS-ROOT-WARN" = "Problèmes detectés 😕";
+"IMPORT-STATUS-DUPLICATE" = "Doublon detecté 😱";
+"IMPORT-STATUS-%@-CORRUPTED" = "%1$@ corrompu 😡";
+"IMPORT-STATUS-CHILD-METADATA" = "Détails manquants 😔";
+"IMPORT-STATUS-MISSING-DATA" = "Données incomplètes 😱";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

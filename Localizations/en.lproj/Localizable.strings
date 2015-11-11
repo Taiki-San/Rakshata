@@ -206,6 +206,13 @@
 "IMPORT-DET-HEAD-VOL" = "Missing volume name or number";
 "IMPORT-DET-PH-NUMBER" = "Number";
 "IMPORT-DET-PH-NAME" = "Name";
+"IMPORT-STATUS-OK" = "Everything is alright 😊";
+"IMPORT-STATUS-ROOT-METADATA" = "Données incomplètes 😱";
+"IMPORT-STATUS-ROOT-WARN" = "Problems detected 😕";
+"IMPORT-STATUS-DUPLICATE" = "Duplicate detected 😱";
+"IMPORT-STATUS-%@-CORRUPTED" = "%1$@ corrupted 😡";
+"IMPORT-STATUS-CHILD-METADATA" = "Details missing 😔";
+"IMPORT-STATUS-MISSING-DATA" = "Incomplete data 😱";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
