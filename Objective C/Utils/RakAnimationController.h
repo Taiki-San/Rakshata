@@ -15,7 +15,7 @@
 	id postAnimationTarget;
 	BOOL haveSelectorToPing;
 	
-	NSAnimation * _animation;
+	NSAnimation * __strong _animation;
 	
 	CGFloat _animationDiff;
 	NSInteger _initialState;
