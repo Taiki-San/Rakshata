@@ -50,6 +50,18 @@ NSString * getRepoName(REPO_DATA * repo);
 
 @end
 
+@interface NSMenuItem (AutoLocalization)
+
+- (void) setAutoLocalizedString : (NSString *) string;
+
+@end
+
+@interface NSMenu (AutoLocalization)
+
+- (void) setAutoLocalizedString : (NSString *) string;
+
+@end
+
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"

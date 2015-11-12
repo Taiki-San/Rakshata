@@ -214,6 +214,16 @@
 "IMPORT-STATUS-CHILD-METADATA" = "Details missing 😔";
 "IMPORT-STATUS-MISSING-DATA" = "Incomplete data 😱";
 
+//Menu title
+"TITLE-ABOUT" = "About Rakshata";
+"TITLE-PREFS" = "Preferences";
+"TITLE-WINDOW" = "Window";
+"TITLE-CLOSE" = "Close";
+"TITLE-SERIE" = "Series";
+"TITLE-CT" = "Chapters and volumes";
+"TITLE-READER" = "Reader";
+"TITLE-DF" = "Enter Distraction Free";
+
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
 "COPYRIGHT" = "© 2011-2015 Taiki. All rights reserved";

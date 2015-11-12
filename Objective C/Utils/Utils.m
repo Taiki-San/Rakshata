@@ -128,6 +128,23 @@
 
 @end
 
+@implementation NSMenuItem (AutoLocalization)
+
+- (void) setAutoLocalizedString : (NSString *) string
+{
+	self.title = NSLocalizedString(string, nil);
+}
+
+@end
+
+@implementation NSMenu (AutoLocalization)
+
+- (void) setAutoLocalizedString : (NSString *) string
+{
+	self.title = NSLocalizedString(string, nil);
+}
+
+@end
 
 NSString * getStringForWchar(const charType * string)
 {
