@@ -32,18 +32,14 @@
  * 2015-07-29 Taiki: Tweak to get close of the convention of the project this code will be poured in, plus add support for prioritary chars
  */
 
-#include <getopt.h>
-#include <ctype.h>
-#include <assert.h>
-
 /* These are defined as macros to make it easier to adapt this code to
  * different characters types or comparison functions. */
-static inline int nat_isdigit(const char a)
+static inline bool nat_isdigit(const char a)
 {
 	return isdigit((unsigned char) a);
 }
 
-static inline int nat_isspace(const char a)
+static inline bool nat_isspace(const char a)
 {
 	return isspace((unsigned char) a);
 }
