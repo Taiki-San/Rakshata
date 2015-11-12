@@ -43,9 +43,10 @@ NSString * getRepoName(REPO_DATA * repo);
 
 @end
 
-@interface NSView (findChild)
+@interface NSView (RakUtils)
 
 - (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates;
+- (NSImage *) imageOfView;
 
 @end
 

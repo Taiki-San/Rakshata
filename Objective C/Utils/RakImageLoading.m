@@ -64,7 +64,38 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 		}
 	}
 	
-	return image != nil ? image : (defaultName != nil ? [NSImage imageNamed:defaultName] : nil);
+	if(image != nil || defaultName == nil)
+		return image;
+	
+	image = [NSImage imageNamed:defaultName];
+	
+	NSSize size = [image size];
+	
+	//Critical size by which, we write the name of the project on
+	if (image != nil && size.height > 125)
+	{
+		image = [image copy];
+		
+		RakText * text = [[RakText alloc] initWithText:getStringForWchar(project.projectName) :[Prefs getSystemColor:COLOR_HIGHLIGHT :nil]];
+		if(text != nil)
+		{
+			text.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:15];
+			text.alignment = NSCenterTextAlignment;
+			text.enableWraps = YES;
+			text.fixedWidth = size.width * 3 / 4;
+			text.enableMultiLine = YES;
+			
+			NSPoint point = NSCenterSize(size, text.bounds.size);
+			NSImage * textImage = [text imageOfView];
+			size = textImage.size;
+			
+			[image lockFocus];
+			[textImage drawInRect:(NSRect) {{round(point.x), round(point.y)}, size} fromRect:(NSRect) {NSZeroPoint, size} operation:NSCompositeDestinationAtop fraction:1.0];
+			[image unlockFocus];
+		}
+	}
+	
+	return image;
 }
 
 NSImage * enforceImageSize(NSImage * image, byte code)

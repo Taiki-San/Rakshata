@@ -87,7 +87,7 @@
 
 @end
 
-@implementation NSView (findChild)
+@implementation NSView (RakUtils)
 
 - (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates
 {
@@ -110,6 +110,20 @@
 	}
 	
 	return self;
+}
+
+- (NSImage *) imageOfView
+{
+	NSRect bounds = self.bounds;
+	NSSize size = bounds.size;
+	
+	NSBitmapImageRep *representation = [self bitmapImageRepForCachingDisplayInRect:bounds];
+	[representation setSize:size];
+	[self cacheDisplayInRect:bounds toBitmapImageRep:representation];
+	
+	NSImage* image = [[NSImage alloc] initWithSize:size];
+	[image addRepresentation:representation];
+	return image;
 }
 
 @end
