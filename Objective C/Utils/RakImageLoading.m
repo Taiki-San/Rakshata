@@ -72,7 +72,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 	NSSize size = [image size];
 	
 	//Critical size by which, we write the name of the project on
-	if (image != nil && size.height > 125)
+	if (image != nil && size.width > 125 && size.width < 800)
 	{
 		image = [image copy];
 		
