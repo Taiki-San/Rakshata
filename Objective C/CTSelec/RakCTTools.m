@@ -147,6 +147,7 @@
 	if(projectImageBase != nil)
 	{
 		[self setImage:projectImageBase];
+		[self setFrame:self.superview.bounds];
 
 		[self registerProject:project];
 	}
@@ -185,8 +186,7 @@
 {
 	NSRect frame;
 	
-	frame.size.height = imageSize.height;
-	frame.size.width = imageSize.width;
+	frame.size = imageSize;
 	
 	frame.origin.x = superviewFrame.size.width / 2 - frame.size.width / 2;
 	frame.origin.y = superviewFrame.size.height - CT_READERMODE_WIDTH_PROJECT_NAME - CT_READERMODE_WIDTH_SPACE_NEXT_PROJECTIMAGE - imageSize.height;

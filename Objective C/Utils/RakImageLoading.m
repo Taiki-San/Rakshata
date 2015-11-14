@@ -86,12 +86,15 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 			text.enableMultiLine = YES;
 			
 			NSPoint point = NSCenterSize(size, text.bounds.size);
+			NSSize oldSize = image.size;
 			NSImage * textImage = [text imageOfView];
 			size = textImage.size;
 			
 			[image lockFocus];
 			[textImage drawInRect:(NSRect) {{round(point.x), round(point.y)}, size} fromRect:(NSRect) {NSZeroPoint, size} operation:NSCompositeDestinationAtop fraction:1.0];
 			[image unlockFocus];
+			
+			image.size = oldSize;
 		}
 	}
 	
@@ -120,7 +123,7 @@ NSImage * enforceImageSize(NSImage * image, byte code)
 
 NSSize getThumbSize(NSImage * image)
 {
-	NSSize smallestSize = [[[image representations] objectAtIndex:0] size];
+	NSSize smallestSize = image.size;
 	for(NSImageRep * rep in [image representations])
 	{
 		if(rep.size.width < smallestSize.width)
