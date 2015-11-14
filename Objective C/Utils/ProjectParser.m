@@ -1049,7 +1049,7 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 
 PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned char * remoteDataRaw, uint *nbElem)
 {
-	if(repo == NULL || nbElem == NULL)
+	if(nbElem == NULL)
 		return NULL;
 	
 	NSError * error = nil;
@@ -1082,10 +1082,14 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 		}
 		
 		bool isLocal = [(NSNumber*) repoID unsignedLongLongValue] == LOCAL_REPO_ID;
+		
+		//No repo, so we don't exactly have a choice
+		if(!isLocal && repo == NULL)
+			continue;
 
-		for(posRepo = 0; posRepo < nbRepo; posRepo++)
+		for(posRepo = 0; posRepo < nbRepo || isLocal; posRepo++)
 		{
-			if(repo[posRepo] == NULL)
+			if(!isLocal && repo[posRepo] == NULL)
 				continue;
 
 			if(isLocal || [(NSNumber*) repoID unsignedLongLongValue] == getRepoID(repo[posRepo]))
@@ -1114,11 +1118,11 @@ PROJECT_DATA_PARSED * parseLocalData(REPO_DATA ** repo, uint nbRepo, unsigned ch
 
 char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** repo, uint nbRepo, size_t * sizeOutput)
 {
-	if(data == NULL || repo == NULL || !nbElem || !nbRepo)
+	if(data == NULL || !nbElem)
 		return NULL;
 	
 	uint counters[nbRepo + 1], jumpTable[nbRepo + 1][nbElem];
-	bool projectLinkedToRepo = false;
+	bool projectLinkedToRepo = false, fullLocal = repo == NULL || !nbRepo, haveLocal = false;
 	
 	memset(counters, 0, sizeof(counters));
 	
@@ -1128,9 +1132,9 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 		if(isLocalRepo(data[pos].project.repo))
 		{
 			jumpTable[nbRepo][counters[nbRepo]++] = pos;
-			projectLinkedToRepo = true;
+			projectLinkedToRepo = haveLocal = true;
 		}
-		else
+		else if(!fullLocal)
 		{
 			uint64_t repoID = getRepoID(data[pos].project.repo);
 			for(posRepo = 0; posRepo < nbRepo; posRepo++)

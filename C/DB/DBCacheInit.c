@@ -264,7 +264,7 @@ void syncCacheToDisk(byte syncCode)
 	if(syncCode & SYNC_PROJECTS)
 	{
 		REPO_DATA ** repoDB = (REPO_DATA **) getCopyKnownRepo(&nbRepo, false);
-		if(repoDB != NULL)
+		if(repoDB != NULL || (isDBRepoEmpty() && !isDBProjectEmpty()))
 		{
 			data = reversedParseData(projectDB, nbProject, repoDB, nbRepo, &dataSize);
 
