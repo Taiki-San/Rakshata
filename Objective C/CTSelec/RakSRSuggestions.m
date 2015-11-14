@@ -18,28 +18,32 @@
 	
 	if(self != nil)
 	{
-		if(![self initModel])
-			return nil;
+		[self initModel];
+		
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
 		[self applyContext:frame : selectedRowIndex : -1];
 		
 		scrollView.verticalScroller.alphaValue = 0;
+
+		[self setEmptyState : _nbData == 0];
 	}
 	
 	return self;
 }
 
-- (BOOL) initModel
+- (void) initModel
 {
 	ID = malloc(10 * sizeof(uint));
 	if(ID == NULL)
-		return NO;
+		return;
 	
 	cache = getCopyCache(SORT_NAME, &nbElem);
-	if(cache == NULL || nbElem == 0)
+	if(cache == NULL && nbElem != 0)	// o_o
 	{
 		free(ID);
-		return NO;
+		ID = NULL;
+		return;
 	}
 	
 	_nbData = MIN(nbElem, 10);
@@ -61,8 +65,24 @@
 	}
 	
 	names = [NSArray arrayWithArray:array];
+}
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if(![RakDBUpdate isPluralUpdate:notification.userInfo] || getDBCount() == nbElem)
+		return;
+
+	freeProjectData(cache);
+	free(ID);
 	
-	return YES;
+	[self initModel];
+	[_tableView reloadData];
+	[self setEmptyState : _nbData == 0];
+}
+
+- (void) dealloc
+{
+	[RakDBUpdate unRegister:self];
 }
 
 - (NSRect) getFrameFromParent: (NSRect) bounds
@@ -115,6 +135,60 @@
 - (BOOL) tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	return NO;
+}
+
+#pragma mark - Handle empty state
+
+- (void) setEmptyState : (BOOL) isEmpty
+{
+	if(isEmpty)
+	{
+		if(placeholder == nil)
+		{
+			placeholder = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-SUGG-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE :nil]];
+			if(placeholder != nil)
+			{
+				placeholder.font = [NSFont fontWithName:[placeholder.font fontName] size:15];
+				placeholder.alignment = NSCenterTextAlignment;
+				placeholder.enableWraps = YES;
+				placeholder.fixedWidth = 200;
+				placeholder.enableMultiLine = YES;
+				[placeholder updateMultilineHeight];
+				
+				NSSize size = scrollView.bounds.size;
+				size.width -= _scrollerWidth;
+				
+				[placeholder setFrameOrigin:NSCenterSize(size, placeholder.bounds.size)];
+				
+				[scrollView addSubview:placeholder];
+			}
+		}
+		else
+		{
+			[placeholder setFrameOrigin:NSCenterSize(scrollView.bounds.size, placeholder.bounds.size)];
+			placeholder.hidden = NO;
+		}
+	}
+	else
+	{
+		if(placeholder != nil)
+			placeholder.hidden = YES;
+	}
+}
+
+- (void) additionalResizing : (NSSize) newSize : (BOOL) animated
+{
+	if(!placeholder.isHidden)
+	{
+		newSize.width -= _scrollerWidth;
+
+		if(animated)
+			[placeholder.animator setFrameOrigin:NSCenterSize(newSize, placeholder.bounds.size)];
+		else
+			[placeholder setFrameOrigin:NSCenterSize(newSize, placeholder.bounds.size)];
+	}
+	
+	[super additionalResizing:newSize :animated];
 }
 
 @end

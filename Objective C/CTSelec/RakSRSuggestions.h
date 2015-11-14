@@ -15,6 +15,8 @@
 	NSArray * names;
 	uint * ID;
 	
+	RakText * placeholder;
+	
 	PROJECT_DATA * cache;
 	uint nbElem;
 }

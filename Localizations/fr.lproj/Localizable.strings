@@ -88,6 +88,7 @@
 "FULL-LIST" = "Liste complète";
 
 "PROJ-GRID-EMPTY" = "Bibliothèque vide\n\nImportez vos séries ou ajoutez de nouvelles sources\n\nPour ce faire, glissez-les dans la fenêtre";
+"PROJ-SUGG-EMPTY" = "Pas de suggestion disponible\n\nVeuillez ajouter quelques séries à votre bibliothèque";
 
 "PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES" = "%2$zu Tomes - %1$zu Chapitres\n";
 "PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES" = "%2$zu Tomes - %1$zu Chapitre\n";

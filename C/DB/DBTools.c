@@ -460,6 +460,11 @@ bool isDBProjectEmpty()
 	return nbElemInCache == 0;
 }
 
+bool getDBCount()
+{
+	return nbElemInCache;
+}
+
 bool isDBRepoEmpty()
 {
 	return lengthRootRepo == 0;

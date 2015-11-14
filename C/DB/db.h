@@ -197,6 +197,7 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 /******		DBTools.c	  ******/
 bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);
 bool isDBProjectEmpty();
+bool getDBCount();
 bool isDBRepoEmpty();
 void updateProjectImages(void * _todo);
 bool isInstalled(PROJECT_DATA project, char * basePath);

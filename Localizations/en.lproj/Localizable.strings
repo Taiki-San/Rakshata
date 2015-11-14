@@ -88,6 +88,7 @@
 "FULL-LIST" = "Full list";
 
 "PROJ-GRID-EMPTY" = "Empty Library\n\nImport your series or add new sources\n\nYou can do that by dragging them in the window";
+"PROJ-SUGG-EMPTY" = "No suggestion available\n\nPlease add some content\nto the library";
 
 "PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES" = "%2$zu Volumes - %1$zu Chapters\n";
 "PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES" = "%2$zu Volumes - %1$zu Chapter\n";
