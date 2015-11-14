@@ -175,7 +175,7 @@
 - (void) keyDown:(NSEvent *)theEvent
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
-	unichar     const   code        =   [character characterAtIndex:0];
+	unichar     const   code        =   [character length] > 0 ? [character characterAtIndex:0] : '\0';
 	BOOL isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
 	
 	switch (code)
