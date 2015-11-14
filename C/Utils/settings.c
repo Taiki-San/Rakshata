@@ -17,17 +17,7 @@ char *loadPrefFile()
 	size_t filesize = getFileSize(SETTINGS_FILE);
 
     if(filesize == 0)
-    {
-		restorePrefsFile();
-		
-		if((filesize = getFileSize(SETTINGS_FILE)) == 0)
-		{
-#ifdef EXTENSIVE_LOGGING
-			logR("Empty file");
-#endif
-			return NULL;
-		}
-    }
+		return NULL;
 	
     char * output = calloc(filesize + 10, sizeof(char));
     if(output == NULL)
@@ -192,6 +182,8 @@ char* loadLargePrefs(char* flag)
 		}
         free(basePtr);
 	}
+	
+#if 0
 	if(flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
@@ -216,6 +208,7 @@ char* loadLargePrefs(char* flag)
 
 		free(downloadData);
 	}
+#endif
     return NULL;
 }
 

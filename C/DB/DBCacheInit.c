@@ -38,24 +38,29 @@ uint setupBDDCache()
 	}
 
 	MUTEX_LOCK(cacheMutex);
-
+	
 	if(cache != NULL)
 	{
 		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}
-
-	repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
-	projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
-
-	if(repoDB == NULL || projectDB == NULL)
+	
+	//Cleanup
+	if(repoList != NULL)
 	{
-		free(repoDB);
-		free(projectDB);
-		MUTEX_UNLOCK(cacheMutex);
-		return 0;
+		freeRepo(repoList);
+		repoList = NULL;
 	}
+	
+	if(rootRepoList != NULL)
+	{
+		freeRootRepo(rootRepoList);
+		rootRepoList = NULL;
+	}
+	
+	nbElemInCache = lengthRepo = lengthRootRepo = 0;
 
+	//Setup and create the database
 #ifdef EXTENSIVE_LOGGING
 	sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, NULL);
 #endif
@@ -71,112 +76,91 @@ uint setupBDDCache()
 	{
 		initializeTags(internalDB);
 	}
+	
+	//Load the cold store, the lack of cold store is properly handled
+	repoDB = loadLargePrefs(SETTINGS_REPODB_FLAG);
+	projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
 
-	if(repoList != NULL)
-	{
-		freeRepo(repoList);
-		repoList = NULL;
-	}
-
-	if(rootRepoList != NULL)
-	{
-		freeRootRepo(rootRepoList);
-		rootRepoList = NULL;
-	}
-
-	free(isUpdated);	isUpdated = NULL;
-	nbElemInCache = lengthRepo = lengthRootRepo = lengthIsUpdated = 0;
-
-	//On parse les teams
+	//Parse the repo, if any
 	ROOT_REPO_DATA ** internalRootRepoList = loadRootRepo(repoDB, &nombreRootRepo);
-
-	free(repoDB);
-
-	if(internalRootRepoList == NULL || nombreRootRepo == 0)
-	{
-		MUTEX_UNLOCK(cacheMutex);
-		return 0;
-	}
-
 	REPO_DATA ** internalRepoList = loadRepo(internalRootRepoList, nombreRootRepo, &nombreRepo);
-	if(internalRepoList == NULL)
-	{
-		freeRootRepo(internalRootRepoList);
-		MUTEX_UNLOCK(cacheMutex);
-		return 0;
-	}
 
-	char * encodedRepo[nombreRepo + 1];
-	for(uint i = 0; i < nombreRepo; i++)
-	{
-		encodedRepo[i] = getPathForRepo(internalRepoList[i]);
-	}
-	encodedRepo[nombreRepo] = getPathForRepo(NULL);		//Local repo
-
+	//Post process the repo: release the ressources and purge of duplicates
+	free(repoDB);
 	getRidOfDuplicateInRepo(internalRepoList, nombreRepo);
-
-	//On vas parser les projets
+	
+	//Will start loading the projects
 	sqlite3_stmt* request = createRequest(internalDB, "CREATE TABLE "MAIN_CACHE" ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_repo)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_mainTagID)" INTEGER NOT NULL, "DBNAMETOID(RDB_tagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nbTagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER, "DBNAMETOID(RDB_chapitreRemote)" INTEGER, "DBNAMETOID(RDB_chapitreRemoteLength)" INTEGER, "DBNAMETOID(RDB_chapitreLocal)" INTEGER, "DBNAMETOID(RDB_chapitreLocalLength)" INTEGER, "DBNAMETOID(RDB_chapitresPrice)" INTEGER, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_DRM)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER, "DBNAMETOID(RDB_tomeRemote)" INTEGER, "DBNAMETOID(RDB_tomeRemoteLength)" INTEGER, "DBNAMETOID(RDB_tomeLocal)" INTEGER, "DBNAMETOID(RDB_tomeLocalLength)" INTEGER, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL, "DBNAMETOID(RDB_isLocal)" INTEGER NOT NULL); CREATE UNIQUE INDEX poniesShallRule ON "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)");");
 
 	if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
-		//abort, couldn't setup DB
-		destroyRequest(request);
 		sqlite3_close(internalDB);
 		goto fail;
 	}
 
-	destroyRequest(request);
 	buildSearchTables(internalDB);
-
 	createCollate(internalDB);
 
-	//On est bon, let's go
-	if((request = getAddToCacheRequest(internalDB)) != NULL)	//préparation de la requête qui sera utilisée
+	//Great, main loading \o/
+	if(projectDB != NULL)
 	{
+		sqlite3_stmt* request = getAddToCacheRequest(internalDB);	//préparation de la requête qui sera utilisée
+		if(request == NULL)
+			goto fail;
+		
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
 		size_t decodedLength = strlen(projectDB);
-
+		
 		//We share the immature DB because getCategoryForID is deep in the call tree and needs it
 		immatureCache = internalDB;
-
+		
 		if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
-
+		
 		unsigned char * decodedProject = base64_decode(projectDB, decodedLength, &decodedLength);
-
 		if(decodedProject == NULL)
 		{
 			free(projectDB);
-
+			
 			removeFromPref(SETTINGS_PROJECTDB_FLAG);
 			projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
 			if(projectDB != NULL)
 			{
 				decodedLength = strlen(projectDB);
-
+				
 				if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
-
+				
 				decodedProject = base64_decode(projectDB, decodedLength, &decodedLength);
 			}
-
+			
 			if(decodedProject == NULL)
 			{
 				logR("Couldn't gather valid catalog :|");
 				goto fail;
 			}
 		}
-
+		
 		PROJECT_DATA_PARSED * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
-
+		
 		free(decodedProject);
 		if(projects != NULL)
 		{
 			void * searchData = buildSearchJumpTable(internalDB);
 			bool isWorkingOnLocalRepo = false;
+			
+			//Craft the paths of all the available repo. We will need them in the loop
+			char * encodedRepo[nombreRepo + 1];
+			for(uint i = 0; i < nombreRepo; i++)
+			{
+				encodedRepo[i] = getPathForRepo(internalRepoList[i]);
+			}
+			encodedRepo[nombreRepo] = getPathForRepo(NULL);		//Local repo
+			
+			//Main insertion loop.
+			//We complete some metadata and
 			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nombreProject; pos++)
 			{
 				projects[pos].project.favoris = checkIfFaved(&projects[pos].project, &cacheFavs);
-
+				
 				if(isLocalRepo(projects[pos].project.repo))
 				{
 					isWorkingOnLocalRepo = true;
@@ -186,7 +170,7 @@ uint setupBDDCache()
 				{
 					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get repo index
 				}
-
+				
 				if((posRepo < nombreRepo || isWorkingOnLocalRepo) && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%s%d/", encodedRepo[posRepo], projects[pos].project.locale ? LOCAL_PATH_NAME"_" : "", projects[pos].project.projectID);
@@ -205,43 +189,36 @@ uint setupBDDCache()
 						continue;
 					}
 				}
-
+				
 				//In case of error, let's not leak memory
 				releaseParsedData(projects[pos]);
 			}
-
+			
+			//Cleanup
+			for(uint i = 0; i < nombreRepo + 1; free(encodedRepo[i++]));
+			
 			free(projects);
 			flushSearchJumpTable(searchData);
 		}
-
+		
 		destroyRequest(request);
 		immatureCache = NULL;
-
-		if(nombreProject)
-		{
-			if(cache != NULL)
-				flushDB();
-
-			cache = internalDB;
-			nbElemInCache = nombreProject;
-
-			rootRepoList = internalRootRepoList;
-			lengthRootRepo = nombreRootRepo;
-
-			repoList = internalRepoList;
-			lengthRepo = nombreRepo;
-
-			isUpdated = calloc(nombreProject + 1, sizeof(char));
-			if(isUpdated)
-				lengthIsUpdated = nombreProject;
-		}
 	}
+	
+	//Apply the loaded data to the context
+	cache = internalDB;
+	nbElemInCache = nombreProject;
+	
+	rootRepoList = internalRootRepoList;
+	lengthRootRepo = nombreRootRepo;
+	
+	repoList = internalRepoList;
+	lengthRepo = nombreRepo;
+	
+fail:
 
 	MUTEX_UNLOCK(cacheMutex);
 
-fail:
-
-	for(uint i = 0; i < nombreRepo; free(encodedRepo[i++]));
 	free(cacheFavs);
 	free(projectDB);
 
@@ -277,8 +254,10 @@ void syncCacheToDisk(byte syncCode)
 			}
 			free(data);
 		}
-		else
+		else if(!isDBRepoEmpty())
 			logR("Sync failed");
+		else
+			removeFromPref(SETTINGS_REPODB_FLAG);
 
 		freeRootRepo(rootRepoDB);
 	}
@@ -303,8 +282,10 @@ void syncCacheToDisk(byte syncCode)
 				}
 				free(data);
 			}
-			else
+			else if(!isDBProjectEmpty())
 				logR("Sync failed");
+			else
+				removeFromPref(SETTINGS_PROJECTDB_FLAG);
 
 			freeRepo(repoDB);
 		}
@@ -367,6 +348,9 @@ void flushDB()
 //La sélection des repo MaJ se fera avant l'appel à cette fonction
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 {
+	if(repoDB == NULL)
+		return NULL;
+		
 	size_t length = strlen(repoDB);
 	
 	if(length > 1 && repoDB[length - 1] == '\n')	length--;
@@ -382,8 +366,14 @@ ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 {
-	if(root == NULL || nbRepo == NULL || nbRoot == 0)
+	if(nbRepo == NULL)
 		return NULL;
+
+	if(root == NULL || nbRoot == 0)
+	{
+		*nbRepo = 0;
+		return NULL;
+	}
 	
 	uint nbSubRepo = 0;
 	

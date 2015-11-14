@@ -14,6 +14,9 @@
 
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
 {
+	if(data == NULL || nombreRepo == 0)
+		return;
+	
 	//On va chercher des collisions
 	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{

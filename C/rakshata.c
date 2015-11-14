@@ -46,13 +46,10 @@ int main(int argc, const char *argv[])
 	mkdirR("log");
 #endif
 	
+	atexit(cleanup);
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
-	
-	if(setupBDDCache() != 0)
-	{
-		atexit(cleanup);
-		NSApplicationMain(argc, argv);
-	}
+	setupBDDCache();
+	NSApplicationMain(argc, argv);
 
 	return -1;
 }

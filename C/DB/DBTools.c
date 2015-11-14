@@ -455,6 +455,16 @@ ICON_PATH getPathToIconsOfProject(PROJECT_DATA project, uint index)
 
 #pragma mark - Divers
 
+bool isDBProjectEmpty()
+{
+	return nbElemInCache == 0;
+}
+
+bool isDBRepoEmpty()
+{
+	return lengthRootRepo == 0;
+}
+
 void resetUpdateDBCache()
 {
     alreadyRefreshed = -DB_CACHE_EXPIRENCY;
