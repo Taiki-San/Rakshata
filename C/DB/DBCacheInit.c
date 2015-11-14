@@ -22,9 +22,6 @@ REPO_DATA ** repoList = NULL;
 uint lengthRepo = 0;
 uint maxRootID = 0;
 
-char *isUpdated = NULL;
-uint lengthIsUpdated = 0;
-
 bool mutexInitialized;
 MUTEX_VAR cacheMutex, cacheParseMutex;
 
@@ -350,10 +347,6 @@ void flushDB()
 	lengthRepo = 0;
 	freeRootRepo(rootRepoList);
 	lengthRootRepo = 0;
-
-	free(isUpdated);
-	isUpdated = NULL;
-	lengthIsUpdated = 0;
 
 	mutexInitialized = false;
 	MUTEX_UNLOCK(cacheMutex);
