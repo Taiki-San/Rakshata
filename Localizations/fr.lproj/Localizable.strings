@@ -87,6 +87,8 @@
 "RECENT-DL" = "Téléchargées récemment";
 "FULL-LIST" = "Liste complète";
 
+"PROJ-GRID-EMPTY" = "Bibliothèque vide\n\nImportez vos séries ou ajoutez de nouvelles sources\n\nPour ce faire, glissez-les dans la fenêtre";
+
 "PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES" = "%2$zu Tomes - %1$zu Chapitres\n";
 "PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES" = "%2$zu Tomes - %1$zu Chapitre\n";
 "PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUME" = "%2$zu Tome - %1$zu Chapitres\n";

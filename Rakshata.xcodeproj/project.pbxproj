@@ -826,14 +826,6 @@
 			name = "SR extension";
 			sourceTree = "<group>";
 		};
-		B634013A1A96AA0F003DC56E /* Localization */ = {
-			isa = PBXGroup;
-			children = (
-				B63401371A96A890003DC56E /* Localizable.strings */,
-			);
-			name = Localization;
-			sourceTree = "<group>";
-		};
 		B64B74F5195909030015B16D /* OptimizationProfiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -1351,7 +1343,7 @@
 			children = (
 				B6DFE1A51B1D007000D65E68 /* settings */,
 				B6DFE1A61B1D007000D65E68 /* backupTags.db */,
-				B634013A1A96AA0F003DC56E /* Localization */,
+				B63401371A96A890003DC56E /* Localizable.strings */,
 				B6BD45D11A7D624100C2A675 /* Defaults */,
 				B6E8938A189EF3A600ACAF36 /* Images.xcassets */,
 				B66ED1971949EC20002A333F /* theme 1 */,

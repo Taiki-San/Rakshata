@@ -26,13 +26,22 @@
 		self.allowsMultipleSelection = NO;
 		self.backgroundColors = @[[NSColor clearColor]];
 		self.minItemSize = NSMakeSize(RCVC_MINIMUM_WIDTH_OFFSET, RCVC_MINIMUM_HEIGHT_OFFSET);
-		[self bind:NSContentBinding toObject:_manager withKeyPath:@"sharedReference" options:nil];
 		
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];
 		[self setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 	}
 	
 	return self;
+}
+
+- (void) bindManager
+{
+	[self bind:NSContentBinding toObject:_manager withKeyPath:@"sharedReference" options:nil];
+}
+
+- (void) dealloc
+{
+	[self unbind:@"sharedReference"];
 }
 
 - (void) viewDidMoveToSuperview
@@ -336,6 +345,12 @@ static bool verboseLog = false;
 {
 	if(nbColumn == 0)
 		return YES;
+	
+	else if([self numberOfItemsInSection:0] > nbColumn)
+		return YES;
+	
+	else if([self numberOfItemsInSection:0] == nbColumn)
+		return NO;
 	
 	//We validate the number of columns
 	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbColumn].view, *lastOfFirstLine = [self itemAtIndex:nbColumn - 1].view;

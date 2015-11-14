@@ -47,6 +47,8 @@
 - (NSColor *) getBorderColor;
 - (void) additionalDrawing;
 
+- (void) updateMultilineHeight;
+
 - (void) overrideMouseDown : (NSEvent *) theEvent;
 - (void) overrideMouseUp : (NSEvent *) theEvent;
 

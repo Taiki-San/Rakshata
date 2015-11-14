@@ -14,8 +14,6 @@
 
 @interface RakCollectionView : NSCollectionView
 {
-	RakSRContentManager * _manager;
-	
 	uint activeProject;
 
 	uint nbColumn;
@@ -25,10 +23,12 @@
 	RakCollectionViewItem * selectedItem;
 }
 
+@property RakSRContentManager * manager;
 @property (strong) RakCollectionViewItem * clickedView;
 @property BOOL draggedSomething;
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
+- (void) bindManager;
 - (void) resizeAnimation : (NSRect) frameRect;
 
 - (BOOL) isValidIndex : (uint) index;

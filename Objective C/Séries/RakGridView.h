@@ -44,10 +44,13 @@ enum
 	PROJECT_DATA _dragProject;
 	uint _currentDragItem;
 	
+	RakText * backgroundText;
+	
 	NSTrackingArea * trackingArea;
 	NSDraggingSession * draggingSession;
 }
 
+@property (nonatomic) BOOL wasEmpty;
 @property (readonly) RakListScrollView * contentView;
 @property (getter=isHidden) BOOL hidden;
 @property CGFloat alphaValue;

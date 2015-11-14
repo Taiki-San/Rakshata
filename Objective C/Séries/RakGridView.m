@@ -48,9 +48,26 @@ enum
 			[scrollview setFrame:bounds];
 			[self updateTrackingArea];
 		}
+		
+		[manager addObserver:self forKeyPath:@"sharedReference" options:NSKeyValueObservingOptionNew context:nil];
+		self.wasEmpty = [collection.manager.sharedReference count] == 0;
+		[collection bindManager];
 	}
 	
 	return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if(![keyPath isEqualToString:@"sharedReference"])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	self.wasEmpty = [collection.manager.sharedReference count] == 0;
+}
+
+- (void) dealloc
+{
+	[collection.manager removeObserver:self forKeyPath:@"sharedReference"];
 }
 
 #pragma mark - Access to view
@@ -87,6 +104,46 @@ enum
 
 - (BOOL) isHidden 	{	return scrollview.isHidden;	}
 
+#pragma mark - Property
+
+- (void) setWasEmpty : (BOOL) wasEmpty
+{
+	if(_wasEmpty == wasEmpty)
+		return;
+	
+	_wasEmpty = wasEmpty;
+	if(wasEmpty)
+	{
+		if(backgroundText == nil)
+		{
+			backgroundText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-GRID-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE :nil]];
+			if(backgroundText != nil)
+			{
+				backgroundText.font = [NSFont fontWithName:[backgroundText.font fontName] size:20];
+				backgroundText.alignment = NSCenterTextAlignment;
+				backgroundText.enableWraps = YES;
+				backgroundText.fixedWidth = 500;
+				backgroundText.enableMultiLine = YES;
+				[backgroundText updateMultilineHeight];
+				
+				[backgroundText setFrameOrigin:NSCenterSize(scrollview.bounds.size, backgroundText.bounds.size)];
+				
+				[scrollview addSubview:backgroundText];
+			}
+		}
+		else
+		{
+			[backgroundText setFrameOrigin:NSCenterSize(scrollview.bounds.size, backgroundText.bounds.size)];
+			backgroundText.hidden = NO;
+		}
+	}
+	else
+	{
+		if(backgroundText != nil)
+			backgroundText.hidden = YES;
+	}
+}
+
 #pragma mark - Resizing code
 
 - (NSRect) frameFromParent : (NSRect) frame
@@ -103,11 +160,18 @@ enum
 - (void) setFrame : (NSRect) frameRect
 {
 	[scrollview setFrame : [self frameFromParent:frameRect]];
+	
+	if(!backgroundText.isHidden)
+		[backgroundText setFrameOrigin:NSCenterSize(scrollview.bounds.size, backgroundText.bounds.size)];
 }
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[scrollview.animator setFrame : [self frameFromParent:frameRect]];
+	frameRect = [self frameFromParent:frameRect];
+	[scrollview.animator setFrame : frameRect];
+
+	if(!backgroundText.isHidden)
+		[backgroundText.animator setFrameOrigin:NSCenterSize(frameRect.size, backgroundText.bounds.size)];
 }
 
 - (void) updateTrackingArea

@@ -68,7 +68,17 @@
 	{
 		*_project = getCopyCache(SORT_NAME, _nbElemFull);
 		if(*_project == NULL || *_nbElemFull == 0)
-			return NO;
+		{
+			if(!isDBProjectEmpty())
+				return NO;
+
+			*_project = NULL;
+			*_cacheList = NULL;
+			*_filteredToSorted = *_filteredToOrdered = NULL;
+			*_orderedToSorted = NULL;
+			*_nbElemFull = *_nbElemActivated = 0;
+			return YES;
+		}
 	}
 	else
 	{
@@ -76,7 +86,7 @@
 		*_nbElemFull = nbElemFull;
 		
 		if(nbElemFull == 0)
-			return NO;
+			return isDBProjectEmpty();
 	}
 	
 	//We get the filtered list
