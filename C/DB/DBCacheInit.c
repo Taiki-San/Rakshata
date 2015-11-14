@@ -104,8 +104,7 @@ uint setupBDDCache()
 	//Great, main loading \o/
 	if(projectDB != NULL)
 	{
-		sqlite3_stmt* request = getAddToCacheRequest(internalDB);	//préparation de la requête qui sera utilisée
-		if(request == NULL)
+		if((request = getAddToCacheRequest(internalDB)) == NULL)	//préparation de la requête qui sera utilisée
 			goto fail;
 		
 		char pathInstall[LENGTH_PROJECT_NAME*5+100];
@@ -368,12 +367,11 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 {
 	if(nbRepo == NULL)
 		return NULL;
+	else
+		*nbRepo = 0;
 
 	if(root == NULL || nbRoot == 0)
-	{
-		*nbRepo = 0;
 		return NULL;
-	}
 	
 	uint nbSubRepo = 0;
 	

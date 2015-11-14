@@ -129,7 +129,7 @@ enum
 	
 	//Have PDF background
 	[Prefs getPref:PREFS_GET_HAVE_PDF_BACKGROUND :&setting];
-	baseY = [self createSwitchWithText:@"READER-SETTING-FORCE-BKGD" status:setting toButton:&button withSelector:@selector(readerColorPDFBackground:) andBaseY:baseY];
+	[self createSwitchWithText:@"READER-SETTING-FORCE-BKGD" status:setting toButton:&button withSelector:@selector(readerColorPDFBackground:) andBaseY:baseY];
 	
 	forcePDFBackground = button;
 }
