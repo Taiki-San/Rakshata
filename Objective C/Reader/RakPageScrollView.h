@@ -19,6 +19,9 @@
 @property uint page;
 @property (nonatomic) BOOL isPDF;
 
+- (void) scrollToTopOfDocument;
+- (void) scrollToBottomOfDocument;
+
 - (void) scrollToBeginningOfDocument;
 - (void) scrollToEndOfDocument;
 

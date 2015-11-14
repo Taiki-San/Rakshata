@@ -434,7 +434,7 @@
 	
 	NSPoint point = [[_scrollView contentView] bounds].origin;
 	
-	if(move < 0 && point.x == 0)
+	if(move < 0 && point.x <= 0)
 		return NO;
 	else if(move < 0 && point.x < -move)
 		point.x = 0;
@@ -1088,7 +1088,6 @@
 		if(withShift ^ !_project.rightToLeft)
 			delta *= -1;
 		
-		
 		if(![self _moveSliderX : delta : YES : NO])
 		{
 			if(withShift)
@@ -1107,10 +1106,11 @@
 		}
 		else
 		{
-			height = [_scrollView documentViewFrame].size.height;
-			if(withShift)	height *= -1;
-			
-			[self moveSliderY : height];
+			//moveSliderX initiate an animation, so those lines have no effect for now...
+//			if(withShift)
+//				[_scrollView scrollToBottomOfDocument];
+//			else
+//				[_scrollView scrollToTopOfDocument];
 		}
 	}
 }
@@ -1603,6 +1603,7 @@
 - (void)pageControllerDidEndLiveTransition : (NSPageController *) pageController
 {
 	_endingTransition = YES;
+	CGFloat magnification = (saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class]) ? _scrollView.magnification : 1;
 	
 	[pageController completeTransition];
 	
@@ -1611,6 +1612,8 @@
 	//Before the first page
 	if(pageController.selectedIndex == 0 && _posElemInStructure == 0)
 		pageController.selectedIndex = 1;
+	
+	_scrollView.magnification = magnification;
 
 	//After the last page
 	if(((NSUInteger) pageController.selectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)

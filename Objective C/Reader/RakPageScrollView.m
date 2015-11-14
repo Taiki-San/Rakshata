@@ -55,6 +55,22 @@
 
 #pragma mark - Size and position manipulation
 
+- (void) scrollToTopOfDocument
+{
+	NSPoint sliderStart = NSMakePoint(self.contentView.bounds.origin.x , READER_PAGE_TOP_BORDER);
+	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
+	
+	if(_pageTooHigh)
+		sliderStart.y = documentViewSize.height - scrollviewSize.height;
+	
+	[self scrollToPoint:sliderStart];
+}
+
+- (void) scrollToBottomOfDocument
+{
+	[self scrollToPoint:NSMakePoint(self.contentView.bounds.origin.x, 0)];
+}
+
 - (void) scrollToBeginningOfDocument
 {
 	NSPoint sliderStart = NSMakePoint(self.contentView.bounds.origin.x , READER_PAGE_TOP_BORDER);
