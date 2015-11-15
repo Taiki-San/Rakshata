@@ -51,7 +51,7 @@
 	preferenceButton = [RakButton allocImageWithBackground: @"settings" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
-		preferenceButton.hidden = getMainThread() != TAB_READER;
+		preferenceButton.hidden = [self shouldHidePrefButton];
 		preferenceButton.alphaValue = !preferenceButton.isHidden;
 
 		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
@@ -275,9 +275,14 @@
 	[self setFrame:self.superview.bounds];
 }
 
+- (BOOL) shouldHidePrefButton
+{
+	return getMainThread() != TAB_READER;
+}
+
 - (CGFloat) preferenceButtonWidth
 {
-	if(preferenceButton.isHidden)
+	if([self shouldHidePrefButton])
 		return SR_HEADER_INTERBUTTON_WIDTH;
 	
 	return NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH;
