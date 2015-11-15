@@ -52,7 +52,7 @@
 	if(preferenceButton != nil)
 	{
 		preferenceButton.hidden = getMainThread() != TAB_READER;
-		preferenceButton.alphaValue = !preferenceButton.hidden;
+		preferenceButton.alphaValue = !preferenceButton.isHidden;
 
 		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
 		[preferenceButton.cell setActiveAllowed:NO];
@@ -277,7 +277,7 @@
 
 - (CGFloat) preferenceButtonWidth
 {
-	if(preferenceButton.hidden)
+	if(preferenceButton.isHidden)
 		return SR_HEADER_INTERBUTTON_WIDTH;
 	
 	return NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH;
