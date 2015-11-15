@@ -30,7 +30,7 @@
 			[self setFrame:frameRect];
 		
 		_noAnimation = YES;
-		[self updateFocus:haveFocus ? TAB_SERIES : TAB_CT];
+		[self updateFocus:getMainThread()];
 		_noAnimation = NO;
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
@@ -51,8 +51,11 @@
 	preferenceButton = [RakButton allocImageWithBackground: @"settings" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
-		preferenceButton.hidden = [self shouldHidePrefButton];
-		preferenceButton.alphaValue = !preferenceButton.isHidden;
+		if([self shouldHidePrefButton])
+		{
+			preferenceButton.hidden = YES;
+			preferenceButton.alphaValue = 0;
+		}
 
 		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
 		[preferenceButton.cell setActiveAllowed:NO];
@@ -315,6 +318,10 @@
 		displayType.hidden = NO;
 #endif
 		tagRail.hidden = search.hidden = storeSwitch.hidden = NO;
+		
+		//Update the frame in the case we were initialized out of SR more
+		[storeSwitch setFrameOrigin: NSMakePoint([self preferenceButtonWidth], storeSwitch.frame.origin.y)];
+		_separatorX = SR_HEADER_INTERBUTTON_WIDTH + NSMaxX(storeSwitch.frame);
 	}
 	else
 		backButton.hidden = NO;
