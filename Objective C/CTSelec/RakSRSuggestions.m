@@ -69,7 +69,7 @@
 
 - (void) DBUpdated : (NSNotification*) notification
 {
-	if(![RakDBUpdate isPluralUpdate:notification.userInfo] || getDBCount() == nbElem)
+	if(getDBCount() == nbElem && ![RakDBUpdate isPluralUpdate:notification.userInfo])
 		return;
 
 	freeProjectData(cache);

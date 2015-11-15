@@ -290,10 +290,7 @@
 	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :data])
 	{
 		if(![NSThread isMainThread])
-		{
-			[self performSelectorOnMainThread:@selector(DBUpdated:) withObject:notification waitUntilDone:NO];
-			return;
-		}
+			return [self performSelectorOnMainThread:@selector(DBUpdated:) withObject:notification waitUntilDone:NO];
 		
 		PROJECT_DATA newData = getProjectByID(data.cacheDBID);
 		
@@ -308,6 +305,8 @@
 			releaseCTData(data);
 			data = newData;
 		}
+		else
+			[[NSApp delegate] CT].initWithNoContent = YES;
 	}
 }
 

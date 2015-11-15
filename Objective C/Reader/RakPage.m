@@ -328,14 +328,15 @@
 
 - (void) failure
 {
-	[self failure : UINT32_MAX];
+	[self failure : INVALID_VALUE];
 }
 
 - (void) failure : (uint) page
 {
-	NSLog(@"Something went wrong delete?");
+	if(!self.initWithNoContent)
+		NSLog(@"Something went wrong delete?");
 	
-	if(page != UINT32_MAX)
+	if(page != INVALID_VALUE)
 	{
 		NSRect frame;
 		frame.size = loadingFailedPlaceholder.size;
@@ -376,6 +377,12 @@
 			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 			
 			[bottomBar favsUpdated:_project.favoris];
+		}
+		else if(!checkProjectStillExist(_project.cacheDBID))
+		{
+			releaseCTData(_project);
+			_project = getEmptyProject();
+			self.initWithNoContent = YES;
 		}
 	}
 }
@@ -1000,9 +1007,11 @@
 {
 	cacheSession++;	//Tell the cache system to stop
 	
+	uint oldCache = _project.cacheDBID;
+	
 	deleteProject(_project, _currentElem, self.isTome);
 	
-	if(_posElemInStructure != INVALID_VALUE)
+	if(_project.isInitialized && _posElemInStructure != INVALID_VALUE)
 	{
 		if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
 		{
@@ -1023,9 +1032,14 @@
 
 	_data.pageCourante = 0;
 	_data.nombrePage = 1;
+	self.initWithNoContent = YES;
 	[self failure : 0];
 	mainScroller.selectedIndex = 1;
-	[[[NSApp delegate] CT] ownFocus];
+
+	if([[[NSApp delegate] CT] activeProject].cacheDBID != oldCache)
+		[[[NSApp delegate] CT] ownFocus];
+	else
+		[[[NSApp delegate] serie] ownFocus];
 }
 
 - (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView

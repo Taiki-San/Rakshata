@@ -455,6 +455,24 @@ PROJECT_DATA getProjectByID(uint cacheID)
 	return getProjectByIDHelper(cacheID, true, false, false).project;
 }
 
+bool checkProjectStillExist(uint cacheID)
+{
+	if(cacheID == INVALID_VALUE)
+		return true;
+	
+	sqlite3_stmt * request = createRequest(cache, "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");;
+	if(request == NULL)
+		return true;
+	
+	sqlite3_bind_int(request, 1, (int) cacheID);
+	
+	bool output = sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) > 0;
+	
+	destroyRequest(request);
+
+	return output;
+}
+
 uint getProjectByName(const char * UTF8Name)
 {
 	if(UTF8Name == NULL)
