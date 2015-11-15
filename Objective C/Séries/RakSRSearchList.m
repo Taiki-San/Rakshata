@@ -14,15 +14,19 @@
 
 - (instancetype) init : (NSRect) frame ofType : (byte) type withData: (charType **) dataList ofSize : (uint) nbDataList andIndexes : (uint64_t *) inputIndexes
 {
-	if(inputIndexes == NULL || dataList == NULL)
-		return nil;
-	
 	self = [self init];
 	
 	if(self != nil)
 	{
 		_type = type;
 		_manualSelection = NO;
+		
+		if(inputIndexes == NULL || dataList == NULL)
+		{
+			inputIndexes = NULL;
+			dataList = NULL;
+			nbDataList = 0;
+		}
 		
 		indexes = inputIndexes;
 		_data = dataList;
