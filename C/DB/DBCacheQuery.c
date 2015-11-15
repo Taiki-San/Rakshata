@@ -781,7 +781,19 @@ void ** getCopyKnownRepo(uint * nbRepo, bool wantRoot)
 	
 	//+1 used to free everything
 	uint sizeElem = wantRoot ? sizeof(ROOT_REPO_DATA) : sizeof(REPO_DATA), length = wantRoot ? lengthRootRepo : lengthRepo;
-	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output = calloc(length + 1, sizeof(void*));
+	void ** originalData = wantRoot ? ((void**)rootRepoList) : ((void**)repoList), ** output;
+	
+	//If no known repo
+	if(originalData == NULL || length == 0)
+	{
+		if(nbRepo != NULL)
+			*nbRepo = 0;
+		
+		MUTEX_UNLOCK(cacheMutex);
+		return NULL;
+	}
+	
+	output = calloc(length + 1, sizeof(void*));
 	if(output != NULL)
 	{
 		uint discardedElement = 0;

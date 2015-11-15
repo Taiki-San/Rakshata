@@ -27,7 +27,7 @@ MUTEX_VAR cacheMutex, cacheParseMutex;
 
 uint setupBDDCache()
 {
-	uint nombreRootRepo, nombreRepo, nombreProject = 0;
+	uint nombreRootRepo = 0, nombreRepo = 0, nombreProject = 0;
 	char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 
@@ -348,8 +348,12 @@ void flushDB()
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo)
 {
 	if(repoDB == NULL)
+	{
+		if(nbRepo != NULL)
+			*nbRepo = 0;
 		return NULL;
-		
+	}
+	
 	size_t length = strlen(repoDB);
 	
 	if(length > 1 && repoDB[length - 1] == '\n')	length--;
