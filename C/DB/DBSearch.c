@@ -380,6 +380,9 @@ bool removeFromSearch(void * _table, uint cacheID)
 	
 	sqlite3_reset(request);
 	
+	if(_table == NULL)
+		flushSearchJumpTable(table);
+	
 	return output;
 }
 
