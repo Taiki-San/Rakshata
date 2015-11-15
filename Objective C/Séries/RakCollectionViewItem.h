@@ -15,6 +15,9 @@
 	uint * _sharedActive;
 	uint sessionCode;
 	
+	//superCriticalFlag activate a small dumb easter egg :P
+	BOOL superCriticalFlag;
+	
 	//Content
 	RakText * mainTag;
 }
