@@ -14,15 +14,13 @@
 
 + (void) animateTabs : (NSArray *) views : (BOOL) fastAnimation
 {
-	uint mainThread;
+	uint mainThread = getMainThread();
 	NSMutableArray * validatedViews = [NSMutableArray array];
 	
 	[views enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		if([obj isKindOfClass:[RakTabView class]])
 			[validatedViews addObject:obj];
 	}];
-	
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		

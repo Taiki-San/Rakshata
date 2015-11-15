@@ -191,10 +191,7 @@
 - (void) refreshLevelViews : (NSView*) superview : (byte) context
 {
 	[self refreshLevelViewsAnimation:superview];
-	
-	uint mainThread;
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	[self animationIsOver : mainThread : context];
+	[self animationIsOver : getMainThread() : context];
 }
 
 - (void) refreshLevelViewsAnimation : (NSView*) superview

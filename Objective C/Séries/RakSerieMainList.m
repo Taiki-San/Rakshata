@@ -173,9 +173,7 @@
 				
 				_installed[pos] = newIsInstalled;
 
-				uint mainThread;
-				[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-				if(self.installOnlyMode || mainThread == TAB_READER)
+				if(self.installOnlyMode || getMainThread() == TAB_READER)
 					[self updateJumpTable];
 				
 				if(!self.installOnlyMode)

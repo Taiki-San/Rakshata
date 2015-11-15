@@ -228,7 +228,7 @@
 - (NSRect) getCoreviewFrame : (NSRect) frame
 {
 	if(header != nil)
-		frame.origin.y = header.height + (searchTab != nil ? searchTab.height : 0);
+		frame.origin.y = header.height + ((searchTab != nil && self.mainThread == TAB_SERIES) ? searchTab.height : 0);
 	
 	frame.size.height -= frame.origin.y;
 	

@@ -153,10 +153,7 @@ enum
 
 - (void) clickRepo
 {
-	uint mainThread;
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-	
-	if(mainThread != TAB_SERIES)
+	if(getMainThread() != TAB_SERIES)
 	{
 		[RakTabView broadcastUpdateFocus:TAB_SERIES];
 		

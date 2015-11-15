@@ -51,6 +51,9 @@
 	preferenceButton = [RakButton allocImageWithBackground: @"settings" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
+		preferenceButton.hidden = getMainThread() != TAB_READER;
+		preferenceButton.alphaValue = !preferenceButton.hidden;
+
 		[preferenceButton setFrameSize:NSMakeSize(26, 26)];
 		[preferenceButton.cell setActiveAllowed:NO];
 		[preferenceButton setFrameOrigin: NSMakePoint(SR_PREF_BUTTON_BORDERS - ((RakButtonCell*)preferenceButton.cell).cellSize.width / 2, RBB_TOP_BORDURE)];
@@ -62,7 +65,7 @@
 	displayType = [RakButtonMorphic allocImages:@[@"grille", @"repo", @"list"] :RB_STATE_STANDARD :self :@selector(displayTypeSwitch)];
 	if(displayType != nil)
 	{
-		[displayType setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
+		[displayType setFrameOrigin: NSMakePoint([self preferenceButtonWidth], RBB_TOP_BORDURE)];
 		[self addSubview:displayType];
 	}
 #endif
@@ -83,7 +86,7 @@
 #ifdef SEVERAL_VIEWS
 		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(displayType.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
 #else
-		[storeSwitch setFrameOrigin: NSMakePoint(NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH, RBB_TOP_BORDURE)];
+		[storeSwitch setFrameOrigin: NSMakePoint([self preferenceButtonWidth], RBB_TOP_BORDURE)];
 #endif
 		
 		if(!_haveFocus)
@@ -236,19 +239,10 @@
 {
 	frame.origin.y = (frame.size.height + SRSEARCHTAB_DEFAULT_HEIGHT) / 2 - RBB_BUTTON_HEIGHT / 2;
 	frame.size.height = RBB_BUTTON_HEIGHT;
+	frame.origin.x = [self preferenceButtonWidth];
+	frame.size.width -= frame.origin.x;
 	
-	if(preferenceButton != nil)
-	{
-		frame.origin.x = preferenceButton.frame.origin.x + preferenceButton.frame.size.width;
-		frame.size.width -= frame.origin.x;
-		
-		return frame;
-	}
-	else
-	{
-		frame.origin.x = RBB_BUTTON_POSX;
-		return frame;
-	}
+	return frame;
 }
 
 - (NSRect) searchButtonFrame : (NSRect) frame
@@ -279,6 +273,14 @@
 - (void) nbRowRailsChanged
 {
 	[self setFrame:self.superview.bounds];
+}
+
+- (CGFloat) preferenceButtonWidth
+{
+	if(preferenceButton.hidden)
+		return SR_HEADER_INTERBUTTON_WIDTH;
+	
+	return NSMaxX(preferenceButton.frame) + SR_HEADER_INTERBUTTON_WIDTH;
 }
 
 #pragma mark - Color
@@ -312,10 +314,12 @@
 	else
 		backButton.hidden = NO;
 	
+	preferenceButton.hidden = mainThread != TAB_READER;
+	
 	if(_noAnimation)
 	{
 		backButton.alphaValue = !_haveFocus;
-		
+		preferenceButton.alphaValue = mainThread == TAB_READER;
 #ifdef SEVERAL_VIEWS
 		displayType.alphaValue = _haveFocus;
 #endif
@@ -326,7 +330,7 @@
 	else
 	{
 		backButton.animator.alphaValue = !_haveFocus;
-		
+		preferenceButton.animator.alphaValue = mainThread == TAB_READER;
 #ifdef SEVERAL_VIEWS
 		displayType.animator.alphaValue = _haveFocus;
 #endif
@@ -339,9 +343,9 @@
 - (void) cleanupAfterFocusChange
 {
 #ifdef SEVERAL_VIEWS
-	for(NSView * view in @[backButton, displayType, tagRail, search])
+	for(NSView * view in @[backButton, displayType, tagRail, search, preferenceButton])
 #else
-		for(NSView * view in @[backButton, tagRail, search])
+		for(NSView * view in @[backButton, tagRail, search, preferenceButton])
 #endif
 		{
 			if(view.alphaValue == 0)

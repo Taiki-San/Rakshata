@@ -484,10 +484,7 @@ enum
 		}
 		else if(readerDeleted)
 		{
-			uint mainThread;
-			[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
-			
-			if(mainThread == TAB_READER)
+			if(getMainThread() == TAB_READER)
 				[RakTabView broadcastUpdateFocus:TAB_CT];
 		}
 	}

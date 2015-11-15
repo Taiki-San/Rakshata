@@ -120,7 +120,7 @@
 	{
 		lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
 		
-		if(lastWasSelected == haveRestriction(indexes[rowIndex], getRestrictionTypeForSBID(_type)))
+		if(lastWasSelected != haveRestriction(indexes[rowIndex], getRestrictionTypeForSBID(_type)))
 			return NO;
 		
 		if(lastWasSelected)

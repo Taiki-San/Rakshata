@@ -41,8 +41,7 @@
 	//In some cases, the window would end up becoming the first responder, which is not an expected scenario
 	if(self.firstResponder == self || [self.firstResponder class] == [RakContentView class])
 	{
-		uint thread;
-		[Prefs getPref:PREFS_GET_MAIN_THREAD :&thread];
+		uint thread = getMainThread();
 		
 		if(thread == TAB_SERIES)
 			[self makeFirstResponder:[[NSApp delegate] serie]];
