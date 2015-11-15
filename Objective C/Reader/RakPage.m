@@ -141,7 +141,7 @@
 
 #pragma mark    -   Events
 
-- (void)mouseUp:(NSEvent *)theEvent
+- (void) mouseUp:(NSEvent *)theEvent
 {
 	BOOL fail = NO;
 	
