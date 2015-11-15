@@ -10,6 +10,8 @@
 **                                                                                          **
 *********************************************************************************************/
 
+#include "dbCache.h"
+
 #define getData(isTome, dataInject, index)	ACCESS_DATA(isTome, ((uint*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
 
 void nullifyCTPointers(PROJECT_DATA * project)
@@ -57,7 +59,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
     else
 		internalDeleteChapitre(projectDB, selection, true);
 
-	//We check if we need to remove the entry (in the case of a local project
+	//We check if we need to remove the entry (in the case of a local project)
 	PROJECT_DATA_PARSED project = getParsedProjectByID(projectDB.cacheDBID);
 	if(!project.project.isInitialized)
 		return;
@@ -113,7 +115,15 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 			}
 
 			generateCTUsable(&project);
-			updateCache(project, RDB_UPDATE_ID, 0);
+			
+			if(project.project.nombreChapitre != 0 || project.project.nombreTomes != 0)
+				updateCache(project, RDB_UPDATE_ID, 0);
+			else
+			{
+				removeFromCache(project);
+				removeFromSearch(NULL, project.project.cacheDBID);
+			}
+			
 			syncCacheToDisk(SYNC_PROJECTS);
 			notifyUpdateProject(project.project);
 		}

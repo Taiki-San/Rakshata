@@ -377,14 +377,39 @@ void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 {
 	if(elemToDel == INVALID_VALUE)	//On supprime tout
 	{
-		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForProject(project);
+		PROJECT_DATA_PARSED projectParsed = getParsedProjectByID(project.cacheDBID);
+		
+		if(!projectParsed.project.isInitialized)
+			return;
+
+		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForProject(projectParsed.project);
 		
 		if(encodedRepo != NULL)
 		{
 			snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
 			removeFolder(path);
+			
+			free(projectParsed.chapitresLocal);		projectParsed.chapitresLocal = NULL;
+			projectParsed.nombreChapitreLocal = 0;
+			
+			freeTomeList(projectParsed.tomeLocal, projectParsed.nombreTomeLocal, true);	projectParsed.tomeLocal = NULL;
+			projectParsed.nombreTomeLocal = 0;
+			
+			generateCTUsable(&projectParsed);
+			
+			if(projectParsed.project.nombreTomes == 0 && projectParsed.project.nombreChapitre == 0)
+			{
+				removeFromCache(projectParsed);
+				removeFromSearch(NULL, projectParsed.project.cacheDBID);
+			}
+			else
+				updateCache(projectParsed, RDB_UPDATE_ID, 0);
+
+			syncCacheToDisk(SYNC_PROJECTS);
 		}
+		
 		free(encodedRepo);
+		releaseParsedData(projectParsed);
 	}
 	else
 		internalDeleteCT(project, isTome, elemToDel);
