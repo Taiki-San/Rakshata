@@ -89,7 +89,7 @@ enum
 	//Checkmark drawing
 	[[NSColor whiteColor] setFill];
 	
-	if(_animation != nil)
+	if(_animation != nil && !animationIsOver)
 	{
 		uint stage = _animation.stage;
 		

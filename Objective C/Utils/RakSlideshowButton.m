@@ -77,7 +77,7 @@ enum
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	CGContextBeginPath(contextBorder);
 	
-	if(_animation != nil)
+	if(_animation != nil && !animationIsOver)
 	{
 		//Getting the current state of the animation
 		uint stage = _animation.stage;

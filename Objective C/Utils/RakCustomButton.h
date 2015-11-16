@@ -18,7 +18,7 @@
 {
 	BOOL initialized;
 	BOOL haveSizeConfig;
-	BOOL canceledAnimation;
+	BOOL canceledAnimation, animationIsOver;
 	
 	RakAnimationController * _animation;
 }
