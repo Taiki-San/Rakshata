@@ -10,6 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define AntiARCRetain(...) do { void *retainedThing = (__bridge_retained void *)__VA_ARGS__; retainedThing = retainedThing; } while(0)
+#define AntiARCRelease(...) do { void *retainedThing = (__bridge void *) __VA_ARGS__; id unretainedThing = (__bridge_transfer id)retainedThing; unretainedThing = nil; } while(0)
+
 NSString * getStringForWchar(const charType * string);
 NSString * getStringForCTID(int ID);
 NSString * getStringForChapter(uint chapID);

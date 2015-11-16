@@ -15,7 +15,7 @@
 	id postAnimationTarget;
 	BOOL haveSelectorToPing;
 	
-	NSAnimation * __strong _animation;
+	NSAnimation * __weak _animation;
 	
 	CGFloat _animationDiff;
 	NSInteger _initialState;
@@ -39,5 +39,7 @@
 - (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress;
 - (void) animationDidEnd:(NSAnimation *)animation;
 - (void) postProcessingBeforeAction;
+
+- (void) workaroundFlushAnimation;
 
 @end

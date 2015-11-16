@@ -10,6 +10,23 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakAnimation : NSAnimation
+
+@end
+
+@implementation RakAnimation
+
+//Because of a bug in _stopAnimation:withDisplayLink: ¯\_(ツ)_/¯
+- (void) dealloc
+{
+	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(workaroundFlushAnimation)])
+	{
+		[(id) self.delegate workaroundFlushAnimation];
+	}
+}
+
+@end
+
 @implementation RakAnimationController
 
 - (instancetype) init
@@ -65,10 +82,11 @@
 	CGFloat duration = _animationDuration - _stage / _animationFrame;
 	uint steps = _animationFrame - _stage;
 	
-	_animation = [[NSAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut];
-	if(_animation == nil)
+	RakAnimation * animation = [[RakAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut];
+	if(animation == nil)
 		return;
 	
+	_animation = animation;
 	_animation.frameRate = 60;
 	_animation.animationBlockingMode = NSAnimationNonblocking;
 	_animation.delegate = self;
@@ -94,7 +112,6 @@
 {
 	[_animation stopAnimation];
 	[self animationDidEnd:_animation];
-	_animation = nil;
 }
 
 #pragma mark - Animation work
@@ -130,6 +147,22 @@
 				[postAnimationTarget display];
 		}
 		
+		//Signal dealloc
+		_animation = nil;
+	}
+}
+
+- (void) workaroundFlushAnimation
+{
+	if(_animation != nil)
+		_animation = nil;
+}
+
+- (void) dealloc
+{
+	if(_animation != nil)
+	{
+		_animation.delegate = nil;
 		_animation = nil;
 	}
 }
