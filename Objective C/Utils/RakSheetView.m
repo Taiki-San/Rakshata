@@ -47,3 +47,12 @@
 }
 
 @end
+
+@implementation RakSheetWindow
+
+- (BOOL) canBecomeKeyWindow
+{
+	return YES;
+}
+
+@end

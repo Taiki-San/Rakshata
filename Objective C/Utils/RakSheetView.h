@@ -17,3 +17,6 @@
 
 @end
 
+@interface RakSheetWindow : NSWindow
+
+@end

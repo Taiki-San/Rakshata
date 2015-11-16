@@ -12,7 +12,7 @@
 
 @interface RakEditDetails : RakImportQuery
 {
-	NSWindow * queryWindow;
+	RakSheetWindow * queryWindow;
 	RakSheetView * coreview;
 }
 

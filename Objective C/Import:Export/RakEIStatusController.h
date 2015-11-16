@@ -14,7 +14,7 @@
 {
 	CGFloat cachedPosInExport, cachedPosInEntry;
 
-	NSWindow * queryWindow;
+	RakSheetWindow * queryWindow;
 
 	RakMenuText * title;
 	NSProgressIndicator * progressBar;

@@ -53,7 +53,7 @@ enum
 		mainView.backgroundColor = [self backgroundColor];
 		[self setupBaseView:mainView];
 
-		queryWindow = [[NSWindow alloc] initWithContentRect:(NSRect) {{200, 200}, mainView.bounds.size} styleMask:0 backing:NSBackingStoreBuffered defer:YES];
+		queryWindow = [[RakSheetWindow alloc] initWithContentRect:(NSRect) {{200, 200}, mainView.bounds.size} styleMask:0 backing:NSBackingStoreBuffered defer:YES];
 		if(queryWindow != nil)
 		{
 			queryWindow.contentView = mainView;
