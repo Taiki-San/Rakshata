@@ -299,7 +299,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 
 - (void) editSerie
 {
-#warning "Need to add the edit code"
+	[[[RakEditDetails alloc] initWithProject:_project] queryUser];
 }
 
 - (void) deleteSerie
