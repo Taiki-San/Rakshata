@@ -223,6 +223,7 @@
 
 //Menu title
 "TITLE-ABOUT" = "About Rakshata";
+"TITLE-UPDATE" = "Check for Update";
 "TITLE-PREFS" = "Preferences";
 "TITLE-WINDOW" = "Window";
 "TITLE-CLOSE" = "Close";
