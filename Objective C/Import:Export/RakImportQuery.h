@@ -13,6 +13,9 @@
 #define CHAPTER_FOR_IMPORTED_VOLUMES 42
 
 @interface RakImportQuery : RakPopoverView
+{
+	PROJECT_DATA _project;
+}
 
 @property RakImportItem * itemOfQueryForMetadata;
 @property RakImportStatusController * controller;
@@ -20,6 +23,11 @@
 - (instancetype) autoInitWithDuplicate : (RakImportItem *) item;
 - (instancetype) autoInitWithDetails : (RakImportItem *) item;
 - (instancetype) autoInitWithMetadata : (PROJECT_DATA) project;
+
+- (void) setupUIMetadata;
+- (NSString *) stringTitleMetadata;
+- (PROJECT_DATA) exfilterProject : (NSArray **) images;
+- (void) validateMetadata;
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver;
 

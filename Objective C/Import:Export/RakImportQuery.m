@@ -16,7 +16,6 @@
 	byte issue;
 
 	//Model
-	PROJECT_DATA _project;
 	CATEGORY_VERBOSE * cats;
 	TAG_VERBOSE * tags;
 	uint nbCats, nbTags;
@@ -349,7 +348,7 @@ enum
 	NSSize selfSize = self.frame.size, titleSize = NSZeroSize, inputSize;
 	CGFloat maxWidthTitles = selfSize.width / 5, maxWidthContent = selfSize.width * 7 / 10, currentHeight = 0;
 
-	RakText * header = [[RakText alloc] initWithText:NSLocalizedString(@"IMPORT-META-HEAD", nil) :[self titleColor]], * title;
+	RakText * header = [[RakText alloc] initWithText:[self stringTitleMetadata] :[self titleColor]], * title;
 	if(header != nil)
 	{
 		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
@@ -587,7 +586,7 @@ enum
 	if(button != nil)
 	{
 		button.target = self;
-		button.action = @selector(validateField);
+		button.action = @selector(validateMetadata);
 
 		titleSize = button.bounds.size;
 
@@ -712,6 +711,11 @@ enum
 	status.nextKeyView = tagList;
 	tagList.nextKeyView = catList;
 	catList.nextKeyView = name;
+}
+
+- (NSString *) stringTitleMetadata
+{
+	return NSLocalizedString(@"IMPORT-META-HEAD", nil);
 }
 
 #pragma mark Generic initialization
@@ -1079,7 +1083,7 @@ enum
 	[RakImportStatusList refreshAfterPass];
 }
 
-- (void) validateField
+- (void) validateMetadata
 {
 	NSArray * overridenImages;
 

@@ -10,6 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
+@interface RakEditDetails : RakImportQuery
+{
+	NSWindow * queryWindow;
+	RakSheetView * coreview;
+}
+
+- (instancetype) initWithProject : (PROJECT_DATA) project;
+- (void) queryUser;
+
+@end
+
 @interface RakCollectionViewItem : RakSRProjectView
 {
 	uint * _sharedActive;
