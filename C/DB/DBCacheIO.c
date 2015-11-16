@@ -326,6 +326,8 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 #endif
 	destroyRequest(request);
 	
+	updateProjectSearch(NULL, data.project);
+	
 	return true;
 }
 
