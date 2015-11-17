@@ -84,7 +84,7 @@ bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID);
 
 /**Native.c**/
-int mkdirR(char *path);
+int mkdirR(const char *path);
 void strend(char *recepter, size_t length, const char *sender);
 size_t ustrlen(const void *input);
 size_t wstrlen(const charType * input);

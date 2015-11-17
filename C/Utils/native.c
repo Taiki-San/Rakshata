@@ -10,7 +10,7 @@
 **                                                                                          **
 *********************************************************************************************/
 
-int mkdirR(char *path)
+int mkdirR(const char *path)
 {
 #ifdef _WIN32
     return mkdir(path);
