@@ -367,10 +367,13 @@ void updateProjects()
 		}
 	}
 	
-	createNewThread(updateProjectImages, iconData);
-	syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
-	freeParseProjectData(oldData);
-	notifyFullUpdate();
+	if(nbElem != 0)
+	{
+		createNewThread(updateProjectImages, iconData);
+		syncCacheToDisk(SYNC_REPO | SYNC_PROJECTS);
+		freeParseProjectData(oldData);
+		notifyFullUpdate();
+	}
 }
 
 void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
