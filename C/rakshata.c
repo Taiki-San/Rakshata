@@ -33,6 +33,7 @@ void cleanup()
 int main(int argc, const char *argv[])
 {
 	createCrashFile();
+	configureSandbox();
 	
 	//Initialisation
 	MUTEX_CREATE(DBRefreshMutex);

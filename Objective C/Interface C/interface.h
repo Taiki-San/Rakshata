@@ -32,6 +32,8 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 
 void createCrashFile();
 void deleteCrashFile();
+bool isSandboxed();
+void configureSandbox();
 
 /*****************************************
  **										**

@@ -164,6 +164,37 @@ void deleteCrashFile()
 	}
 }
 
+bool isSandboxed()
+{
+	return [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
+}
+
+void configureSandbox()
+{
+	if(isSandboxed())
+		return;
+	
+	NSArray * searchPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	if(searchPath == nil || [searchPath count] == 0)
+		return;
+
+	NSString * identifier = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+	NSString * container = [NSString stringWithFormat:@"%@/Containers/%@/Data/", [searchPath firstObject], identifier];
+	BOOL isDir = NO;
+		
+	if(![[[NSFileManager alloc] init] fileExistsAtPath:container isDirectory:&isDir] || !isDir)
+	{
+		if(!isDir)
+			remove([container UTF8String]);
+		
+		//We need to create the sandbox directory somehow
+		createPath([container UTF8String]);
+	}
+	
+	if(![[NSFileManager defaultManager] changeCurrentDirectoryPath:container])
+		NSLog(@"Couldn't change directory to standard sandbox directory!");
+}
+
 /*****************************************
 **										**
 **				  PREFS					**
