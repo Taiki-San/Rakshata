@@ -254,6 +254,15 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[menu addItem:[NSMenuItem separatorItem]];
 	}
 	
+#ifdef RESUME_READING
+	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-RESUME-READING", nil) action:@selector(editSerie) keyEquivalent:@""];
+	if(item != nil)
+	{
+		[menu addItem:item];
+		[menu addItem:[NSMenuItem separatorItem]];
+	}
+#endif
+	
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-EDIT-SERIE", nil) action:@selector(editSerie) keyEquivalent:@""];
 	if(item != nil)
 	{

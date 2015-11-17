@@ -36,4 +36,5 @@
 
 #ifdef DEV_VERSION
 //#define HIDE_EVERYTHING
+#define RESUME_READING
 #endif
