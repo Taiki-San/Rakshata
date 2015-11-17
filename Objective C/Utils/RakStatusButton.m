@@ -131,6 +131,14 @@ enum
 	func(_target, _action, nil);
 }
 
+- (NSView *) hitTest : (NSPoint) aPoint
+{
+	if(aPoint.x < [self getMinX])
+		return [super hitTest:aPoint];
+	
+	return self;
+}
+
 #pragma mark - Text management
 
 - (void) updateTrackingAreas
