@@ -320,7 +320,7 @@
 		for(posInChunk = 1; posInChunk < length && !isdigit(simplifiedChunk[posInChunk]); ++posInChunk);
 
 		//Couldn't find digits in the end of the chunk and the next chunk doesn't start with digits
-		if(posInChunk == length && (i == [tokens count] || [[tokens objectAtIndex:i + 1] length] == 0 || !isdigit([[tokens objectAtIndex:i + 1] UTF8String][0])))
+		if(posInChunk == length && (i >= [tokens count] - 1 || [[tokens objectAtIndex:i + 1] length] == 0 || !isdigit([[tokens objectAtIndex:i + 1] UTF8String][0])))
 		{
 			++discardedCloseCalls;
 			continue;

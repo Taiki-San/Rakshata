@@ -211,10 +211,6 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				if(items != nil)
 					[output addObjectsFromArray:items];
 			}
-			else
-			{
-				[[NSAlert alertWithMessageText:@"Oh, relax, not quite ready for such a large import, soon!" defaultButton:@"Ok :c" alternateButton:@"Ok :c" otherButton:@"Ok :c" informativeTextWithFormat:@"WIP"] runModal];
-			}
 		}
 	}
 
