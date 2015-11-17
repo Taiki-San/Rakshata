@@ -302,19 +302,6 @@
                         </userDefinedRuntimeAttributes>
                     </menu>
                 </menuItem>
-                <menuItem title="Debug" id="RcL-kR-KFp">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Debug" id="1jt-hw-f98">
-                        <items>
-                            <menuItem title="Reload from remote" id="YA7-9I-tsi">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="reloadFromRemote:" target="494" id="erD-lc-TTo"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
             </items>
         </menu>
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" id="371" customClass="RakWindow">
