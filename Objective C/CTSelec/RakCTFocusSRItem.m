@@ -114,10 +114,8 @@ enum
 - (void) updateProject : (PROJECT_DATA) project
 {
 	[super updateProject:project];
-
-	projectName.stringValue = getStringForWchar(project.projectName);
-	
 	[self initReason];
+	[self reloadOrigin];
 }
 
 #pragma mark - Sizing
@@ -151,6 +149,23 @@ enum
 		[stars.animator setFrameOrigin:	(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 	else
 		[stars setFrameOrigin:			(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
+	
+	return previousOrigin;
+}
+
+- (NSPoint) reloadOrigin
+{
+	NSPoint previousOrigin = [super reloadOrigin];
+	
+	if(_reason == SUGGESTION_REASON_AUTHOR)
+		[projectAuthor setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+	else
+	{
+		[typeProject setFrameOrigin:	(previousOrigin = [self originOfType : _workingArea : previousOrigin])];
+		[tagProject setFrameOrigin:		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+	}
+	
+	[stars setFrameOrigin:				(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 	
 	return previousOrigin;
 }

@@ -50,5 +50,6 @@ enum
 - (NSPoint) originOfAuthor : (NSRect) frameRect : (NSPoint) nameOrigin;
 
 - (NSPoint) resizeContent : (NSSize) newSize : (BOOL) animated;
+- (NSPoint) reloadOrigin;
 
 @end

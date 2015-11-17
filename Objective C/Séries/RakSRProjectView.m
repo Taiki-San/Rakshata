@@ -36,6 +36,7 @@ enum
 		[self initContent];
 		
 		registerThumbnailUpdate(self, @selector(thumbnailUpdate:), THUMBID_HEAD);
+		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 	}
 	
 	return self;
@@ -57,10 +58,24 @@ enum
 	}
 }
 
+- (void) DBUpdated : (NSNotification *) notification
+{
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
+	{
+		PROJECT_DATA project = getProjectByID(_project.cacheDBID);
+		if(!_project.isInitialized)
+			return;
+
+		releaseCTData(project);
+		[self updateProject:project];
+	}
+}
+
 - (void) dealloc
 {
 	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[RakDBUpdate unRegister:self];
 }
 
 - (void) updateProject : (PROJECT_DATA) project
@@ -69,6 +84,12 @@ enum
 	nullifyCTPointers(&project);
 	
 	_project = project;
+	
+	if(projectName != nil)
+		projectName.stringValue = getStringForWchar(_project.projectName);
+	
+	if(projectAuthor)
+		projectAuthor.stringValue = getStringForWchar(_project.authorName);
 	
 	NSImage * image = loadImageGrid(_project);
 	if(image != nil)
@@ -251,6 +272,15 @@ enum
 		[thumbnail setFrameOrigin: 		previousOrigin];
 		[projectName setFrameOrigin: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
 	}
+	
+	return previousOrigin;
+}
+
+- (NSPoint) reloadOrigin
+{
+	NSPoint previousOrigin = [self originOfThumb : _workingArea];
+	[thumbnail setFrameOrigin: 		previousOrigin];
+	[projectName setFrameOrigin: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
 	
 	return previousOrigin;
 }

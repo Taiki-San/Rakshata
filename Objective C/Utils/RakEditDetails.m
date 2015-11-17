@@ -97,6 +97,8 @@
 	{
 		parsedProject.project = project;
 		updateCache(parsedProject, RDB_UPDATE_ID, 0);
+		syncCacheToDisk(SYNC_PROJECTS);
+		notifyUpdateProject(project);
 	}
 	
 	releaseParsedData(parsedProject);

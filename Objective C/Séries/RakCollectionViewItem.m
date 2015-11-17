@@ -72,7 +72,12 @@ enum	{	BORDER_BOTTOM	= 7	};
 - (void) updateProject:(PROJECT_DATA)project
 {
 	[super updateProject:project];
+	
+	mainTag.stringValue = getStringForWchar(getTagNameForCode(_project.mainTag));
+	
 	[self configureMenu : NO];
+	
+	[self reloadOrigin];
 }
 
 #pragma mark - Mouse handling
@@ -187,6 +192,16 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[mainTag setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
 	
+	return previousOrigin;
+}
+
+- (NSPoint) reloadOrigin
+{
+	NSPoint previousOrigin = [super reloadOrigin];
+
+	[projectAuthor setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+	[mainTag setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+
 	return previousOrigin;
 }
 
