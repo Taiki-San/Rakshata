@@ -26,6 +26,14 @@
                                     <action selector="orderFrontStandardAboutPanel:" target="-1" id="pOu-Tu-Thr"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Check for Updates" keyEquivalent="u" id="1Lc-vT-2o8">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-UPDATE"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="checkForUpdates:" target="3xm-KV-End" id="F9r-1o-seL"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="NdE-UH-XwG">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
@@ -332,5 +340,6 @@
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
         <userDefaultsController representsSharedInstance="YES" id="9dd-CP-NtX"/>
+        <customObject id="3xm-KV-End" customClass="SUUpdater"/>
     </objects>
 </document>
