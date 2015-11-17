@@ -12,6 +12,8 @@
 
 @interface RakAnimation : NSAnimation
 
+@property BOOL noPing;
+
 @end
 
 @implementation RakAnimation
@@ -19,7 +21,7 @@
 //Because of a bug in _stopAnimation:withDisplayLink: ¯\_(ツ)_/¯
 - (void) dealloc
 {
-	if(self.delegate != nil && [self.delegate respondsToSelector:@selector(workaroundFlushAnimation)])
+	if(!self.noPing && self.delegate != nil && [self.delegate respondsToSelector:@selector(workaroundFlushAnimation)])
 	{
 		[(id) self.delegate workaroundFlushAnimation];
 	}
@@ -154,15 +156,14 @@
 
 - (void) workaroundFlushAnimation
 {
-	if(_animation != nil)
-		_animation = nil;
+	_animation = nil;
 }
 
 - (void) dealloc
 {
 	if(_animation != nil)
 	{
-		_animation.delegate = nil;
+		((RakAnimation *) _animation).noPing = YES;
 		_animation = nil;
 	}
 }
