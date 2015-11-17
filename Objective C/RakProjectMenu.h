@@ -10,22 +10,28 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCollectionViewItem : RakSRProjectView
+@interface RakProjectMenu : NSObject
 {
-	uint * _sharedActive;
-	uint sessionCode;
+	PROJECT_DATA _project;
 	
-	RakProjectMenu * menuManager;
-	BOOL superCriticalFlag;
-	
-	//Content
-	RakText * mainTag;
+	NSView * _view;
 }
 
-@property BOOL selected;
-@property CGFloat requestedHeight;
+- (instancetype) initWithProject : (PROJECT_DATA) project;
+- (void) configureMenu : (BOOL) optionPressed toView : (NSView *) view;
 
-- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
-- (void) updateFocus;
+- (void) deleteSerie;
 
 @end
+
+@interface RakEditDetails : RakImportQuery
+{
+	RakSheetWindow * queryWindow;
+	RakSheetView * coreview;
+}
+
+- (instancetype) initWithProject : (PROJECT_DATA) project;
+- (void) queryUser;
+
+@end
+

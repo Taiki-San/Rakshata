@@ -49,6 +49,8 @@
 	#import "RakExportController.h"
 	#import "RakImportController.h"
 
+	#import "RakMenu.h"
+
 	#import "Series.h"
 	#import "CTSelec.h"
 	#import "Reader.h"

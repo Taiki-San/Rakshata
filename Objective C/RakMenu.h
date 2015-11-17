@@ -10,22 +10,4 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCollectionViewItem : RakSRProjectView
-{
-	uint * _sharedActive;
-	uint sessionCode;
-	
-	RakProjectMenu * menuManager;
-	BOOL superCriticalFlag;
-	
-	//Content
-	RakText * mainTag;
-}
-
-@property BOOL selected;
-@property CGFloat requestedHeight;
-
-- (instancetype) initWithProject : (PROJECT_DATA) project : (uint *) sharedActive;
-- (void) updateFocus;
-
-@end
+#include "RakProjectMenu.h"

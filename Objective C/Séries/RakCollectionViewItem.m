@@ -29,7 +29,9 @@ enum	{	BORDER_BOTTOM	= 7	};
 		if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
 			self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
 		
-		[self configureMenu : NO];
+		menuManager = [[RakProjectMenu alloc] initWithProject:_project];
+		if(menuManager != nil)
+			[menuManager configureMenu:(superCriticalFlag = ((RakWindow *) self.window).optionPressed) toView:self];
 	}
 	
 	return self;
@@ -75,7 +77,9 @@ enum	{	BORDER_BOTTOM	= 7	};
 	
 	mainTag.stringValue = getStringForWchar(getTagNameForCode(_project.mainTag));
 	
-	[self configureMenu : NO];
+	menuManager = [[RakProjectMenu alloc] initWithProject:_project];
+	if(menuManager != nil)
+		[menuManager configureMenu:superCriticalFlag toView:self];
 	
 	[self reloadOrigin];
 }
@@ -245,68 +249,6 @@ enum	{	BORDER_BOTTOM	= 7	};
 
 #pragma mark - Menu
 
-- (void) configureMenu : (BOOL) optionPressed
-{
-	superCriticalFlag = optionPressed;
-	
-	if(!_project.isInitialized)
-		self.menu = nil;
-	
-	NSMenu * menu = [[NSMenu alloc] initWithTitle:@"Menu"];
-	if(menu == nil)
-		return;
-	
-	menu.autoenablesItems = NO;
-	
-	NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ - %@", getStringForWchar(_project.projectName), getStringForWchar(_project.authorName)] action:@selector(clicked) keyEquivalent:@""];
-	if(item != nil)
-	{
-		if(_project.authorName[0] == 0)	//Unexpected, but we remove the author from the name then
-			item.title = getStringForWchar(_project.projectName);
-		
-		[item setEnabled:NO];
-		[menu addItem:item];
-		[menu addItem:[NSMenuItem separatorItem]];
-	}
-	
-#ifdef RESUME_READING
-	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-RESUME-READING", nil) action:@selector(editSerie) keyEquivalent:@""];
-	if(item != nil)
-	{
-		[menu addItem:item];
-		[menu addItem:[NSMenuItem separatorItem]];
-	}
-#endif
-	
-	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-EDIT-SERIE", nil) action:@selector(editSerie) keyEquivalent:@""];
-	if(item != nil)
-	{
-		item.enabled = _project.locale;
-		[menu addItem:item];
-	}
-	
-	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-DELETE-SERIE", nil) action:@selector(deleteSerie) keyEquivalent:@""];
-	if(item != nil)
-	{
-		item.enabled = isInstalled(_project, NULL);
-		[menu addItem:item];
-	}
-	
-	//Easter egg
-	if(superCriticalFlag)
-	{
-		item = [[NSMenuItem alloc] initWithTitle:@"NUKE FROM ORBIT" action:@selector(clicked) keyEquivalent:@""];
-		if(item != nil)
-		{
-			[menu addItem:[NSMenuItem separatorItem]];
-			[menu addItem:item];
-		}
-	}
-	
-	
-	[self setMenu:menu];
-}
-
 //Prevent the menu from appearing if clicking outside the active area
 - (void) rightMouseDown:(NSEvent *)theEvent
 {
@@ -315,7 +257,12 @@ enum	{	BORDER_BOTTOM	= 7	};
 	if(NSPointInRect(point, _workingArea))
 	{
 		if(((RakWindow *) self.window).optionPressed != superCriticalFlag)
-			[self configureMenu:!superCriticalFlag];
+		{
+			superCriticalFlag = !superCriticalFlag;
+			menuManager = [[RakProjectMenu alloc] initWithProject:_project];
+			if(menuManager != nil)
+				[menuManager configureMenu:superCriticalFlag toView:self];
+		}
 		
 		[super rightMouseDown:theEvent];
 	}
@@ -331,23 +278,6 @@ enum	{	BORDER_BOTTOM	= 7	};
 	_selected = NO;
 	[self setNeedsDisplay:YES];
 	[self updateFocusNow];
-
-	deleteProject(_project, INVALID_VALUE, false);
-}
-
-//Easter egg
-- (void) clicked
-{
-	NSAlert * alert = [[NSAlert alloc] init];
-	
-	if(alert != nil)
-	{
-		alert.alertStyle = NSInformationalAlertStyle;
-		alert.messageText = @"I'm sorry Dave";
-		alert.informativeText = @"I'm afraid I can't do that.";
-		[alert addButtonWithTitle:@"Ok 😔"];
-		[alert runModal];
-	}
 }
 
 @end
