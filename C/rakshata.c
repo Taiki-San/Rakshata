@@ -32,8 +32,8 @@ void cleanup()
 
 int main(int argc, const char *argv[])
 {
-	createCrashFile();
 	configureSandbox();
+	createCrashFile();
 	registerExtensions();
 	
 	//Initialisation
