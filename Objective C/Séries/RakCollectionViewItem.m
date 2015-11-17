@@ -31,7 +31,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		
 		menuManager = [[RakProjectMenu alloc] initWithProject:_project];
 		if(menuManager != nil)
-			[menuManager configureMenu:(superCriticalFlag = ((RakWindow *) self.window).optionPressed) toView:self];
+			[menuManager configureCleanMenu:(superCriticalFlag = ((RakWindow *) self.window).optionPressed) toView:self];
 	}
 	
 	return self;
@@ -79,7 +79,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	
 	menuManager = [[RakProjectMenu alloc] initWithProject:_project];
 	if(menuManager != nil)
-		[menuManager configureMenu:superCriticalFlag toView:self];
+		[menuManager configureCleanMenu:superCriticalFlag toView:self];
 	
 	[self reloadOrigin];
 }
@@ -261,7 +261,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 			superCriticalFlag = !superCriticalFlag;
 			menuManager = [[RakProjectMenu alloc] initWithProject:_project];
 			if(menuManager != nil)
-				[menuManager configureMenu:superCriticalFlag toView:self];
+				[menuManager configureCleanMenu:superCriticalFlag toView:self];
 		}
 		
 		[super rightMouseDown:theEvent];

@@ -326,6 +326,32 @@
 	return [item isRootItem];
 }
 
+#pragma mark - Menu
+
+- (void) activateMenu
+{
+	//The menu will reuse our appearance
+	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
+		content.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+	
+	content.menu = [[NSMenu alloc] init];
+	content.menu.delegate = self;
+}
+
+- (void) menuNeedsUpdate : (NSMenu *) menu
+{
+	if (content.clickedRow > -1 && content.clickedColumn > -1)
+	{
+		[menu removeAllItems];
+		[self configureMenu:menu forItem:[content itemAtRow:content.clickedRow] atColumn:content.clickedColumn];
+	}
+}
+
+- (void) configureMenu : (NSMenu *) menu forItem : (id) item atColumn : (NSInteger) column
+{
+	
+}
+
 ///			Manipulation we view added/removed
 
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row

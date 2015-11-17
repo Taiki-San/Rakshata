@@ -18,7 +18,10 @@
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
-- (void) configureMenu : (BOOL) optionPressed toView : (NSView *) view;
+
+- (void) configureMenu : (NSMenu *) menu;
+- (void) configureCleanMenu : (BOOL) optionPressed toView : (NSView *) view;
+- (void) configureMenu : (NSMenu *) menu withOption : (BOOL) optionPressed;
 
 - (void) deleteSerie;
 

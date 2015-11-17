@@ -22,7 +22,7 @@
 	return self;
 }
 
-- (void) configureMenu : (BOOL) optionPressed toView : (NSView *) view
+- (void) configureCleanMenu : (BOOL) optionPressed toView : (NSView *) view
 {
 	_view = view;
 	
@@ -32,9 +32,21 @@
 	NSMenu * menu = [[NSMenu alloc] initWithTitle:@"Menu"];
 	if(menu == nil)
 		return;
-	
-	menu.autoenablesItems = NO;
 
+	[self configureMenu:menu withOption:optionPressed];
+	
+	[_view setMenu:menu];
+}
+
+- (void) configureMenu : (NSMenu *) menu
+{
+	[self configureMenu:menu withOption:[(RakAppDelegate *) NSApp.delegate window].optionPressed];
+}
+
+- (void) configureMenu : (NSMenu *) menu withOption : (BOOL) optionPressed
+{
+	if(menu.autoenablesItems)
+		menu.autoenablesItems = NO;
 	
 	NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ - %@", getStringForWchar(_project.projectName), getStringForWchar(_project.authorName)] action:@selector(clicked) keyEquivalent:@""];
 	if(item != nil)
@@ -85,9 +97,6 @@
 			[menu addItem:item];
 		}
 	}
-	
-	
-	[_view setMenu:menu];
 }
 
 //Prevent the menu from appearing if clicking outside the active area

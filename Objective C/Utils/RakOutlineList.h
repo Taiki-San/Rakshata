@@ -25,7 +25,7 @@
 
 @end
 
-@interface RakOutlineList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination>
+@interface RakOutlineList : RakDragResponder <NSOutlineViewDataSource, NSOutlineViewDelegate, NSDraggingDestination, NSMenuDelegate>
 {
 	uint _nbRoot;
 
@@ -33,6 +33,7 @@
 	NSTableColumn * firstColumn;
 
 	RakOutlineListItem * currentDraggedItem;
+	RakProjectMenu * menuHandler;
 	
 	uint nbColumn;
 }
@@ -43,6 +44,9 @@
 - (RakTreeView *) getContent;
 
 - (void) moreFlushing;
+
+- (void) activateMenu;
+- (void) configureMenu : (NSMenu *) menu forItem : (id) item atColumn : (NSInteger) column;
 
 - (void) setColumnWidth : (NSTableColumn *) _column : (uint) index : (CGFloat) fullWidth;
 

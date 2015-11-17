@@ -219,6 +219,32 @@
 	[_tableView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 }
 
+#pragma mark - Menu
+
+- (void) activateMenu
+{
+	//The menu will reuse our appearance
+	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
+		_tableView.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+	
+	_tableView.menu = [[NSMenu alloc] init];
+	_tableView.menu.delegate = self;
+}
+
+- (void) menuNeedsUpdate : (NSMenu *) menu
+{
+	if (_tableView.clickedRow > -1 && _tableView.clickedColumn > -1)
+	{
+		[menu removeAllItems];
+		[self configureMenu:menu forLine:_tableView.clickedRow column:_tableView.clickedColumn];
+	}
+}
+
+- (void) configureMenu : (NSMenu *) menu forLine : (NSInteger) line column : (NSInteger) column
+{
+	
+}
+
 #pragma mark - Backup routine
 
 - (uint) getSelectedElement

@@ -47,7 +47,7 @@ typedef struct //smartReload_data
 	
 } SR_DATA;
 
-@interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource>
+@interface RakList : RakDragResponder <NSTableViewDelegate, NSTableViewDataSource, NSMenuDelegate>
 {
 	void* _data;
 	uint _nbData;
@@ -61,6 +61,8 @@ typedef struct //smartReload_data
 
 	BOOL isListOfRepo;
 	CGFloat _scrollerWidth;
+	
+	RakProjectMenu * menuHandler;
 	
 	//Color cache
 	NSColor * normal;
@@ -100,6 +102,9 @@ typedef struct //smartReload_data
 - (void) needUpdateTableviewHeight;
 
 - (void) enableDrop;
+
+- (void) activateMenu;
+- (void) configureMenu : (NSMenu *) menu forLine : (NSInteger) line column : (NSInteger) column;
 
 - (uint) getSelectedElement;
 - (uint) getIndexOfElement : (uint) element;

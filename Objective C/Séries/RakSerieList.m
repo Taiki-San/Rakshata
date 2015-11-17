@@ -48,6 +48,8 @@
 			if(rootItems[i] != nil)
 				[rootItems[i] resetMainListHeight];
 			
+			[self activateMenu];
+			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(needUpdateRecent:) name:@"RakSeriesNeedUpdateRecent" object:nil];
 		}
 		else
@@ -621,6 +623,18 @@
 		[self reloadContent];
 	else
 		[self performSelectorOnMainThread:@selector(needUpdateRecent:) withObject:notification waitUntilDone:YES];
+}
+
+#pragma mark - Menu
+
+- (void) configureMenu : (NSMenu *) menu forItem : (id) item atColumn : (NSInteger) column
+{
+	if(item == nil || [item isMainList] || [item isRootItem])
+		return;
+
+	menuHandler = [[RakProjectMenu alloc] initWithProject:[item getRawDataChild]];
+	if(menuHandler != nil)
+		[menuHandler configureMenu:menu];
 }
 
 #pragma mark - Drag'n Drop

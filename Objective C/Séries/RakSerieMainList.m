@@ -63,6 +63,7 @@
 		}
 		
 		[self applyContext:frame : selectedRowIndex : scrollPosition];
+		[self activateMenu];
 	}
 	return self;
 }
@@ -152,7 +153,7 @@
 	}
 	
 	uint updatedID;
-	if(![RakDBUpdate isPluralUpdate:notification.userInfo] && [RakDBUpdate getIDUpdated:notification.userInfo :&updatedID])			//Single item updated
+	if(![RakDBUpdate isPluralUpdate:notification.userInfo] && [RakDBUpdate getIDUpdated:notification.userInfo :&updatedID] && checkProjectStillExist(updatedID))			//Single item updated
 	{
 		//The only data that could change if only a single project changed is the installation state
 		for(uint pos = 0; pos < _nbElemFull; pos++)
@@ -197,13 +198,13 @@
 	{
 		uint nbElem, oldNbElem = _nbElemFull;
 		PROJECT_DATA * projects = getCopyCache(SORT_NAME | RDB_LOADALL, &nbElem), *oldData = _data;
-		bool * newInstalled, *oldInstalled = _installed, needSwapInstalled = NO, newState;
+		bool * newInstalled, *oldInstalled = _installed, needSwapInstalled = NO, newState = installedRequested;
 		
-		if(projects == NULL)
+		if(projects == NULL && getDBCount() > 0)
 			return;
 		
 		newInstalled = getInstalledFromData(projects, nbElem);
-		if(newInstalled == NULL)
+		if(newInstalled == NULL && nbElem > 0)
 		{
 			freeProjectData(projects);
 			return;
@@ -228,6 +229,7 @@
 			}
 		}
 		
+		_nbData = newState ? _nbElemInstalled : _nbElemFull;
 		[self smartReload : [self getSmartReloadData : oldData : oldNbElem : oldInstalled] : oldNbElem : [self getSmartReloadData : _data : _nbElemFull : _installed]: _nbElemFull];
 		
 		freeProjectData(oldData);
@@ -262,13 +264,14 @@
 
 - (void) updateJumpTable
 {
+	if(_jumpToInstalled != NULL)
+	{
+		free(_jumpToInstalled);
+		_jumpToInstalled = NULL;
+	}
+	
 	if(_nbElemFull == 0)
 		return;
-	
-	if(_jumpToInstalled != NULL)
-		free(_jumpToInstalled);
-	
-	_jumpToInstalled = NULL;
 	
 	uint rawJumpTable[_nbElemFull], positionRawTable, positionInstalled;
 	
@@ -429,6 +432,23 @@
 	
 	if(dataToSend.isInitialized)
 		[RakTabView broadcastUpdateContext: scrollView : dataToSend : NO : INVALID_VALUE];
+}
+
+#pragma mark - Menu
+
+- (void) configureMenu : (NSMenu *) menu forLine : (NSInteger) line column : (NSInteger) column
+{
+	if(line >= _nbData)
+		return;
+
+	if(_jumpToInstalled != NULL && line < _nbElemInstalled)
+		line = _jumpToInstalled[line];
+	
+	PROJECT_DATA project = ((PROJECT_DATA*) _data)[line];
+	
+	menuHandler = [[RakProjectMenu alloc] initWithProject:project];
+	if(menuHandler != nil)
+		[menuHandler configureMenu:menu];
 }
 
 #pragma mark - Drag and drop support
