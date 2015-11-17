@@ -34,6 +34,7 @@ int main(int argc, const char *argv[])
 {
 	createCrashFile();
 	configureSandbox();
+	registerExtensions();
 	
 	//Initialisation
 	MUTEX_CREATE(DBRefreshMutex);

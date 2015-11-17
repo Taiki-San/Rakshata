@@ -284,7 +284,6 @@ void flushBundleCache(NSBundle *bundle)
 	}
 }
 
-#if 0
 //Ensure app defaults, out of sandbox only
 
 #import <ApplicationServices/ApplicationServices.h>
@@ -300,12 +299,10 @@ void registerDefaultForExtension(NSString * extension)
 		return;
 
 	//If not, let's take it over :o
-	OSStatus status = LSSetDefaultRoleHandlerForContentType (localExtension, kLSRolesViewer, (__bridge CFStringRef) [[NSBundle mainBundle] bundleIdentifier]);
+	/*OSStatus status = */LSSetDefaultRoleHandlerForContentType (localExtension, kLSRolesViewer, (__bridge CFStringRef) [[NSBundle mainBundle] bundleIdentifier]);
 
-	if(status != kLSLaunchInProgressErr)
-	{
-		NSLog(@"Failure :c %d", status);
-	}
+//	if(status != kLSLaunchInProgressErr)
+//	{
+//		NSLog(@"Failure :c %d", status);
+//	}
 }
-
-#endif

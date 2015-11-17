@@ -164,9 +164,17 @@ void deleteCrashFile()
 	}
 }
 
+static bool wasSandboxed, checkedSandbox = false;
+
 bool isSandboxed()
 {
-	return [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
+	if(!checkedSandbox)
+	{
+		wasSandboxed = [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
+		checkedSandbox = true;
+	}
+	
+	return wasSandboxed;
 }
 
 void configureSandbox()
@@ -193,6 +201,15 @@ void configureSandbox()
 	
 	if(![[NSFileManager defaultManager] changeCurrentDirectoryPath:container])
 		NSLog(@"Couldn't change directory to standard sandbox directory!");
+}
+
+void registerExtensions()
+{
+	if(isSandboxed())
+		return;
+	
+	for(NSString * extension in DEFAULT_ARCHIVE_SUPPORT)
+		registerDefaultForExtension(extension);
 }
 
 /*****************************************

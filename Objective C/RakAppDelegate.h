@@ -54,3 +54,4 @@
 #define EXTERNAL_FILE_EXT_RAR	@[@"rar", @"cbr"]
 #define EXTERNAL_FILE_EXT_PLAIN @[@"pdf"]
 #define ARCHIVE_SUPPORT			@[@"rak", @"zip", @"cbz", @"rar", @"cbr", @"pdf"]
+#define DEFAULT_ARCHIVE_SUPPORT	@[@"rak", @"zip", @"cbz", @"rar", @"cbr"]

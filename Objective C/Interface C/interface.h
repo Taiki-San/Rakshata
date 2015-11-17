@@ -34,6 +34,7 @@ void createCrashFile();
 void deleteCrashFile();
 bool isSandboxed();
 void configureSandbox();
+void registerExtensions();
 
 /*****************************************
  **										**

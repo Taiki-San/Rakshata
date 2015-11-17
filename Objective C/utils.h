@@ -21,7 +21,7 @@ NSString * getStringForVolumeFull(META_TOME tome);
 NSNumber * getNumberForString(NSString * string);
 NSString * getRepoName(REPO_DATA * repo);
 
-//void registerDefaultForExtension(NSString * extension);
+void registerDefaultForExtension(NSString * extension);
 
 @interface RakFlippedView : NSView
 @end
