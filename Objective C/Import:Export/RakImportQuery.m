@@ -718,6 +718,20 @@ enum
 	return NSLocalizedString(@"IMPORT-META-HEAD", nil);
 }
 
+- (void) keyDown:(NSEvent *)theEvent
+{
+	if(([theEvent modifierFlags] & NSCommandKeyMask) != 0 && [[theEvent charactersIgnoringModifiers] characterAtIndex:0] == NSCarriageReturnCharacter)
+	{
+		if(issue == IMPORT_PROBLEM_METADATA)
+			return [self validateMetadata];
+
+		else if(issue == IMPORT_PROBLEM_METADATA_DETAILS)
+			return [self validateDetail];
+	}
+
+	return [super keyDown:theEvent];
+}
+
 #pragma mark Generic initialization
 
 - (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver

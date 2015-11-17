@@ -334,7 +334,12 @@
 			result = YES;
 		}
 	}
-
+	else if ((commandSelector == @selector(noop:)) && [self isCommandEnterEvent:[NSApp currentEvent]])
+	{
+		[self.nextResponder keyDown:[NSApp currentEvent]];
+		result = YES;
+	}
+	
 	return result;
 }
 
@@ -507,6 +512,15 @@
 
 		self.callbackOnChange(obj, didComplete);
 	}
+}
+
+#pragma mark - Cmd+Enter manager
+
+- (void) noop : (id) yef {}
+
+- (BOOL) isCommandEnterEvent : (NSEvent *) event
+{
+	return ([event modifierFlags] & NSCommandKeyMask) != 0 && [[event charactersIgnoringModifiers] characterAtIndex:0] == NSCarriageReturnCharacter;
 }
 
 @end
