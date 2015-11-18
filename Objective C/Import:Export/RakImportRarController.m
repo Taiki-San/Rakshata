@@ -39,7 +39,7 @@
 
 - (BOOL) canLocateFile : (NSString * __nonnull) file
 {
-	return fileExistInArchive(archive, [file UTF8String]);
+	return [archiveFileName isEqualToString:file] || fileExistInArchive(archive, [file UTF8String]);
 }
 
 - (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
