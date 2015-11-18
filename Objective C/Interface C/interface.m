@@ -77,6 +77,9 @@ void createCrashFile()
 	
 	if(file != NULL)
 		fclose(file);
+	
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"68795b31d0a748d990db94ab4744c8c2"];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 }
 
 void sendCrashedFilesHome()

@@ -39,6 +39,7 @@
 	#import <Quartz/Quartz.h>
 	#import <QuartzCore/QuartzCore.h>
 	#import <INPopoverController/INPopoverController.h>
+	#import <HockeySDK/HockeySDK.h>
 
 	#import "utils.h"
 

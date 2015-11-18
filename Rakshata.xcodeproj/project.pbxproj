@@ -222,6 +222,8 @@
 		B6E8B9691AE026E7008C11EC /* RakPrefsAddTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E8B9681AE026E7008C11EC /* RakPrefsAddTools.m */; };
 		B6E8E1B219ABAE6200930E6D /* RakPrefsRemindPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E8E1B119ABAE6200930E6D /* RakPrefsRemindPopover.m */; };
 		B6E9427D197F2D5B000F268E /* RakCTTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427C197F2D5B000F268E /* RakCTTools.m */; };
+		B6E9C0B61BFCDB42003770D8 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */; };
+		B6E9C0B71BFCDB4B003770D8 /* HockeySDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9D19D190EEF9B007F041C /* RakMDLList.m */; };
 		B6EA520718A4111000A9B16E /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
 		B6EB260619841E2500D678B3 /* auth.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6EB260519841E2500D678B3 /* auth.xib */; };
@@ -260,6 +262,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				B6E9C0B71BFCDB4B003770D8 /* HockeySDK.framework in Embed Frameworks */,
 				B667B1171BFA859E00BB1971 /* Sparkle.framework in Embed Frameworks */,
 				B6DDBB081BDBED7300B9E6AC /* INPopoverController.framework in Embed Frameworks */,
 			);
@@ -614,6 +617,7 @@
 		B6E8E1B119ABAE6200930E6D /* RakPrefsRemindPopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsRemindPopover.m; path = Prefs/RakPrefsRemindPopover.m; sourceTree = "<group>"; };
 		B6E9427B197F2D5B000F268E /* RakCTTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTTools.h; path = CTSelec/RakCTTools.h; sourceTree = "<group>"; };
 		B6E9427C197F2D5B000F268E /* RakCTTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTTools.m; path = CTSelec/RakCTTools.m; sourceTree = "<group>"; };
+		B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HockeySDK.framework; path = Framework/HockeySDK.framework; sourceTree = "<group>"; };
 		B6E9D19C190EEF9B007F041C /* RakMDLList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLList.h; path = MDL/RakMDLList.h; sourceTree = "<group>"; };
 		B6E9D19D190EEF9B007F041C /* RakMDLList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakMDLList.m; path = MDL/RakMDLList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
@@ -680,6 +684,7 @@
 				B6FBD8BD1BD3E5EC00A0A7A5 /* libsqlite.a in Frameworks */,
 				B6FBD8BA1BD3E5EC00A0A7A5 /* libarchive.a in Frameworks */,
 				B68EAF6F1BD517E800F6AB97 /* SystemConfiguration.framework in Frameworks */,
+				B6E9C0B61BFCDB42003770D8 /* HockeySDK.framework in Frameworks */,
 				B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
 				B68EAF731BD5180C00F6AB97 /* AppKit.framework in Frameworks */,
@@ -1317,6 +1322,7 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */,
 				B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */,
