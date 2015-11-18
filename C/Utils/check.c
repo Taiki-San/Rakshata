@@ -60,13 +60,21 @@ void networkAndVersionTest()
 {
     /*Cette fonction va vérifier si le logiciel est a jour*/
     int hostNotReached = 0;
-	char testURL[512], * bufferDL = NULL;
+	char testURL[1024], * bufferDL = NULL;
 	size_t lengthBufferDL;
 
     NETWORK_ACCESS = CONNEXION_TEST_IN_PROGRESS;
 
 	/*Chargement de l'URL*/
-    snprintf(testURL, sizeof(testURL), SERVEUR_URL"/update.php?version="CURRENTVERSIONSTRING"&os="BUILD);
+	if(COMPTE_PRINCIPAL_MAIL != NULL && COMPTE_PRINCIPAL_MAIL[0] != 0)
+	{
+		uint length = strlen(COMPTE_PRINCIPAL_MAIL);
+		char hexEncodedMail[length * 2 + 1];
+		decToHex((byte *) COMPTE_PRINCIPAL_MAIL, length, (char *) &hexEncodedMail);
+		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD"&mail=%s", hexEncodedMail);
+	}
+	else
+		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD);
 
     if(download_mem(testURL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
@@ -96,30 +104,12 @@ void networkAndVersionTest()
 	else
     {
         NETWORK_ACCESS = CONNEXION_OK;
-
+		
+		if(COMPTE_PRINCIPAL_MAIL != NULL && COMPTE_PRINCIPAL_MAIL[0] != 0 && bufferDL[0] == '0')	//A partir d'ici, le compte est killswitche
+			remove(SECURE_DATABASE);
+		
 		free(bufferDL);
 		bufferDL = NULL;
-
-		//Nouveau killswitch
-        if(COMPTE_PRINCIPAL_MAIL != NULL)
-		{
-			char URL[strlen(COMPTE_PRINCIPAL_MAIL) + 100];
-			
-			//Compte killswitché
-			snprintf(URL, sizeof(URL), SERVEUR_URL"/checkAccountValid.php?mail=%s", COMPTE_PRINCIPAL_MAIL);
-			if(download_mem(URL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_RETOUR_OK && bufferDL != NULL && lengthBufferDL != 0 && bufferDL[0] == '0')
-			{
-				free(bufferDL);
-				
-				/*A partir d'ici, le compte est killswitche*/
-				remove(SECURE_DATABASE);
-				removeFolder(PROJECT_ROOT);
-				logR("Ugh, you did wrong things =/");
-				exit(0);
-			}
-			
-			free(bufferDL);
-		}
 		
 		updateDatabase(false);
 		updateFavorites();
