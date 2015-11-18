@@ -150,7 +150,11 @@
 		}
 		
 		//Signal dealloc
-		_animation = nil;
+		if(_animation != nil)
+		{
+			((RakAnimation *) _animation).noPing = YES;
+			_animation = nil;
+		}
 	}
 }
 
