@@ -153,7 +153,7 @@ void generateFingerPrint(unsigned char output[WP_DIGEST_SIZE+1])
 				buffer_fingerprint[length] = 0;
 				pclose(system_output);
 			}
-#ifdef EXTENSIVE_LOGGING
+#ifdef DEV_VERSION
 			else
 			{
 				logR("Hum, fingerprint generation fuckup...");
@@ -346,7 +346,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, uint numeroChapitre, ui
     for(curPosInConfigEnc = 0; curPosInConfigEnc < sizeDBPass && isNbr(decryptedPass[curPosInConfigEnc]); curPosInConfigEnc++);
     if(!curPosInConfigEnc || decryptedPass[curPosInConfigEnc] != ' ')
     {
-#ifdef EXTENSIVE_LOGGING
+#ifdef DEV_VERSION
 		logR("Decryption probably failed, the number of keys isn't followed by a space");
 		if(!curPosInConfigEnc)
 			logR("	Couldn't even find the first number");
@@ -365,7 +365,7 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, uint numeroChapitre, ui
 
     if(curPosInConfigEnc < sizeDBPass && decryptedPass[curPosInConfigEnc] != '\0' && decryptedPass[curPosInConfigEnc] != ' ')
     {
-#ifdef EXTENSIVE_LOGGING
+#ifdef DEV_VERSION
 		logR("Decryption probably failed, ended up in the middle of other keys");
 #endif
 		free(pathPageCopy);
