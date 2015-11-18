@@ -385,7 +385,7 @@
 	if(inferedSomethingSolid)
 	{
 		_isTome = isTomeInfered;
-		_contentID = isTomeInfered ? elementID / 10 : elementID;
+		_contentID = elementID;
 
 		//We'll assume that most of what came before CT was the name
 		char * fullName = strdup([[[_path lastPathComponent] stringByDeletingPathExtension] UTF8String]);
