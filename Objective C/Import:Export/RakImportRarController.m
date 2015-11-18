@@ -66,11 +66,13 @@
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)
 	{
 		void * entry;
-		if(!rarLocateFile(archive, &entry, archive->fileList[indexOfFiles[pos]]))
+		NSString * string = [NSString stringWithUTF8String:archive->fileList[indexOfFiles[pos]]];
+		
+		if([string isEqualToString:[dirName stringByAppendingString:@"/"]] || !rarLocateFile(archive, &entry, archive->fileList[indexOfFiles[pos]]))
 			continue;
 
 		archive->cachedEntry = entry;
-		workingBlock(self, [NSString stringWithUTF8String:archive->fileList[indexOfFiles[pos]]], pos, &abort);
+		workingBlock(self, string, pos, &abort);
 		archive->cachedEntry = NULL;
 	}
 }
