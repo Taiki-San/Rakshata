@@ -186,7 +186,7 @@
 "PROCESSING" = "Post-traitement";
 "CANCELED" = "Nettoyage";
 "IMPORT-REPORT" = "Rapport d'import";
-"IMPORT-ONE-PBM" = "1 problème détecté, cliquez sur le symbole pour le résoudre";
+"IMPORT-ONE-PBM" = "1 problème détecté, cliquez dans le symbole pour le résoudre";
 "IMPORT-%zu-PBM" = "%1$zu problèmes détectés, cliquez sur les symboles pour les résoudres";
 "IMPORT-CHAP-OVERRIDE" = "Chapitre déjà existant, souhaitez vous le remplacer?";
 "IMPORT-VOL-OVERRIDE" = "Tome déjà existant, souhaitez vous le remplacer?";
