@@ -158,7 +158,7 @@
 - (NSString *) getProjectName
 {
 #ifdef EXTENSIVE_LOGGING
-	return [NSString stringWithFormat:@"[β (#%lX)] %s", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue], PROJECT_NAME];
+	return [NSString stringWithFormat:@"%s β", PROJECT_NAME];
 #else
 	return [NSString stringWithUTF8String:PROJECT_NAME];
 #endif

@@ -71,10 +71,10 @@ void networkAndVersionTest()
 		uint length = strlen(COMPTE_PRINCIPAL_MAIL);
 		char hexEncodedMail[length * 2 + 1];
 		decToHex((byte *) COMPTE_PRINCIPAL_MAIL, length, (char *) &hexEncodedMail);
-		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD"&mail=%s", hexEncodedMail);
+		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD"_%d&mail=%s", getBuildID(), hexEncodedMail);
 	}
 	else
-		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD);
+		snprintf(testURL, sizeof(testURL), SERVEUR_URL"/pingMothership.php?version="CURRENTVERSIONSTRING"&os="BUILD"_%d", getBuildID());
 
     if(download_mem(testURL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;

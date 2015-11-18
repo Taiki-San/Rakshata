@@ -215,6 +215,11 @@ void registerExtensions()
 		registerDefaultForExtension(extension);
 }
 
+int getBuildID()
+{
+	return [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
+}
+
 /*****************************************
 **										**
 **				  PREFS					**

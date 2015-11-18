@@ -35,6 +35,7 @@ void deleteCrashFile();
 bool isSandboxed();
 void configureSandbox();
 void registerExtensions();
+int getBuildID();
 
 /*****************************************
  **										**

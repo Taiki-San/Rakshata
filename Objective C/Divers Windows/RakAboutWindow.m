@@ -87,10 +87,10 @@ enum
 	
 	
 	NSDictionary * data = [[NSBundle mainBundle] infoDictionary];
-	NSString * _version = [data objectForKey:@"CFBundleShortVersionString"], * build = [data objectForKey:@"CFBundleVersion"];
+	NSString * _version = [data objectForKey:@"CFBundleShortVersionString"];
 	
-	if(data != nil && _version != nil && build != nil)
-		version = [[RakText alloc] initWithText:[NSString stringWithFormat:@"Version %@ (%lX)", _version, [build integerValue]] :[self versionTextColor]];
+	if(data != nil && _version != nil)
+		version = [[RakText alloc] initWithText:[NSString stringWithFormat:@"Version %@ (%X)", _version, getBuildID()] :[self versionTextColor]];
 	else
 		version = [[RakText alloc] initWithText:[NSString stringWithFormat:@"Version %s", PRINTABLE_VERSION] :[self versionTextColor]];
 	
