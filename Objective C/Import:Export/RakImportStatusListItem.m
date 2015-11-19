@@ -150,6 +150,9 @@
 - (void) checkRefreshStatusRoot
 {
 	_status = [self checkStatusFromChildren];
+	
+	if(_status == STATUS_BUTTON_WARN)
+		[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_OPEN_ITEM object:self];
 }
 
 @end

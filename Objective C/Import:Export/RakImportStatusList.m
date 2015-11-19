@@ -79,6 +79,7 @@ enum
 		
 		//We register the internal D&D
 		[content registerForDraggedTypes: @[IMPORT_ENTRY_PB_TYPE]];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openChildNotif:) name:NOTIFICATION_IMPORT_OPEN_ITEM object:nil];
 	}
 
 	return self;
@@ -340,7 +341,7 @@ enum
 	return YES;
 }
 
-#pragma mark Internal Utils
+#pragma mark Internal Utils & Notification
 
 + (void) refreshAfterPass
 {
@@ -369,6 +370,20 @@ enum
 
 	if(newQuery != nil)
 		newQuery.controller = _controller;
+}
+
+- (void) openChildNotif : (NSNotification *) notification
+{
+	RakOutlineListItem * item = notification.object;
+	
+	if(item == nil || ![item isKindOfClass:[RakOutlineListItem class]])
+		return;
+	
+	NSUInteger pos = [rootItems indexOfObject:item];
+	if(pos == NSNotFound)
+		return;
+	
+	[content expandItem:item expandChildren:YES];
 }
 
 @end

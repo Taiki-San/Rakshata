@@ -13,6 +13,7 @@
 #define NOTIFICATION_IMPORT_STATUS_UI	@"RakImportStatusUpdateUI"
 #define NOTIFICATION_CHILD	@"RakImportStatusUpdateChild"
 #define NOTIFICATION_ROOT	@"RakImportStatusUpdateRoot"
+#define NOTIFICATION_IMPORT_OPEN_ITEM	@"RakImportOpenItem"
 
 @interface RakImportStatusListItem : RakOutlineListItem
 
