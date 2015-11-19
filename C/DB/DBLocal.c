@@ -260,7 +260,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 	}
 }
 
-static uint cachedVolumeID = 0x80000000 - 1;
+static uint cachedVolumeID = 0x80000000;
 uint getVolumeIDForImport(PROJECT_DATA project)
 {
 	//Used in a scenario where isInitialized is not set (cf RakImportIO) so we can't check it
@@ -275,9 +275,9 @@ uint getVolumeIDForImport(PROJECT_DATA project)
 	//Check for an empty slot
 	do
 	{
-		if(cachedVolumeID < 0x80000000 - 1)
+		if(cachedVolumeID < 0x80000000)
 		{
-			cachedVolumeID = 0x80000000 - 1;
+			cachedVolumeID = 0x80000000;
 			
 			if(loopedOnce)
 			{
