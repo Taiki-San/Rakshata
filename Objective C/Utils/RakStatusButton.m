@@ -32,7 +32,7 @@ enum
 		if(trackingArea != nil)
 			[self addTrackingArea:trackingArea];
 
-		[Prefs registerForChange:self forType:KVO_THEME];
+		cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND :self];
 	}
 
 	return self;
@@ -48,11 +48,11 @@ enum
 	_status = status;
 
 	if(status == STATUS_BUTTON_OK)
-		cachedColor = [NSColor greenColor];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_OK :nil];
 	else if(status == STATUS_BUTTON_WARN)
-		cachedColor = [NSColor orangeColor];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_WARN :nil];
 	else if(status == STATUS_BUTTON_ERROR)
-		cachedColor = [NSColor redColor];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_ERROR :nil];
 }
 
 - (BOOL) isFlipped
@@ -65,6 +65,9 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
+	[self setStatus:_status];
+	cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND :nil];
+	
 	text.textColor = [self fontColor];
 	[self setNeedsDisplay:YES];
 }
@@ -220,17 +223,23 @@ enum
 	CGFloat minX = [self getMinX], middle = STATUS_BUTTON_DRAWING_WIDTH / 2;
 
 	//Find our origin
-
 	[cachedColor setStroke];
+	[cachedBackgroundColor setFill];
 
-	//First, draw the circle
-	CGContextBeginPath(contextBorder);
-	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
+	for(byte i = 0; i < 2; ++i)
+	{
+		//First, draw the circle
+		CGContextBeginPath(contextBorder);
+		CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
+		
+		//Line to the other side is implied when drawing the other half of the circle
+		CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+		CGContextClosePath(contextBorder);
 
-	//Line to the other side is implied when drawing the other half of the circle
-	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
-	CGContextClosePath(contextBorder);
-
+		if(i == 0)
+			CGContextFillPath(contextBorder);
+	}
+	
 	//Now, draw the shape within
 	switch(_status)
 	{

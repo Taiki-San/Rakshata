@@ -12,7 +12,7 @@
 
 @interface RakStatusButton : NSView
 {
-	NSColor * cachedColor;
+	NSColor * cachedColor,  * cachedBackgroundColor;
 	RakText * text;
 
 	RakAnimationController * _animation;
