@@ -83,8 +83,8 @@
 //Project selection strings
 "YOUR-PROJECTS" = "Vos séries";
 "SUGGESTIONS" = "Suggestions";
-"RECENT-OPEN" = "Consultées récemment";
-"RECENT-DL" = "Téléchargées récemment";
+"RECENT-OPEN" = "Consultée récemment";
+"RECENT-INSTALL" = "Installée récemment";
 "FULL-LIST" = "Liste complète";
 
 "PROJ-GRID-EMPTY" = "Bibliothèque vide\n\nImportez vos séries ou ajoutez de nouvelles sources\n\nPour ce faire, glissez-les dans la fenêtre";

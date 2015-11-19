@@ -84,7 +84,7 @@
 "YOUR-PROJECTS" = "Your series";
 "SUGGESTIONS" = "Suggestions";
 "RECENT-OPEN" = "Recently read";
-"RECENT-DL" = "Recently downloaded";
+"RECENT-INSTALL" = "Recently installed";
 "FULL-LIST" = "Full list";
 
 "PROJ-GRID-EMPTY" = "Empty Library\n\nImport your series or add new sources\n\nYou can do that by dragging them in the window";

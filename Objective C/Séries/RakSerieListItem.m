@@ -40,7 +40,7 @@
 				case INIT_SECOND_STAGE:
 				{
 					_isDLList = YES;
-					dataString = NSLocalizedString(@"RECENT-DL", nil);
+					dataString = NSLocalizedString(@"RECENT-INSTALL", nil);
 					break;
 				}
 					
