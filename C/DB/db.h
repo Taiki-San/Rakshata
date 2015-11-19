@@ -16,6 +16,7 @@ int64_t alreadyRefreshed;
 
 //Repo ID are the combinaison of two 32 bits integer, thus, it can not be below 2^32 + 1 so, we're safe
 #define LOCAL_REPO_ID 42
+#define MIN_LOCAL_VOLUME_ID 0x80000001
 
 enum getCopyDBCodes
 {

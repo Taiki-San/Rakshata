@@ -166,6 +166,15 @@
 
 - (BOOL) updateProject : (PROJECT_DATA) project
 {
+	if(_projectData.data.project.cacheDBID != project.cacheDBID &&  project.nombreTomes > 0 && (project.locale || project.tomesFull[0].ID > MIN_LOCAL_VOLUME_ID))
+	{
+		uint ID = project.tomesFull[0].ID;
+		while(checkTomeReadable(project, ID))
+			ID = getVolumeIDForImport(project);
+		
+		project.tomesFull[0].ID = _contentID = ID;
+	}
+	
 	_projectData.data.project = project;
 
 	[self refreshState];
