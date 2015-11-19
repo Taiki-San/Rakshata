@@ -1150,7 +1150,7 @@ enum
 		//Somehow, the volume wasn't registered ¯\_(ツ)_/¯
 		if(project.data.nombreTomeLocal == 0)
 		{
-			tomeData.ID = getVolumeIDForImport(_item.projectData.data.project);
+			tomeData.ID = getVolumeIDForImport(project.data.project);
 			if(tomeData.ID != INVALID_VALUE)
 			{
 				tomeData.readingID = (int) checkedContentID;
