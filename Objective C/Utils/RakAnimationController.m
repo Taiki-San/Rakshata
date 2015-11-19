@@ -31,6 +31,19 @@
 
 @implementation RakAnimationController
 
+//The loop need to be initialized very early
+- (instancetype) initAsLoop
+{
+	self = [self init];
+	
+	if(self != nil)
+	{
+		_loop = YES;
+	}
+	
+	return self;
+}
+
 - (instancetype) init
 {
 	self = [super init];
@@ -46,7 +59,7 @@
 - (void) setAnimationDuration : (CGFloat) animationDuration
 {
 	_animationDuration = animationDuration;
-	_animationFrame = floor(animationDuration * 60.0f);
+	_animationFrame = floor(animationDuration * (_loop ? 30.0f : 60.0f));
 }
 
 #pragma mark - Context update
@@ -89,10 +102,10 @@
 		return;
 	
 	_animation = animation;
-	_animation.frameRate = 60;
+	_animation.frameRate = _loop ? 30 : 60;
 	_animation.animationBlockingMode = NSAnimationNonblocking;
 	_animation.delegate = self;
-	
+
 	NSAnimationProgress progress = 0;
 	for(uint i = 0; i <= steps; i++)
 	{
@@ -112,8 +125,12 @@
 
 - (void) abortAnimation
 {
+	aborting = YES;
+
 	[_animation stopAnimation];
 	[self animationDidEnd:_animation];
+	
+	aborting = NO;
 }
 
 #pragma mark - Animation work
@@ -134,27 +151,33 @@
 
 - (void) animationDidEnd:(NSAnimation *)animation
 {
-	if(animation == _animation)
+	if(animation != _animation)
+		return;
+	
+	if(!aborting && _loop)
 	{
-		if(_stage >= _animationFrame)
-		{
-			_stage = _animationFrame;
-			
-			[self postProcessingBeforeAction];
+		_loopingBack = !_loopingBack;
+		return [self startAnimation];
+	}
 
-			if([postAnimationTarget respondsToSelector:@selector(animationOver)])
-				[postAnimationTarget performSelector:@selector(animationOver)];
-
-			else if([postAnimationTarget isKindOfClass:[NSView class]])
-				[postAnimationTarget display];
-		}
+	if(_stage >= _animationFrame)
+	{
+		_stage = _animationFrame;
 		
-		//Signal dealloc
-		if(_animation != nil)
-		{
-			((RakAnimation *) _animation).noPing = YES;
-			_animation = nil;
-		}
+		[self postProcessingBeforeAction];
+
+		if([postAnimationTarget respondsToSelector:@selector(animationOver:)])
+			[postAnimationTarget performSelector:@selector(animationOver:) withObject:self];
+
+		else if([postAnimationTarget isKindOfClass:[NSView class]])
+			[postAnimationTarget display];
+	}
+		
+	//Signal dealloc
+	if(_animation != nil)
+	{
+		((RakAnimation *) _animation).noPing = YES;
+		_animation = nil;
 	}
 }
 

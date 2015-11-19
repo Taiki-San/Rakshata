@@ -24,6 +24,6 @@
 }
 
 - (void) initColors;
-- (void) animationOver;
+- (void) animationOver : (RakAnimationController *) controller;
 
 @end

@@ -197,7 +197,7 @@ enum
 	[email.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 }
 
-- (void) animationOver
+- (void) animationOver : (RakAnimationController *) controller
 {
 	[self updateTheme];
 }

@@ -381,7 +381,7 @@
 	[animationController addAction : self];
 }
 
-- (void) animationOver
+- (void) animationOver : (RakAnimationController *) controller
 {
 	[self switchIsTome];
 }

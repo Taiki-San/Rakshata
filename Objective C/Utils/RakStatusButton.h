@@ -15,7 +15,7 @@
 	NSColor * cachedColor,  * cachedBackgroundColor;
 	RakText * text;
 
-	RakAnimationController * _animation;
+	RakAnimationController * _animation, * _backgroundAnimation;
 	NSTrackingArea * trackingArea;
 
 	BOOL cursorOver, clickingInside;

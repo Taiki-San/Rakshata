@@ -33,6 +33,7 @@ enum
 			[self addTrackingArea:trackingArea];
 
 		cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND :self];
+		[self reloadAnimation];
 	}
 
 	return self;
@@ -40,6 +41,7 @@ enum
 
 - (void) dealloc
 {
+	[self stopAnimation];
 	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
@@ -53,6 +55,8 @@ enum
 		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_WARN :nil];
 	else if(status == STATUS_BUTTON_ERROR)
 		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_ERROR :nil];
+	
+	[self reloadAnimation];
 }
 
 - (BOOL) isFlipped
@@ -70,6 +74,49 @@ enum
 	
 	text.textColor = [self fontColor];
 	[self setNeedsDisplay:YES];
+}
+
+#pragma mark - Animation
+
+- (void) runAnimation
+{
+	if(_backgroundAnimation == nil)
+	{
+		_backgroundAnimation = [[RakAnimationController alloc] initAsLoop];
+		if(_backgroundAnimation == nil)
+			return;
+		
+		_backgroundAnimation.animationDuration = 1;
+		_backgroundAnimation.viewToRefresh = self;
+	}
+	
+	[_backgroundAnimation startAnimation];
+}
+
+- (void) reloadAnimation
+{
+	if(_status != STATUS_BUTTON_OK)
+		[self restartAnimation];
+}
+
+- (void) restartAnimation
+{
+	if(_backgroundAnimation != nil)
+	{
+		[_backgroundAnimation abortAnimation];
+		
+		_backgroundAnimation.loopingBack = NO;
+		_backgroundAnimation.stage = _backgroundAnimation.animationFrame;
+		
+		[_backgroundAnimation startAnimation];
+	}
+	else
+		[self runAnimation];
+}
+
+- (void) stopAnimation
+{
+	_backgroundAnimation.stage = _backgroundAnimation.animationFrame;
 }
 
 #pragma mark - Over
@@ -224,11 +271,17 @@ enum
 
 	//Find our origin
 	[cachedColor setStroke];
-	[cachedBackgroundColor setFill];
-
-	for(byte i = 0; i < 2; ++i)
+	
+	if(_status != STATUS_BUTTON_OK && _backgroundAnimation != nil)
 	{
-		//First, draw the circle
+		const CGFloat animationFrame = _backgroundAnimation.animationFrame;
+		CGFloat ratio = _backgroundAnimation.stage / animationFrame;
+		
+		if(_backgroundAnimation.loopingBack)
+			ratio = 1.0f - ratio;
+		
+		[[cachedBackgroundColor colorWithAlphaComponent:[cachedBackgroundColor alphaComponent] * ratio] setFill];
+
 		CGContextBeginPath(contextBorder);
 		CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
 		
@@ -236,9 +289,16 @@ enum
 		CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
 		CGContextClosePath(contextBorder);
 
-		if(i == 0)
-			CGContextFillPath(contextBorder);
+		CGContextFillPath(contextBorder);
 	}
+
+	//First, draw the circle
+	CGContextBeginPath(contextBorder);
+	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
+		
+	//Line to the other side is implied when drawing the other half of the circle
+	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+	CGContextClosePath(contextBorder);
 	
 	//Now, draw the shape within
 	switch(_status)
@@ -323,9 +383,11 @@ enum
 	[self updateTextOrigin];
 }
 
-- (void) animationOver
+- (void) animationOver : (RakAnimationController *) controller
 {
-	_animation = nil;
+	if(controller == _animation)
+		_animation = nil;
+	
 	[self display];
 }
 

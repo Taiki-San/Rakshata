@@ -95,7 +95,7 @@
 	[super setState:value];
 }
 
-- (void) animationOver
+- (void) animationOver : (RakAnimationController *) controller
 {
 	animationIsOver = YES;
 	

@@ -13,7 +13,7 @@
 @interface RakAnimationController : NSObject <NSAnimationDelegate>
 {
 	id postAnimationTarget;
-	BOOL haveSelectorToPing;
+	BOOL haveSelectorToPing, aborting, _loop;
 	
 	NSAnimation * __weak _animation;
 	
@@ -25,8 +25,12 @@
 @property uint stage;
 @property uint animationFrame;
 
+@property BOOL loopingBack;
+
 @property (nonatomic) SEL selectorToPing;
 @property NSView * viewToRefresh;
+
+- (instancetype) initAsLoop;
 
 - (void) addAction : (id) target;
 - (void) updateState : (NSInteger) initialPos : (CGFloat) diff;
