@@ -11,6 +11,9 @@
  *********************************************************************************************/
 
 @interface RakImportStatusController : RakEIStatusController
+{
+	BOOL updatedFrameOnce;
+}
 
 - (void) switchToIssueUI : (NSArray *) dataSet;
 

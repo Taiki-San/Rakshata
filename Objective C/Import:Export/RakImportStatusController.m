@@ -118,22 +118,41 @@ enum
 
 - (void) setPositioningOfIssueUI
 {
+	//This method is first called to move all the UI out of the display in order for the animation to run smoothly.
+	//However, this only happen once and the following calls only need to update the frame
+	
 	NSSize oldSize = queryWindow.contentView.bounds.size;
-	CGFloat halfWidth = (oldSize.width + DELTA_WIDTH) / 2.0f, oldHeight = oldSize.height, currentY = oldHeight + DELTA_HEIGHT;
+	CGFloat deltaWidth = updatedFrameOnce ? 0 : DELTA_WIDTH, deltaHeight = updatedFrameOnce ? 0 : DELTA_HEIGHT, offsetHeight;
 
-	[issueTitle setFrameOrigin:NSMakePoint(halfWidth - issueTitle.bounds.size.width / 2, oldHeight + (currentY -= issueTitle.bounds.size.height + 5))];
-	[issueHeader setFrameOrigin:NSMakePoint(halfWidth - issueHeader.bounds.size.width / 2, oldHeight + (currentY -= issueHeader.bounds.size.height + 5))];
-	[scrollview setFrameOrigin:NSMakePoint(halfWidth - scrollview.bounds.size.width / 2, oldHeight + (currentY -= scrollview.bounds.size.height + 10))];
+	if(updatedFrameOnce)
+	{
+		deltaHeight = 0;
+		deltaWidth = 0;
+		offsetHeight = 0;
+	}
+	else
+	{
+		deltaHeight = DELTA_HEIGHT;
+		deltaWidth = DELTA_WIDTH;
+		offsetHeight = oldSize.height;
+		updatedFrameOnce = YES;
+	}
+	
+	CGFloat halfWidth = (oldSize.width + deltaWidth) / 2.0f, oldHeight = oldSize.height, currentY = oldHeight + deltaHeight;
+	
+	[issueTitle setFrameOrigin:NSMakePoint(halfWidth - issueTitle.bounds.size.width / 2, offsetHeight + (currentY -= issueTitle.bounds.size.height + 5))];
+	[issueHeader setFrameOrigin:NSMakePoint(halfWidth - issueHeader.bounds.size.width / 2, offsetHeight + (currentY -= issueHeader.bounds.size.height + 5))];
+	[scrollview setFrameOrigin:NSMakePoint(halfWidth - scrollview.bounds.size.width / 2, offsetHeight + (currentY -= scrollview.bounds.size.height + 10))];
 
 	currentY /= 2;
 
 	if(replaceAll != nil && !replaceAll.isHidden)
 	{
-		[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, oldHeight + currentY - replaceAll.bounds.size.height / 2)];
-		[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
+		[replaceAll setFrameOrigin:NSMakePoint(halfWidth / 2 - replaceAll.bounds.size.width / 2, offsetHeight + currentY - replaceAll.bounds.size.height / 2)];
+		[close setFrameOrigin:NSMakePoint(halfWidth + halfWidth / 2 - close.bounds.size.width / 2, offsetHeight + currentY - close.bounds.size.height / 2)];
 	}
 	else
-		[close setFrameOrigin:NSMakePoint(halfWidth - close.bounds.size.width / 2, oldHeight + currentY - close.bounds.size.height / 2)];
+		[close setFrameOrigin:NSMakePoint(halfWidth - close.bounds.size.width / 2, offsetHeight + currentY - close.bounds.size.height / 2)];
 }
 
 - (void) transition
