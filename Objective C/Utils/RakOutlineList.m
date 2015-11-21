@@ -28,9 +28,8 @@
 	
 	if([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
 	{
-		uint themeID = [Prefs getCurrentTheme:nil];
-		[(NSButton *)view setImage:[RakResPath getImageFromTheme:@"TD->" :themeID]];
-		[(NSButton *)view setAlternateImage:[RakResPath getImageFromTheme:@"TD-v" :themeID]];
+		[(NSButton *)view setImage:[RakResPath getImage:@"TD->"]];
+		[(NSButton *)view setAlternateImage:[RakResPath getImage:@"TD-v"]];
 	}
 	
 	return view;

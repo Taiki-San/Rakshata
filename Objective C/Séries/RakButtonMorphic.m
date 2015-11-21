@@ -67,7 +67,7 @@
 		}
 		else
 		{
-			image = [RakResPath getImageFromTheme:imageName :currentTheme];
+			image = [RakResPath getImage:imageName];
 			if(image != nil)
 				[images addObject:image];
 			else
@@ -87,7 +87,7 @@
 	
 	uint currentTheme = [Prefs getCurrentTheme : nil];
 	
-	NSImage * image = [RakResPath getImageFromTheme:_imageNames[0] :currentTheme];
+	NSImage * image = [RakResPath getImage:_imageNames[0]];
 	
 	if(image != nil)
 	{

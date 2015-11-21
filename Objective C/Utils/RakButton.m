@@ -312,10 +312,11 @@
 
 - (BOOL) loadIcon : (short) state : (uint) currentTheme
 {
-	clicked		= [RakResPath craftResNameFromContext:_imageName : YES : YES : currentTheme];
-	nonClicked	= [RakResPath craftResNameFromContext:_imageName : NO : YES : currentTheme];
-	unAvailable = [RakResPath craftResNameFromContext:_imageName : NO : NO : currentTheme];
-	
+	NSImage * template = [RakResPath getImage:_imageName];
+	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE :nil]];
+	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE :nil]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE :nil]];
+
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 		[self setImage:nonClicked];
 	else if(state == RB_STATE_HIGHLIGHTED && clicked != nil)

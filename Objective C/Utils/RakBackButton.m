@@ -211,9 +211,10 @@ enum
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state
 {
-	clicked		= [RakResPath craftResNameFromContext:imageName : YES : YES : 1];
-	nonClicked	= [RakResPath craftResNameFromContext:imageName : NO : YES : 1];
-	unAvailable = [RakResPath craftResNameFromContext:imageName : NO : NO : 1];
+	NSImage * template = [RakResPath getImage:imageName];
+	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE :nil]];
+	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE :nil]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE :nil]];
 	
 	notAvailable = NO;
 	
@@ -227,9 +228,7 @@ enum
 		notAvailable = YES;
 	}
 	else
-	{
 		NSLog(@"Failed at create button for icon: %@", imageName);
-	}
 }
 
 - (void) setAnimationInProgress : (BOOL) start

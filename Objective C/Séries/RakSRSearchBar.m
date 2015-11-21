@@ -144,7 +144,7 @@
 - (void) initCell
 {
 	NSSearchFieldCell * cell = self.cell;
-	RakButtonCell * button = [[RakButtonCell alloc] initWithPage : @"loupe" : RB_STATE_STANDARD];
+	RakButtonCell * button = [[RakButtonCell alloc] initWithPage : @"search" : RB_STATE_STANDARD];
 	if(button != nil)
 	{
 		[button setBordered:NO];

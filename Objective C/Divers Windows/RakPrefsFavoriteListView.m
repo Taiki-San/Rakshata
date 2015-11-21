@@ -98,7 +98,7 @@ enum
 	
 	if(read == nil)
 	{
-		read = [RakButton allocImageWithoutBackground:@"p_voir" :RB_STATE_STANDARD :self :@selector(read)];
+		read = [RakButton allocImageWithoutBackground:@"pRead" :RB_STATE_STANDARD :self :@selector(read)];
 		if(read != nil)
 		{
 			[read.cell setActiveAllowed:NO];
@@ -108,7 +108,7 @@ enum
 	
 	if(remove == nil)
 	{
-		remove = [RakButton allocImageWithoutBackground:@"p_X" :RB_STATE_STANDARD :self :@selector(remove)];
+		remove = [RakButton allocImageWithoutBackground:@"pDelete" :RB_STATE_STANDARD :self :@selector(remove)];
 		if(remove != nil)
 		{
 			[remove.cell setActiveAllowed:NO];
@@ -118,7 +118,7 @@ enum
 	
 	if(download == nil)
 	{
-		download = [RakButton allocImageWithoutBackground:@"p_dl" :RB_STATE_STANDARD :self :@selector(download)];
+		download = [RakButton allocImageWithoutBackground:@"pDL" :RB_STATE_STANDARD :self :@selector(download)];
 		if(download != nil)
 		{
 			[download.cell setActiveAllowed:NO];

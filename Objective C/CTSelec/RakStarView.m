@@ -33,12 +33,12 @@ uint _currentTheme;
 		
 		if(starActive == nil)
 		{
-			starActive = [RakResPath getImageFromTheme :@"ratingSelected" :currentTheme];
+			starActive = [RakResPath getImage :@"ratingSelected"];
 			_currentTheme = currentTheme;
 		}
 		if(starIdle == nil)
 		{
-			starIdle = [RakResPath getImageFromTheme :@"ratingEmpty" :currentTheme];
+			starIdle = [RakResPath getImage :@"ratingEmpty"];
 			_currentTheme = currentTheme;
 		}
 		
@@ -157,8 +157,8 @@ uint _currentTheme;
 	
 	if(currentTheme != _currentTheme)
 	{
-		starActive = [RakResPath getImageFromTheme :@"ratingSelected" :currentTheme];
-		starIdle = [RakResPath getImageFromTheme :@"ratingEmpty" :currentTheme];
+		starActive = [RakResPath getImage :@"ratingSelected"];
+		starIdle = [RakResPath getImage :@"ratingEmpty"];
 		
 		_currentTheme = currentTheme;
 	}
