@@ -226,7 +226,11 @@ enum
 	for(RakImportItem * item in _dataSet)
 	{
 		if(item.issue != IMPORT_PROBLEM_NONE)
-			nbIssues++;
+		{
+			//Once we are >= 2, there is no difference
+			if(++nbIssues > 1)
+				break;
+		}
 	}
 
 	if(nbIssues > 1)

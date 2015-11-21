@@ -108,6 +108,7 @@
 		B678D034197717A600D7FE6A /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
 		B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutTools.m */; };
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
+		B67E65DF1BFF3CD1008C483D /* RakImportMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E65DE1BFF3CD1008C483D /* RakImportMenu.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B6824AF01AA8AB8D001837D6 /* RakPrefsRepoDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */; };
 		B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6885A281B08E67A00C2D7DD /* tagSyncParser.m */; };
@@ -434,6 +435,8 @@
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTSelectionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakCTSelectionList.h; path = CTSelec/RakCTSelectionList.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B67E079318E7714B0007EB44 /* RakCTSelectionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSelectionList.m; path = CTSelec/RakCTSelectionList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B67E65DD1BFF3CD1008C483D /* RakImportMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImportMenu.h; path = Utils/RakImportMenu.h; sourceTree = "<group>"; };
+		B67E65DE1BFF3CD1008C483D /* RakImportMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportMenu.m; path = Utils/RakImportMenu.m; sourceTree = "<group>"; };
 		B67F92B718F0C2B0002FC657 /* RakPageCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageCounter.h; path = Reader/RakPageCounter.h; sourceTree = "<group>"; };
 		B67F92B818F0C2B0002FC657 /* RakPageCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageCounter.m; path = Reader/RakPageCounter.m; sourceTree = "<group>"; };
 		B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoDetails.m; path = "Divers Windows/RakPrefsRepoDetails.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -705,9 +708,11 @@
 		B604067F1BFB2FD200BE7E24 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
-				B604067D1BFB2FCB00BE7E24 /* RakProjectMenu.m */,
-				B60406801BFB2FED00BE7E24 /* RakProjectMenu.h */,
+				B67E65DD1BFF3CD1008C483D /* RakImportMenu.h */,
+				B67E65DE1BFF3CD1008C483D /* RakImportMenu.m */,
 				B60406811BFB2FF200BE7E24 /* RakMenu.h */,
+				B60406801BFB2FED00BE7E24 /* RakProjectMenu.h */,
+				B604067D1BFB2FCB00BE7E24 /* RakProjectMenu.m */,
 			);
 			name = Menu;
 			sourceTree = "<group>";
@@ -1793,6 +1798,7 @@
 				B6E07A1C1B3575F60016C9B0 /* zip.c in Sources */,
 				B6AA41971B6856DD008A7521 /* moduleDLWorker.c in Sources */,
 				B6C9F12D1B541D2C008DF724 /* RakSheetView.m in Sources */,
+				B67E65DF1BFF3CD1008C483D /* RakImportMenu.m in Sources */,
 				B6E9D19E190EEF9B007F041C /* RakMDLList.m in Sources */,
 				B6AA41861B685692008A7521 /* Rijndael.c in Sources */,
 				B696DDEE194A7D430018CDF9 /* RakDragResponder.m in Sources */,

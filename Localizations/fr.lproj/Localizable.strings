@@ -221,6 +221,9 @@
 "IMPORT-STATUS-CHILD-METADATA" = "Détails manquants 😔";
 "IMPORT-STATUS-MISSING-DATA" = "Données incomplètes 😱";
 
+"IMPORT-MENU-MOVE-OUT" = "Déplacer dans une série séparée";
+"IMPORT-MENU-NUKE" = "Retirer de la liste";
+
 //Menu title
 "TITLE-ABOUT" = "À propos de Rakshata";
 "TITLE-UPDATE" = "Vérifier les mises à jour";

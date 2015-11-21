@@ -31,9 +31,7 @@
 
 - (uint) getNbChildren
 {
-	if([self isRootItem])
-		return _nbChildren;
-	return 0;
+	return self.isRootItem ? _nbChildren : 0;
 }
 
 - (void) setChild : (id) child atIndex : (NSUInteger) index
@@ -55,6 +53,17 @@
 - (id) getData
 {
 	return dataString;
+}
+
+- (void) enumerateChildrenWithBlock : (void (^)(id child, uint indexChild, BOOL * stop))block
+{
+	if(!_isRootItem)
+		return;
+	
+	[children enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
+	{
+		block(obj, idx, stop);
+	}];
 }
 
 @end

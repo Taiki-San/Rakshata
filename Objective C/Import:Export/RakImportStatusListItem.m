@@ -107,7 +107,7 @@
 	_nbChildren = [children count];
 }
 
-- (BOOL) removeItemFromChildren : (RakImportItem *) item
+- (BOOL) removeChild : (RakImportItem *) item
 {
 	if(!_isRootItem)
 		return NO;
@@ -138,6 +138,23 @@
 - (void) sortChildren
 {
 	
+}
+
+#pragma mark - Menu management
+
+- (BOOL) canMoveToIndependentNode
+{
+	return !_isRootItem;
+}
+
+- (void) moveToIndependentNode
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_NEED_CALLBACK object:nil userInfo:@{@"item":self, @"payload":@(1)}];
+}
+
+- (void) removeItem
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_NEED_CALLBACK object:nil userInfo:@{@"item":self, @"payload":@(2)}];
 }
 
 #pragma mark - Content update

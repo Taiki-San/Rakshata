@@ -29,5 +29,6 @@
 - (id) getChildAtIndex : (NSUInteger) index;
 
 - (id) getData;
+- (void) enumerateChildrenWithBlock : (void (^)(id child, uint indexChild, BOOL * stop))block;
 
 @end

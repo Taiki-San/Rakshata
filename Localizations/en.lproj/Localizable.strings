@@ -221,6 +221,9 @@
 "IMPORT-STATUS-CHILD-METADATA" = "Details missing 😔";
 "IMPORT-STATUS-MISSING-DATA" = "Incomplete data 😱";
 
+"IMPORT-MENU-MOVE-OUT" = "Move to separate series";
+"IMPORT-MENU-NUKE" = "Discard";
+
 //Menu title
 "TITLE-ABOUT" = "About Rakshata";
 "TITLE-UPDATE" = "Check for Update";

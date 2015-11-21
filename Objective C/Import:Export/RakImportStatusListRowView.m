@@ -34,6 +34,8 @@
 	listItem = item;
 	_item = item.itemForChild;
 	isRoot = item.isRootItem;
+	
+	[[[RakImportMenu alloc] initWithResponder:listItem] configureMenu:self];
 
 	if(projectName == nil)
 	{

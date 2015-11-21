@@ -8,23 +8,14 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakImportStatusController : RakEIStatusController
+@interface RakImportMenu : NSObject
 {
-	BOOL updatedFrameOnce;
+	id _responder;
 }
 
-- (void) switchToIssueUI : (NSArray *) dataSet;
-
-- (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index;
-- (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item;
-
-- (void) postProcessUpdate;
-
-- (void) close;
+- (instancetype) initWithResponder : (id) responder;
+- (void) configureMenu : (NSView *) receiver;
 
 @end
-
-#define NOTIFICATION_IMPORT_REPLACE_ONE	@"RakImportReplaceOne"
-#define NOTIFICATION_IMPORT_REPLACE_ALL	@"RakImportReplaceAll"

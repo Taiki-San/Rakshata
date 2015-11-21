@@ -80,6 +80,7 @@ enum
 		//We register the internal D&D
 		[content registerForDraggedTypes: @[IMPORT_ENTRY_PB_TYPE]];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openChildNotif:) name:NOTIFICATION_IMPORT_OPEN_ITEM object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(senpaiNoticedMe:) name:NOTIFICATION_IMPORT_NEED_CALLBACK object:nil];
 	}
 
 	return self;
@@ -194,7 +195,7 @@ enum
 	_draggedProject = item.projectData.data.project;
 	nullifyCTPointers(&_draggedProject);
 	
-	//Not commited imported project are yet flagged as initiliazed. However, they contain the
+	//Not commited imported project are flagged as initialized. However, they contain the
 	if(!_draggedProject.isInitialized)
 		_draggedProject.isInitialized = true;
 }
@@ -242,27 +243,121 @@ enum
 	if(pasteboard == nil || finalItem == nil || !finalItem.rootItem || [finalItem getNbChildren] == 0)
 		return NO;
 	
-	NSMutableArray * itemsNeedingUpdate = [NSMutableArray new];
-	NSMutableIndexSet * indexToRemove = [NSMutableIndexSet new];
 	NSArray * array = [NSArray arrayWithData:[pasteboard dataForType:IMPORT_ENTRY_PB_TYPE]];
 	if(array == nil)
 		return NO;
+
+	[self moveItems:array toParent:finalItem atIndex : finalIndex];
+	
+	return YES;
+}
+
+#pragma mark Internal Utils & Notification
+
++ (void) refreshAfterPass
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+}
+
+- (BOOL) haveDuplicate
+{
+	for(RakImportItem * item in _dataSet)
+	{
+		if(item.issue == IMPORT_PROBLEM_DUPLICATE)
+			return YES;
+	}
+
+	return NO;
+}
+
+- (void) setQuery : (RakImportQuery *) newQuery
+{
+	if(_query != nil && _query != newQuery)
+		[_query closePopover];
+
+	_query = newQuery;
+
+	if(newQuery != nil)
+		newQuery.controller = _controller;
+}
+
+- (BOOL) collapseIfRelevant
+{
+	for(RakImportItem * item in _dataSet)
+	{
+		if(item.issue != IMPORT_PROBLEM_NONE)
+			return NO;
+	}
+	
+	[_controller close];
+	return YES;
+}
+
+- (void) moveItems : (NSArray *) items toParent : (RakImportStatusListItem *) newRoot atIndex : (NSInteger) newIndex
+{
+	BOOL needImportRoot = NO;
+	NSMutableArray * itemsNeedingUpdate = [NSMutableArray new];
+	NSMutableIndexSet * indexToRemove = [NSMutableIndexSet new];
 	
 	//We process each entries
 	uint count = 0;
-	PROJECT_DATA_EXTRA sampleProject = ((RakImportStatusListItem *) [finalItem getChildAtIndex:0]).itemForChild.projectData, oldProject;
+	PROJECT_DATA_EXTRA sampleProject, oldProject;
+	
+	if(newRoot != nil)	//Move to an existing item
+	{
+		sampleProject = ((RakImportStatusListItem *) [newRoot getChildAtIndex:0]).itemForChild.projectData;
+	}
+	else				//Oh boy...
+	{
+		if([items count] == 0)	//Nope nope nope nope
+			return;
+		
+		NSDictionary * dict = [items firstObject];
+		RakImportItem * item = [dict objectForKey:@"item"];
+		if(item == nil)
+			return;
+		
+		sampleProject = getEmptyExtraProject();
+
+		sampleProject.data.project.locale = true;
+		sampleProject.data.project.cacheDBID = getEmptyLocalSlot(sampleProject.data.project);
+
+		swprintf(sampleProject.data.project.projectName, LENGTH_PROJECT_NAME, L"(ex %ls)", item.projectData.data.project.projectName);
+		sampleProject.data.project.projectName[LENGTH_PROJECT_NAME - 1] = 0;
+		
+		newRoot = [[RakImportStatusListItem alloc] initWithProject:sampleProject.data.project];
+
+		NSMutableArray * newRoots = [NSMutableArray arrayWithArray:rootItems];
+		if(newRoots == nil)
+			return;
+
+		NSUInteger indexOfOld = [rootItems indexOfObject:[dict objectForKey:@"root"]];
+		if(indexOfOld != NSNotFound)
+			[newRoots insertObject:newRoot atIndex:indexOfOld + 1];
+		else
+			[newRoots addObject:newRoot];
+		
+		rootItems = [NSArray arrayWithArray:newRoots];
+		_nbRoot = [rootItems count];
+		
+		needImportRoot = YES;
+		newIndex = NSOutlineViewDropOnItemIndex;
+	}
+	
 	nullifyCTPointers(&sampleProject.data.project);
 	
-	for (NSDictionary * entry in array)
+	for (NSDictionary * entry in items)
 	{
 		RakImportItem * item = [entry objectForKey:@"item"];
 		RakImportStatusListItem * root = [entry objectForKey:@"root"];
 		
-		if(item == nil || root == nil || finalItem == root)
+		if(item == nil || root == nil || root == newRoot)
 			continue;
 		
-		//We remote the item from its root and add it to the new item
-		if(![root removeItemFromChildren:item])
+		//We remove the item from its root and add it to the new item
+		if(![root removeChild:item])
 		{
 #ifdef EXTENSIVE_LOGGING
 			NSLog(@"Uh, we misidentified the root?!");
@@ -270,13 +365,13 @@ enum
 		}
 		
 		//We update the item
-		if(finalIndex == NSOutlineViewDropOnItemIndex)
-			[finalItem addItemAsChild:item];
+		if(newIndex == NSOutlineViewDropOnItemIndex)
+			[newRoot addItemAsChild:item];
 		else
-			[finalItem insertItemAsChild:item atIndex: finalIndex + count++];
+			[newRoot insertItemAsChild:item atIndex: newIndex + count++];
 		
 		NSDictionary * entryID = @{@"index": @(root.indexOfLastRemoved), @"root": root};
-
+		
 		//Remove the old root if needed
 		if([root getNbChildren] == 0)
 		{
@@ -314,10 +409,15 @@ enum
 	
 	[NSAnimationContext beginGrouping];
 	
+	[newRoot checkRefreshStatusRoot];
+
+	if(needImportRoot)
+		[content insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:[rootItems indexOfObject:newRoot]] inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
+	
 	//Remove independant entries
 	for(NSDictionary * dict in itemsNeedingUpdate)
 	{
-		[outlineView removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:[(NSNumber *) [dict objectForKey:@"index"] unsignedIntegerValue]] inParent:[dict objectForKey:@"root"] withAnimation:NSTableViewAnimationSlideLeft];
+		[content removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:[(NSNumber *) [dict objectForKey:@"index"] unsignedIntegerValue]] inParent:[dict objectForKey:@"root"] withAnimation:NSTableViewAnimationSlideLeft];
 	}
 	
 	//Remove empty root
@@ -329,47 +429,93 @@ enum
 		if(new != nil)
 			rootItems = new;
 		
-		[outlineView removeItemsAtIndexes:indexToRemove inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
+		[content removeItemsAtIndexes:indexToRemove inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
 	}
-
+	
 	//Reload the receiver
-	[finalItem checkRefreshStatusRoot];
-	[outlineView reloadItem:finalItem reloadChildren:YES];
+	[content reloadItem:newRoot reloadChildren:YES];
 	
 	[NSAnimationContext endGrouping];
-	
-	return YES;
 }
 
-#pragma mark Internal Utils & Notification
-
-+ (void) refreshAfterPass
+- (void) removeItems : (NSArray *) array
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_CHILD object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_ROOT object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
-}
+	NSMutableArray * itemsToRemove = [NSMutableArray array];
+	NSMutableDictionary * rootToRemove = [NSMutableDictionary dictionary];
+	NSMutableIndexSet * indexRootToRemove = [NSMutableIndexSet indexSet];
 
-- (BOOL) haveDuplicate
-{
-	for(RakImportItem * item in _dataSet)
+	for(RakImportStatusListItem * item in array)
 	{
-		if(item.issue == IMPORT_PROBLEM_DUPLICATE)
-			return YES;
+		BOOL isRoot = item.isRootItem;
+		if(!isRoot)	//If a standard item
+		{
+			RakImportStatusListItem * root = [content parentForItem:item];
+			if(root == nil)
+				continue;
+			
+			//We check the root wasn't already discarded
+			if([rootToRemove count] > 0 && [rootToRemove objectForKey:@((uint64_t) root)] != nil)
+				continue;
+
+			//We delete the root if empty
+			else if ([root getNbChildren] <= 1)
+			{
+				NSUInteger index = [rootItems indexOfObject:root];
+
+				[rootToRemove setObject:@(0) forKey:@((uint64_t) root)];
+				[indexRootToRemove addIndex:index];
+			}
+
+			//We just remove the child
+			else
+			{
+				[root removeChild:item.itemForChild];
+			
+				//We new add it to the list to be removed from the array
+				[itemsToRemove addObject:@{@"index":@(root.indexOfLastRemoved), @"root": root}];
+			}
+			
+			item.itemForChild.issue = IMPORT_PROBLEM_NONE;
+		}
+		else
+		{
+			NSUInteger index = [rootItems indexOfObject:item];
+			
+			[rootToRemove setObject:@(0) forKey:@((uint64_t) item)];
+			[indexRootToRemove addIndex:index];
+			
+			[item enumerateChildrenWithBlock:^(RakImportStatusListItem * child, uint indexChild, BOOL *stop)
+			{
+				child.itemForChild.issue = IMPORT_PROBLEM_NONE;
+			}];
+		}
 	}
-
-	return NO;
-}
-
-- (void) setQuery : (RakImportQuery *) newQuery
-{
-	if(_query != nil && _query != newQuery)
-		[_query closePopover];
-
-	_query = newQuery;
-
-	if(newQuery != nil)
-		newQuery.controller = _controller;
+	
+	[NSAnimationContext beginGrouping];
+	
+	//Remove independant entries
+	for(NSDictionary * dict in itemsToRemove)
+	{
+		[content removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:[(NSNumber *) [dict objectForKey:@"index"] unsignedIntegerValue]] inParent:[dict objectForKey:@"root"] withAnimation:NSTableViewAnimationSlideLeft];
+	}
+	
+	//Remove empty root
+	if([indexRootToRemove count] > 0)
+	{
+		NSMutableArray * mutable = [NSMutableArray arrayWithArray:rootItems];
+		if(mutable != nil)
+		{
+			[mutable removeObjectsAtIndexes:indexRootToRemove];
+			
+			id new = [NSArray arrayWithArray:mutable];
+			if(new != nil)
+				rootItems = new;
+			
+			[content removeItemsAtIndexes:indexRootToRemove inParent:nil withAnimation:NSTableViewAnimationSlideLeft];
+		}
+	}
+	
+	[NSAnimationContext endGrouping];
 }
 
 - (void) openChildNotif : (NSNotification *) notification
@@ -384,6 +530,88 @@ enum
 		return;
 	
 	[content expandItem:item expandChildren:YES];
+}
+
+- (void) senpaiNoticedMe : (NSNotification *) notification
+{
+	NSDictionary * userInfo;
+	NSArray * itemList;
+	NSNumber * request;
+	id singleItem;
+	
+	if(notification == nil || (userInfo = notification.userInfo) == nil)
+		return;
+	
+	else if((singleItem =	[userInfo objectForKey:@"item"]) == nil || ![singleItem isKindOfClass:[RakImportStatusListItem class]])
+		return;
+	
+	else if((request = [userInfo objectForKey:@"payload"]) == nil || ![request isKindOfClass:[NSNumber class]])
+		return;
+	
+	//If items were already selected, they overtake the one we received
+	NSIndexSet * selectedRowIndexes = content.selectedRowIndexes;
+	if(selectedRowIndexes != nil && [selectedRowIndexes count] > 0)
+	{
+		NSMutableArray * newItemList = [NSMutableArray array];
+		
+		[selectedRowIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop)
+		{
+			RakImportStatusListItem * current = [content itemAtRow:(NSInteger) idx];
+			if(current != nil)
+				[newItemList addObject:current];
+		}];
+		
+		if([newItemList count] > 0)
+			itemList = [NSArray arrayWithArray:newItemList];
+		else
+			itemList = @[singleItem];
+	}
+	else
+		itemList = @[singleItem];
+
+	//We process the request
+	switch ([request intValue])
+	{
+		//moveToIndependentNode
+		case 1:
+		{
+			NSMutableArray * array = [NSMutableArray array];
+			for(RakImportStatusListItem * item in itemList)
+			{
+				RakImportStatusListItem * root = [content parentForItem:item];
+				if(root != nil)
+				{
+					[array addObject:@{@"item":item.itemForChild, @"root":root}];
+				}
+				else
+				{
+					root = item;
+					for(uint i = 0, length = [root getNbChildren]; i < length; ++i)
+					{
+						[array addObject:@{@"item":((RakImportStatusListItem *) [root getChildAtIndex:i]).itemForChild, @"root":root}];
+					}
+				}
+			}
+			
+			if([array count])
+				[self moveItems:array toParent:nil atIndex:0];
+			
+			break;
+		}
+			
+		//removeItem
+		case 2:
+		{
+			[self removeItems : itemList];
+			break;
+		}
+			
+		default:
+			return;
+	}
+	
+	if(![self collapseIfRelevant])
+		[[self class] refreshAfterPass];
 }
 
 @end
