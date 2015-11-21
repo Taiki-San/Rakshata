@@ -92,8 +92,7 @@
 		
 		[self initCell];
 
-		if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
-			self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+		CONFIGURE_APPEARANCE_DARK(self);
 		self.bezeled = NO;
 		self.drawsBackground = NO;
 		self.focusRingType = NSFocusRingTypeNone;

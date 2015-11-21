@@ -10,4 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#define CONFIGURE_APPEARANCE_DARK(__view) if(__view != nil && floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10) __view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]
+
 #include "RakProjectMenu.h"

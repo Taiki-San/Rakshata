@@ -26,8 +26,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 		[self setFrameSize: NSMakeSize(_workingArea.size.height + BORDER_BOTTOM, _workingArea.size.width)];
 		
 		//The menu will reuse our appearance
-		if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
-			self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+		CONFIGURE_APPEARANCE_DARK(self);
 		
 		menuManager = [[RakProjectMenu alloc] initWithProject:_project];
 		if(menuManager != nil)

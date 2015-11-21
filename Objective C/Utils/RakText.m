@@ -73,8 +73,7 @@
 	if([self respondsToSelector:@selector(setAllowsDefaultTighteningForTruncation:)])
 		[self setAllowsDefaultTighteningForTruncation:YES];
 
-	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
-		self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+	CONFIGURE_APPEARANCE_DARK(self);
 
 	[self.cell setWraps : NO];
 }

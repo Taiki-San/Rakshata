@@ -331,8 +331,7 @@
 - (void) activateMenu
 {
 	//The menu will reuse our appearance
-	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10)
-		content.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+	CONFIGURE_APPEARANCE_DARK(content);
 	
 	content.menu = [[NSMenu alloc] init];
 	content.menu.delegate = self;
