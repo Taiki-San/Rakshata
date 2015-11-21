@@ -143,6 +143,8 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		updateProjectSearch(NULL, cacheCopy);
 		notifyUpdateProject(*projectDB);
 	}
+	else
+		silentProjectFailure();
 
 end:
 	
@@ -159,18 +161,19 @@ void updateFavorites()
 	
 	uint nbElem;
     PROJECT_DATA *projectDB = getCopyCache(RDB_LOAD_FAVORITE | SORT_REPO | RDB_REMOTE_ONLY, &nbElem);
-    if(projectDB == NULL)
-        return;
-	
+
+	if(projectDB == NULL || nbElem == 0)
+		return free(projectDB);
+
 	//Old dataset
 	PROJECT_DATA previousProject;	previousProject.isInitialized = false;
 	bool previousIsTome;
 	uint previousElement;
 
-    for(uint pos = 0; pos < nbElem; pos++)
-    {
+	for(uint pos = 0; pos < nbElem; pos++)
+	{
 		checkFavoriteUpdate(projectDB[pos], &previousProject, &previousIsTome, &previousElement, false);
-    }
+	}
 	
 	if(previousProject.isInitialized)
 		addElementToMDL(previousProject, previousIsTome, previousElement, false);
@@ -181,7 +184,10 @@ void updateFavorites()
 bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, uint * elementInPipeline, bool checkOnly)
 {
 	if(!project.isInitialized)
+	{
+		silentProjectFailure();
 		return false;
+	}
 	
 	uint basePos;
 	
@@ -269,7 +275,10 @@ void getNewFavs()
 	for(size_t posProject = 0, posFull, maxPos; posProject < nbProject; posProject++)
     {
 		if(!projectDB[posProject].isInitialized)
+		{
+			silentProjectFailure();
 			continue;
+		}
 		
 		current = &projectDB[posProject];
 		

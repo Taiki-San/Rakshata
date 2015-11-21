@@ -82,6 +82,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			//Successfully loaded the data
 			if(cachedProject.project.isInitialized)
 				break;
+			else
+				silentProjectFailure();
 		}
 
 		//Insert into the base, and quit

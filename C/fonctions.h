@@ -162,6 +162,7 @@ void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);
 IMG_DATA* readFile(char * path);
 bool isDownloadValid(char *input);
 bool haveSuffixCaseInsensitive(const char *input, const char * stringToFind);
+void silentProjectFailure();
 
 #define crashTemp(string, length) bzero(string, length)
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))

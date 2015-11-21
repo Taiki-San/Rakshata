@@ -383,7 +383,7 @@ void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 		PROJECT_DATA_PARSED projectParsed = getParsedProjectByID(project.cacheDBID);
 		
 		if(!projectParsed.project.isInitialized)
-			return;
+			return silentProjectFailure();
 
 		char path[2*LENGTH_PROJECT_NAME + 25], *encodedRepo = getPathForProject(projectParsed.project);
 		

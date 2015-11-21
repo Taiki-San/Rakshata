@@ -478,7 +478,10 @@ void resetUpdateDBCache()
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 {
 	if(!data.isInitialized)
+	{
+		silentProjectFailure();
 		return data;
+	}
 	
 	PROJECT_DATA newData = data;
 	

@@ -325,6 +325,8 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 				if(((PROJECT_DATA_PARSED *) output)[pos].project.isInitialized)
 					pos++;
+				else
+					silentProjectFailure();
 			}
 			else
 			{
@@ -333,6 +335,8 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 
 				if(((PROJECT_DATA *) output)[pos].isInitialized)
 					pos++;
+				else
+					silentProjectFailure();
 			}
 		}
 
