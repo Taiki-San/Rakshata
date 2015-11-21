@@ -280,6 +280,9 @@ enum
 		if(_backgroundAnimation.loopingBack)
 			ratio = 1.0f - ratio;
 		
+		if(!cursorOver)
+			ratio *= 2;
+		
 		[[cachedBackgroundColor colorWithAlphaComponent:[cachedBackgroundColor alphaComponent] * ratio] setFill];
 
 		CGContextBeginPath(contextBorder);
