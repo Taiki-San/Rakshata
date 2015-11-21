@@ -27,8 +27,9 @@
 	[self setAutoresizesSubviews:NO];
 	[self setNeedsDisplay:YES];
 	[self setWantsLayer:YES];
-	
-	[self.layer setCornerRadius:7.5];
+
+	self.layer.cornerRadius = 7.5;
+	self.layer.backgroundColor = [self getMainColor].CGColor;
 	
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
 	
@@ -60,6 +61,7 @@
 {
 	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_THEME]])
 	{
+		self.layer.backgroundColor = [self getMainColor].CGColor;
 		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS : nil].CGColor;
 		[self setNeedsDisplay:YES];
 	}
@@ -171,17 +173,6 @@
 - (NSColor*) getMainColor
 {
 	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
-}
-
-- (void) drawContentView: (NSRect) frame
-{
-	[[self getMainColor] setFill];
-	NSRectFill(frame);
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-	[self drawContentView:dirtyRect];
 }
 
 #pragma mark - General resizing utils

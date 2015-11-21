@@ -57,7 +57,6 @@ enum {
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
 - (NSColor*) getMainColor;
-- (void) drawContentView: (NSRect) frame;
 - (void) refreshLevelViews : (NSView*) superview : (byte) context;
 - (void) refreshLevelViewsAnimation : (NSView*) superview;
 - (void) fastAnimatedRefreshLevel : (NSView*) superview;
