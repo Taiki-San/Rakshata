@@ -12,7 +12,7 @@
 
 @interface RakImportStatusController : RakEIStatusController
 {
-	BOOL updatedFrameOnce;
+	BOOL windowDidExpand;
 }
 
 - (void) switchToIssueUI : (NSArray *) dataSet;

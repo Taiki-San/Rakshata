@@ -122,9 +122,9 @@ enum
 	//However, this only happen once and the following calls only need to update the frame
 	
 	NSSize oldSize = queryWindow.contentView.bounds.size;
-	CGFloat deltaWidth = updatedFrameOnce ? 0 : DELTA_WIDTH, deltaHeight = updatedFrameOnce ? 0 : DELTA_HEIGHT, offsetHeight;
+	CGFloat deltaWidth = windowDidExpand ? 0 : DELTA_WIDTH, deltaHeight = windowDidExpand ? 0 : DELTA_HEIGHT, offsetHeight;
 
-	if(updatedFrameOnce)
+	if(windowDidExpand)
 	{
 		deltaHeight = 0;
 		deltaWidth = 0;
@@ -135,7 +135,6 @@ enum
 		deltaHeight = DELTA_HEIGHT;
 		deltaWidth = DELTA_WIDTH;
 		offsetHeight = oldSize.height;
-		updatedFrameOnce = YES;
 	}
 	
 	CGFloat halfWidth = (oldSize.width + deltaWidth) / 2.0f, oldHeight = oldSize.height, currentY = oldHeight + deltaHeight;
@@ -196,6 +195,7 @@ enum
 		//Try to fix the bug that made the window display the expired, midanimation, UI
 		[[NSAnimationContext currentContext] setCompletionHandler:^{
 			[queryWindow.contentView setNeedsDisplay:YES];
+			windowDidExpand = YES;
 		}];
 
 		[NSAnimationContext endGrouping];
