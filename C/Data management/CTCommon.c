@@ -62,7 +62,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 	//We check if we need to remove the entry (in the case of a local project)
 	PROJECT_DATA_PARSED project = getParsedProjectByID(projectDB.cacheDBID);
 	if(!project.project.isInitialized)
-		return silentProjectFailure();
+		return;
 
 	uint length = ACCESS_DATA(isTome, project.nombreChapitreLocal, project.nombreTomeLocal);
 	void * data = ACCESS_DATA(isTome, (void *) project.chapitresLocal, (void *) project.tomeLocal);
@@ -521,7 +521,7 @@ void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint n
 void releaseParsedData(PROJECT_DATA_PARSED data)
 {
 	if(!data.project.isInitialized)
-		return silentProjectFailure();
+		return;
 
 	free(data.chapitresLocal);
 	free(data.chapitresRemote);

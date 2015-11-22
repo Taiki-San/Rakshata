@@ -143,8 +143,6 @@ bool setFavorite(PROJECT_DATA* projectDB)
 		updateProjectSearch(NULL, cacheCopy);
 		notifyUpdateProject(*projectDB);
 	}
-	else
-		silentProjectFailure();
 
 end:
 	
@@ -184,10 +182,7 @@ void updateFavorites()
 bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, uint * elementInPipeline, bool checkOnly)
 {
 	if(!project.isInitialized)
-	{
-		silentProjectFailure();
 		return false;
-	}
 	
 	uint basePos;
 	
@@ -275,10 +270,7 @@ void getNewFavs()
 	for(size_t posProject = 0, posFull, maxPos; posProject < nbProject; posProject++)
     {
 		if(!projectDB[posProject].isInitialized)
-		{
-			silentProjectFailure();
 			continue;
-		}
 		
 		current = &projectDB[posProject];
 		

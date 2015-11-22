@@ -20,10 +20,7 @@ sqlite3_stmt * getAddToCacheRequest(sqlite3 * db)
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID)
 {
 	if(!data.project.isInitialized)
-	{
-		silentProjectFailure();
 		return false;
-	}
 
 	if(data.nombreChapitreLocal || data.nombreTomeLocal)
 	{
@@ -117,13 +114,7 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	void * buffer;
 	sqlite3_stmt *request = NULL;
 	
-	if(!data.project.isInitialized)
-	{
-		silentProjectFailure();
-		return false;
-	}
-		
-	if(cache == NULL && !setupBDDCache())	//Échec du chargement
+	if(!data.project.isInitialized || (cache == NULL && !setupBDDCache()))	//Échec du chargement
 		return false;
 	
 	//On libère la mémoire des éléments remplacés

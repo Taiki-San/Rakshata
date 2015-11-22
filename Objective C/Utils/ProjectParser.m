@@ -659,10 +659,7 @@ end:
 NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 {
 	if(!project.project.isInitialized)
-	{
-		silentProjectFailure();
 		return nil;
-	}
 
 	//No project remaining
 	if(isLocalProject(project.project) && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
@@ -722,10 +719,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 	PROJECT_DATA shortData = parseBloc(bloc);
 
 	if(!shortData.isInitialized)
-	{
-		silentProjectFailure();
 		return output;
-	}
 
 	output.project = shortData;
 
@@ -941,8 +935,6 @@ PROJECT_DATA_EXTRA parseBlocExtra(NSDictionary * bloc)
 			}
 		}
 	}
-	else
-		silentProjectFailure();
 
 	return output;
 }

@@ -109,10 +109,3 @@ bool haveSuffixCaseInsensitive(const char *input, const char * stringToFind)
 		++input;
 	}
 }
-
-void silentProjectFailure()
-{
-#ifdef DEV_VERSION
-	logR("Silent project failure");
-#endif
-}
