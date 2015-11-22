@@ -45,7 +45,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(position == INVALID_VALUE)
 					return nil;
 
-				outputPath = getStringForVolumeFull(project.tomesFull[position]);
+				outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForVolumeFull(project.tomesFull[position])];
 			}
 
 			else
@@ -542,13 +542,11 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 	if(isTome)
 	{
-		META_TOME * tome = selection;
-		
-		uint pos = getPosForID(project, true, tome->ID);
+		uint pos = getPosForID(project, true, * (uint *) selection);
 		if(pos == INVALID_VALUE)
 			return nil;
 		
-		[dict setObject:@(tome->ID) forKey:RAK_STRING_CONTENT_ID];
+		[dict setObject:@(* (uint *) selection) forKey:RAK_STRING_CONTENT_ID];
 		
 		NSArray * volumeMetadata = recoverVolumeBloc(&(project.tomesInstalled[pos]), 1, project.isPaid);
 		if(volumeMetadata != nil && [volumeMetadata count] > 0)
