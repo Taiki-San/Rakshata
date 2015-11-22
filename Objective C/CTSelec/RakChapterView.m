@@ -250,13 +250,13 @@
 		case TAB_READER:
 		case TAB_SERIES:
 		{
-			code = COLOR_BACKGROUND_COREVIEW;
+			code = COLOR_COREVIEW_BACKGROUND;
 			break;
 		}
 			
 		case TAB_CT:
 		{
-			code = COLOR_BACKGROUND_TABS;
+			code = COLOR_TABS_BACKGROUND;
 			break;
 		}
 			

@@ -230,7 +230,7 @@
 	if(self.compactMode)
 		return [NSColor clearColor].CGColor;
 	
-	return [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW].CGColor;
+	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND].CGColor;
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

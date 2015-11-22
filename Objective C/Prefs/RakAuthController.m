@@ -23,7 +23,7 @@
 	[Prefs registerForChange:self forType:KVO_THEME];
 	
 	self.view.wantsLayer = YES;
-	self.view.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TABS].CGColor;
+	self.view.layer.backgroundColor = [Prefs getSystemColor:COLOR_TABS_BACKGROUND].CGColor;
 	self.view.layer.cornerRadius = 4;
 	
 	baseHeight = self.view.bounds.size.height;

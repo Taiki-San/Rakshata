@@ -82,7 +82,7 @@ enum
 
 - (NSColor *) activeBackground
 {
-	return [Prefs getSystemColor:COLOR_PREFS_BUTTONS_FOCUS];
+	return [Prefs getSystemColor:COLOR_PREFS_BUTTON_FOCUS];
 }
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView

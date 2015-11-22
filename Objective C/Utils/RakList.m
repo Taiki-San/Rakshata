@@ -295,7 +295,7 @@
 
 - (NSColor *) getBackgroundHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL];
+	return [Prefs getSystemColor:COLOR_LIST_SELECTED_BACKGROUND];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

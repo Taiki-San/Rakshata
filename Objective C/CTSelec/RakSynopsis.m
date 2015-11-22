@@ -310,7 +310,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
+	return [Prefs getSystemColor:COLOR_REPO_LIST_BACKGROUND];
 }
 
 @end

@@ -33,7 +33,7 @@ enum
 			[self addTrackingArea:trackingArea];
 
 		[Prefs registerForChange:self forType:KVO_THEME];
-		cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND];
+		cachedBackgroundColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_BACKGROUND];
 		[self reloadAnimation];
 	}
 
@@ -51,11 +51,11 @@ enum
 	_status = status;
 
 	if(status == STATUS_BUTTON_OK)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_OK];
+		cachedColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_OK];
 	else if(status == STATUS_BUTTON_WARN)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_WARN];
+		cachedColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 	else if(status == STATUS_BUTTON_ERROR)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_ERROR];
+		cachedColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_ERROR];
 	
 	[self reloadAnimation];
 }
@@ -71,7 +71,7 @@ enum
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
 	[self setStatus:_status];
-	cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND];
+	cachedBackgroundColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_BACKGROUND];
 	
 	text.textColor = [self fontColor];
 	[self setNeedsDisplay:YES];

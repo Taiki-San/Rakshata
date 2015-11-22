@@ -180,13 +180,13 @@
 
 - (NSColor *) getBarColor
 {
-	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS];
+	return [Prefs getSystemColor:COLOR_COREVIEW_BORDER];
 }
 
 - (NSColor *) getBackgroundColor
 {
 	if(_haveBackgroundColor)
-		return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+		return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 	return nil;
 }
 

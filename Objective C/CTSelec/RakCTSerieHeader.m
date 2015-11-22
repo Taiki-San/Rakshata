@@ -305,12 +305,12 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
 
 - (NSColor *) getGradientColor
 {
-	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS];
+	return [Prefs getSystemColor:COLOR_COREVIEW_BORDER];
 }
 
 - (void) updateGradient

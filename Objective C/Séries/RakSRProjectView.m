@@ -143,7 +143,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor : COLOR_BACKGROUND_GRID_FOCUS];
+	return [Prefs getSystemColor : COLOR_GRID_FOCUS_BACKGROUND];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

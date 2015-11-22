@@ -125,7 +125,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND];
+	return [Prefs getSystemColor:COLOR_EXPORT_BACKGROUND];
 }
 
 #pragma mark - Refresh the status

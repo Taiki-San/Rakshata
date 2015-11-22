@@ -94,12 +94,12 @@ enum
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS];
+	return [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND];
 }
 
 - (NSColor *) getColorBackgroundSlider
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS_ANIMATING];
+	return [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND_ANIMATING];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -214,7 +214,7 @@ enum
 	NSImage * template = [RakResPath getImage:imageName];
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];
-	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE]];
 	
 	notAvailable = NO;
 	

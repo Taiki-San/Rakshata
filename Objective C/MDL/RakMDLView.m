@@ -204,7 +204,7 @@ enum
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor: COLOR_BACKGROUND_COREVIEW];
+	return [Prefs getSystemColor: COLOR_COREVIEW_BACKGROUND];
 }
 
 - (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender

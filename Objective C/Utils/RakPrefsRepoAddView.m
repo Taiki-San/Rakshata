@@ -290,12 +290,12 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO];
+	return [Prefs getSystemColor:COLOR_ADD_REPO_BACKGROUND];
 }
 
 - (NSColor *) listBackgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL];
+	return [Prefs getSystemColor:COLOR_LIST_SELECTED_BACKGROUND];
 }
 
 @end

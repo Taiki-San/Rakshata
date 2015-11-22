@@ -42,10 +42,10 @@ enum
 
 - (void) initColors
 {
-	borderColor = [Prefs getSystemColor:COLOR_BORDER_SWITCH_BUTTON];
-	backgroundMixed = [Prefs getSystemColor:COLOR_BACKGROUND_SWITCH_BUTTON_MIXED];
-	backgroundOff = [Prefs getSystemColor:COLOR_BACKGROUND_SWITCH_BUTTON_OFF];
-	backgroundOn = [Prefs getSystemColor:COLOR_BACKGROUND_SWITCH_BUTTON_ON];
+	borderColor = [Prefs getSystemColor:COLOR_BUTTON_SWITCH_BORDER];
+	backgroundMixed = [Prefs getSystemColor:COLOR_BUTTON_SWITCH_BACKGROUND_MIXED];
+	backgroundOff = [Prefs getSystemColor:COLOR_BUTTON_SWITCH_BACKGROUND_OFF];
+	backgroundOn = [Prefs getSystemColor:COLOR_BUTTON_SWITCH_BACKGROUND_ON];
 }
 
 #pragma mark - Drawing

@@ -41,7 +41,7 @@
 	{
 		if(self.selected)
 		{
-			[[Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO] setFill];
+			[[Prefs getSystemColor:COLOR_ADD_REPO_BACKGROUND] setFill];
 			NSRectFill(dirtyRect);
 		}
 	}

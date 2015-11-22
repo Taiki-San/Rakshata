@@ -273,7 +273,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_READER_INTAB];
+	return [Prefs getSystemColor:COLOR_READER_BACKGROUND_INTAB];
 }
 
 - (BOOL) isStillCollapsedReaderTab

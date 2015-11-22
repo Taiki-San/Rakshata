@@ -163,17 +163,17 @@
 
 - (NSColor *) popoverArrowColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:COLOR_BORDER_TABS];
+	return [Prefs getSystemColor:COLOR_TABS_BORDER];
 }
 
 - (NSColor *) backgroundColor
 {
-	return 	[Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+	return 	[Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
 
 #pragma mark - Toolbox

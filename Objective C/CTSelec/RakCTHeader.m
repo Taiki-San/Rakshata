@@ -23,8 +23,8 @@
 		if(self != nil)
 		{
 			header = localHeader;
-			_backgroundColor = [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW];
-			_synopsisTitleBackground = [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+			_backgroundColor = [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
+			_synopsisTitleBackground = [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 			
 			[Prefs registerForChange:self forType:KVO_THEME];
 			
@@ -166,8 +166,8 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	_backgroundColor = [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW];
-	_synopsisTitleBackground = [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
+	_backgroundColor = [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
+	_synopsisTitleBackground = [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 	[self setNeedsDisplay:YES];
 }
 

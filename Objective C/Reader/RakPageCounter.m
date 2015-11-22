@@ -240,7 +240,7 @@
 	if(textField != nil)
 	{
 		((RakTextCell*)textField.cell).customizedInjectionPoint = YES;
-		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND]];
 		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		[textField setBezeled:NO];
 		
@@ -290,7 +290,7 @@
 	
 	if(textField != nil)
 	{
-		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND]];
 		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		[textField setNeedsDisplay:YES];
 	}

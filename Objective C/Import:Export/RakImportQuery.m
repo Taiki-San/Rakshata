@@ -799,7 +799,7 @@ enum
 		((RakTextCell*) text.cell).centered = YES;
 
 		text.drawsBackground = YES;
-		text.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD];
+		text.backgroundColor = [Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND];
 
 		[text setPlaceholderString:NSLocalizedString(string, nil)];
 		text.editable = YES;

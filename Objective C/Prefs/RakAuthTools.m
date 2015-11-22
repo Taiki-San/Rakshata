@@ -29,7 +29,7 @@
 		[self setBordered:YES];
 		self.wantCustomBorder = YES;
 		
-		[self setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[self setBackgroundColor:[Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND]];
 		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		self.maxLength = 100;
 		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
@@ -194,7 +194,7 @@
 		self.wantCustomBorder = NO;
 		[self setDelegate:self];
 		
-		[self setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[self setBackgroundColor:[Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND]];
 		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 	}
 	
@@ -290,7 +290,7 @@
 	if(backgroundColor == nil)
 	{
 		[Prefs registerForChange:self forType:KVO_THEME];
-		backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED];
+		backgroundColor = [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED];
 	}
 	
 	[backgroundColor setFill];
@@ -302,7 +302,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED];
+	backgroundColor = [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED];
 	[self setNeedsDisplay:YES];
 }
 

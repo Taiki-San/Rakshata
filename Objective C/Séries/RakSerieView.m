@@ -103,7 +103,7 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor : COLOR_BACKGROUND_COREVIEW];
+	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
 }
 
 #pragma mark - Frame calcul

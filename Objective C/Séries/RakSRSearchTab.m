@@ -225,7 +225,7 @@ enum
 
 - (NSColor *) placeholderTextColor
 {
-	return [Prefs getSystemColor:COLOR_SRPLACEHOLDER_TEXT];
+	return [Prefs getSystemColor:COLOR_SR_PLACEHOLDER_TEXT];
 }
 
 - (NSFont *) placeholderFont

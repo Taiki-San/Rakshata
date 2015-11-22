@@ -81,7 +81,7 @@
 	//El Capitan
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 	{
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
 		[Prefs registerForChange:self forType:KVO_THEME];
 		hasRegisteredThemeUpdates = YES;
 	}
@@ -100,7 +100,7 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(self.layer.backgroundColor != nil)
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
 	
 	[self setNeedsDisplay];
 }
@@ -203,7 +203,7 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
 		self.layer.cornerRadius = 4;
 		
 		if(!hasRegisteredThemeUpdates)
@@ -325,7 +325,7 @@
 	
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE ]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE ]];
-	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE ]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE ]];
 
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 	{
@@ -416,24 +416,24 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS ];
+	return [Prefs getSystemColor:COLOR_BUTTON_BORDER ];
 }
 
 - (NSColor*) getBackgroundColor
 {
-	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED ] : _customBackgroundColor;
+	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED ] : _customBackgroundColor;
 }
 
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_HIGHLIGHT];
+		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_HIGHLIGHT];
 	else if(self.state == NSOnState && self.activeAllowed)
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED];
+		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_CLICKED];
 	else if([self isEnabled])
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED];
+		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_NONCLICKED];
 	else
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE ];
+		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_UNAVAILABLE ];
 }
 
 - (void) reloadFontColor

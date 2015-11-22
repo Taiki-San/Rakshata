@@ -54,7 +54,7 @@
 
 - (NSColor *) getBackgroundColor
 {
-	return [Prefs getSystemColor:COLOR_FILTER_FORGROUND];
+	return [Prefs getSystemColor:COLOR_FILTER_FOREGROUND];
 }
 
 - (void) mouseDown:(NSEvent *)theEvent

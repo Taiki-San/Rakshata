@@ -108,12 +108,12 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_PREFS_HEADER];
+	return [Prefs getSystemColor:COLOR_PREFS_HEADER_BACKGROUND];
 }
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:COLOR_BORDER_PREFS_HEADER];
+	return [Prefs getSystemColor:COLOR_PREFS_HEADER_BORDER];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

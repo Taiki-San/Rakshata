@@ -141,7 +141,7 @@ enum
 
 - (NSColor *) placeholderColor
 {
-	return [Prefs getSystemColor:COLOR_PLACEHOLDER_REPO];
+	return [Prefs getSystemColor:COLOR_REPO_TEXT_PLACEHOLDER];
 }
 
 #pragma mark - Data interface
