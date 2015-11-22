@@ -126,7 +126,8 @@ enum KVO_REQUEST {
 	KVO_THEME,
 	KVO_MAIN_THREAD,
 	KVO_PDF_BACKGRND,
-	KVO_MAGNIFICATION
+	KVO_MAGNIFICATION,
+	KVO_DIROVERRIDE
 };
 
 @interface Prefs : NSObject
@@ -155,6 +156,7 @@ enum KVO_REQUEST {
 @property byte activePrefsPanel;
 @property BOOL saveMagnification;
 @property BOOL havePDFBackground;
+@property BOOL overrideDirection;
 @property BOOL favoriteAutoDL;
 
 + (void) initCache;

@@ -26,6 +26,7 @@
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
+		[Prefs getPref:PREFS_GET_DIROVERRIDE :&overrideDirection];
 		
 		[self initView : contentView : state];
 		self.layer.cornerRadius = 0;

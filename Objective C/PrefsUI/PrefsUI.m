@@ -12,10 +12,11 @@
 
 enum
 {
-	LATERAL_BORDER = 15,
+	LEFT_BORDER = 15,
+	RIGHT_BORDER = 5,
 	INTER_BORDER = 15,
 	WIDTH = 150,
-	HEIGHT = 150
+	HEIGHT = 200
 };
 
 @implementation RakPrefsPopover
@@ -105,6 +106,14 @@ enum
 	[Prefs setPref:PREFS_SET_HAVE_PDF_BACKGROUND :forcePDFBackground.state == NSOnState];
 }
 
+- (void) readerOverrideDirection : (RakSwitchButton *) button
+{
+	if(button != overrideDirection)
+		return [overrideDirection performClick:nil];
+
+	[Prefs setPref:PREFS_SET_DIROVERRIDE :overrideDirection.state == NSOnState];
+}
+
 #pragma mark - Colors
 
 - (NSColor *) textColor
@@ -129,14 +138,20 @@ enum
 	
 	//Have PDF background
 	[Prefs getPref:PREFS_GET_HAVE_PDF_BACKGROUND :&setting];
-	[self createSwitchWithText:@"READER-SETTING-FORCE-BKGD" status:setting toButton:&button withSelector:@selector(readerColorPDFBackground:) andBaseY:baseY];
+	baseY = [self createSwitchWithText:@"READER-SETTING-FORCE-BKGD" status:setting toButton:&button withSelector:@selector(readerColorPDFBackground:) andBaseY:baseY];
 	
 	forcePDFBackground = button;
+	
+	//Should override the direction suggested by the project
+	[Prefs getPref:PREFS_GET_DIROVERRIDE :&setting];
+	baseY = [self createSwitchWithText:@"READER-SETTING-OVERRIDE-DIR" status:setting toButton:&button withSelector:@selector(readerOverrideDirection:) andBaseY:baseY];
+	
+	overrideDirection = button;
 }
 
 #pragma mark - UI Toolkit
 
-#define WIDTH_TEXT (WIDTH - 2 * LATERAL_BORDER - (*button).bounds.size.width - INTER_BORDER)
+#define WIDTH_TEXT (WIDTH - LEFT_BORDER - RIGHT_BORDER - (*button).bounds.size.width - INTER_BORDER)
 
 - (CGFloat) createSwitchWithText : (NSString *) textString status : (BOOL) enabled toButton : (RakSwitchButton **) button withSelector : (SEL) selector andBaseY : (CGFloat) baseY
 {
@@ -161,8 +176,8 @@ enum
 			
 			baseY -= maxHeight;
 
-			[*button setFrameOrigin:NSMakePoint(LATERAL_BORDER, baseY + (maxHeight / 2 - heightButton / 2))];
-			[text setFrameOrigin:NSMakePoint(LATERAL_BORDER + (*button).bounds.size.width + INTER_BORDER, baseY + (maxHeight / 2 - heightText / 2))];
+			[*button setFrameOrigin:NSMakePoint(LEFT_BORDER, baseY + (maxHeight / 2 - heightButton / 2))];
+			[text setFrameOrigin:NSMakePoint(LEFT_BORDER + (*button).bounds.size.width + INTER_BORDER, baseY + (maxHeight / 2 - heightText / 2))];
 			[mainView addSubview:text];
 			
 			[textFields addObject:text];

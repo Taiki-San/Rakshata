@@ -30,7 +30,7 @@
 	size_t _queryArraySize;
 	
 	//Page management
-	BOOL saveMagnification;
+	BOOL saveMagnification, overrideDirection;
 	CGFloat lastKnownMagnification;
 	RakPageScrollView * _scrollView;
 	

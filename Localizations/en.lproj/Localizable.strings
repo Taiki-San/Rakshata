@@ -134,6 +134,7 @@
 
 "READER-SETTING-KEEP-MAGNI" = "Keep the zoom setting through pages";
 "READER-SETTING-FORCE-BKGD" = "Draw white background (PDF)";
+"READER-SETTING-OVERRIDE-DIR" = "Ignore the reading direction of the serie";
 
 //Prefs
 "PREFS-TITLE-GENERAL" = "General";

@@ -22,7 +22,7 @@
 	//UI Elements
 	//	Reader
 	
-	RakSwitchButton * forcePDFBackground, * saveMagnification;
+	RakSwitchButton * forcePDFBackground, * saveMagnification, *overrideDirection;
 }
 
 @property (nonatomic, weak) NSPopover * popover;

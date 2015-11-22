@@ -424,6 +424,12 @@ enum
 			break;
 		}
 			
+		case PREFS_GET_DIROVERRIDE:
+		{
+			* (BOOL *) outputContainer = _overrideDirection;
+			break;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);
@@ -575,6 +581,18 @@ enum
 			break;
 		}
 			
+		case PREFS_SET_DIROVERRIDE:
+		{
+			value = value != 0;
+			
+			ret_value = prefsCache.overrideDirection != (BOOL) value;
+			
+			if(ret_value)
+				prefsCache.overrideDirection = value;
+			
+			break;
+		}
+			
 		default:
 			break;
 	}
@@ -703,6 +721,9 @@ enum
 			
 		case KVO_MAGNIFICATION:
 			return @"saveMagnification";
+			
+		case KVO_DIROVERRIDE:
+			return @"overrideDirection";
 	}
 	
 	return nil;
@@ -725,6 +746,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		_stateTabsReader = STATE_READER_TAB_DEFAULT;
 		_favoriteAutoDL = true;
 		_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
+		_overrideDirection = YES;
 
 		if(data == nil)
 			self.themeCode = 1;
@@ -824,6 +846,12 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 				prefsCache.havePDFBackground = value != 0;
 				break;
 			}
+				
+			case 6:
+			{
+				prefsCache.overrideDirection = value != 0;
+				break;
+			}
 		}
 	}
 }
@@ -850,7 +878,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 
 - (NSString *) dumpPrefs
 {
-	return [NSString stringWithFormat:@"%d\n%d\n%d\n%d\n%d\n%d", _mainThread, _themeCode, _favoriteAutoDL, _activePrefsPanel, _saveMagnification, _havePDFBackground];
+	return [NSString stringWithFormat:@"%d\n%d\n%d\n%d\n%d\n%d\n%d", _mainThread, _themeCode, _favoriteAutoDL, _activePrefsPanel, _saveMagnification, _havePDFBackground, _overrideDirection];
 }
 
 - (void) refreshFirstResponder

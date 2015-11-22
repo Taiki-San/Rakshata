@@ -134,6 +134,7 @@
 
 "READER-SETTING-KEEP-MAGNI" = "Conserve les zoom à travers les pages";
 "READER-SETTING-FORCE-BKGD" = "Affiche un fond blanc (PDF)";
+"READER-SETTING-OVERRIDE-DIR" = "Ignore la direction de lecture de la série";
 
 //Prefs
 "PREFS-TITLE-GENERAL" = "Général";

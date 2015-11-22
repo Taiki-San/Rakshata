@@ -405,6 +405,12 @@
 	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_MAGNIFICATION]])
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
 	
+	else if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_DIROVERRIDE]])
+	{
+		[Prefs getPref:PREFS_GET_DIROVERRIDE:&overrideDirection];
+		[self updateProjectReadingOrder];
+	}
+	
 	else
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
@@ -1681,8 +1687,10 @@
 
 - (void) updateProjectReadingOrder
 {
-	mainScroller.flipped = _project.rightToLeft;
-	mainScroller.transitionStyle = NSPageControllerTransitionStyleHorizontalStrip;//_project.rightToLeft ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
+	BOOL flipped = !overrideDirection && _project.rightToLeft;
+	
+	mainScroller.flipped = flipped;
+	mainScroller.transitionStyle = flipped ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 }
 
 #pragma mark - Checks if new elements to download

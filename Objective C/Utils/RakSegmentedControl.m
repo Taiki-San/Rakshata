@@ -134,7 +134,9 @@ enum
 	else
 		[animationController updateState : initialPos : [newValue integerValue] - initialPos];
 	
-	[(RakCTSelection*) self.superview feedAnimationController:animationController];
+	if([self.superview respondsToSelector:@selector(feedAnimationController:)])
+		[(id) self.superview feedAnimationController:animationController];
+	
 	[animationController startAnimation];
 	
 	return YES;
