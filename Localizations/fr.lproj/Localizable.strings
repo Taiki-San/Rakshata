@@ -247,7 +247,3 @@
 
 "CRASH-RECOVERED-TITLE" = "Correction du problème";
 "CRASH-RECOVERED-CONTENT" = "Rakshata semble avoir récupéré d'un problème, peut-il nous envoyer le cadre dans lequel l'erreur se produisait afin de la corriger?\nC'est rapide, anonymisé et vous n'avez rien à faire, merci!";
-
-
-//DEV COMS, shouldn't really end up in production
-"PREFS-UPDATE-UI" = "MàJ de l'UI";

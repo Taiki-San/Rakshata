@@ -223,8 +223,7 @@ void initializeTags(void * mainCache)
 		
 		if(!checkFileExist(TAG_DB) || sqlite3_open(TAG_DB , &coldDB) != SQLITE_OK)
 		{
-			logR("We have significant issues setting up our environment, this may be caused by permission issues, please contact us at contact@rakshata.com");
-			exit(0);
+			alertExit("We have significant issues setting up our environment, this may be caused by permission issues, please contact us at contact@rakshata.com");
 		}
 	}
 	

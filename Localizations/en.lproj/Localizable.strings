@@ -248,5 +248,6 @@
 "CRASH-RECOVERED-TITLE" = "Crash recovery";
 "CRASH-RECOVERED-CONTENT" = "Rakshata recovered from a crash, do you allow it to send us the context so we can work on fixing the issue?\nThis is super quick, you don't have to do anything and it really help us!";
 
-//DEV COMS, shouldn't really end up in production
-"PREFS-UPDATE-UI" = "Update the UI";
+//Major failure alert
+"MAJOR-FAILURE-TITLE" = "Major failure :(";
+"MAJOR-FAILURE-MESSAGE-%s" = "Rakshata had to exit because of a critical internal failure.\n%1$s";

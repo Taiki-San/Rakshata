@@ -24,10 +24,7 @@
 	
 	RakContentView * contentView = [self getContentView];
 	if(contentView == nil)
-	{
-		NSLog(@"Couldn't build view structure, basically, it's a _very_ early failure, we can't recover from that =/");
-		exit(EXIT_FAILURE);
-	}
+		alertExit("Couldn't build view structure, basically, it's a _very_ early failure, we can't recover from that =/");
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
 	

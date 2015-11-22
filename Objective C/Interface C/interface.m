@@ -16,6 +16,65 @@
  **										**
  *****************************************/
 
+static bool wasSandboxed, checkedSandbox = false;
+
+bool isSandboxed()
+{
+	if(!checkedSandbox)
+	{
+		wasSandboxed = [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
+		checkedSandbox = true;
+	}
+	
+	return wasSandboxed;
+}
+
+void configureSandbox()
+{
+	if(isSandboxed())
+		return;
+	
+	NSArray * searchPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	if(searchPath == nil || [searchPath count] == 0)
+		return;
+
+	NSString * identifier = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+	NSString * container = [NSString stringWithFormat:@"%@/Containers/%@/Data/", [searchPath firstObject], identifier];
+	BOOL isDir = NO;
+		
+	if(![[[NSFileManager alloc] init] fileExistsAtPath:container isDirectory:&isDir] || !isDir)
+	{
+		if(!isDir)
+			remove([container UTF8String]);
+		
+		//We need to create the sandbox directory somehow
+		createPath([container UTF8String]);
+	}
+	
+	if(![[NSFileManager defaultManager] changeCurrentDirectoryPath:container])
+		NSLog(@"Couldn't change directory to standard sandbox directory!");
+}
+
+void registerExtensions()
+{
+	if(isSandboxed())
+		return;
+	
+	for(NSString * extension in DEFAULT_ARCHIVE_SUPPORT)
+		registerDefaultForExtension(extension);
+}
+
+int getBuildID()
+{
+	return [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
+}
+
+/*****************************************
+ **										**
+ **				   ERROR				**
+ **										**
+ *****************************************/
+
 #define LAUNCH_CRASH_FILE "crashAtLaunch"
 
 void createCrashFile()
@@ -167,57 +226,38 @@ void deleteCrashFile()
 	}
 }
 
-static bool wasSandboxed, checkedSandbox = false;
-
-bool isSandboxed()
+void sendToLog(const char * string)
 {
-	if(!checkedSandbox)
+	NSLog(@"%s", string);
+}
+
+#ifdef VERBOSE_DB_MANAGEMENT
+void logStack(void * address)
+{
+	[[NSString stringWithFormat:@"%@", [NSThread callStackSymbols]] writeToFile:[NSString stringWithFormat:@"log/%p.txt", address] atomically:NO encoding:NSASCIIStringEncoding error:nil];
+}
+#endif
+
+void alertExit(const char * exitReason)
+{
+	if(![NSThread isMainThread])
+		return dispatch_sync(dispatch_get_main_queue(), ^{	alertExit(exitReason);	});
+	
+	sendToLog(exitReason);
+
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	if(alert != nil)
 	{
-		wasSandboxed = [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
-		checkedSandbox = true;
-	}
-	
-	return wasSandboxed;
-}
-
-void configureSandbox()
-{
-	if(isSandboxed())
-		return;
-	
-	NSArray * searchPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-	if(searchPath == nil || [searchPath count] == 0)
-		return;
-
-	NSString * identifier = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
-	NSString * container = [NSString stringWithFormat:@"%@/Containers/%@/Data/", [searchPath firstObject], identifier];
-	BOOL isDir = NO;
+		alert.alertStyle = NSCriticalAlertStyle;
+		alert.messageText = NSLocalizedString(@"MAJOR-FAILURE-TITLE", nil);
+		alert.informativeText = [NSString localizedStringWithFormat:NSLocalizedString(@"MAJOR-FAILURE-MESSAGE-%s", nil), exitReason];
+		[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
 		
-	if(![[[NSFileManager alloc] init] fileExistsAtPath:container isDirectory:&isDir] || !isDir)
-	{
-		if(!isDir)
-			remove([container UTF8String]);
+		[alert runModal];
 		
-		//We need to create the sandbox directory somehow
-		createPath([container UTF8String]);
+		exit(EXIT_FAILURE);
 	}
-	
-	if(![[NSFileManager defaultManager] changeCurrentDirectoryPath:container])
-		NSLog(@"Couldn't change directory to standard sandbox directory!");
-}
-
-void registerExtensions()
-{
-	if(isSandboxed())
-		return;
-	
-	for(NSString * extension in DEFAULT_ARCHIVE_SUPPORT)
-		registerDefaultForExtension(extension);
-}
-
-int getBuildID()
-{
-	return [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
 }
 
 /*****************************************
@@ -243,18 +283,6 @@ bool shouldDownloadFavorite()
 	
 	return output;
 }
-
-void sendToLog(const char * string)
-{
-	NSLog(@"%s", string);
-}
-
-#ifdef VERBOSE_DB_MANAGEMENT
-void logStack(void * address)
-{
-	[[NSString stringWithFormat:@"%@", [NSThread callStackSymbols]] writeToFile:[NSString stringWithFormat:@"log/%p.txt", address] atomically:NO encoding:NSASCIIStringEncoding error:nil];
-}
-#endif
 
 void notifyEmailUpdate()
 {

@@ -30,12 +30,22 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
  **										**
  *****************************************/
 
-void createCrashFile();
-void deleteCrashFile();
 bool isSandboxed();
 void configureSandbox();
 void registerExtensions();
 int getBuildID();
+
+
+/*****************************************
+ **										**
+ **				   ERROR				**
+ **										**
+ *****************************************/
+
+void createCrashFile();
+void deleteCrashFile();
+void sendToLog(const char * string);
+void alertExit(const char * exitReason);
 
 /*****************************************
  **										**
@@ -45,7 +55,6 @@ int getBuildID();
 
 uint32_t getMainThread();
 bool shouldDownloadFavorite();
-void sendToLog(const char * string);
 void notifyEmailUpdate();
 void restorePrefsFile();
 bool removeProjectWithContent();
