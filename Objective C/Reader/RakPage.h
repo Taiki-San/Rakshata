@@ -54,6 +54,8 @@
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize;
 
+- (void) updateProjectReadingOrder;
+
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
 

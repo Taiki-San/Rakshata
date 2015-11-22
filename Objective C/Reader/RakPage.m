@@ -24,10 +24,10 @@
 	
 	if(mainScroller == nil)
 	{
-		mainScroller = [[NSPageController alloc] init];
+		mainScroller = [[RakPageController alloc] init];
 		mainScroller.view = container;
-		mainScroller.transitionStyle = dataRequest.rightToLeft ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 		mainScroller.delegate = self;
+		[self updateProjectReadingOrder];
 	}
 	
 	[self updateEvnt];
@@ -197,16 +197,14 @@
 			break;
 		}
 		case NSLeftArrowFunctionKey:
-		{
-			[self prevPage];
-			break;
-		}
 		case NSRightArrowFunctionKey:
 		{
-			[self nextPage];
+			if(mainScroller.flipped ^ (code == NSLeftArrowFunctionKey))
+				[self prevPage];
+			else
+				[self nextPage];
 			break;
 		}
-			
 		case NSPageUpFunctionKey:
 		{
 			[self scrollToExtreme : _scrollView : YES];
@@ -376,6 +374,7 @@
 			_project = project;
 			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 			
+			[self updateProjectReadingOrder];
 			[bottomBar favsUpdated:_project.favoris];
 		}
 		else if(!checkProjectStillExist(_project.cacheDBID))
@@ -588,6 +587,8 @@
 		return NO;
 	}
 	
+	[self updateProjectReadingOrder];
+	
 	if(startPage == INVALID_VALUE || _data.nombrePage == 0)
 		_data.pageCourante = 0;
 	else if(startPage < _data.nombrePage)
@@ -664,7 +665,7 @@
 		_data.pageCourante--;
 	}
 	
-	if(switchType != READER_ETAT_DEFAULT && mainScroller.selectedIndex != _data.pageCourante + 1)
+	if(switchType != READER_ETAT_DEFAULT && mainScroller.patchSelectedIndex != _data.pageCourante + 1)
 	{
 		MUTEX_LOCK(cacheMutex);
 		
@@ -1344,7 +1345,7 @@
 	if(index >= [data count])
 		return NO;
 	
-	Class class = [data[index] class];
+	Class class = [data[[mainScroller getPatchedPosForIndex:index]] class];
 	
 	return class == [RakPageScrollView class] || class == [RakImageView class];
 }
@@ -1365,9 +1366,10 @@
 		else
 			internalData = data;
 		
-		for(uint pos = 0, max = [internalData count]; pos < max; pos++)
+		for(uint pos = 0, relativePos, max = [internalData count]; pos < max; pos++)
 		{
-			object = [internalData objectAtIndex:pos];
+			relativePos = [mainScroller getPatchedPosForIndex:pos];
+			object = [internalData objectAtIndex:relativePos];
 			
 			if([object class] == [RakPageScrollView class])
 			{
@@ -1377,7 +1379,7 @@
 				   objectPage > curPage + 24)			//Too far ahead
 				{
 					[freeList addObject:object];
-					[internalData replaceObjectAtIndex:pos withObject:@(pos)];
+					[internalData replaceObjectAtIndex:relativePos withObject:@(relativePos)];
 					invalidFound++;
 				}
 				else
@@ -1473,7 +1475,7 @@
 	
 	if(page < [data count] && currentCacheSession == cacheSession)
 	{
-		[data replaceObjectAtIndex:page withObject:view];
+		[data replaceObjectAtIndex:[mainScroller getPatchedPosForIndex:page] withObject:view];
 		mainScroller.arrangedObjects = data;
 	}
 	
@@ -1582,13 +1584,13 @@
 
 #endif
 
-- (void) pageController : (NSPageController *) pageController didTransitionToObject : (RakPageScrollView *) object
+- (void) pageController : (RakPageController *) pageController didTransitionToObject : (RakPageScrollView *) object
 {
 	if(object == nil || _flushingCache)
 		return;
 	
 	//We are to an adjacent chapter page
-	uint index = pageController.selectedIndex;
+	uint index = pageController.patchSelectedIndex;
 	
 	if(index == 0)
 	{
@@ -1614,7 +1616,7 @@
 	}
 }
 
-- (void)pageControllerDidEndLiveTransition : (NSPageController *) pageController
+- (void)pageControllerDidEndLiveTransition : (RakPageController *) pageController
 {
 	_endingTransition = YES;
 	CGFloat magnification = (saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class]) ? _scrollView.magnification : 1;
@@ -1624,13 +1626,13 @@
 	_endingTransition = NO;
 	
 	//Before the first page
-	if(pageController.selectedIndex == 0 && _posElemInStructure == 0)
+	if(pageController.patchSelectedIndex == 0 && _posElemInStructure == 0)
 		pageController.selectedIndex = 1;
 	
 	_scrollView.magnification = magnification;
 
 	//After the last page
-	if(((NSUInteger) pageController.selectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
+	if(((NSUInteger) pageController.patchSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
 	{
 		pageController.selectedIndex = (int64_t) [pageController.arrangedObjects count] - 2;
 		
@@ -1639,6 +1641,12 @@
 			[self switchDistractionFree];
 #endif
 	}
+}
+
+- (void) updateProjectReadingOrder
+{
+	mainScroller.flipped = _project.rightToLeft;
+	mainScroller.transitionStyle = NSPageControllerTransitionStyleHorizontalStrip;//_project.rightToLeft ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 }
 
 #pragma mark - Checks if new elements to download

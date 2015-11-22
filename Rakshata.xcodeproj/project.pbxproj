@@ -69,6 +69,7 @@
 		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
+		B634EAD61C01DF170078F33A /* RakPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = B634EAD41C01DF170078F33A /* RakPageController.m */; };
 		B63805E91B6BD9F90029418C /* RakImportIOTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B63805E81B6BD9F90029418C /* RakImportIOTools.m */; };
 		B63A5D951BE81C83005E6EBC /* lecteur_sharedStruct.m in Sources */ = {isa = PBXBuildFile; fileRef = B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */; };
 		B63A5D971BE81D3C005E6EBC /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B63A5D961BE81D3C005E6EBC /* Quartz.framework */; };
@@ -420,6 +421,8 @@
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
+		B634EAD31C01DF170078F33A /* RakPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageController.h; path = Reader/RakPageController.h; sourceTree = "<group>"; };
+		B634EAD41C01DF170078F33A /* RakPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageController.m; path = Reader/RakPageController.m; sourceTree = "<group>"; };
 		B63805E81B6BD9F90029418C /* RakImportIOTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportIOTools.m; path = "Import:Export/RakImportIOTools.m"; sourceTree = "<group>"; };
 		B63805EA1B6C4A060029418C /* RakImportIOController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportIOController.h; path = "Import:Export/RakImportIOController.h"; sourceTree = "<group>"; };
 		B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lecteur_sharedStruct.m; sourceTree = "<group>"; };
@@ -1414,6 +1417,8 @@
 				B62DBB891A118AEF007EBAC6 /* RakDRM.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
+				B634EAD31C01DF170078F33A /* RakPageController.h */,
+				B634EAD41C01DF170078F33A /* RakPageController.m */,
 				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
 				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
@@ -2039,6 +2044,7 @@
 				B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */,
 				B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */,
 				B606EB501B6855D300DDBBBD /* error.c in Sources */,
+				B634EAD61C01DF170078F33A /* RakPageController.m in Sources */,
 				B66392251BD65A00003FD758 /* sorting.c in Sources */,
 				B6ED38571AF183B8007293E5 /* RakAnimationController.m in Sources */,
 				B6BBEA261B55C73300127628 /* RakStatusButton.m in Sources */,

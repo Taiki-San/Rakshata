@@ -12,6 +12,8 @@
 
 #include "lecteur.h"
 #import "RakPageScrollView.h"
+#import "RakPageController.h"
+
 @class RakReaderBottomBar;
 
 @interface Reader : RakTabView
@@ -31,7 +33,7 @@
 	BOOL saveMagnification;
 	RakPageScrollView * _scrollView;
 	
-	NSPageController * mainScroller;
+	RakPageController * mainScroller;
 	NSImage * loadingPlaceholder;
 	NSImage * loadingFailedPlaceholder;
 	
