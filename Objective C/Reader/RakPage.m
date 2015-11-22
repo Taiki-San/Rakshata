@@ -698,10 +698,9 @@
 		[self updateEvnt];
 	else
 	{
-		if([mainScroller.arrangedObjects[_data.pageCourante + 1] class] == [RakPageScrollView class])
+		RakPageScrollView * view = mainScroller.arrangedObjects[[mainScroller getPatchedPosForIndex:_data.pageCourante + 1]];
+		if([view class] == [RakPageScrollView class])
 		{
-			RakPageScrollView * view = mainScroller.arrangedObjects[_data.pageCourante + 1];
-			
 			if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
 				view.magnification = _scrollView.magnification;
 			
