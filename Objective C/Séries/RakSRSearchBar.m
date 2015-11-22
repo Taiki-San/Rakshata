@@ -144,7 +144,7 @@
 - (void) initCell
 {
 	NSSearchFieldCell * cell = self.cell;
-	RakButtonCell * button = [[RakButtonCell alloc] initWithPage : @"search" : RB_STATE_STANDARD];
+	RakButtonCell * button = [[RakButtonCell alloc] initWithPage : @"search"];
 	if(button != nil)
 	{
 		[button setBordered:NO];
@@ -157,7 +157,7 @@
 		[cell setSearchButtonCell:button];
 	}
 	
-	button = [[RakButtonCell alloc] initWithPage:@"discard" :RB_STATE_STANDARD];
+	button = [[RakButtonCell alloc] initWithPage:@"discard"];
 	if(button != nil)
 	{
 		[button setBordered:NO];

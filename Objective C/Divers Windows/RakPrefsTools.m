@@ -24,14 +24,12 @@ enum
 
 @implementation RakPrefsSelectionButton
 
-+ (instancetype) allocImageWithoutBackground:(NSString *)imageName :(short)stateAtStartup :(id)target :(SEL)selectorToCall
++ (instancetype) allocImageWithoutBackground:(NSString *)imageName :(id)target :(SEL)selectorToCall
 {
-	RakPrefsSelectionButton * button = [super allocImageWithoutBackground:imageName :stateAtStartup :target :selectorToCall];
+	RakPrefsSelectionButton * button = [super allocImageWithoutBackground:imageName :target :selectorToCall];
 	
 	if(button != nil)
-	{
 		[button setFrameSize:[button intrinsicContentSize]];
-	}
 	
 	return button;
 }

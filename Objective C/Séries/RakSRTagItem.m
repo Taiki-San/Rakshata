@@ -51,7 +51,7 @@
 	if(close != nil)
 		[close removeFromSuperview];
 	
-	close = [RakButton allocImageWithoutBackground:BUTTON_NAME :RB_STATE_STANDARD :self :@selector(close)];
+	close = [RakButton allocImageWithoutBackground:BUTTON_NAME :self :@selector(close)];
 	if(close != nil)
 	{
 		[close.cell setActiveAllowed:NO];

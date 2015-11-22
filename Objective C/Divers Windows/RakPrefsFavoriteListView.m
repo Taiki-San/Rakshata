@@ -88,7 +88,7 @@ enum
 	
 	if(refresh == nil)
 	{
-		refresh = [RakButton allocImageWithoutBackground:@"refresh" :RB_STATE_STANDARD :self :@selector(refresh)];
+		refresh = [RakButton allocImageWithoutBackground:@"refresh" :self :@selector(refresh)];
 		if(refresh != nil)
 		{
 			[refresh.cell setActiveAllowed:YES];
@@ -98,7 +98,7 @@ enum
 	
 	if(read == nil)
 	{
-		read = [RakButton allocImageWithoutBackground:@"pRead" :RB_STATE_STANDARD :self :@selector(read)];
+		read = [RakButton allocImageWithoutBackground:@"pRead" :self :@selector(read)];
 		if(read != nil)
 		{
 			[read.cell setActiveAllowed:NO];
@@ -108,7 +108,7 @@ enum
 	
 	if(remove == nil)
 	{
-		remove = [RakButton allocImageWithoutBackground:@"pDelete" :RB_STATE_STANDARD :self :@selector(remove)];
+		remove = [RakButton allocImageWithoutBackground:@"pDelete" :self :@selector(remove)];
 		if(remove != nil)
 		{
 			[remove.cell setActiveAllowed:NO];
@@ -118,7 +118,7 @@ enum
 	
 	if(download == nil)
 	{
-		download = [RakButton allocImageWithoutBackground:@"pDL" :RB_STATE_STANDARD :self :@selector(download)];
+		download = [RakButton allocImageWithoutBackground:@"pDL" :self :@selector(download)];
 		if(download != nil)
 		{
 			[download.cell setActiveAllowed:NO];

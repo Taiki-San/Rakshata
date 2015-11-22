@@ -43,7 +43,7 @@ enum
 		NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 		paragraphStyle.alignment                = kCTTextAlignmentCenter;
 		
-		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"pSettings" :RB_STATE_STANDARD :self :@selector(clicGeneral)];
+		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"pSettings" :self :@selector(clicGeneral)];
 		if(buttonGeneral != nil)
 		{
 			[buttonGeneral setFrameSize:NSMakeSize(buttonGeneral.bounds.size.width + 7, buttonGeneral.bounds.size.height + 7)];
@@ -55,7 +55,7 @@ enum
 			[self addSubview:buttonGeneral];
 		}
 		
-		buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"pRepo" :RB_STATE_STANDARD :self :@selector(clicRepo)];
+		buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"pRepo" :self :@selector(clicRepo)];
 		if(buttonRepo != nil)
 		{
 			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-REPO", nil) attributes:
@@ -67,7 +67,7 @@ enum
 			[self addSubview:buttonRepo];
 		}
 		
-		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"pFavs" :RB_STATE_STANDARD :self :@selector(clicFav)];
+		buttonFav = [RakPrefsSelectionButton allocImageWithoutBackground:@"pFavs" :self :@selector(clicFav)];
 		if(buttonFav != nil)
 		{
 			[buttonFav setFrameSize:buttonGeneral.bounds.size];

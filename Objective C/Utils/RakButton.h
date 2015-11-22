@@ -25,10 +25,10 @@
 @property BOOL textButton;
 @property BOOL hasBorder;
 
-+ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
++ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 
-+ (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
-+ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall;
++ (instancetype) allocImageWithBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall;
++ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall;
 + (instancetype) allocWithText : (NSString*) string : (NSRect) frame;
 + (instancetype) allocWithText : (NSString*) string;
 
@@ -55,7 +55,7 @@
 @property BOOL hasBorder;
 @property (nonatomic, getter=isActiveAllowed) BOOL activeAllowed;
 
-- (instancetype) initWithPage : (NSString*) imageName : (short) state;
+- (instancetype) initWithPage : (NSString*) imageName;
 
 - (instancetype) initWithText : (NSString *) text;
 - (void) reloadFontColor;

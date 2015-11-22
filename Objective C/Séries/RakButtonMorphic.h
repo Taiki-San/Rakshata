@@ -15,8 +15,6 @@
 	NSArray * _imageNames;
 	NSArray * _images;
 	
-	short _defaultState;
-	
 	uint _activeCell;
 	
 	BOOL didRegister;
@@ -24,6 +22,6 @@
 
 @property uint activeCell;
 
-+ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (SEL) selector;
++ (instancetype) allocImages : (NSArray*) imageNames : (id) target : (SEL) selector;
 
 @end

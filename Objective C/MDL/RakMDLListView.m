@@ -81,7 +81,7 @@ enum
 {
 	if(_pause == nil)
 	{
-		_pause = [RakButton allocImageWithoutBackground : @"pause" : RB_STATE_STANDARD : self : @selector(sendPause)];
+		_pause = [RakButton allocImageWithoutBackground : @"pause" : self : @selector(sendPause)];
 		if(_pause != nil)
 		{
 			[_pause setButtonType:NSMomentaryChangeButton];
@@ -92,7 +92,7 @@ enum
 	
 	if(_read == nil)
 	{
-		_read = [RakButton allocImageWithoutBackground : @"read" : RB_STATE_STANDARD : self : @selector(sendRead)];
+		_read = [RakButton allocImageWithoutBackground : @"read" : self : @selector(sendRead)];
 		if(_read != nil)
 		{
 			[_read setButtonType:NSMomentaryChangeButton];
@@ -104,7 +104,7 @@ enum
 	
 	if(_remove == nil)
 	{
-		_remove = [RakButton allocImageWithoutBackground : @"delete" : RB_STATE_STANDARD : self : @selector(sendRemove)];
+		_remove = [RakButton allocImageWithoutBackground : @"delete" : self : @selector(sendRemove)];
 		if(_remove != nil)
 		{
 			[_remove setButtonType:NSMomentaryChangeButton];

@@ -48,7 +48,7 @@
 {
 	NSRect frame = self.bounds;
 	
-	preferenceButton = [RakButton allocImageWithBackground: @"settings" : RB_STATE_STANDARD : self : @selector(gogoWindow)];
+	preferenceButton = [RakButton allocImageWithBackground: @"settings" : self : @selector(gogoWindow)];
 	if(preferenceButton != nil)
 	{
 		if([self shouldHidePrefButton])

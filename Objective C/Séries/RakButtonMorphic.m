@@ -12,23 +12,23 @@
 
 @implementation RakButtonMorphic
 
-+ (instancetype) allocImages : (NSArray*) imageNames : (short) defaultState : (id) target : (SEL) selector
++ (instancetype) allocImages : (NSArray*) imageNames : (id) target : (SEL) selector
 {
 	if(imageNames == nil || [imageNames count] == 0 || target == nil)
 		return nil;
 	
-	RakButtonMorphic * output = [self allocImageWithBackground:imageNames[0] :defaultState :target : selector];
+	RakButtonMorphic * output = [self allocImageWithBackground:imageNames[0] :target : selector];
 	
 	if(output != nil)
 	{
 		[output.cell setActiveAllowed:NO];
-		output = [output initImages : imageNames : defaultState];
+		output = [output initImages : imageNames];
 	}
 	
 	return output;
 }
 
-- (instancetype) initImages : (NSArray*) imageNames : (short) defaultState
+- (instancetype) initImages : (NSArray*) imageNames
 {
 	[Prefs registerForChange:self forType:KVO_THEME];
 	didRegister = YES;
@@ -37,7 +37,6 @@
 		return nil;
 	
 	_activeCell = 0;
-	_defaultState = defaultState;
 	_imageNames = [NSArray arrayWithArray:imageNames];
 	
 	return self;

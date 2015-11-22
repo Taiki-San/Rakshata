@@ -12,9 +12,9 @@
 
 @implementation RakButton
 
-+ (instancetype) allocImageWithBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall
++ (instancetype) allocImageWithBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall
 {
-	RakButton *output = [self allocImageWithoutBackground:imageName :stateAtStartup: target :selectorToCall];
+	RakButton *output = [self allocImageWithoutBackground:imageName: target :selectorToCall];
 	
 	if(output != nil)
 	{
@@ -24,7 +24,7 @@
 	return output;
 }
 
-+ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (short) stateAtStartup : (id) target : (SEL) selectorToCall
++ (instancetype) allocImageWithoutBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall
 {
 	RakButton* output = [self new];
 	
@@ -32,7 +32,7 @@
 	{
 		output.textButton = NO;
 		
-		output.cell = [output.cell initWithPage: imageName : stateAtStartup];
+		output.cell = [output.cell initWithPage: imageName];
 		
 		//Update a couple of prefs
 		[output sizeToFit];
@@ -158,9 +158,9 @@
 
 #pragma mark - Helper
 
-+ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (short) stateAtStartup : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
-	RakButton * button = [self allocImageWithoutBackground:imageName :stateAtStartup :target :selectorToCall];
+	RakButton * button = [self allocImageWithoutBackground:imageName :target :selectorToCall];
 	
 	if(button != nil && superview != nil)
 	{
@@ -237,7 +237,7 @@
 	return self;
 }
 
-- (instancetype) initWithPage : (NSString*) imageName : (short) state
+- (instancetype) initWithPage : (NSString*) imageName
 {
 	self = [self init];
 	
@@ -248,7 +248,7 @@
 		notAvailable = NO;
 		_activeAllowed = hasRegisteredThemeUpdates = YES;
 		
-		if(![self loadIcon:state :[Prefs getCurrentTheme]])
+		if(![self loadIcon:RB_STATE_STANDARD])
 		{
 			NSLog(@"Failed at create button for icon: %@", imageName);
 			return nil;
@@ -301,15 +301,17 @@
 	}
 	else					//img cell
 	{
-		int state = RB_STATE_UNAVAILABLE;
+		int state;
 		
 		//We get the previous state to restore it
 		if(self.image == clicked)
 			state = RB_STATE_HIGHLIGHTED;
 		else if(self.image == nonClicked)
 			state = RB_STATE_STANDARD;
+		else
+			state = RB_STATE_UNAVAILABLE;
 		
-		[self loadIcon:state :[Prefs getCurrentTheme]];
+		[self loadIcon:state];
 	}
 
 	[_controlView setNeedsDisplay:YES];
@@ -317,17 +319,22 @@
 
 #pragma mark - Utils
 
-- (BOOL) loadIcon : (short) state : (uint) currentTheme
+- (BOOL) loadIcon : (short) state
 {
 	NSImage * template = [RakResPath getImage:_imageName];
+	
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE ]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE ]];
 	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE ]];
 
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
+	{
 		[self setImage:nonClicked];
+	}
 	else if(state == RB_STATE_HIGHLIGHTED && clicked != nil)
+	{
 		[self setImage:clicked];
+	}
 	else if(unAvailable != nil)
 	{
 		[self setImage:unAvailable];
@@ -335,6 +342,7 @@
 	}
 	else
 		return NO;
+
 	return YES;
 }
 
