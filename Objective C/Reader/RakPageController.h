@@ -13,8 +13,8 @@
 @interface RakPageController : NSPageController
 
 @property (nonatomic) BOOL flipped;
+@property (nonatomic) NSInteger patchedSelectedIndex;
 
-- (NSInteger) patchSelectedIndex;
 - (NSUInteger) getPatchedPosForIndex : (NSUInteger) index;
 
 @end

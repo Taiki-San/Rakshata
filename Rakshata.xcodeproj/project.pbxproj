@@ -1045,6 +1045,17 @@
 			name = Favorite;
 			sourceTree = "<group>";
 		};
+		B65EEA371C01F1FC002B1090 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B634EAD31C01DF170078F33A /* RakPageController.h */,
+				B634EAD41C01DF170078F33A /* RakPageController.m */,
+				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
+				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 		B6694F55194A8A8200D656A9 /* Drag'n Drop */ = {
 			isa = PBXGroup;
 			children = (
@@ -1417,14 +1428,11 @@
 				B62DBB891A118AEF007EBAC6 /* RakDRM.m */,
 				B6E45D7018D5F290007E1D5C /* RakPage.h */,
 				B6E45D7118D5F290007E1D5C /* RakPage.m */,
-				B634EAD31C01DF170078F33A /* RakPageController.h */,
-				B634EAD41C01DF170078F33A /* RakPageController.m */,
-				B6A1F59B1975684100A3AACD /* RakPageScrollView.h */,
-				B6A1F59C1975684100A3AACD /* RakPageScrollView.m */,
 				B6756C2318C13EBF006E166F /* RakReaderBottomBar.h */,
 				B6756C2418C13EBF006E166F /* RakReaderBottomBar.m */,
 				B69D61D3186CA2F2003504F9 /* Reader.h */,
 				B69D61D4186CA2F2003504F9 /* Reader.m */,
+				B65EEA371C01F1FC002B1090 /* Utils */,
 			);
 			name = Reader;
 			sourceTree = "<group>";

@@ -679,7 +679,8 @@
 		_data.pageCourante--;
 	}
 	
-	if(switchType != READER_ETAT_DEFAULT && mainScroller.patchSelectedIndex != _data.pageCourante + 1)
+	//We have to change the page ourselves
+	if(switchType != READER_ETAT_DEFAULT && mainScroller.patchedSelectedIndex != _data.pageCourante + 1)
 	{
 		MUTEX_LOCK(cacheMutex);
 		
@@ -696,7 +697,7 @@
 		{
 			[CATransaction begin];
 			[CATransaction setDisableActions:YES];
-			mainScroller.selectedIndex = _data.pageCourante + 1;
+			mainScroller.patchedSelectedIndex = _data.pageCourante + 1;
 			[CATransaction commit];
 		}
 		self.preventRecursion = NO;
@@ -957,7 +958,7 @@
 	[array addObject:@(-1)];	//Placeholder for last page of previous chapter
 	
 	for(uint i = 0; i < _data.nombrePage; i++)
-		[array addObject:@(i)];
+		[array addObject:@([mainScroller getPatchedPosForIndex:i])];
 	
 	[array addObject:@(-2)];	//Placeholder for first page of next chapter
 	
@@ -972,7 +973,7 @@
 		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
 		
 		mainScroller.arrangedObjects = array;
-		mainScroller.selectedIndex = _data.pageCourante + 1;
+		mainScroller.patchedSelectedIndex = _data.pageCourante + 1;
 		
 		_flushingCache = NO;
 
@@ -1053,7 +1054,7 @@
 	_data.nombrePage = 1;
 	self.initWithNoContent = YES;
 	[self failure : 0];
-	mainScroller.selectedIndex = 1;
+	mainScroller.patchedSelectedIndex = 1;
 
 	if([[[NSApp delegate] CT] activeProject].cacheDBID != oldCache)
 		[[[NSApp delegate] CT] ownFocus];
@@ -1519,7 +1520,7 @@
 	return controller;
 }
 
-- (void) pageController : (NSPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (RakPageScrollView*) object
+- (void) pageController : (RakPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (RakPageScrollView*) object
 {
 	NSView * view = viewController.view;
 	NSArray * subviews = [NSArray arrayWithArray:view.subviews];
@@ -1551,7 +1552,7 @@
 		[placeholder setImage:imagePlaceholder];
 		
 		if([object isKindOfClass:[NSNumber class]])
-			placeholder.page = [(NSNumber *) object unsignedIntValue];
+			placeholder.page = [pageController getPatchedPosForIndex:[(NSNumber *) object unsignedIntValue]];
 		else
 			placeholder.page = UINT_MAX;
 		
@@ -1569,7 +1570,17 @@
 		[object setFrame:container.bounds];
 		
 		if(!_endingTransition)
-			object.magnification = 1;
+		{
+			if(saveMagnification)
+			{
+				if(_scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+					lastKnownMagnification = _scrollView.magnification;
+				
+				object.magnification = lastKnownMagnification;
+			}
+			else
+				object.magnification = 1;
+		}
 		
 		if(object.page != _data.pageCourante)
 			[object scrollToBeginningOfDocument];
@@ -1613,7 +1624,7 @@
 		return;
 	
 	//We are to an adjacent chapter page
-	uint index = pageController.patchSelectedIndex;
+	uint index = pageController.patchedSelectedIndex;
 	
 	if(index == 0)
 	{
@@ -1651,15 +1662,15 @@
 	_endingTransition = NO;
 	
 	//Before the first page
-	if(pageController.patchSelectedIndex == 0 && _posElemInStructure == 0)
-		pageController.selectedIndex = 1;
+	if(pageController.patchedSelectedIndex == 0 && _posElemInStructure == 0)
+		pageController.patchedSelectedIndex = 1;
 	
 	_scrollView.magnification = saveMagnification ? lastKnownMagnification : 1;
 
 	//After the last page
-	if(((NSUInteger) pageController.patchSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
+	if(((NSUInteger) pageController.patchedSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
 	{
-		pageController.selectedIndex = (int64_t) [pageController.arrangedObjects count] - 2;
+		pageController.patchedSelectedIndex = (int64_t) [pageController.arrangedObjects count] - 2;
 		
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 		if(self.distractionFree)
@@ -1762,7 +1773,7 @@
 		
 		_scrollView = nil;
 		
-		mainScroller.selectedIndex = 0;
+		mainScroller.patchedSelectedIndex = 0;
 		mainScroller.arrangedObjects = array;
 		
 		_flushingCache = NO;

@@ -12,21 +12,21 @@
 
 @implementation RakPageController
 
-- (void) setSelectedIndex:(NSInteger)selectedIndex
+- (void) setPatchedSelectedIndex : (NSInteger) patchedSelectedIndex
 {
 	if(_flipped)
 	{
 		NSInteger count = (NSInteger) [self.arrangedObjects count];
-		if(selectedIndex < count)
-			[super setSelectedIndex: count - 1 - selectedIndex];
+		if(patchedSelectedIndex < count)
+			self.selectedIndex = count - 1 - patchedSelectedIndex;
 		else
-			[super setSelectedIndex:0];
+			self.selectedIndex = 0;
 	}
 	else
-		[super setSelectedIndex:selectedIndex];
+		self.selectedIndex = patchedSelectedIndex;
 }
 
-- (NSInteger) patchSelectedIndex
+- (NSInteger) patchedSelectedIndex
 {
 	if(_flipped)
 	{
@@ -46,9 +46,7 @@
 	{
 		NSUInteger count = [self.arrangedObjects count], selectedIndex = index;
 		if(selectedIndex < count)
-			return [self.arrangedObjects count] - 1 - selectedIndex;
-		else
-			return 0;
+			return count - 1 - selectedIndex;
 	}
 	
 	return index;
@@ -59,7 +57,7 @@
 	if(_flipped != flipped)
 	{
 		_flipped = flipped;
-		self.selectedIndex = [super selectedIndex];
+		self.selectedIndex = self.selectedIndex;
 	}
 }
 
