@@ -29,6 +29,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restrictionsUpdated:) name:NOTIFICATION_SEARCH_UPDATED object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(installedOnlyTriggered:) name:NOTIFICATION_INSTALLED_ONLY_STAB object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(freeOnlyTriggered:) name:NOTIFICATION_FREE_ONLY object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favsOnlyTriggered:) name:NOTIFICATION_FAVS_ONLY object:nil];
 		
 		_sharedReference = [NSMutableArray array];
 		
@@ -90,7 +91,7 @@
 	}
 	
 	//We get the filtered list
-	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch UTF8String] : NULL, installedOnly, freeOnly);
+	uint * filtered = getFilteredProject(_nbElemActivated, commitedSearch != nil ? [commitedSearch UTF8String] : NULL, installedOnly, freeOnly, favsOnly);
 	if(filtered == NULL && *_nbElemActivated != 0)
 	{
 		if(includeCacheRefresh)
@@ -406,6 +407,20 @@
 		if(newFreeOnly != freeOnly)
 		{
 			freeOnly = newFreeOnly;
+			[self updateContext:NO];
+		}
+	}
+}
+
+- (void) favsOnlyTriggered : (NSNotification *) notification
+{
+	if(notification.object != nil && [notification.object isKindOfClass:[NSNumber class]])
+	{
+		BOOL newFavsOnly = [notification.object boolValue];
+		
+		if(newFavsOnly != favsOnly)
+		{
+			favsOnly = newFavsOnly;
 			[self updateContext:NO];
 		}
 	}

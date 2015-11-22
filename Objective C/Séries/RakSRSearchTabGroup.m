@@ -79,6 +79,27 @@ enum
 				else
 					freeSwitch = nil;
 			}
+			
+			favsSwitch = [[RakSwitchButton alloc] init];
+			if(freeSwitch != nil)
+			{
+				favsText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FAVS-ONLY", nil) :[self textColor]];
+				if(favsText != nil)
+				{
+					favsSwitch.state = NSOffState;
+					favsSwitch.target = self;
+					favsSwitch.action = @selector(triggerFavs);
+					
+					[self addSubview:favsSwitch];
+					
+					favsText.clicTarget = self;
+					favsText.clicAction = @selector(switchTriggerFavs);
+					
+					[self addSubview:favsText];
+				}
+				else
+					favsSwitch = nil;
+			}
 		}
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
@@ -117,17 +138,28 @@ enum
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		NSRect freeSwitchFrame = freeSwitch.frame, freeTextFrame = freeText.frame;
-		
 		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
 		[close setFrameOrigin:newOrigin];
 		
-		const CGFloat cumulatedWidth = freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT + freeTextFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - freeSwitchFrame.size.height);
+		//Free button
+		NSRect switchFrame = freeSwitch.frame, textFrame = freeText.frame;
+		CGFloat cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
 		[freeSwitch setFrameOrigin:newOrigin];
 		
-		newOrigin = NSMakePoint(newOrigin.x + freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (freeSwitchFrame.size.height / 2 - freeTextFrame.size.height / 2));
+		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
 		[freeText setFrameOrigin:newOrigin];
+
+		//Favs button
+		switchFrame = favsSwitch.frame;
+		textFrame = favsText.frame;
+		
+		cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
+		[favsSwitch setFrameOrigin:newOrigin];
+		
+		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
+		[favsText setFrameOrigin:newOrigin];
 	}
 	else
 	{
@@ -142,17 +174,28 @@ enum
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		NSRect freeSwitchFrame = freeSwitch.frame, freeTextFrame = freeText.frame;
-		
 		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
 		[close.animator setFrameOrigin:newOrigin];
 		
-		const CGFloat cumulatedWidth = freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT + freeTextFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - freeSwitchFrame.size.height);
-		[freeSwitch setFrameOrigin:newOrigin];
+		//Free button
+		NSRect switchFrame = freeSwitch.frame, textFrame = freeText.frame;
+		CGFloat cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
+		[freeSwitch.animator setFrameOrigin:newOrigin];
 		
-		newOrigin = NSMakePoint(newOrigin.x + freeSwitchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (freeSwitchFrame.size.height / 2 - freeTextFrame.size.height / 2));
-		[freeText setFrameOrigin:newOrigin];
+		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
+		[freeText.animator setFrameOrigin:newOrigin];
+		
+		//Favs button
+		switchFrame = favsSwitch.frame;
+		textFrame = favsText.frame;
+		
+		cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
+		[favsSwitch.animator setFrameOrigin:newOrigin];
+		
+		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
+		[favsText.animator setFrameOrigin:newOrigin];
 	}
 	else
 	{
@@ -280,9 +323,19 @@ enum
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FREE_ONLY object:@(freeSwitch.state == NSOnState)];
 }
 
+- (void) triggerFavs
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FAVS_ONLY object:@(favsSwitch.state == NSOnState)];
+}
+
 - (void) switchTriggerFree
 {
 	[freeSwitch performClick:self];
+}
+
+- (void) switchTriggerFavs
+{
+	[favsSwitch performClick:self];
 }
 
 @end

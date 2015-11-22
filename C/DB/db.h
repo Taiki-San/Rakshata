@@ -176,7 +176,7 @@ uint getIDForTag(byte type, uint code);
 
 uint _getFromSearch(void * _table, byte type, void * data);
 
-uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly);
+uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly, bool wantFavsOnly);
 char ** getProjectNameStartingWith(const char * start, uint * nbProject);
 bool haveOneOrLessMatchForNameStartingWith(const char * start);
 

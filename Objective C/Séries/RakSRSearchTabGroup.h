@@ -19,8 +19,8 @@
 	
 	//Used by extra
 	RakButton * close;
-	RakSwitchButton * freeSwitch;
-	RakText * freeText;
+	RakSwitchButton * freeSwitch, * favsSwitch;
+	RakText * freeText, * favsText;
 	
 	charType ** listData;
 	uint nbDataList;
