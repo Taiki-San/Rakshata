@@ -14,6 +14,7 @@
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
+	lastKnownMagnification = 1;
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
 	
@@ -115,8 +116,13 @@
 		else if([view class] != [RakPageScrollView class])
 			return;
 		
-		if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
-			((RakPageScrollView *) view).magnification = _scrollView.magnification;
+		if(saveMagnification)
+		{
+			if(_scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+				((RakPageScrollView *) view).magnification = lastKnownMagnification = _scrollView.magnification;
+			else
+				((RakPageScrollView *) view).magnification = lastKnownMagnification;
+		}
 		
 		_scrollView = (id) view;
 	}
@@ -294,21 +300,29 @@
 				case '0':
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
-						_scrollView.animator.magnification = 1;
+						_scrollView.animator.magnification = lastKnownMagnification = 1;
 					break;
 				}
 					
 				case '+':
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && _scrollView.magnification < 3)
-						_scrollView.animator.magnification += (_scrollView.magnification > 1.5) ? 0.5f : 0.25f;
+					{
+						lastKnownMagnification = _scrollView.magnification;
+						lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+						_scrollView.animator.magnification = lastKnownMagnification;
+					}
 					break;
 				}
 					
 				case '-':
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && round(_scrollView.magnification * 4) > 1)
-						_scrollView.animator.magnification -= (_scrollView.magnification > 1.5) ? 0.5f : 0.25f;;
+					{
+						lastKnownMagnification = _scrollView.magnification;
+						lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+						_scrollView.animator.magnification = lastKnownMagnification;
+					}
 					break;
 				}
 					
@@ -701,8 +715,13 @@
 		RakPageScrollView * view = mainScroller.arrangedObjects[[mainScroller getPatchedPosForIndex:_data.pageCourante + 1]];
 		if([view class] == [RakPageScrollView class])
 		{
-			if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
-				view.magnification = _scrollView.magnification;
+			if(saveMagnification)
+			{
+				if(_scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+					view.magnification = lastKnownMagnification = _scrollView.magnification;
+				else
+					view.magnification = lastKnownMagnification;
+			}
 			
 			_scrollView = view;
 		}
@@ -1455,8 +1474,13 @@
 	
 	if(&_data == dataLecture && page == dataLecture->pageCourante)		//If current page, we update the main scrollview pointer (click management)
 	{
-		if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
-			view.magnification = _scrollView.magnification;
+		if(saveMagnification)
+		{
+			if(_scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+				view.magnification = lastKnownMagnification = _scrollView.magnification;
+			else
+				view.magnification = lastKnownMagnification;
+		}
 
 		_scrollView = view;
 	}
@@ -1618,7 +1642,9 @@
 - (void)pageControllerDidEndLiveTransition : (RakPageController *) pageController
 {
 	_endingTransition = YES;
-	CGFloat magnification = (saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class]) ? _scrollView.magnification : 1;
+	
+	if(saveMagnification && _scrollView != nil && [_scrollView class] == [RakPageScrollView class])
+		lastKnownMagnification = _scrollView.magnification;
 	
 	[pageController completeTransition];
 	
@@ -1628,7 +1654,7 @@
 	if(pageController.patchSelectedIndex == 0 && _posElemInStructure == 0)
 		pageController.selectedIndex = 1;
 	
-	_scrollView.magnification = magnification;
+	_scrollView.magnification = saveMagnification ? lastKnownMagnification : 1;
 
 	//After the last page
 	if(((NSUInteger) pageController.patchSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)

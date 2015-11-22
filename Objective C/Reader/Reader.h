@@ -31,6 +31,7 @@
 	
 	//Page management
 	BOOL saveMagnification;
+	CGFloat lastKnownMagnification;
 	RakPageScrollView * _scrollView;
 	
 	RakPageController * mainScroller;
