@@ -136,12 +136,12 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL];
 }
 
 - (NSColor *) placeholderColor
 {
-	return [Prefs getSystemColor:COLOR_PLACEHOLDER_REPO :nil];
+	return [Prefs getSystemColor:COLOR_PLACEHOLDER_REPO];
 }
 
 #pragma mark - Data interface

@@ -133,17 +133,17 @@ enum
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (NSColor *) getTagTextColor
 {
-	return [Prefs getSystemColor:COLOR_TAGITEM_FONT :nil];
+	return [Prefs getSystemColor:COLOR_TAGITEM_FONT];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor : COLOR_BACKGROUND_GRID_FOCUS : nil];
+	return [Prefs getSystemColor : COLOR_BACKGROUND_GRID_FOCUS];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

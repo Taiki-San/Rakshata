@@ -233,12 +233,12 @@
 
 - (NSColor *) getFontTopColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE : nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (NSColor *) getFontClickableColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT : nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

@@ -255,12 +255,12 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:COLOR_READER_BAR : nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR];
 }
 
 - (NSColor*) getColorFront
 {
-	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT : nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

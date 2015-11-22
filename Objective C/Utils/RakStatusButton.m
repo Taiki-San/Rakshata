@@ -32,7 +32,8 @@ enum
 		if(trackingArea != nil)
 			[self addTrackingArea:trackingArea];
 
-		cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND :self];
+		[Prefs registerForChange:self forType:KVO_THEME];
+		cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND];
 		[self reloadAnimation];
 	}
 
@@ -50,11 +51,11 @@ enum
 	_status = status;
 
 	if(status == STATUS_BUTTON_OK)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_OK :nil];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_OK];
 	else if(status == STATUS_BUTTON_WARN)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_WARN :nil];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_WARN];
 	else if(status == STATUS_BUTTON_ERROR)
-		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_ERROR :nil];
+		cachedColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_ERROR];
 	
 	[self reloadAnimation];
 }
@@ -70,7 +71,7 @@ enum
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
 	[self setStatus:_status];
-	cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND :nil];
+	cachedBackgroundColor = [Prefs getSystemColor:COLOR_STATUS_BUTTON_BACKGROUND];
 	
 	text.textColor = [self fontColor];
 	[self setNeedsDisplay:YES];
@@ -396,12 +397,12 @@ enum
 
 - (NSColor *) fontColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (NSColor *) fontPressedColor
 {
-	return [Prefs getSystemColor:COLOR_HIGHLIGHT :nil];
+	return [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }
 
 @end

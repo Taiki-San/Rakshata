@@ -37,7 +37,7 @@ enum
 		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:_bounds] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
 		
-		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:COLOR_SURVOL : nil]];	//setupInternal already register
+		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:COLOR_SURVOL]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
 			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];
@@ -94,7 +94,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[dropPlaceHolder setTextColor:[Prefs getSystemColor:COLOR_SURVOL : nil]];
+	[dropPlaceHolder setTextColor:[Prefs getSystemColor:COLOR_SURVOL]];
 	[self setNeedsDisplay:YES];
 }
 
@@ -204,7 +204,7 @@ enum
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor: COLOR_BACKGROUND_COREVIEW: nil];
+	return [Prefs getSystemColor: COLOR_BACKGROUND_COREVIEW];
 }
 
 - (BOOL) proxyReceiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender

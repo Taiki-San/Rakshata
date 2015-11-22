@@ -758,17 +758,17 @@ enum
 
 - (NSColor *) mainTitleColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (NSColor *) titleColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (RakText *) getTextForLocalizationString : (NSString *) string : (CGFloat) maxWidth
@@ -799,7 +799,7 @@ enum
 		((RakTextCell*) text.cell).centered = YES;
 
 		text.drawsBackground = YES;
-		text.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil];
+		text.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD];
 
 		[text setPlaceholderString:NSLocalizedString(string, nil)];
 		text.editable = YES;

@@ -50,7 +50,7 @@
 {
 	NSString * string = NSLocalizedString(_isTome ? @"DELETION-VOL-CONFIRM" : @"DELETION-CHAP-CONFIRM", nil);
 	
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :string :[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR]];
 	if(contentText != nil)
 	{
 		[contentText setAlignment:NSTextAlignmentCenter];
@@ -97,7 +97,7 @@
 	{
 		if([view class] == [RakText class])
 		{
-			[view setTextColor:[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil]];
+			[view setTextColor:[Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR]];
 			break;
 		}
 	}
@@ -107,7 +107,7 @@
 
 - (NSColor *) popoverBorderColor
 {
-	return [Prefs getSystemColor: COLOR_DANGER_POPOVER_BORDER :nil];
+	return [Prefs getSystemColor: COLOR_DANGER_POPOVER_BORDER];
 }
 
 //Toolbox
@@ -155,9 +155,9 @@
 - (NSColor *) getFontColor : (uint) cellID
 {
 	if([self isSelectedForSegment:cellID])
-		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED];
 	else
-		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR];
 }
 
 @end
@@ -176,9 +176,9 @@
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
-		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED];
 	else
-		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR:nil];
+		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR];
 }
 
 @end

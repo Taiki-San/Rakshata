@@ -148,7 +148,7 @@
 	if(_currentContext != TAB_READER)
 		return [super drawRect:dirtyRect];
 	
-	[[Prefs getSystemColor:COLOR_BACKGROUND_CT_LIST :nil] setFill];
+	[[Prefs getSystemColor:COLOR_BACKGROUND_CT_LIST] setFill];
 	
 	dirtyRect.size = _bounds.size;
 	

@@ -61,7 +61,6 @@
 	#import "RakAppDelegate.h"
 
 	#import "Prefs.h"
-	#import "RakResPath.h"
 
 	#pragma clang diagnostic ignored "-Wnonnull"
 

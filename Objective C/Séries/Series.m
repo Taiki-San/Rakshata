@@ -21,7 +21,7 @@
 		
 		[self initView : contentView : state];
 		
-		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:self].CGColor;
+		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;
 		
 		[self initContent : state];
@@ -34,7 +34,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:nil].CGColor;
+	self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS].CGColor;
 	[self setNeedsDisplay:YES];
 }
 

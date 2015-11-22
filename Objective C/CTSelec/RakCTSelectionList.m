@@ -910,15 +910,15 @@
 	if(row < _nbData)
 	{
 		if(self.compactMode || (_installedTable != NULL && _installedTable[row]))
-			return [Prefs getSystemColor : COLOR_CLICKABLE_TEXT : nil];
+			return [Prefs getSystemColor : COLOR_CLICKABLE_TEXT];
 	}
 	
-	return [Prefs getSystemColor : COLOR_SURVOL : nil];
+	return [Prefs getSystemColor : COLOR_SURVOL];
 }
 
 - (NSColor *) getTextHighlightColor:(uint)column :(uint)row
 {
-	return [Prefs getSystemColor : COLOR_ACTIVE : nil];
+	return [Prefs getSystemColor : COLOR_ACTIVE];
 }
 
 #pragma mark - Smart reloading
@@ -1121,7 +1121,7 @@
 		if(price != 0)
 		{
 			RakText * priceView = [[RakText alloc] init];
-			priceView.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+			priceView.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 			priceView.stringValue = priceString(price);
 			[priceView sizeToFit];
 			

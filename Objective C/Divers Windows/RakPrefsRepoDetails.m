@@ -237,7 +237,7 @@ enum
 			if(flushButton != nil)
 			{
 				[flushButton.cell setBorderWidth:2];
-				[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
+				[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST]];
 				[flushButton sizeToFit];
 				
 				flushButton.target = self;
@@ -255,7 +255,7 @@ enum
 			if(deleteButton != nil)
 			{
 				[deleteButton.cell setBorderWidth:2];
-				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
+				[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST]];
 				[deleteButton sizeToFit];
 				
 				deleteButton.target = self;
@@ -514,7 +514,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (void) drawRect:(NSRect)dirtyRect
@@ -545,8 +545,8 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
-	[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil]];
+	[flushButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST]];
+	[deleteButton.cell setCustomBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST]];
 }
 
 @end

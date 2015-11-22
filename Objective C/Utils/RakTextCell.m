@@ -109,7 +109,7 @@
 	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
 	
 	if(self.customizedInjectionPoint)
-		[output setInsertionPointColor:[Prefs getSystemColor:COLOR_INSERTION_POINT :nil]];
+		[output setInsertionPointColor:[Prefs getSystemColor:COLOR_INSERTION_POINT]];
 	
 	return output;
 }
@@ -161,7 +161,7 @@
 {
 	NSTextView * output = (NSTextView*) [super setUpFieldEditorAttributes:textObj];
 	
-	[output setInsertionPointColor:[Prefs getSystemColor:COLOR_INSERTION_POINT :nil]];
+	[output setInsertionPointColor:[Prefs getSystemColor:COLOR_INSERTION_POINT]];
 	
 	return output;
 }

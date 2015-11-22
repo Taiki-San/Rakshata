@@ -109,7 +109,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 #pragma mark - UI Configuration

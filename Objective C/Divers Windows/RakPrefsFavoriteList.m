@@ -37,7 +37,7 @@
 		scrollView.wantsLayer = YES;
 		scrollView.layer.cornerRadius = 3;
 		scrollView.drawsBackground = YES;
-		scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
+		scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
 		
 		[self enableDrop];
 	}
@@ -163,7 +163,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
+	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
 	[scrollView setNeedsDisplay:YES];
 }
 

@@ -31,6 +31,7 @@
 	self.layer.cornerRadius = 7.5;
 	self.layer.backgroundColor = [self getMainColor].CGColor;
 	
+	[Prefs registerForChange:self forType:KVO_THEME];
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
 	
 	[self resizeTrackingArea];
@@ -62,7 +63,7 @@
 	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_THEME]])
 	{
 		self.layer.backgroundColor = [self getMainColor].CGColor;
-		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS : nil].CGColor;
+		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS].CGColor;
 		[self setNeedsDisplay:YES];
 	}
 }
@@ -172,7 +173,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
 }
 
 #pragma mark - General resizing utils

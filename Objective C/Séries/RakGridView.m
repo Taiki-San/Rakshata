@@ -116,7 +116,7 @@ enum
 	{
 		if(backgroundText == nil)
 		{
-			backgroundText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-GRID-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE :nil]];
+			backgroundText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-GRID-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE]];
 			if(backgroundText != nil)
 			{
 				backgroundText.font = [NSFont fontWithName:[backgroundText.font fontName] size:20];

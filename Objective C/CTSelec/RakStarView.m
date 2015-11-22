@@ -29,7 +29,8 @@ uint _currentTheme;
 	
 	if(self != nil)
 	{
-		uint currentTheme = [Prefs getCurrentTheme:self];
+		uint currentTheme = [Prefs getCurrentTheme];
+		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		if(starActive == nil)
 		{
@@ -48,7 +49,7 @@ uint _currentTheme;
 		_wantNumber = NO;
 		_project = project;
 		
-		rating = 0;//(getRandom() % 50) / 10.0f;
+		rating = 0;
 		
 		[self setFrameSize : NSMakeSize(WIDTH, HEIGHT)];
 		basePoint = NSZeroPoint;
@@ -145,7 +146,7 @@ uint _currentTheme;
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -153,7 +154,7 @@ uint _currentTheme;
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	uint currentTheme = [Prefs getCurrentTheme:nil];
+	uint currentTheme = [Prefs getCurrentTheme];
 	
 	if(currentTheme != _currentTheme)
 	{

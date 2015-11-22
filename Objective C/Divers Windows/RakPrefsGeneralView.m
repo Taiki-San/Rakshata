@@ -41,7 +41,7 @@ enum
 	
 	if(self != nil)
 	{
-		uint currentTheme = [Prefs getCurrentTheme:self];
+		[Prefs registerForChange:self forType:KVO_THEME];
 
 		//Theme change
 		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:_bounds :@[NSLocalizedString(@"PREFS-GENERAL-THEME-DARK", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-LIGHT", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-CUSTOM", nil)]];
@@ -54,7 +54,7 @@ enum
 			if(checkFileExist(CUSTOM_COLOR_FILE))
 				[themeSwitch setEnabled:YES forSegment:2];
 			
-			[themeSwitch setSelected:YES forSegment:currentTheme - 1];
+			[themeSwitch setSelected:YES forSegment:[Prefs getCurrentTheme] - 1];
 			
 			[themeSwitch setFrameOrigin:NSMakePoint(BORDER, THEME_BASE_Y - themeSwitch.bounds.size.height / 2)];
 			
@@ -132,12 +132,12 @@ enum
 
 - (NSColor *) titleColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

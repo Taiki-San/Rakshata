@@ -32,7 +32,7 @@ enum
 		[self initView: contentView : state];
 		canDeploy = NO;
 		
-		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS:self].CGColor;
+		self.layer.borderColor = [Prefs getSystemColor:COLOR_BORDER_TABS].CGColor;
 		self.layer.borderWidth = 2;
 		
 		if(![self initContent:state])

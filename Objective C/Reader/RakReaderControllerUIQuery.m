@@ -54,7 +54,7 @@
 	
 	NSString * string = NSLocalizedString(_isTome ? (_sizeArray == 1 ? @"AUTO-DL-ONE-VOL" : @"AUTO-DL-SEVERAL-VOL") : (_sizeArray == 1 ? @"AUTO-DL-ONE-CHAP" : @"AUTO-DL-SEVERAL-CHAP"), nil);
 	
-	RakText * contentText = [[RakText alloc] initWithText:frame :string :[Prefs getSystemColor : COLOR_HIGHLIGHT:nil]];
+	RakText * contentText = [[RakText alloc] initWithText:frame :string :[Prefs getSystemColor : COLOR_HIGHLIGHT]];
 	if(contentText != nil)
 	{
 		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
@@ -117,7 +117,7 @@
 	{
 		if([view class] == [RakText class])
 		{
-			[view setTextColor:[Prefs getSystemColor : COLOR_HIGHLIGHT:nil]];
+			[view setTextColor:[Prefs getSystemColor : COLOR_HIGHLIGHT]];
 			break;
 		}
 	}

@@ -31,6 +31,8 @@ enum
 		_invalidData = NO;
 		wasMultiLine = _controller.isSerieMainThread;	//We want to trigger the code updating wasMultiLine
 		
+		[Prefs registerForChange:self forType:KVO_THEME];
+		
 		todoList = [_controller getData: _row : YES];
 		if(todoList == NULL || *todoList == NULL)
 		{
@@ -42,10 +44,10 @@ enum
 		
 		self.autoresizesSubviews = NO;
 		
-		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:COLOR_INACTIVE : self]];
+		requestName = [[RakText alloc] initWithText:self.bounds : @"Dangos are awesome" : [Prefs getSystemColor:COLOR_INACTIVE]];
 		if(requestName != nil)		[self addSubview:requestName];
 		
-		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+		statusText = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-INSTALLING", nil) : [Prefs getSystemColor:COLOR_ACTIVE]];
 		if(statusText != nil)		{		[statusText sizeToFit];			[self addSubview:statusText];		}
 		
 		[self initIcons];
@@ -148,8 +150,8 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
-	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+	[requestName setTextColor:[Prefs getSystemColor:COLOR_INACTIVE]];
+	[statusText setTextColor:[Prefs getSystemColor:COLOR_ACTIVE]];
 	
 	[_pause removeFromSuperview];	_pause = nil;
 	[_read removeFromSuperview];	_read = nil;

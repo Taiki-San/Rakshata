@@ -87,7 +87,7 @@ enum
 		if(scrollview != nil)
 		{
 			scrollview.drawsBackground = YES;
-			scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW :nil];
+			scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW];
 			scrollview.documentView = view;
 			[superview addSubview:scrollview];
 
@@ -207,7 +207,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW :nil];
+	scrollview.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_COREVIEW];
 }
 
 #pragma mark - Text management
@@ -254,7 +254,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 #pragma mark - Helper

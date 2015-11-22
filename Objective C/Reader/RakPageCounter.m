@@ -100,7 +100,7 @@
 
 - (NSColor *) getColorBackground
 {
-	return [Prefs getSystemColor:COLOR_READER_BAR_PAGE_COUNTER:nil];
+	return [Prefs getSystemColor:COLOR_READER_BAR_PAGE_COUNTER];
 }
 
 - (NSColor *) getBorderColor
@@ -110,7 +110,7 @@
 
 - (NSColor *) getFontColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -223,7 +223,7 @@
 	{
 		[mainLabel setStringValue:NSLocalizedString(@"READER-JUMP-TO", nil)];
 		[mainLabel sizeToFit];
-		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE]];
 	}
 	
 	if(gotoButtonContainer != nil)
@@ -240,8 +240,8 @@
 	if(textField != nil)
 	{
 		((RakTextCell*)textField.cell).customizedInjectionPoint = YES;
-		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		[textField setBezeled:NO];
 		
 		RakFormatterNumbersOnly * formater = [[RakFormatterNumbersOnly alloc] init];
@@ -284,14 +284,14 @@
 {
 	if(mainLabel != nil)
 	{
-		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE :nil]];
+		[mainLabel setTextColor:[Prefs getSystemColor:COLOR_ACTIVE]];
 		[mainLabel setNeedsDisplay:YES];
 	}
 	
 	if(textField != nil)
 	{
-		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD :nil]];
-		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil]];
+		[textField setBackgroundColor:[Prefs getSystemColor:COLOR_BACKGROUND_TEXTFIELD]];
+		[textField setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		[textField setNeedsDisplay:YES];
 	}
 }

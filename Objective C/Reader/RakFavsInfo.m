@@ -42,7 +42,7 @@
 
 - (void) setupView
 {
-	RakText * contentText = [[RakText alloc] initWithText:self.frame :NSLocalizedString(@"FAVORITE-DESCRIPTION", nil) :[Prefs getSystemColor : COLOR_ACTIVE:nil]];
+	RakText * contentText = [[RakText alloc] initWithText:self.frame :NSLocalizedString(@"FAVORITE-DESCRIPTION", nil) :[Prefs getSystemColor:COLOR_ACTIVE]];
 	if(contentText != nil)
 	{
 		[contentText setAlignment:NSTextAlignmentCenter];
@@ -85,7 +85,7 @@
 	{
 		if([view class] == [RakText class])
 		{
-			[view setTextColor:[Prefs getSystemColor : COLOR_ACTIVE:nil]];
+			[view setTextColor:[Prefs getSystemColor:COLOR_ACTIVE]];
 			break;
 		}
 	}

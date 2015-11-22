@@ -307,17 +307,17 @@ enum
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (NSColor *) getTagColor
 {
-	return [Prefs getSystemColor:COLOR_TAGITEM_FONT :nil];
+	return [Prefs getSystemColor:COLOR_TAGITEM_FONT];
 }
 
 - (NSColor *) getSynopsisColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE : nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (NSColor *) interTagColor

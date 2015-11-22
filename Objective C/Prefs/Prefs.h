@@ -12,7 +12,6 @@
 
 #include "RakPrefsTools.h"
 #include "RakPrefsDeepData.h"
-#import "RakResPath.h"
 #import "RakContextRestoration.h"
 
 enum DIRECT_QUERY_REQUEST
@@ -163,10 +162,10 @@ enum KVO_REQUEST {
 + (NSString *) dumpPrefs;
 + (void) deletePrefs;
 
-+ (uint) getCurrentTheme : (id) registerForChanges;
++ (uint) getCurrentTheme;
 + (void) setCurrentTheme : (uint) newTheme;
 
-+ (NSColor*) getSystemColor : (byte) context : (id) senderToRegister;
++ (NSColor*) getSystemColor : (byte) context;
 
 + (NSString *) getFontName : (byte) context;
 

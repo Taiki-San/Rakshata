@@ -83,7 +83,7 @@ enum
 		[_synopsis setAlignment:NSTextAlignmentJustified];
 		[_synopsis.cell setWraps:YES];
 		
-		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE]];
 	}
 	
 	//Update text
@@ -101,7 +101,7 @@ enum
 		placeholderString = YES;
 		if(_placeholder == nil)
 		{
-			_placeholder = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"CT-NO-SYNOPSIS", nil) : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+			_placeholder = [[RakText alloc] initWithText:self.bounds : NSLocalizedString(@"CT-NO-SYNOPSIS", nil) : [Prefs getSystemColor:COLOR_ACTIVE]];
 			if(_placeholder != nil)
 			{
 #ifdef LARGE_FONT_FOR_PLACEHOLDERS
@@ -166,10 +166,10 @@ enum
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(_synopsis != nil)
-		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+		[_synopsis setTextColor : [Prefs getSystemColor:COLOR_ACTIVE]];
 	
 	if(_placeholder != nil)
-		[_placeholder setTextColor : [Prefs getSystemColor:COLOR_ACTIVE : nil]];
+		[_placeholder setTextColor : [Prefs getSystemColor:COLOR_ACTIVE]];
 	
 	[self setNeedsDisplay:YES];
 }
@@ -310,7 +310,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
 }
 
 @end

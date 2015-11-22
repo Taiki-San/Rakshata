@@ -224,7 +224,7 @@ enum
 
 - (NSColor *) borderColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (void) reloadColors

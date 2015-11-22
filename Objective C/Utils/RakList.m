@@ -275,7 +275,7 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (NSColor *) getTextColor : (uint) column : (uint) row
@@ -285,7 +285,7 @@
 
 - (NSColor *) getTextHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (NSColor *) getTextHighlightColor : (uint) column : (uint) row
@@ -295,7 +295,7 @@
 
 - (NSColor *) getBackgroundHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL:nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -830,7 +830,7 @@
 
 - (NSColor *) _dropHighlightColor
 {
-	return [Prefs getSystemColor:COLOR_ACTIVE:nil];
+	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
 - (void)setDropRow:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation

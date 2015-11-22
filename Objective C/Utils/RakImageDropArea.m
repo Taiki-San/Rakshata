@@ -24,12 +24,14 @@ enum
 
 	if(self != nil)
 	{
+		[Prefs registerForChange:self forType:KVO_THEME];
+		
 		self.editable = YES;
 		self.imageScaling = NSImageScaleProportionallyUpOrDown;
 
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 5;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA :self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA].CGColor;
 
 		content = [[RakText alloc] initWithText:string :[self textColor]];
 		if(content != nil)
@@ -106,7 +108,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -114,7 +116,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA :nil].CGColor;
+	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_DROP_AREA].CGColor;
 }
 
 - (void) drawRect:(NSRect)dirtyRect
@@ -124,7 +126,7 @@ enum
 	if(highlighted)
 	{
 		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:_bounds xRadius:5 yRadius:5];
-		[[Prefs getSystemColor:COLOR_ACTIVE :nil] setStroke];
+		[[Prefs getSystemColor:COLOR_ACTIVE] setStroke];
 
 		[path setLineWidth:2];
 		[path stroke];

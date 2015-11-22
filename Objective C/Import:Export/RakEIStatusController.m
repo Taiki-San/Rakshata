@@ -96,7 +96,7 @@ enum
 		[superview addSubview:progressBar];
 	}
 
-	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT:nil]];
+	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 	if(percentage != nil)
 	{
 		percentage.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:20];
@@ -125,7 +125,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND];
 }
 
 #pragma mark - Refresh the status
@@ -209,7 +209,7 @@ enum
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
 	((RakSheetView *) queryWindow.contentView).backgroundColor = [self backgroundColor];
-	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	percentage.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 @end

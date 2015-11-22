@@ -22,7 +22,6 @@
 		flag = TAB_READER;
 		gonnaReduceTabs = 0;
 		
-		[Prefs registerForChange:self forType:KVO_THEME];
 		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
@@ -274,7 +273,7 @@
 
 - (NSColor*) getMainColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_READER_INTAB : nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_READER_INTAB];
 }
 
 - (BOOL) isStillCollapsedReaderTab

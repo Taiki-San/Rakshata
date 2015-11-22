@@ -300,17 +300,17 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE : nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
 }
 
 - (NSColor *) getGradientColor
 {
-	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS : nil];
+	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS];
 }
 
 - (void) updateGradient

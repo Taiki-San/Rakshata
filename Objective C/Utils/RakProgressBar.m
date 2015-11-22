@@ -25,7 +25,9 @@
 		_percentage = 0;
 		_speed = 0;
 		
-		_speedText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]] :[Prefs getSystemColor:COLOR_INACTIVE : self]];
+		[Prefs registerForChange:self forType:KVO_THEME];
+		
+		_speedText = [[RakText alloc] initWithText: frame : [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:_speed countStyle:NSByteCountFormatterCountStyleBinary]] :[Prefs getSystemColor:COLOR_INACTIVE]];
 		
 		if(_speedText == nil)
 			return nil;
@@ -35,8 +37,8 @@
 		
 		[self addSubview:_speedText];	[self centerText];
 		
-		slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT : nil];
-		progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
+		slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT];
+		progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS];
 	}
 	
 	return self;
@@ -57,9 +59,9 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[_speedText setTextColor:[Prefs getSystemColor:COLOR_INACTIVE :nil]];
-	slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT : nil];
-	progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS : nil];
+	[_speedText setTextColor:[Prefs getSystemColor:COLOR_INACTIVE]];
+	slotColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_SLOT];
+	progressColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS];
 	
 	[self setNeedsDisplay:YES];
 }

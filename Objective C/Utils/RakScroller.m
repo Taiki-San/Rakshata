@@ -20,10 +20,12 @@
 	{
 		incompleteDrawing = NO;
 		
-		passive = [Prefs getSystemColor:COLOR_INACTIVE:self];
-		active = [Prefs getSystemColor:COLOR_HIGHLIGHT:nil];
+		passive = [Prefs getSystemColor:COLOR_INACTIVE];
+		active = [Prefs getSystemColor:COLOR_HIGHLIGHT];
 		color = passive;
-		[self setKnobStyle:NSScrollerKnobStyleLight];
+		
+		self.knobStyle = NSScrollerKnobStyleLight;
+		[Prefs registerForChange:self forType:KVO_THEME];
 		[Prefs getPref : PREFS_GET_SCROLLER_STYLE : &scrollerStyle];
 		
 		if(scrollerStyle == SCROLLER_STYLE_THIN)
@@ -47,8 +49,8 @@
 	
 	BOOL isActive = color == active;
 	
-	passive = [Prefs getSystemColor:COLOR_INACTIVE:nil];
-	active = [Prefs getSystemColor:COLOR_HIGHLIGHT:nil];
+	passive = [Prefs getSystemColor:COLOR_INACTIVE];
+	active = [Prefs getSystemColor:COLOR_HIGHLIGHT];
 	
 	if(isActive)	color = active;
 	else			color = passive;

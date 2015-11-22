@@ -254,19 +254,19 @@
 	{
 		if((NSInteger)NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
 		{
-			NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_START :nil] colorWithAlphaComponent:0.7]
-																 endingColor:[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_END :nil]];
+			NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_START] colorWithAlphaComponent:0.7]
+																 endingColor:[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_GRADIENT_END]];
 			[gradient drawInRect:dirtyRect angle:90];
 		}
 		else
 		{
-			[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_MAIN :nil] setFill];
+			[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_MAIN] setFill];
 			NSRectFill(dirtyRect);
 		}
 	}
 	else
 	{
-		[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY :nil] setFill];
+		[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY] setFill];
 		NSRectFill(dirtyRect);
 	}
 
@@ -279,25 +279,25 @@
 
 - (NSColor *) textColor
 {
-	return _isMainWindow ? [Prefs getSystemColor:COLOR_SURVOL: nil] : [Prefs getSystemColor:COLOR_HIGHLIGHT : nil];
+	return _isMainWindow ? [Prefs getSystemColor:COLOR_SURVOL] : [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }
 
 - (NSColor *) firstBorderColor
 {
-	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST : nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST];
 }
 
 - (NSColor *) middleBorderColor
 {
 	if(self.window.isMainWindow)
-		return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE : nil];
+		return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE];
 	
-	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN :nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN];
 }
 
 - (NSColor *) lastBorderColor
 {
-	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_CLOSEST : nil];
+	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_CLOSEST];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

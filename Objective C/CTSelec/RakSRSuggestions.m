@@ -145,7 +145,7 @@
 	{
 		if(placeholder == nil)
 		{
-			placeholder = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-SUGG-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE :nil]];
+			placeholder = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-SUGG-EMPTY", nil) :[Prefs getSystemColor:COLOR_INACTIVE]];
 			if(placeholder != nil)
 			{
 				placeholder.font = [NSFont fontWithName:[placeholder.font fontName] size:15];

@@ -81,7 +81,8 @@
 	//El Capitan
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 	{
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
+		[Prefs registerForChange:self forType:KVO_THEME];
 		hasRegisteredThemeUpdates = YES;
 	}
 
@@ -99,7 +100,7 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(self.layer.backgroundColor != nil)
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS:nil].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
 	
 	[self setNeedsDisplay];
 }
@@ -202,10 +203,16 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS : hasRegisteredThemeUpdates ? nil :self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_BACK_BUTTONS].CGColor;
 		self.layer.cornerRadius = 4;
-		hasRegisteredThemeUpdates = YES;
+		
+		if(!hasRegisteredThemeUpdates)
+		{
+			[Prefs registerForChange:self forType:KVO_THEME];
+			hasRegisteredThemeUpdates = YES;
+		}
 	}
+
 	haveBackground = !haveBackground;
 }
 
@@ -241,7 +248,7 @@
 		notAvailable = NO;
 		_activeAllowed = hasRegisteredThemeUpdates = YES;
 		
-		if(![self loadIcon:state :[Prefs getCurrentTheme:self]])
+		if(![self loadIcon:state :[Prefs getCurrentTheme]])
 		{
 			NSLog(@"Failed at create button for icon: %@", imageName);
 			return nil;
@@ -302,7 +309,7 @@
 		else if(self.image == nonClicked)
 			state = RB_STATE_STANDARD;
 		
-		[self loadIcon:state :[Prefs getCurrentTheme:nil]];
+		[self loadIcon:state :[Prefs getCurrentTheme]];
 	}
 
 	[_controlView setNeedsDisplay:YES];
@@ -313,9 +320,9 @@
 - (BOOL) loadIcon : (short) state : (uint) currentTheme
 {
 	NSImage * template = [RakResPath getImage:_imageName];
-	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE :nil]];
-	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE :nil]];
-	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE :nil]];
+	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE ]];
+	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE ]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_UNAVAILABLE ]];
 
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 		[self setImage:nonClicked];
@@ -401,24 +408,24 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS :nil];
+	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS ];
 }
 
 - (NSColor*) getBackgroundColor
 {
-	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED :nil] : _customBackgroundColor;
+	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED ] : _customBackgroundColor;
 }
 
 - (NSColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_HIGHLIGHT : nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_HIGHLIGHT];
 	else if(self.state == NSOnState && self.activeAllowed)
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED : nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED];
 	else if([self isEnabled])
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED : nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED];
 	else
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE :nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE ];
 }
 
 - (void) reloadFontColor

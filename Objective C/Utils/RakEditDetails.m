@@ -72,7 +72,7 @@
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_EXPORT_BACKGROUND];
 }
 
 #pragma mark - Control

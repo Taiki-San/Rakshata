@@ -295,7 +295,7 @@
 
 - (NSColor *) separatorColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE :nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 #pragma mark - Preference UI

@@ -81,9 +81,11 @@ enum
 			}
 		}
 		
+		[Prefs registerForChange:self forType:KVO_THEME];
+		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 3;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :self].CGColor;
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 	}
 	
 	return self;
@@ -247,7 +249,7 @@ enum
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -255,7 +257,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND :nil].CGColor;
+	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 	
 	if(freeText != nil)
 		freeText.textColor = [self textColor];

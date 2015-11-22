@@ -30,10 +30,10 @@
 
 - (instancetype) initImages : (NSArray*) imageNames : (short) defaultState
 {
-	uint currentTheme = [Prefs getCurrentTheme : self];
+	[Prefs registerForChange:self forType:KVO_THEME];
 	didRegister = YES;
 	
-	if(![self updateImages:imageNames :currentTheme])
+	if(![self updateImages:imageNames])
 		return nil;
 	
 	_activeCell = 0;
@@ -51,7 +51,7 @@
 
 #pragma mark - Context update
 
-- (BOOL) updateImages : (NSArray *) imageNames : (uint) currentTheme
+- (BOOL) updateImages : (NSArray *) imageNames
 {
 	NSMutableArray * images = [NSMutableArray array];
 	
@@ -85,14 +85,12 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	uint currentTheme = [Prefs getCurrentTheme : nil];
-	
 	NSImage * image = [RakResPath getImage:_imageNames[0]];
 	
 	if(image != nil)
 	{
 		self.image = image;
-		[self updateImages:_imageNames :currentTheme];
+		[self updateImages:_imageNames];
 	}
 	
 	[self setNeedsDisplay:YES];

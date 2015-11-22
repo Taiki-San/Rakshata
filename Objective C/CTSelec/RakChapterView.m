@@ -264,7 +264,7 @@
 			return [NSColor clearColor];
 	}
 	
-	return [Prefs getSystemColor:code : nil];
+	return [Prefs getSystemColor:code];
 }
 
 #pragma mark - Proxy

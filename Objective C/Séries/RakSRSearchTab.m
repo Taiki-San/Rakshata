@@ -210,22 +210,22 @@ enum
 - (NSColor *) getBorderColor
 {
 	if(!_isVisible)
-		return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_BAR :nil];
+		return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_BAR];
 	
 	else if(_collapsed)
-		return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_COLLAPSED :nil];
+		return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_COLLAPSED];
 	
-	return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_DEPLOYED :nil];
+	return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_DEPLOYED];
 }
 
 - (NSColor *) getBACKGROUNDColor
 {
-	return [Prefs getSystemColor:COLOR_SEARCHTAB_BACKGROUND :nil];
+	return [Prefs getSystemColor:COLOR_SEARCHTAB_BACKGROUND];
 }
 
 - (NSColor *) placeholderTextColor
 {
-	return [Prefs getSystemColor:COLOR_SRPLACEHOLDER_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_SRPLACEHOLDER_TEXT];
 }
 
 - (NSFont *) placeholderFont

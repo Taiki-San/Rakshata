@@ -175,18 +175,18 @@
 
 - (NSColor *) getTextColor
 {
-	return [Prefs getSystemColor:COLOR_INACTIVE : nil];
+	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
 - (NSColor *) getBarColor
 {
-	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS : nil];
+	return [Prefs getSystemColor:COLOR_BORDERS_COREVIEWS];
 }
 
 - (NSColor *) getBackgroundColor
 {
 	if(_haveBackgroundColor)
-		return [Prefs getSystemColor:COLOR_BACKGROUND_TABS : nil];
+		return [Prefs getSystemColor:COLOR_BACKGROUND_TABS];
 	return nil;
 }
 

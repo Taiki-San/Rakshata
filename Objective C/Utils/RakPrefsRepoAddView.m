@@ -285,17 +285,17 @@ enum
 
 - (NSColor *) getTitleColor
 {
-	return [Prefs getSystemColor:COLOR_SURVOL :nil];
+	return [Prefs getSystemColor:COLOR_SURVOL];
 }
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_ADD_REPO];
 }
 
 - (NSColor *) listBackgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_CT_TVCELL];
 }
 
 @end

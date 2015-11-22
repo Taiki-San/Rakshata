@@ -73,7 +73,7 @@ enum
 		scrollView.wantsLayer = YES;
 		scrollView.layer.cornerRadius = 3;
 		scrollView.drawsBackground = YES;
-		scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
+		scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
 	}
 	
 	return self;
@@ -112,7 +112,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST :nil];
+	scrollView.backgroundColor = [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST];
 	[scrollView setNeedsDisplay:YES];
 }
 
@@ -437,7 +437,7 @@ enum
 
 - (NSColor *) backgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST_ITEM :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_REPO_LIST_ITEM];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

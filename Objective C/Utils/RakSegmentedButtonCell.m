@@ -146,27 +146,27 @@
 
 - (NSColor*) getBackgroundColor
 {
-	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS :nil];
+	return [Prefs getSystemColor:COLOR_BORDER_BUTTONS];
 }
 
 - (NSColor*) getSelectedColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_SELECTED :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_SELECTED];
 }
 
 - (NSColor*) getUnselectedColor
 {
-	return [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED :nil];
+	return [Prefs getSystemColor:COLOR_BACKGROUND_BUTTON_UNSELECTED];
 }
 
 - (NSColor *) getFontColor : (uint) cellID
 {
 	if(![self isEnabledForSegment:cellID])
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE:nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_UNAVAILABLE];
 	else if([self isSelectedForSegment:cellID])
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED:nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_CLICKED];
 	else
-		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED:nil];
+		return [Prefs getSystemColor:COLOR_FONT_BUTTON_NONCLICKED];
 }
 
 - (NSTextFieldCell*) getCellForID : (uint) cellID

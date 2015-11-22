@@ -65,14 +65,14 @@ enum
 		[(RakContentViewBack*) core.window.contentView updateUI];
 }
 
-+ (NSColor*) getSystemColor : (byte) context : (id) senderToRegister
++ (NSColor*) getSystemColor : (byte) context
 {
 	if(prefsCache == nil)
 		[self initCache];
 
 	NSArray * themeData = nil;
 
-	switch ([self getCurrentTheme : senderToRegister])
+	switch ([self getCurrentTheme])
 	{
 		case THEME_CODE_DARK:
 		{
@@ -649,7 +649,7 @@ enum
 
 #pragma mark - KVO
 
-+ (uint) getCurrentTheme : (id) registerForChanges
++ (uint) getCurrentTheme
 {
 	if(prefsCache == nil)
 		[self initCache];
@@ -664,8 +664,6 @@ enum
 		[garbageCollector setValue:[NSThread callStackSymbols] forKey:[NSString stringWithFormat:@"%@", @((uint64_t) registerForChanges)]];
 	}
 #endif
-	
-	[self registerForChange:registerForChanges forType:KVO_THEME];
 	
 	return prefsCache.themeCode;
 }

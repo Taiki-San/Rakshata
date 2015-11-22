@@ -69,7 +69,7 @@
 
 - (NSColor *) textColor
 {
-	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT :nil];
+	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
 #pragma mark - Buttons responder
