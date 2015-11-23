@@ -816,32 +816,32 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 				
 			case 2:
 			{
-				prefsCache.favoriteAutoDL = value != 0;
+				_favoriteAutoDL = value != 0;
 				break;
 			}
 			
 			case 3:
 			{
 				if(value >= PREFS_BUTTON_CODE_GENERAL && value <= PREFS_BUTTON_CODE_CUSTOM)
-					prefsCache.activePrefsPanel = value;
+					_activePrefsPanel = value;
 				break;
 			}
 				
 			case 4:
 			{
-				prefsCache.saveMagnification = value != 0;
+				_saveMagnification = value != 0;
 				break;
 			}
 				
 			case 5:
 			{
-				prefsCache.havePDFBackground = value != 0;
+				_havePDFBackground = value != 0;
 				break;
 			}
 				
 			case 6:
 			{
-				prefsCache.overrideDirection = value != 0;
+				_overrideDirection = value != 0;
 				break;
 			}
 		}
