@@ -51,7 +51,5 @@ int main(int argc, const char *argv[])
 	atexit(cleanup);
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 	setupBDDCache();
-	NSApplicationMain(argc, argv);
-
-	return -1;
+	return NSApplicationMain(argc, argv);
 }
