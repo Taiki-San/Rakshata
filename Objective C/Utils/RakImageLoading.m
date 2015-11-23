@@ -76,7 +76,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 	{
 		image = [image copy];
 		
-		RakText * text = [[RakText alloc] initWithText:getStringForWchar(project.projectName) :[Prefs getSystemColor:COLOR_HIGHLIGHT]];
+		RakText * text = [[RakText alloc] initWithText:getStringForWchar(project.projectName) :[Prefs getSystemColor:COLOR_ICON_TEXT]];
 		if(text != nil)
 		{
 			text.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:15];
