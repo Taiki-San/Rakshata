@@ -40,16 +40,11 @@ enum
 		
 		responder = delegate;
 		
-		NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-		paragraphStyle.alignment                = kCTTextAlignmentCenter;
-		
 		buttonGeneral = [RakPrefsSelectionButton allocImageWithoutBackground:@"pSettings" :self :@selector(clicGeneral)];
 		if(buttonGeneral != nil)
 		{
 			[buttonGeneral setFrameSize:NSMakeSize(buttonGeneral.bounds.size.width + 7, buttonGeneral.bounds.size.height + 7)];
-			buttonGeneral.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-GENERAL", nil) attributes:
-											 @{NSForegroundColorAttributeName : [delegate textColor],
-											   NSParagraphStyleAttributeName : paragraphStyle}];
+			buttonGeneral.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-GENERAL"];
 			
 			[buttonGeneral setFrameOrigin:NSMakePoint(BUTTON_OFFSET_X, BUTTON_OFFSET_Y)];
 			[self addSubview:buttonGeneral];
@@ -58,9 +53,7 @@ enum
 		buttonRepo = [RakPrefsSelectionButton allocImageWithoutBackground:@"pRepo" :self :@selector(clicRepo)];
 		if(buttonRepo != nil)
 		{
-			buttonRepo.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-REPO", nil) attributes:
-										  @{NSForegroundColorAttributeName : [delegate textColor],
-											NSParagraphStyleAttributeName : paragraphStyle}];
+			buttonRepo.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-REPO"];
 			
 			[buttonRepo setFrameOrigin:NSMakePoint(NSMaxX(buttonGeneral.frame) + BUTTON_SEPARATOR_X, BUTTON_OFFSET_Y)];
 			
@@ -71,9 +64,7 @@ enum
 		if(buttonFav != nil)
 		{
 			[buttonFav setFrameSize:buttonGeneral.bounds.size];
-			buttonFav.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"PREFS-TITLE-FAVS", nil) attributes:
-										 @{NSForegroundColorAttributeName : [delegate textColor],
-										   NSParagraphStyleAttributeName : paragraphStyle}];
+			buttonFav.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-FAVS"];
 			
 			//The english version is cropped unless we increase the width
 			[buttonFav setFrameSize:NSMakeSize(buttonFav.bounds.size.width + 2, buttonFav.bounds.size.height)];
@@ -85,6 +76,16 @@ enum
 	}
 	
 	return self;
+}
+
+- (NSAttributedString *) attributedStringWithLocalization : (NSString *) localization
+{
+	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+	paragraphStyle.alignment                = kCTTextAlignmentCenter;
+
+	return [[NSAttributedString alloc] initWithString:NSLocalizedString(localization, nil) attributes:
+			@{NSForegroundColorAttributeName : [responder textColor],
+			  NSParagraphStyleAttributeName : paragraphStyle}];
 }
 
 - (void) viewDidMoveToWindow
@@ -120,7 +121,11 @@ enum
 {
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	
+
+	buttonGeneral.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-GENERAL"];
+	buttonRepo.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-REPO"];
+	buttonFav.attributedTitle = [self attributedStringWithLocalization:@"PREFS-TITLE-FAVS"];
+
 	[self setNeedsDisplay:YES];
 }
 
