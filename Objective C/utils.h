@@ -37,6 +37,8 @@ void registerDefaultForExtension(NSString * extension);
 - (NSData*) convertToData;
 + (NSArray*) arrayWithData:(NSData*) data;
 
+- (NSArray *) revertArray;
+
 @end
 
 @interface NSString (comparaison)

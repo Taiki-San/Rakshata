@@ -23,6 +23,7 @@
 		gonnaReduceTabs = 0;
 		
 		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
+		[Prefs registerForChange:self forType:KVO_DIROVERRIDE];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];

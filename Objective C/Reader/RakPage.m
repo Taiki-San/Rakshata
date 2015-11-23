@@ -976,7 +976,7 @@
 
 		_flushingCache = YES;
 		
-		[array replaceObjectAtIndex:_data.pageCourante + 1 withObject:@(_data.pageCourante)];
+		[array replaceObjectAtIndex:[mainScroller getPatchedPosForIndex:_data.pageCourante + 1] withObject:@(_data.pageCourante)];
 		
 		mainScroller.arrangedObjects = array;
 		mainScroller.patchedSelectedIndex = _data.pageCourante + 1;

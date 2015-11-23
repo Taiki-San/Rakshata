@@ -66,6 +66,17 @@ static NSArray * savedContext;
 	return [NSArray arrayWithObjects:(id __unsafe_unretained *) p count:n];
 }
 
+- (NSArray *) revertArray
+{
+	NSMutableArray * array = [NSMutableArray new];
+	NSUInteger count = [self count];
+	
+	while (count--)
+		[array addObject:[self objectAtIndex:count]];
+	
+	return [NSArray arrayWithArray:array];
+}
+
 @end
 
 @implementation NSString (comparaison)

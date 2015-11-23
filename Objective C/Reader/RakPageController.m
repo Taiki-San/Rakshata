@@ -32,7 +32,7 @@
 	{
 		NSInteger count = (NSInteger) [self.arrangedObjects count], selectedIndex = [super selectedIndex];
 		if(selectedIndex < count)
-			return (NSInteger) [self.arrangedObjects count] - 1 - selectedIndex;
+			return (NSInteger) count - 1 - selectedIndex;
 		else
 			return 0;
 	}
@@ -56,8 +56,12 @@
 {
 	if(_flipped != flipped)
 	{
+		NSInteger patched = self.patchedSelectedIndex;
+		
 		_flipped = flipped;
-		self.selectedIndex = self.selectedIndex;
+		
+		self.arrangedObjects = [self.arrangedObjects revertArray];
+		self.patchedSelectedIndex = patched;
 	}
 }
 
