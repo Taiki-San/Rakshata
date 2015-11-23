@@ -74,9 +74,9 @@
 	else
 	{
 		if(selection % 10)
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u", projectPath, selection / 10, selection % 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/", projectPath, selection / 10, selection % 10);
 		else
-			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u", projectPath, selection / 10);
+			snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/", projectPath, selection / 10);
 	}
 
 	//Main decompression cycle
