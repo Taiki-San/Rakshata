@@ -13,7 +13,7 @@
 #define NOTIFICATION_IMPORT_STATUS_UI	@"RakImportStatusUpdateUI"
 #define NOTIFICATION_CHILD	@"RakImportStatusUpdateChild"
 #define NOTIFICATION_ROOT	@"RakImportStatusUpdateRoot"
-#define NOTIFICATION_IMPORT_OPEN_ITEM	@"RakImportOpenItem"
+#define NOTIFICATION_IMPORT_OPEN_ITEM	@"MeurtEnEnferMarine"
 #define NOTIFICATION_IMPORT_NEED_CALLBACK @"pleaseNoticeMeSenpai"
 
 @interface RakImportStatusListItem : RakOutlineListItem

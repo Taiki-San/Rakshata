@@ -239,12 +239,14 @@
 			switch (c)
 			{
 				case 'a':
+				case 'j':
 				{
 					[self prevPage];
 					break;
 				}
 					
 				case 'd':
+				case 'l':
 				{
 					if(isModPressed && ((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
 					{
@@ -266,24 +268,28 @@
 				}
 					
 				case 'q':
+				case 'u':
 				{
 					[self prevChapter];
 					break;
 				}
 					
 				case 'e':
+				case 'o':
 				{
 					[self nextChapter];
 					break;
 				}
 					
 				case 'w':
+				case 'i':
 				{
 					[self moveSliderY:PAGE_MOVE];
 					break;
 				}
 					
 				case 's':
+				case 'k':
 				{
 					[self moveSliderY:-PAGE_MOVE];
 					break;

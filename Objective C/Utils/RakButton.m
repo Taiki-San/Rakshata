@@ -81,7 +81,7 @@
 	//El Capitan
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 	{
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
+		self.layer.backgroundColor = [self getBackground].CGColor;
 	}
 
 	return self;
@@ -98,7 +98,7 @@
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if(self.layer.backgroundColor != nil)
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
+		self.layer.backgroundColor = [self getBackground].CGColor;
 	
 	[self setNeedsDisplay];
 }
@@ -154,6 +154,11 @@
 	return [RakButtonCell class];
 }
 
+- (NSColor *) getBackground
+{
+	return [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED];
+}
+
 #pragma mark - Helper
 
 + (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
@@ -201,7 +206,7 @@
 	else
 	{
 		self.wantsLayer = YES;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
+		self.layer.backgroundColor = [self getBackground].CGColor;
 		self.layer.cornerRadius = 4;
 		
 		if(!hasRegisteredThemeUpdates)
