@@ -149,7 +149,7 @@
 {
 	if(_isVisible && _collapsed)
 	{
-		[[[NSColor blackColor] colorWithAlphaComponent:0.3] setFill];
+		[[Prefs getSystemColor:COLOR_SEARCHTAB_PEAK_BACKGROUND] setFill];
 		NSRectFill(dirtyRect);
 	}
 }

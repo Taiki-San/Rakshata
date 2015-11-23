@@ -216,7 +216,7 @@ enum
 	if(popover == nil && (popover = [[NSPopover alloc] init]) != nil)
 	{
 		popover.contentViewController = viewControllerHUD;
-		popover.appearance = NSPopoverAppearanceHUD;
+		popover.appearance = [Prefs getCurrentTheme] == THEME_CODE_LIGHT ? NSPopoverAppearanceMinimal : NSPopoverAppearanceHUD;
 		
 		popover.animates = YES;
 		
