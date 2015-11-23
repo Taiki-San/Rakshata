@@ -86,7 +86,7 @@ ARCHIVE * openArchiveFromFile(const char * path)
 			predictedNumberOfFiles += step;
 			if(predictedNumberOfFiles < currentPos)	//Overflow
 			{
-				logR("Over 4 billions file in archive, a bit too much for us to cope, sorry!");
+				logR("Over 4 billion file in archive, a bit too much for us to cope, sorry!");
 
 				output->fileList = filename;
 				output->nbFiles = currentPos;
@@ -151,7 +151,7 @@ ARCHIVE * openArchiveFromFile(const char * path)
 	rarJumpBackAtBegining(output);
 
 	//Reduce our memory use
-	if(currentPos > predictedNumberOfFiles)
+	if(currentPos < predictedNumberOfFiles)
 	{
 		void * tmp = realloc(filename, currentPos * sizeof(char *));
 		if(tmp != NULL)

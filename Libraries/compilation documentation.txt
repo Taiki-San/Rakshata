@@ -16,6 +16,10 @@ mv lib/.libs/libcurl.a ../
 clang -O3 -c sqlite3.c && ar rcs ../libsqlite.a sqlite3.o
 
 #libarchive
+#note the build was patched because of encoding issues
+#libarchive/archive_string.c → default_iconv_charset → return "UTF-8"; in place of the #if/#elif/#endif
+
 ./configure --enable-shared=no --disable-rpath --without-bz2lib --without-iconv --without-lzma
+make
 strip -Sx .libs/libarchive.a
 mv .libs/libarchive.a ../
