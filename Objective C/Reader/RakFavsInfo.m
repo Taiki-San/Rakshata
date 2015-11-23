@@ -17,11 +17,6 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 160, 155)];
 }
 
-- (void) dealloc
-{
-	[Prefs deRegisterForChange:self forType:KVO_THEME];
-}
-
 - (void) launchPopover : (NSView *) anchor
 {
 	//We check if the user asked not to be annoyed again
@@ -30,8 +25,6 @@
 	if(!alreadyAsked || !answer || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
 	{
 		_anchor = anchor;
-		
-		[Prefs registerForChange:self forType:KVO_THEME];
 		
 		[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
 		
