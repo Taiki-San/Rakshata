@@ -31,8 +31,7 @@
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if([object class] != [Prefs class])
-		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	self.layer.borderColor = [Prefs getSystemColor:COLOR_TABS_BORDER].CGColor;
 	[self setNeedsDisplay:YES];
