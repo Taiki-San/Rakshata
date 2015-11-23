@@ -188,7 +188,7 @@
 	{
 		SEL jumpTable[numberElem];
 		[self initJumpTable:jumpTable];
-		[self setAtIndex:index : [self triggerJumpTableLocal: jumpTable[index]] ];
+		[self setAtIndex:index : [self triggerJumpTableLocal: jumpTable[index]]];
 	}
 #ifdef EXTENSIVE_LOGGING
 	else

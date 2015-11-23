@@ -97,7 +97,7 @@
 	
 	[[_chapterView getContent] removeFromSuperviewWithoutNeedingDisplay];
 	
-	[[_volView getContent ] removeFromSuperviewWithoutNeedingDisplay];
+	[[_volView getContent] removeFromSuperviewWithoutNeedingDisplay];
 	
 	releaseCTData(data);
 	

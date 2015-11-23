@@ -17,19 +17,7 @@
 	self = [super initWithCoder:aDecoder];
 	
 	if(self != nil)
-	{
-		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-		[self setAutoresizesSubviews:NO];
-		[self setNeedsDisplay:YES];
-		[self setWantsLayer:YES];
-		
-		titleView = [[RakText alloc] initWithText:@"" :[self textColor]];
-		if(titleView != nil)
-		{
-			[titleView setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
-			[self addSubview:titleView];
-		}
-	}
+		[self earlySetup];
 	
 	return self;
 }
@@ -39,35 +27,38 @@
 	self = [super initWithFrame:frameRect];
 	
 	if(self != nil)
-	{
-		[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-		[self setAutoresizesSubviews:NO];
-		[self setNeedsDisplay:YES];
-		[self setWantsLayer:YES];
-
-		titleView = [[RakText alloc] initWithText:@"" :[self textColor]];
-		if(titleView != nil)
-		{
-			[titleView setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
-			[self addSubview:titleView];
-		}
-	}
+		[self earlySetup];
 	
 	return self;
+}
+
+- (void) earlySetup
+{
+	[self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+	[self setAutoresizesSubviews:NO];
+	[self setNeedsDisplay:YES];
+	[self setWantsLayer:YES];
+	
+	titleView = [[RakText alloc] initWithText:@"" :[self textColor]];
+	if(titleView != nil)
+	{
+		[titleView setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
+		[self addSubview:titleView];
+	}
 }
 
 - (void) setupBorders
 {
 	[Prefs registerForChange:self forType:KVO_THEME];
-	
-	backgroundColor = [self firstBorderColor];
+
+	self.layer.backgroundColor = [self firstBorderColor].CGColor;
 	NSRect frame = [self internalFrame];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
 	frame.size.height -= 2 * WIDTH_BORDER_FAREST;
 	frame.origin.x += WIDTH_BORDER_FAREST;
 	frame.origin.y += WIDTH_BORDER_FAREST;
-	
+
 	internalRows1 = [[RakBorder alloc] initWithFrame:frame : WIDTH_BORDER_MIDDLE : 3.5 : [self middleBorderColor]];
 	if(internalRows1 != nil)
 		[self addSubview:internalRows1];
@@ -111,7 +102,7 @@
 
 - (void) updateUI
 {
-	backgroundColor = [self firstBorderColor];
+	self.layer.backgroundColor = [self firstBorderColor].CGColor;
 	[internalRows1 setColor:[self middleBorderColor]];
 	
 	if(self.window.isMainWindow)
@@ -180,7 +171,7 @@
 	frameRect.size.height -= 2 * WIDTH_BORDER_MIDDLE;
 	frameRect.origin.x += WIDTH_BORDER_MIDDLE;
 	frameRect.origin.y += WIDTH_BORDER_MIDDLE;
-	
+
 	[internalRows2 setFrame:frameRect];
 	
 	frameRect.size.width -= 2 * WIDTH_BORDER_INTERNAL;
@@ -269,10 +260,6 @@
 		[[Prefs getSystemColor:COLOR_TITLEBAR_BACKGROUND_STANDBY] setFill];
 		NSRectFill(dirtyRect);
 	}
-
-	
-	[backgroundColor setFill];
-	NSRectFill(internalFrame);
 }
 
 #pragma mark - Color
@@ -305,15 +292,13 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	backgroundColor = [self firstBorderColor];
+	self.layer.backgroundColor = [self firstBorderColor].CGColor;
 	[internalRows1 setColor: [self middleBorderColor]];
 	
 	if(self.window.isMainWindow)
-	{
 		[internalRows2 setColor: [self lastBorderColor]];
-		
-		[titleView setTextColor:[self textColor]];
-	}
+	
+	[titleView setTextColor:[self textColor]];
 	
 	[self setNeedsDisplay:YES];
 }

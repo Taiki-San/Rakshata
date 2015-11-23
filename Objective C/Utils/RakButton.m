@@ -338,9 +338,9 @@
 {
 	NSImage * template = [RakResPath getImage:_imageName];
 	
-	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE ]];
-	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE ]];
-	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE ]];
+	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
+	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];
+	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE]];
 
 	if(state == RB_STATE_STANDARD && nonClicked != nil)
 	{
@@ -431,12 +431,12 @@
 
 - (NSColor*) getBorderColor
 {
-	return [Prefs getSystemColor:COLOR_BUTTON_BORDER ];
+	return [Prefs getSystemColor:COLOR_BUTTON_BORDER];
 }
 
 - (NSColor*) getBackgroundColor
 {
-	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED ] : _customBackgroundColor;
+	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED] : _customBackgroundColor;
 }
 
 - (NSColor *) getFontColor
@@ -448,7 +448,7 @@
 	else if([self isEnabled])
 		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_NONCLICKED];
 	else
-		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_UNAVAILABLE ];
+		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_UNAVAILABLE];
 }
 
 - (void) reloadFontColor

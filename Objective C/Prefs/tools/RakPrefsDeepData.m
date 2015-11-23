@@ -104,7 +104,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 		SEL jumpTable[numberElem];
 		[self initJumpTable:jumpTable];
 		
-		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]] ];
+		[self setAtIndex:index : [self triggerJumpTable: jumpTable[index]]];
 	}
 #ifdef EXTENSIVE_LOGGING
 	else
