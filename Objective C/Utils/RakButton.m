@@ -82,8 +82,6 @@
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 	{
 		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND].CGColor;
-		[Prefs registerForChange:self forType:KVO_THEME];
-		hasRegisteredThemeUpdates = YES;
 	}
 
 	return self;
@@ -246,7 +244,13 @@
 		_imageName = [imageName copy];
 		
 		notAvailable = NO;
-		_activeAllowed = hasRegisteredThemeUpdates = YES;
+		_activeAllowed = YES;
+		
+		if(!hasRegisteredThemeUpdates)
+		{
+			[Prefs registerForChange:self forType:KVO_THEME];
+			hasRegisteredThemeUpdates = YES;
+		}
 		
 		if(![self loadIcon:RB_STATE_STANDARD])
 		{
@@ -273,8 +277,11 @@
 			textCell.textColor = [self getFontColor];
 			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
 			
-			[Prefs registerForChange:self forType:KVO_THEME];
-			hasRegisteredThemeUpdates = YES;
+			if(!hasRegisteredThemeUpdates)
+			{
+				[Prefs registerForChange:self forType:KVO_THEME];
+				hasRegisteredThemeUpdates = YES;
+			}
 		}
 	}
 	return self;
@@ -286,7 +293,10 @@
 		self.image = nil;
 	
 	if(hasRegisteredThemeUpdates)
+	{
 		[Prefs deRegisterForChange:self forType:KVO_THEME];
+		hasRegisteredThemeUpdates = NO;
+	}
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
