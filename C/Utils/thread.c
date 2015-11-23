@@ -67,7 +67,7 @@ void createNewThread(void *function, void *arg)
     pthread_t thread;
 
     if(pthread_create(&thread, NULL, function, arg))
-        alertExit("Failed at create thread");
+        alertExit("Failed at creating the thread");
 #endif
 }
 
