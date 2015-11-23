@@ -23,6 +23,12 @@ NSString * getRepoName(REPO_DATA * repo);
 
 void registerDefaultForExtension(NSString * extension);
 
+@interface NSApplication (contextSave)
+
+@property NSArray * savedContext;
+
+@end
+
 @interface RakFlippedView : NSView
 @end
 

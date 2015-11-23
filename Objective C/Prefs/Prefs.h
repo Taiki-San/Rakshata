@@ -160,7 +160,6 @@ enum KVO_REQUEST {
 @property BOOL favoriteAutoDL;
 
 + (void) initCache;
-+ (void) initCache : (NSString *) data;
 + (NSString *) dumpPrefs;
 + (void) deletePrefs;
 

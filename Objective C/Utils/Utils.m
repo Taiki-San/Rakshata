@@ -10,6 +10,25 @@
  **                                                                                         **
  *********************************************************************************************/
 
+static NSArray * savedContext;
+
+@implementation NSApplication (contextSave)
+
+- (void) setSavedContext:(NSArray *)_savedContext
+{
+	savedContext = _savedContext;
+}
+
+- (NSArray *) savedContext
+{
+	if(savedContext == nil)
+		savedContext = [RakContextRestoration newContext];
+	
+	return savedContext;
+}
+
+@end
+
 @implementation RakFlippedView
 
 - (BOOL) isFlipped

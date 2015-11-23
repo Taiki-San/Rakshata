@@ -26,16 +26,8 @@ enum
 
 + (void) initCache
 {
-	[self initCache:nil];
-}
-
-+ (void) initCache : (NSString *) data
-{
 	if(prefsCache == nil)
-		prefsCache = [[Prefs alloc] init : data];
-	
-	else if(data != nil)
-		[prefsCache updateContext:data];
+		prefsCache = [[Prefs alloc] init : NSApp.savedContext[0]];
 	
 	((RakAppDelegate *) [NSApp delegate]).haveDistractionFree = prefsCache.mainThread == TAB_READER;
 }

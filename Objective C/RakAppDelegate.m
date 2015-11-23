@@ -40,13 +40,10 @@
 	self.window.defaultDispatcher = contentView;
 	[self.window makeFirstResponder:contentView];
 	
-	NSArray *context = [RakContextRestoration newContext];
-	
-	[Prefs initCache:[context objectAtIndex:0]];
-	tabSerie = [_tabSerie init:contentView : [context objectAtIndex:1]];
-	tabCT = [_tabCT init:contentView : [context objectAtIndex:2]];
-	tabMDL = [_tabMDL init:contentView : [context objectAtIndex:3]];
-	tabReader = [_tabReader init:contentView : [context objectAtIndex:4]];
+	tabSerie = [_tabSerie init:contentView : NSApp.savedContext[1]];
+	tabCT = [_tabCT init:contentView : NSApp.savedContext[2]];
+	tabMDL = [_tabMDL init:contentView : NSApp.savedContext[3]];
+	tabReader = [_tabReader init:contentView : NSApp.savedContext[4]];
 	
 	//Update everything's size now that everything if up to date
 	tabMDL.needUpdateMainViews = YES;
@@ -57,6 +54,7 @@
 	deleteCrashFile();
 
 	_initialized = YES;
+	NSApp.savedContext = nil;
 }
 
 - (RakContentView*) getContentView

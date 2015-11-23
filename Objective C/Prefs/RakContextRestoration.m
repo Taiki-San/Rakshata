@@ -54,7 +54,7 @@
 
 + (NSArray *) newContext
 {
-	NSString * fileContent = [NSString stringWithContentsOfFile:@""CONTEXT_FILE"" encoding:NSASCIIStringEncoding error:NULL];
+	NSString * fileContent = [NSString stringWithContentsOfFile:@CONTEXT_FILE encoding:NSASCIIStringEncoding error:NULL];
 	
 	if(fileContent == nil)
 		return nil;
