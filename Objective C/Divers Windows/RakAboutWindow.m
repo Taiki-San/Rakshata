@@ -247,12 +247,12 @@ enum
 
 - (NSColor *) mainTextColor
 {
-	return [[NSColor whiteColor] colorWithAlphaComponent:0.9];
+	return [[Prefs getSystemColor:COLOR_CLICKABLE_TEXT] colorWithAlphaComponent:0.9];
 }
 
 - (NSColor *) versionTextColor
 {
-	return [[NSColor whiteColor] colorWithAlphaComponent:0.4];
+	return [[Prefs getSystemColor:COLOR_CLICKABLE_TEXT] colorWithAlphaComponent:0.4];
 }
 
 #pragma mark - Update positions
@@ -321,7 +321,7 @@ enum
 	{
 		CGFloat _steps[3] = {step0, step1, step2};
 		
-		[[NSColor colorWithCalibratedWhite:0.2 alpha:1] setFill];
+		[[Prefs getSystemColor:COLOR_EXTERNALBORDER_CLOSEST] setFill];
 		
 		for(byte i = 0; i < 3 && _steps[i] != 0; i++)
 		{

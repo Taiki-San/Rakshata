@@ -631,7 +631,7 @@ enum
 				name = inputField;
 				name.wantCompletion = YES;
 				name.wantCustomBorder = [name.stringValue isEqualToString:@""];
-				name.customBorderColor = [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
+				name.customBorderColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 				
 				__block id cpSelf = self;
 				__weak RakText * cpName = name;
@@ -646,7 +646,7 @@ enum
 				author = inputField;
 				
 				author.wantCustomBorder = [author.stringValue isEqualToString:@""];
-				author.customBorderColor = [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
+				author.customBorderColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 				
 				__weak RakText * copyAuthor = author;
 				

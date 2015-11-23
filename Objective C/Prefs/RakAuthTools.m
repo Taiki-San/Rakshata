@@ -62,17 +62,17 @@
 	{
 		case AUTH_STATE_GOOD:
 		{
-			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_OK];
 		}
 			
 		case AUTH_STATE_INVALID:
 		{
-			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_ERROR];
 		}
 			
 		case AUTH_STATE_LOADING:
 		{
-			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 		}
 			
 		case AUTH_STATE_NONE:
@@ -207,17 +207,17 @@
 	{
 		case AUTH_STATE_GOOD:
 		{
-			return [NSColor colorWithSRGBRed:0 green:1 blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_OK];
 		}
 			
 		case AUTH_STATE_INVALID:
 		{
-			return [NSColor colorWithSRGBRed:1 green:0 blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_ERROR];
 		}
 			
 		case AUTH_STATE_LOADING:
 		{
-			return [NSColor colorWithSRGBRed:1 green:0.5f blue:0 alpha:1.0];
+			return [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 		}
 			
 		case AUTH_STATE_NONE:
