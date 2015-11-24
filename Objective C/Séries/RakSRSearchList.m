@@ -115,32 +115,35 @@
 {
 	[tableView commitClic];
 	
+	lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
+
 	RakText * view = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:NO];
 	if(view != nil && [view class] == [RakText class])
 	{
-		lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
-		
-		if(lastWasSelected != haveRestriction(indexes[rowIndex], getRestrictionTypeForSBID(_type)))
-			return NO;
-		
 		if(lastWasSelected)
-		{
 			view.textColor = (normal != nil ? normal : [self getTextColor:0 :rowIndex]);
-			[selection removeObject:@(rowIndex)];
-		}
 		else
-		{
 			view.textColor = (highlight != nil ? highlight : [self getTextHighlightColor:0 :rowIndex]);
-			[selection addObject:@(rowIndex)];
-		}
-		
-		lastWasSelected = !lastWasSelected;
-		selectedRowIndex = rowIndex;
+
 		[view setNeedsDisplay];
-		
-		[self postProcessingSelection];
 	}
+
+	if(lastWasSelected)
+		[selection removeObject:@(rowIndex)];
 	else
+		[selection addObject:@(rowIndex)];
+	
+	selectedRowIndex = rowIndex;	//Signal the row being updated
+	
+	//If the UI was out of date, we don't update the backend
+	BOOL isUIOutOfDate = lastWasSelected == haveRestriction(indexes[rowIndex], getRestrictionTypeForSBID(_type));
+
+	lastWasSelected = !lastWasSelected;
+	
+	if(isUIOutOfDate)
+		[self postProcessingSelection];
+	
+	if(!lastWasSelected)
 		selectedRowIndex = LIST_INVALID_SELECTION;
 	
 	return NO;
@@ -158,6 +161,11 @@
 			_manualSelection = NO;
 		}
 	}
+}
+
+- (NSColor *) getBackgroundHighlightColor
+{
+	return [NSColor clearColor];
 }
 
 #pragma mark - Trigger
@@ -182,12 +190,21 @@
 	{
 		if(indexes[i] == code)
 		{
+			//If we want to unselect, but the item wasn't selected
+			if((ID = [notification.userInfo objectForKey:SR_NOTIF_UNSELECT]) != nil && [ID isKindOfClass:[NSNumber class]] && [ID boolValue])
+			{
+				if([selection indexOfObject:@(code)] == NSNotFound)
+					return;
+			}
+			
 			_manualSelection = YES;
 			[self tableView:_tableView shouldSelectRow:i];
 			_manualSelection = NO;
-			break;
+			return;
 		}
 	}
+	
+	NSLog(@"o_o");
 }
 
 @end

@@ -32,6 +32,7 @@ enum
 
 #define SR_NOTIF_CACHEID 		@"cacheID"
 #define SR_NOTIF_OPTYPE 		@"opType"
+#define SR_NOTIF_UNSELECT 		@"evolution"
 
 #import "RakCollectionView.h"
 #import "RakCollectionViewItem.h"

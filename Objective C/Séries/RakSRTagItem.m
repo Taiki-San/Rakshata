@@ -140,7 +140,7 @@
 	else
 		return;
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:notification object:@(_index) userInfo:@{SR_NOTIF_CACHEID : @(__dataID), SR_NOTIF_OPTYPE : @(NO)}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:notification object:@(_index) userInfo:@{SR_NOTIF_CACHEID : @(__dataID), SR_NOTIF_OPTYPE : @(NO), SR_NOTIF_UNSELECT : @(YES)}];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
