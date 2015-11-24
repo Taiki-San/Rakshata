@@ -18,7 +18,7 @@
 	RakSRSearchBar * searchBar;
 	
 	//Used by extra
-	RakButton * close;
+	RakButton * close, *flush;
 	RakSwitchButton * freeSwitch, * favsSwitch;
 	RakText * freeText, * favsText;
 	

@@ -53,7 +53,6 @@ enum
 				[close setAction:@selector(close)];
 				
 				[close.cell setActiveAllowed:NO];
-				[close setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - close.bounds.size.width / 2, _bounds.size.height - 5 - close.bounds.size.height)];
 				[close.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
 				
 				[self addSubview:close];
@@ -99,6 +98,18 @@ enum
 				}
 				else
 					favsSwitch = nil;
+			}
+			
+			flush = [RakButton allocWithText:NSLocalizedString(@"PROJ-FILTER-FLUSH", nil)];
+			if(flush != nil)
+			{
+				flush.target = self;
+				flush.action = @selector(flushFilters);
+
+				[flush.cell setActiveAllowed:NO];
+				[flush.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
+				
+				[self addSubview:flush];
 			}
 		}
 		
@@ -160,6 +171,9 @@ enum
 		
 		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
 		[favsText setFrameOrigin:newOrigin];
+		
+		switchFrame = flush.bounds;
+		[flush setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
@@ -196,6 +210,9 @@ enum
 		
 		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
 		[favsText.animator setFrameOrigin:newOrigin];
+
+		switchFrame = flush.bounds;
+		[flush.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
@@ -336,6 +353,11 @@ enum
 - (void) switchTriggerFavs
 {
 	[favsSwitch performClick:self];
+}
+
+- (void) flushFilters
+{
+	
 }
 
 @end

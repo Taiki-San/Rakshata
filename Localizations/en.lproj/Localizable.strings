@@ -119,6 +119,7 @@
 "PROJ-CLOSE-FILTER-ARRAY" = "Close ▲";
 "PROJ-FILTER-FREE-ONLY" = "Free only";
 "PROJ-FILTER-FAVS-ONLY" = "Favorite";
+"PROJ-FILTER-FLUSH" = "Remove\nall filters";
 
 //Reader utils
 "DELETION-VOL-CONFIRM" = "You're about to\ndelete a volume.\nTo read it again,\nyou will need to\ndownload it.";

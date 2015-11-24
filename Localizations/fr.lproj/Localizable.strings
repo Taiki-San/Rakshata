@@ -119,6 +119,7 @@
 "PROJ-CLOSE-FILTER-ARRAY" = "Refermer ▲";
 "PROJ-FILTER-FREE-ONLY" = "Gratuit";
 "PROJ-FILTER-FAVS-ONLY" = "Favoris";
+"PROJ-FILTER-FLUSH" = "Retirer tous\nles filtres";
 
 //Reader utils
 "DELETION-VOL-CONFIRM" = "Vous vous apprêtez\nà supprimer un tome.\nPour y accéder, il vous\nfaudra le télécharger\nà nouveau.";
