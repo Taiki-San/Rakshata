@@ -25,6 +25,8 @@
 	charType ** listData;
 	uint nbDataList;
 	uint64_t * indexesData;
+	
+	BOOL manualUpdateNoNotif;
 }
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (byte) ID;

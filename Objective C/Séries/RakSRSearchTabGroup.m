@@ -41,6 +41,7 @@ enum
 			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(searchBar != nil)
 			{
+				[[NSNotificationCenter defaultCenter] addObserver:list selector:@selector(fullCleanup) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 				[self addSubview:searchBar];
 			}
 		}
@@ -111,6 +112,8 @@ enum
 				
 				[self addSubview:flush];
 			}
+			
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanupCustomTab) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 		}
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
@@ -125,6 +128,9 @@ enum
 
 - (void) dealloc
 {
+	if(_ID == SEARCH_BAR_ID_EXTRA)
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
+		
 	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
@@ -337,12 +343,14 @@ enum
 
 - (void) triggerFree
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FREE_ONLY object:@(freeSwitch.state == NSOnState)];
+	if(!manualUpdateNoNotif)
+		[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FREE_ONLY object:@(freeSwitch.state == NSOnState)];
 }
 
 - (void) triggerFavs
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FAVS_ONLY object:@(favsSwitch.state == NSOnState)];
+	if(!manualUpdateNoNotif)
+		[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_FAVS_ONLY object:@(favsSwitch.state == NSOnState)];
 }
 
 - (void) switchTriggerFree
@@ -355,9 +363,30 @@ enum
 	[favsSwitch performClick:self];
 }
 
+- (void) cleanupCustomTab
+{
+	manualUpdateNoNotif = YES;
+
+	if(freeSwitch.state == NSOnState)
+		[self switchTriggerFree];
+	
+	if(favsSwitch.state == NSOnState)
+		[self switchTriggerFavs];
+	
+	manualUpdateNoNotif = NO;
+}
+
 - (void) flushFilters
 {
+	setLockStatusNotifyRestrictionChanged(true);
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 	
+	setLockStatusNotifyRestrictionChanged(false);
+	
+	[self close];
+	
+	notifyRestrictionChanged();
 }
 
 @end

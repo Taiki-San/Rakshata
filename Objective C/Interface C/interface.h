@@ -89,6 +89,7 @@ void notifyThumbnailUpdate(ICONS_UPDATE * payload);
  **										**
  *****************************************/
 
+void setLockStatusNotifyRestrictionChanged(bool lock);
 void notifyRestrictionChanged();
 
 /*****************************************

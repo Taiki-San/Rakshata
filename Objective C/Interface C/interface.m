@@ -399,9 +399,17 @@ void registerThumbnailUpdate(id object, SEL selector, byte updateType)
  **										**
  *****************************************/
 
+static bool _lockNotifyRestrictionChanged = false;
+
+void setLockStatusNotifyRestrictionChanged(bool lock)
+{
+	_lockNotifyRestrictionChanged = lock;
+}
+
 void notifyRestrictionChanged()
 {
-	[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_SEARCH_UPDATED object:nil userInfo: nil];
+	if(!_lockNotifyRestrictionChanged)
+		[[NSNotificationCenter defaultCenter] postNotificationName: NOTIFICATION_SEARCH_UPDATED object:nil userInfo: nil];
 }
 
 /*****************************************

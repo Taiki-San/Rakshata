@@ -203,8 +203,26 @@
 			return;
 		}
 	}
+}
+
+- (void) fullCleanup
+{
+	//We assume the system that posted the notification called setLockStatusNotifyRestrictionChanged(true)
+	NSArray * oldSelection = [NSArray arrayWithArray:selection];
 	
-	NSLog(@"o_o");
+	for(NSNumber * number in oldSelection)
+	{
+		uint64_t code = [number unsignedLongLongValue];
+		for(uint i = 0; i < _nbData; i++)
+		{
+			if(indexes[i] == code)
+			{
+				[self tableView:_tableView shouldSelectRow:i];
+			}
+		}
+	}
+	
+	[selection removeAllObjects];
 }
 
 @end

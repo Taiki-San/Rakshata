@@ -25,6 +25,8 @@ enum
 #define SR_NOTIFICATION_SOURCE 	@"RakSRSourceSelectionNotification"
 #define SR_NOTIFICATION_FLUSH 	@"RakSRFlushSelectionNotification"
 #define SR_NOTIFICATION_SELECTION_TRIGGERED	@"RakSRSelectionTriggeredNotification"
+#define SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED	@"VacuumCleanerTimeEverybody!"
+
 
 #define RCVC_FOCUS_DELAY 		0.2f
 #define SR_NOTIFICATION_FOCUS	@"RakSRItemFocusChanged"
