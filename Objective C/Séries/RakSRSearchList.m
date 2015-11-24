@@ -115,7 +115,7 @@
 {
 	[tableView commitClic];
 	
-	lastWasSelected = [selection indexOfObject:@(rowIndex)] != NSNotFound;
+	lastWasSelected = [selection indexOfObject:@(indexes[rowIndex])] != NSNotFound;
 
 	RakText * view = [tableView viewAtColumn:0 row:rowIndex makeIfNecessary:NO];
 	if(view != nil && [view class] == [RakText class])
@@ -129,9 +129,9 @@
 	}
 
 	if(lastWasSelected)
-		[selection removeObject:@(rowIndex)];
+		[selection removeObject:@(indexes[rowIndex])];
 	else
-		[selection addObject:@(rowIndex)];
+		[selection addObject:@(indexes[rowIndex])];
 	
 	selectedRowIndex = rowIndex;	//Signal the row being updated
 	
