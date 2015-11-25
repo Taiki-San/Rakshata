@@ -403,7 +403,7 @@ void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 			if(projectParsed.project.nombreTomes == 0 && projectParsed.project.nombreChapitre == 0)
 			{
 				removeFromCache(projectParsed);
-				removeFromSearch(NULL, projectParsed.project.cacheDBID);
+				removeFromSearch(NULL, projectParsed.project);
 			}
 			else
 				updateCache(projectParsed, RDB_UPDATE_ID, 0);

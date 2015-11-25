@@ -365,7 +365,7 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 	return output;
 }
 
-bool removeFromSearch(void * _table, uint cacheID)
+bool removeFromSearch(void * _table, PROJECT_DATA project)
 {
 	SEARCH_JUMPTABLE table = _table;
 	
@@ -376,9 +376,14 @@ bool removeFromSearch(void * _table, uint cacheID)
 		if(table == NULL)
 			return false;
 	}
+	
+	//We copy the various ID to check if we need to delete them afterward
+	uint authorID = getFromSearch(table, PULL_SEARCH_AUTHORID, project);
+	uint catID = getFromSearch(table, PULL_SEARCH_CATID, project);
+	uint tagID = getFromSearch(table, PULL_SEARCH_TAGID, project);
 
 	sqlite3_stmt * request = table->removeProject;
-	sqlite3_bind_int(request, 1, (int32_t) cacheID);
+	sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
 
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
@@ -386,6 +391,10 @@ bool removeFromSearch(void * _table, uint cacheID)
 	
 	if(_table == NULL)
 		flushSearchJumpTable(table);
+	
+	checkIfRemainingAndDelete(authorID, RDBS_TYPE_AUTHOR);
+	checkIfRemainingAndDelete(catID, RDBS_TYPE_CAT);
+	checkIfRemainingAndDelete(tagID, RDBS_TYPE_TAG);
 	
 	return output;
 }

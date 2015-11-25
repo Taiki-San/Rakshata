@@ -121,7 +121,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 			else
 			{
 				removeFromCache(project);
-				removeFromSearch(NULL, project.project.cacheDBID);
+				removeFromSearch(NULL, project.project);
 			}
 			
 			syncCacheToDisk(SYNC_PROJECTS);

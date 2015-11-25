@@ -178,7 +178,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 		if(outputSort < 0)			//Projet dans oldData pas dans newData, on le delete
 		{
 			removeFromCache(oldData[posOld]);
-			removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
+			removeFromSearch(searchData, oldData[posOld].project);
 			posOld++;
 		}
 		else if(outputSort == 0)	//On a trouvé une version mise à jour
@@ -234,7 +234,7 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 	while (posOld < magnitudeOldData)
 	{
 		removeFromCache(oldData[posOld]);
-		removeFromSearch(searchData, oldData[posOld].project.cacheDBID);
+		removeFromSearch(searchData, oldData[posOld].project);
 		posOld++;
 	}
 	
