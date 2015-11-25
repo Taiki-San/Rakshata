@@ -163,7 +163,7 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
-	if((output->readProject = createRequest(_cache, "SELECT * FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;")) == NULL)
+	if((output->readProject = createRequest(_cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;")) == NULL)
 		goto fail;
 	else
 		stage++;
@@ -184,6 +184,10 @@ fail:
 		
 		free(output);
 		output = NULL;
+		
+#ifdef EXTENSIVE_LOGGING
+		logR(sqlite3_errmsg(_cache));
+#endif
 	}
 	
 	return output;
