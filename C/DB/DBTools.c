@@ -587,6 +587,8 @@ PROJECT_DATA getEmptyProject()
 	PROJECT_DATA project;
 
 	memset(&project, 0, sizeof(PROJECT_DATA));
+	
+	project.mainTag = CAT_NO_VALUE;
 
 	return project;
 }
@@ -597,6 +599,8 @@ PROJECT_DATA_PARSED getEmptyParsedProject()
 
 	memset(&project, 0, sizeof(project));
 
+	project.project.mainTag = CAT_NO_VALUE;
+
 	return project;
 }
 
@@ -606,6 +610,8 @@ PROJECT_DATA_EXTRA getEmptyExtraProject()
 
 	memset(&project, 0, sizeof(project));
 
+	project.data.project.mainTag = CAT_NO_VALUE;
+	
 	return project;
 }
 
