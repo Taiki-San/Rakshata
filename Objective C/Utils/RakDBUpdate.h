@@ -24,6 +24,8 @@
 + (BOOL) analyseNeedUpdateProject : (NSDictionary*) notification : (PROJECT_DATA) project;
 + (BOOL) getIDUpdated : (NSDictionary*) notification : (uint*) ID;
 + (BOOL) isPluralUpdate : (NSDictionary *) notification;
++ (BOOL) isProjectUpdate : (NSDictionary *) notification;
+
 + (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID;
 + (BOOL) isFullRepoUpdate : (NSDictionary *) notification;
 

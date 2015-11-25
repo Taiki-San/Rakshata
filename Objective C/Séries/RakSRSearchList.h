@@ -22,6 +22,9 @@
 }
 
 - (instancetype) init : (NSRect) frame ofType : (byte) type withData: (charType **) dataList ofSize : (uint) nbDataList andIndexes : (uint64_t *) indexes;
+
+- (void) updateData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes;
+
 - (void) fullCleanup;
 
 @end

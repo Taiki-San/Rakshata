@@ -15,6 +15,7 @@
 static bool initialized = false;
 
 static int64_t nbAuthor = 0, nbTag = 0, nbType = 0;
+static uint64_t sessionAuthor = 1, sessionTag = 1, sessionType = 1;
 
 typedef struct randoName
 {
@@ -612,6 +613,23 @@ bool flushRestriction()
 
 #pragma mark - Maintenance API
 
+uint64_t getSessionForType(byte type)
+{
+	switch (type)
+	{
+		case RDBS_TYPE_AUTHOR:
+			return sessionAuthor;
+			
+		case RDBS_TYPE_TAG:
+			return sessionTag;
+			
+		case RDBS_TYPE_CAT:
+			return sessionType;
+	}
+	
+	return INVALID_VALUE;
+}
+
 void updateElementCount(byte type, int change)
 {
 	switch (type)
@@ -619,18 +637,21 @@ void updateElementCount(byte type, int change)
 		case RDBS_TYPE_AUTHOR:
 		{
 			nbAuthor += change;
+			++sessionAuthor;
 			break;
 		}
 			
 		case RDBS_TYPE_TAG:
 		{
 			nbTag += change;
+			++sessionTag;
 			break;
 		}
 			
 		case RDBS_TYPE_CAT:
 		{
 			nbType += change;
+			++sessionType;
 			break;
 		}
 	}

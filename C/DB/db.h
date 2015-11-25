@@ -160,6 +160,7 @@ void setUninstalled(bool isRoot, uint64_t repoID);
 void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, uint ** price);
 void setInstalled(uint cacheID);
 uint * getFavoritesID(uint * nbFavorites);
+uint64_t getSessionForType(byte type);
 
 /**DBSearch.c**/
 bool getProjectSearchData(void * table, uint cacheID, uint * authorID, uint * tagID, uint * typeID);

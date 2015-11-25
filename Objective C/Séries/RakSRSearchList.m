@@ -46,6 +46,30 @@
 
 #pragma mark - Data manipulation
 
+- (void) updateData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes
+{
+	NSMutableArray * array = [NSMutableArray arrayWithCapacity:nbData];
+
+	for(uint pos = 0; pos < nbData; ++pos)
+		[array addObject:@(listIndexes[pos])];
+	
+	if([selection count] > 0)
+	{
+		//Remove deleted items
+		NSMutableArray * deletedItems = [selection copy];
+		[deletedItems removeObjectsInArray:array];
+		
+		for(NSNumber * item in deletedItems)
+			[self tableView:_tableView shouldSelectRow:[item longValue]];
+	}
+	
+	indexes = listIndexes;
+	_data = names;
+	_nbData = nbData;
+	
+	[_tableView reloadData];
+}
+
 - (SR_DATA *) getSmartReloadData : (PROJECT_DATA*) data : (uint) nbElem : (BOOL *) installed
 {
 	if(!nbElem)

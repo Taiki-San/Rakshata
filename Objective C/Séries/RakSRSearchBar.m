@@ -124,21 +124,25 @@
 	self = [self initWithFrame:frameRect :ID];
 
 	if(self != nil)
+		[self updateData:names ofSize:nbData andIndexes:listIndexes];
+	
+	return self;
+}
+
+- (void) updateData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes
+{
+	NSMutableArray * array = [NSMutableArray new];
+	
+	if(names != nil)
 	{
-		NSMutableArray * array = [NSMutableArray new];
-		if(array == nil)
-			return self;
-		
 		for(uint i = 0; i < nbData; ++i)
 		{
 			[array addObject:getStringForWchar(names[i])];
 		}
-		
-		indexes = listIndexes;
-		data = [NSArray arrayWithArray:array];
 	}
 	
-	return self;
+	indexes = listIndexes;
+	data = [NSArray arrayWithArray:array];
 }
 
 - (void) initCell

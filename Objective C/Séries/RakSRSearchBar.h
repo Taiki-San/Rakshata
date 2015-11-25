@@ -50,6 +50,8 @@ enum
 - (instancetype) initWithFrame : (NSRect) frameRect : (byte) ID;
 - (instancetype) initWithFrame : (NSRect) frameRect ID : (byte) ID andData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes;
 
+- (void) updateData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes;
+
 + (void) triggeringSearchBar : (BOOL) goingIn : (byte) ID;
 
 - (void) resizeAnimation : (NSRect) frame;

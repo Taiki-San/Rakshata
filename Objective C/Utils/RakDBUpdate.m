@@ -119,6 +119,14 @@
 	return [val unsignedIntValue] == UNUSED_FIELD;
 }
 
++ (BOOL) isProjectUpdate : (NSDictionary *) notification
+{
+	if(notification == nil)
+		return NO;
+
+	return [notification objectForKey:PROJECT_FIELD] != nil;
+}
+
 + (BOOL) getUpdatedRepo : (NSDictionary *) notification : (uint64_t *) ID
 {
 	if(notification == nil)

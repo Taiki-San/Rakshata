@@ -22,9 +22,9 @@
 	RakSwitchButton * freeSwitch, * favsSwitch;
 	RakText * freeText, * favsText;
 	
-	charType ** listData;
-	uint nbDataList;
-	uint64_t * indexesData;
+	charType ** listData, **_cachedListData;
+	uint nbDataList, _cachedNbDataList;
+	uint64_t * indexesData, * _cachedIndexesData, sessionID;
 	
 	BOOL manualUpdateNoNotif;
 }

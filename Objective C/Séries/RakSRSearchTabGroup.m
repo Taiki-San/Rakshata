@@ -36,14 +36,16 @@ enum
 			
 			list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] ofType:_ID withData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(list != nil)
+			{
+				[[NSNotificationCenter defaultCenter] addObserver:list selector:@selector(fullCleanup) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 				[self addSubview:[list getContent]];
+			}
 			
 			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(searchBar != nil)
-			{
-				[[NSNotificationCenter defaultCenter] addObserver:list selector:@selector(fullCleanup) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 				[self addSubview:searchBar];
-			}
+			
+			[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		}
 		else
 		{
@@ -130,23 +132,28 @@ enum
 {
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 		[[NSNotificationCenter defaultCenter] removeObserver:self];
+	else
+	{
+		[RakDBUpdate unRegister:self];
+	
+		_cachedListData = listData;
+		_cachedIndexesData = indexesData;
+		_cachedNbDataList = nbDataList;
 		
+		[self releaseData];
+	}
+	
 	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
-- (byte) getRDBSCodeForID
+- (void) releaseData
 {
-	if(_ID == SEARCH_BAR_ID_AUTHOR)
-		return RDBS_TYPE_AUTHOR;
-	else if(_ID == SEARCH_BAR_ID_SOURCE)
-		return RDBS_TYPE_SOURCE;
-	else if(_ID == SEARCH_BAR_ID_TAG)
-		return RDBS_TYPE_TAG;
-	else if(_ID == SEARCH_BAR_ID_CAT)
-		return RDBS_TYPE_CAT;
+	while(_cachedNbDataList--)
+		free(_cachedListData[_cachedNbDataList]);
 	
-	NSLog(@"Not supported yet");
-	return 255;
+	_cachedNbDataList = 0;
+	free(_cachedListData);		_cachedListData = NULL;
+	free(_cachedIndexesData);	_cachedIndexesData = NULL;
 }
 
 - (void) setFrame:(NSRect)frameRect
@@ -253,7 +260,13 @@ enum
 
 - (void) loadDataForListAndSearch
 {
-	byte type = [self getRDBSCodeForID];
+	sessionID = getSessionForType(getRestrictionTypeForSBID(_ID));
+
+	_cachedListData = listData;			listData = NULL;
+	_cachedIndexesData = indexesData;	indexesData = NULL;
+	_cachedNbDataList = nbDataList;		nbDataList = 0;
+	
+	byte type = getRestrictionTypeForSBID(_ID);
 	if(type != RDBS_TYPE_SOURCE)
 	{
 		indexesData = getSearchData(type, &listData, &nbDataList);
@@ -307,6 +320,21 @@ enum
 		
 		freeRepo(repo);
 	}
+}
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if( _ID == SEARCH_BAR_ID_EXTRA ||
+	   (_ID == SEARCH_BAR_ID_SOURCE && ![RakDBUpdate getUpdatedRepo: notification.userInfo : NULL]) ||
+	   (_ID != SEARCH_BAR_ID_SOURCE && (getSessionForType(getRestrictionTypeForSBID(_ID)) == sessionID || ![RakDBUpdate isProjectUpdate:notification.userInfo])))
+		return;
+	
+	[self loadDataForListAndSearch];
+	
+	[list updateData:listData ofSize:nbDataList andIndexes:indexesData];
+	[searchBar updateData:listData ofSize:nbDataList andIndexes:indexesData];
+	
+	[self releaseData];
 }
 
 - (RakSRSearchBar *) searchBar	{	return searchBar;	}
