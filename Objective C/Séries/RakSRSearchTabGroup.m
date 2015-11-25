@@ -356,6 +356,9 @@ enum
 	if(freeText != nil)
 		freeText.textColor = [self textColor];
 	
+	if(favsText != nil)
+		favsText.textColor = [self textColor];
+	
 	[self setNeedsDisplay:YES];
 }
 
