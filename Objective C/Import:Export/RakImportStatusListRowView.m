@@ -39,7 +39,7 @@
 
 	if(projectName == nil)
 	{
-		projectName = [[RakText alloc] initWithText:[self getLineName : item] :[NSColor whiteColor]];
+		projectName = [[RakText alloc] initWithText:[self getLineName : item] :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		if(projectName != nil)
 			[self addSubview:projectName];
 	}
