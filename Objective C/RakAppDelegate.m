@@ -294,6 +294,11 @@
 		[tabReader switchDistractionFree];
 }
 
+- (IBAction)close : (id)sender
+{
+	[[NSApp keyWindow] close];
+}
+
 #pragma mark Debug
 
 - (IBAction) reloadFromRemote : (id)sender

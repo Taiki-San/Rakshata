@@ -56,11 +56,20 @@
 	if([selection count] > 0)
 	{
 		//Remove deleted items
-		NSMutableArray * deletedItems = [selection copy];
+		NSMutableArray * deletedItems = [NSMutableArray arrayWithArray:selection];
 		[deletedItems removeObjectsInArray:array];
 		
 		for(NSNumber * item in deletedItems)
-			[self tableView:_tableView shouldSelectRow:[item longValue]];
+		{
+			uint64_t code = [item unsignedLongLongValue];
+			for(uint i = 0; i < _nbData; i++)
+			{
+				if(indexes[i] == code)
+				{
+					[self tableView:_tableView shouldSelectRow:i];
+				}
+			}
+		}
 	}
 	
 	indexes = listIndexes;

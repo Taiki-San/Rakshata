@@ -75,6 +75,7 @@ enum	{	BORDER_BOTTOM	= 7	};
 	[super updateProject:project];
 	
 	mainTag.stringValue = getStringForWchar(getTagNameForCode(_project.mainTag));
+	[mainTag sizeToFit];
 	
 	menuManager = [[RakProjectMenu alloc] initWithProject:_project];
 	if(menuManager != nil)
