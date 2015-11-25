@@ -151,7 +151,14 @@ ARCHIVE * openArchiveFromFile(const char * path)
 	rarJumpBackAtBegining(output);
 
 	//Reduce our memory use
-	if(currentPos < predictedNumberOfFiles)
+	if(currentPos == 0)
+	{
+		free(filename);
+		output->nbFiles = 0;
+		closeArchive(output);
+		return NULL;
+	}
+	else if(currentPos < predictedNumberOfFiles)
 	{
 		void * tmp = realloc(filename, currentPos * sizeof(char *));
 		if(tmp != NULL)

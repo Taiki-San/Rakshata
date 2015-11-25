@@ -211,7 +211,7 @@ void initializeTags(void * mainCache)
 {
 	MUTEX_CREATE(concurentColdUpdate);
 	
-	sqlite3 * coldDB;
+	sqlite3 * coldDB = NULL;
 	
 	//Create the tables in the main cache
 	createTagsTable(mainCache);

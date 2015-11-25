@@ -300,7 +300,7 @@
 
 - (PROJECT_DATA) getElementAtIndex : (NSInteger) index
 {
-	if(index >= 0 && index < _nbData)
+	if(_data != NULL && index >= 0 && index < _nbData)
 	{
 		if(self.installOnlyMode && index < _nbElemInstalled)
 			index = _jumpToInstalled[index];

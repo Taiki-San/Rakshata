@@ -255,9 +255,9 @@ void alertExit(const char * exitReason)
 		[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
 		
 		[alert runModal];
-		
-		exit(EXIT_FAILURE);
 	}
+
+	exit(EXIT_FAILURE);
 }
 
 /*****************************************

@@ -326,13 +326,15 @@ void registerDefaultForExtension(NSString * extension)
 
 	//If it's us, we return
 	if([(__bridge NSURL *) currentDefault isEqualTo:[[NSBundle mainBundle] bundleURL]])
+	{
+		CFRelease(localExtension);
+		CFRelease(currentDefault);
 		return;
+	}
 
 	//If not, let's take it over :o
 	/*OSStatus status = */LSSetDefaultRoleHandlerForContentType (localExtension, kLSRolesViewer, (__bridge CFStringRef) [[NSBundle mainBundle] bundleIdentifier]);
 
-//	if(status != kLSLaunchInProgressErr)
-//	{
-//		NSLog(@"Failure :c %d", status);
-//	}
+	CFRelease(localExtension);
+	CFRelease(currentDefault);
 }

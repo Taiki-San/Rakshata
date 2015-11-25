@@ -122,7 +122,7 @@ enum
 	//However, this only happen once and the following calls only need to update the frame
 	
 	NSSize oldSize = queryWindow.contentView.bounds.size;
-	CGFloat deltaWidth = windowDidExpand ? 0 : DELTA_WIDTH, deltaHeight = windowDidExpand ? 0 : DELTA_HEIGHT, offsetHeight;
+	CGFloat deltaWidth, deltaHeight, offsetHeight;
 
 	if(windowDidExpand)
 	{

@@ -144,7 +144,7 @@ enum
 	
 	//Should override the direction suggested by the project
 	[Prefs getPref:PREFS_GET_DIROVERRIDE :&setting];
-	baseY = [self createSwitchWithText:@"READER-SETTING-OVERRIDE-DIR" status:setting toButton:&button withSelector:@selector(readerOverrideDirection:) andBaseY:baseY];
+	[self createSwitchWithText:@"READER-SETTING-OVERRIDE-DIR" status:setting toButton:&button withSelector:@selector(readerOverrideDirection:) andBaseY:baseY];
 	
 	overrideDirection = button;
 }
