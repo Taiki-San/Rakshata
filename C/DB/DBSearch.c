@@ -649,7 +649,8 @@ void checkIfRemainingAndDelete(uint data, byte type)
 	sqlite3_bind_int64(request, 1, data);
 	sqlite3_bind_int(request, 2, type);
 	
-	bool nothingRemaining = sqlite3_step(request) == SQLITE_DONE;
+	int retValue = sqlite3_step(request);
+	bool nothingRemaining = retValue == SQLITE_DONE || (retValue == SQLITE_ROW && sqlite3_column_int(request, 0) == 0);
 	
 	destroyRequest(request);
 	
@@ -722,27 +723,25 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	if(dataName == NULL || dataLength == NULL || cache == NULL)
 		return NULL;
 	
-	sqlite3_stmt * request;
+	sqlite3_stmt * request = NULL;
 
 	if(type == RDBS_TYPE_AUTHOR)
 	{
 		*dataLength = nbAuthor;
-		if((request = createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" COLLATE "SORT_FUNC" ASC;")) == NULL)
-			return NULL;
+		request = createRequest(cache, "SELECT * FROM "TABLE_NAME_AUTHOR" ORDER BY "DBNAMETOID(RDB_authors)" COLLATE "SORT_FUNC" ASC;");
 	}
 	else if(type == RDBS_TYPE_TAG)
 	{
 		*dataLength = nbTag;
-		if((request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";")) == NULL)
-			return NULL;
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_TAG)";");
 	}
 	else if(type == RDBS_TYPE_CAT)
 	{
 		*dataLength = nbType;
-		if((request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)";")) == NULL)
-			return NULL;
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)";");
 	}
-	else
+	
+	if(request == NULL)
 		return NULL;
 	
 	uint pos = 0, length = *dataLength;
