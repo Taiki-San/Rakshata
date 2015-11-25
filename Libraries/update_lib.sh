@@ -304,7 +304,7 @@ do
 		echo "Found everything we needed, compiling!"
 		
 		#Compiling
-		clang -O3 -c $SQLITE_SOURCE_FILE -o sqlite3.o
+		clang -O3 -c -DHAVE_USLEEP=1 $SQLITE_SOURCE_FILE -o sqlite3.o
 		
 		#Packaging the library
 		ar rcs ../../$OUTPUT_DIR/$OUTPUT_FILE sqlite3.o
