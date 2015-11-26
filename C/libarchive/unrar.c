@@ -236,14 +236,21 @@ bool rarLocateFile(ARCHIVE * archive, void ** entryBackup, const char * filename
 	{
 		err = archive_read_next_header(archive->archive, &entry);
 
-		if(firstPass && err == ARCHIVE_EOF)
+		if(err == ARCHIVE_EOF)
 		{
-			firstPass = false;
 			rarJumpBackAtBegining(archive);
-			err = archive_read_next_header(archive->archive, &entry);
+			if(firstPass)
+			{
+				err = archive_read_next_header(archive->archive, &entry);
+				firstPass = false;
+			}
+			else
+			{
+				logR("Couldn't find file in RAR archive :(");
+				break;
+			}
 		}
-
-		if(err != ARCHIVE_OK)
+		else if(err != ARCHIVE_OK)
 		{
 			logR("Error while reading the file");
 			logR(archive_error_string(archive->archive));
