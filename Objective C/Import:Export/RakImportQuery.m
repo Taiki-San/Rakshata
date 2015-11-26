@@ -832,6 +832,40 @@ enum
 		if(fallbackID < NB_IMAGES)
 			[self setDefaultThumbFor:area withID:fallbackID fallBack:NB_IMAGES];
 	}
+	else if(_project.isInitialized)
+	{
+		NSImage * image = nil;
+		
+		switch (ID)
+		{
+			case THUMB_INDEX_HEAD:
+			case THUMB_INDEX_HEAD2X:
+			{
+				image = loadCTHeader(_project);
+				break;
+			}
+				
+			case THUMB_INDEX_SR:
+			case THUMB_INDEX_SR2X:
+			{
+				image = loadImageGridWithoutDefault(_project);
+				break;
+			}
+				
+			case THUMB_INDEX_DD:
+			case THUMB_INDEX_DD2X:
+			{
+				image = loadDDThumbnailWithoutDefault(_project);
+				break;
+			}
+		}
+		
+		if(image != nil)
+		{
+			area.image = image;
+			area.defaultImage = YES;
+		}
+	}
 }
 
 - (void) feedAnimationController : (RakCTAnimationController *) animationController

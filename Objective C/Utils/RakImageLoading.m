@@ -155,6 +155,21 @@ NSImage * loadImageGrid(const PROJECT_DATA project)
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, @"defaultSRImage"), THUMB_INDEX_SR);
 }
 
+NSImage * loadCTHeaderWithoutDefault(const PROJECT_DATA project)
+{
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, nil), THUMB_INDEX_HEAD);
+}
+
+NSImage * loadDDThumbnailWithoutDefault(const PROJECT_DATA project)
+{
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_DD, nil), THUMB_INDEX_DD);
+}
+
+NSImage * loadImageGridWithoutDefault(const PROJECT_DATA project)
+{
+	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, nil), THUMB_INDEX_SR);
+}
+
 NSSize thumbSizeForID(byte ID)
 {
 	switch(ID)
