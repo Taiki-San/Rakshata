@@ -23,7 +23,7 @@
 
 @interface RakSRContentManager : NSObject
 {
-	BOOL _initialized;
+	BOOL _initialized, secondPass;
 	
 	NSString * commitedSearch;
 	
@@ -36,7 +36,6 @@
 	
 	uint * orderedToSorted;
 	uint * filteredToOrdered;
-	uint * filteredToSorted;
 	
 	//Views
 	NSRect previousFrame;
