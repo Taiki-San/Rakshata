@@ -95,6 +95,17 @@
 	PROJECT_DATA project = [self exfilterProject:&array];
 	if(project.isInitialized)
 	{
+		//Install the overriden images
+		for(NSDictionary * dict in array)
+		{
+			byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue], standardCode = retinaCode - retinaCode % 2;
+			NSImage * baseImage = [dict objectForKey:@"data"];
+			
+			NSSize retinaSize = thumbSizeForID(retinaCode), standardSize = thumbSizeForID(standardCode);
+			
+			exportImageToPath(baseImage, standardSize, retinaSize, [NSString stringWithUTF8String:getPathToIconsOfProject(project, retinaCode).string]);
+			exportImageToPath(baseImage, standardSize, standardSize, [NSString stringWithUTF8String:getPathToIconsOfProject(project, standardCode).string]);
+		}
 		parsedProject.project = project;
 		updateCache(parsedProject, RDB_UPDATE_ID, 0);
 		syncCacheToDisk(SYNC_PROJECTS);
