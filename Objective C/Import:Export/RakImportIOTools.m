@@ -44,7 +44,7 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 	
 	output.nodeName = nodeName;
 
-	bool onlyImages = true, imagesAndFlatCT = true;
+	bool imagesAndFlatCT = true;
 	const char * supportedFormat[] = {"png", "jpg", "dat", "jpeg", "pdf", "tiff", "gif"};
 	const byte formatLengths[] = {3, 3, 3, 4, 3, 4, 3};
 	uint nbImages = 0;
@@ -80,8 +80,6 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 			{
 				output.children = tmp;
 
-				onlyImages = false;
-
 				if(imagesAndFlatCT && !newNode.isFlatCT)
 					imagesAndFlatCT = false;
 			}
@@ -115,6 +113,9 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 						foundOne = false;
 				}
 
+				if(!foundOne)
+					continue;
+
 				//Is config.dat? Otherwise, drop the file
 				if(i == CONFIG_INDEX)
 				{
@@ -127,15 +128,10 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 						break;
 					}
 				}
-				else
-					++nbImages;
 			}
 
-			if(!foundOne)
-			{
-				onlyImages = false;
-				continue;
-			}
+			if(foundOne)
+				++nbImages;
 		}
 	}
 
@@ -146,8 +142,7 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 	}
 	else
 	{
-		output.isFlatCT = onlyImages;
-		output.couldBeComplexT = !onlyImages && imagesAndFlatCT && [output.children count] > 1;
+		output.isFlatCT = nbImages > 0 && [output.children count] == 0;
 		output.nbImages = nbImages;
 
 		if(output.isFlatCT || [output.children count])
