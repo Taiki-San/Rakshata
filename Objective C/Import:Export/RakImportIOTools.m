@@ -30,7 +30,7 @@ enum
 	MAX_DEPTH = 5
 };
 
-RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController, uint depth)
+RakImportNode * _importDataForFiles(const char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController, uint depth)
 {
 	RakImportNode * output = getEmptyImportNode();
 
@@ -155,7 +155,7 @@ RakImportNode * _importDataForFiles(char * dirName, char ** files, const uint nb
 	return output;
 }
 
-RakImportNode * importDataForFiles(char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController)
+RakImportNode * importDataForFiles(const char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController)
 {
 	return _importDataForFiles(dirName, files, nbFiles, IOController, 0);
 }

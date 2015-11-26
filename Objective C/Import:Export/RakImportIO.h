@@ -58,7 +58,6 @@
 @property uint nbImages;
 
 @property bool isFlatCT;
-@property bool couldBeComplexT;
 @property bool isValid;
 
 - (NSArray <NSString *> * __nullable) getChildrenNames;

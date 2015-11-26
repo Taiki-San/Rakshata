@@ -153,7 +153,7 @@
 
 - (RakImportNode *) getNode
 {
-	return importDataForFiles(strdup([archiveFileName UTF8String]), filenames, nbFiles, self);
+	return importDataForFiles([archiveFileName UTF8String], filenames, nbFiles, self);
 }
 
 - (void) generateConfigDatInPath : (NSString *) path

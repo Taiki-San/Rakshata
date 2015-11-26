@@ -61,7 +61,8 @@
 			UI.posInExport++;
 
 		//First, check the file exist in the archive
-		if(![item.IOController canLocateFile: item.path])
+		//An empty path mean the lack of structure in the zip
+		if(![item.path isEqualToString:@""] && ![item.IOController canLocateFile: item.path])
 			continue;
 
 		//At this point, we know two things: the project is valid, exist in the archive
