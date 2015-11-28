@@ -14,7 +14,8 @@
 
 static bool initialized = false;
 
-static int64_t nbAuthor = 0, nbTag = 0, nbType = 0;
+static int64_t nbAuthor = 0, nbTag = 0, nbCat = 0;
+static int64_t nbRestrictionAuthor = 0, nbRestrictionTag = 0, nbRestrictionCat = 0, nbRestrictionSource = 0;
 static uint64_t sessionAuthor = 1, sessionTag = 1, sessionType = 1;
 
 typedef struct randoName
@@ -40,6 +41,7 @@ typedef struct randoName
 
 bool manipulateProjectSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project);
 void updateElementCount(byte type, int change);
+void updateRestrictionCount(byte type, int change);
 
 void buildSearchTables(sqlite3 *_cache)
 {
@@ -545,6 +547,9 @@ bool insertRestriction(uint64_t code, byte type)
 	
 	destroyRequest(request);
 	
+	if(output)
+		updateRestrictionCount(type, 1);
+	
 	notifyRestrictionChanged();
 	
 	return output;
@@ -586,6 +591,9 @@ bool removeRestriction(uint64_t code, byte type)
 	bool output = sqlite3_step(request) == SQLITE_DONE;
 	
 	destroyRequest(request);
+	
+	if(output)
+		updateRestrictionCount(type, -1);
 	
 	notifyRestrictionChanged();
 	
@@ -650,8 +658,38 @@ void updateElementCount(byte type, int change)
 			
 		case RDBS_TYPE_CAT:
 		{
-			nbType += change;
+			nbCat += change;
 			++sessionType;
+			break;
+		}
+	}
+}
+
+void updateRestrictionCount(byte type, int change)
+{
+	switch (type)
+	{
+		case RDBS_TYPE_AUTHOR:
+		{
+			nbRestrictionAuthor += change;
+			break;
+		}
+			
+		case RDBS_TYPE_TAG:
+		{
+			nbRestrictionTag += change;
+			break;
+		}
+			
+		case RDBS_TYPE_CAT:
+		{
+			nbRestrictionCat += change;
+			break;
+		}
+			
+		case RDBS_TYPE_SOURCE:
+		{
+			nbRestrictionSource += change;
 			break;
 		}
 	}
@@ -758,7 +796,7 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 	}
 	else if(type == RDBS_TYPE_CAT)
 	{
-		*dataLength = nbType;
+		*dataLength = nbCat;
 		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_tagID)", "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_TAG" WHERE "DBNAMETOID(RDBS_tagType)" = "STRINGIZE(RDBS_TYPE_CAT)";");
 	}
 	
@@ -803,6 +841,72 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 
 #pragma mark - Most highlevel API
 
+uint * _copyDataForRequest(sqlite3_stmt * request, uint * nbElemOutput)
+{
+	size_t realLength = 0;
+	uint data[nbElemInCache + 1];
+	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
+	{
+		data[realLength++] = (uint32_t) sqlite3_column_int(request, 0);
+	}
+	
+	*nbElemOutput = 0;
+	
+	if(realLength == 0)
+		return NULL;
+
+	uint * output = malloc(realLength * sizeof(uint));
+	if(output != NULL)
+	{
+		memcpy(output, data, realLength * sizeof(uint));
+		*nbElemOutput = realLength;
+	}
+	
+	return output;
+}
+
+uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bool wantAND, const char * additionnalRequest, uint * nbElemOutput)
+{
+	if(additionnalRequest == NULL)
+		additionnalRequest = "";
+	
+	char requestString[1024 + strlen(additionnalRequest)];
+	
+	if(categoryName != NULL)
+	{
+		if(wantAND)
+		{
+			snprintf(requestString, sizeof(requestString), "SELECT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s GROUP BY list."DBNAMETOID(RDB_ID)" HAVING COUNT(list."DBNAMETOID(RDB_ID)") >= %d ORDER BY list."DBNAMETOID(RDB_ID)" ASC;", categoryName, categoryName, additionnalRequest, nbItemInCategory);
+		}
+		else
+		{
+			snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s ORDER BY list."DBNAMETOID(RDB_ID)" ASC", categoryName, categoryName, additionnalRequest);
+		}
+	}
+	else if(additionnalRequest[0] != 0)		//Not an empty request
+	{
+		while (*additionnalRequest == ' ')									additionnalRequest++;
+		while (*additionnalRequest != ' ' && *additionnalRequest != 0)		additionnalRequest++;
+		
+		if(*additionnalRequest == 0)
+			return NULL;
+		
+		snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache WHERE %s ORDER BY "DBNAMETOID(RDB_ID)" ASC", additionnalRequest);
+	}
+	else
+		snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache ORDER BY "DBNAMETOID(RDB_ID)" ASC");
+	
+	sqlite3_stmt * request = createRequest(cache, requestString);
+	if(request == NULL)
+		return NULL;
+	
+	void * output = _copyDataForRequest(request, nbElemOutput);
+	
+	destroyRequest(request);
+
+	return output;
+}
+
 uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly, bool wantFavsOnly)
 {
 	if(dataLength == NULL)
@@ -810,40 +914,21 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	else
 		*dataLength = UINT_MAX;
 	
-	sqlite3_stmt * request;
-	
 	size_t maxLength = nbElemInCache;
 	uint * output = malloc(maxLength * sizeof(uint));	//We allocate more space, but will reduce at the end
 	
 	if(output == NULL)
 		return NULL;
 	
-	//Bon, on va essayer de documenter un poil ce joujou
-	//Cette requête est composée de deux morceaux fonctionnellements très proches, je vais documenter la version compilée de cette requêtes, les constantes n'ayant pas un sens critique
-	//Cette requête est un INTERSECT de deux requêtes de cette forme:
-	//SELECT `1` FROM rakSearch3 list JOIN rakSearch4 rest WHERE (SELECT COUNT() = 0 FROM rakSearch4 WHERE rakSearch4.`20` = 2) OR (rest.`20` = 2 AND list.`19` = rest.`19` AND list.`20` = rest.`20`) GROUP BY `1` HAVING COUNT(`1`) >= (SELECT COUNT() FROM rakSearch4 WHERE rakSearch4.`20` = 2);
-	//Nous faisons une jointure entre la table de correspondance et la table contenant les restrictions
-	//Ensuite, soit aucune restriction compatible n'est trouvée, et tout est alors autorisé (COUNT = 0 -> TRUE), soit une restriction du type considéré est présente, auquel cas elle est filtrée (`20` = 2) et la restriction est appliquée
-	//Enfin, nous regroupons les correspondances (GROUP BY) dans le cas ou toutes les conditions ont étés remplies (HAVING). Nous utilisons >= pour fonctionner dans le cas où aucune restriction n'a été trouvée
-	//Nous supportons deux types de restrictions, les AND et les OR, ceci était une AND, forçant que toutes ses conditions soient remplies à travers son HAVING
-	//Les OR remplacent GROUP BY ... HAVING ... par SELECT DISTINCT, retirant les collisions
-	//La donnée que nous extrayons est l'ID des éléments valides
-	
-	//Current recipe: (AUTHOR(|) OR SOURCE(|) OR TYPE(|)) AND TAG(&)
-	
-	//Futur maintainer, I wish you good luck
-	//If TABLE_NAME_RESTRICTIONS is empty, it seems the request return no data, asshole
-	//We insert an invalid data when creating it to solve the issue
+	//Current recipe: AUTHOR(|) AND SOURCE(|) AND TYPE(|) AND TAG(&)
 	
 	uint searchLength = searchQuery == NULL ? 0 : strlen(searchQuery);
-	char requestString[1024 + 2 * searchLength];
-	
-	if(!searchLength && !wantInstalledOnly && !wantFreeOnly && !wantFavsOnly)
-		strncpy(requestString, "SELECT DISTINCT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", sizeof(requestString));
-	else
+	bool haveAdditionnalRequest = false;
+	char additionnalRequest[256 + searchLength];	additionnalRequest[0] = 0;
+
+	//We craft the additional parts of the request
+	if(searchLength || wantInstalledOnly || wantFreeOnly || wantFavsOnly)
 	{
-		char additionnalRequest[256 + searchLength];	additionnalRequest[0] = 0;
-		
 		if(searchLength)
 			snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
 		
@@ -864,38 +949,133 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 			uint currentLength = strlen(additionnalRequest);
 			snprintf(&(additionnalRequest[currentLength]), sizeof(additionnalRequest) - currentLength, " AND cache."DBNAMETOID(RDB_isInstalled)" = 1");
 		}
+		
+		haveAdditionnalRequest = true;
+	}
+	
+	uint * intermediaryData[4] = {NULL}, nbElemInData[4] = {0}, dataCount = 0;
+	
+	//We get the data for the various restrictions
+	if(nbRestrictionAuthor)
+	{
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_AUTHOR), nbRestrictionAuthor, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		
+		if(haveAdditionnalRequest)
+			haveAdditionnalRequest = false;
+		
+		dataCount++;
+	}
+	
+	if(nbRestrictionSource)
+	{
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_SOURCE), nbRestrictionSource, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		
+		if(haveAdditionnalRequest)
+			haveAdditionnalRequest = false;
+		
+		dataCount++;
+	}
+	
+	if(nbRestrictionCat)
+	{
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_CAT), nbRestrictionCat, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		
+		if(haveAdditionnalRequest)
+			haveAdditionnalRequest = false;
+		
+		dataCount++;
+	}
+	
+	if(nbRestrictionTag)
+	{
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_TAG), nbRestrictionTag, true, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		
+		if(haveAdditionnalRequest)
+			haveAdditionnalRequest = false;
+		
+		dataCount++;
+	}
+	
+	//If there was no other restriction
+	if(haveAdditionnalRequest || dataCount == 0)
+	{
+		intermediaryData[dataCount] = _getIDForRestriction(NULL, 0, false, additionnalRequest, &(nbElemInData[dataCount]));
+		dataCount++;
+	}
+	
+	//We find the largest array
+	uint minCount = 0, indexSmallestArray = 0, indexInIntermediary[dataCount];
+	for(uint i = 0; i < dataCount; ++i)
+	{
+		if(minCount > nbElemInData[i])
+		{
+			minCount = nbElemInData[i];
+			indexSmallestArray = i;
+		}
+		
+		indexInIntermediary[i] = 0;
+	}
+	
+	//Array are all sorted, we want the ID appearing in all of them. We pick the smallest, then check that all its item appear in all the other items
+	uint validateLength = 0;
+	bool reachedEndOfAList = false, itemValidated;
+	
+	while(!reachedEndOfAList)
+	{
+		if(indexInIntermediary[indexSmallestArray] >= nbElemInData[indexSmallestArray])
+			break;
+		
+		uint currentID = intermediaryData[indexSmallestArray][indexInIntermediary[indexSmallestArray]++];
+		itemValidated = true;
+		
+		for(uint posInIntermediary = 0; posInIntermediary < dataCount; ++posInIntermediary)
+		{
+			//We don't have to compare with ourselves
+			if(posInIntermediary == indexSmallestArray)
+				continue;
 			
-		snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest, "MAIN_CACHE" cache ON cache."DBNAMETOID(RDB_ID)" = list."DBNAMETOID(RDB_ID)" WHERE ((SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)")) OR (rest."DBNAMETOID(RDBS_dataType)" IN ("STRINGIZE(RDBS_TYPE_AUTHOR)", "STRINGIZE(RDBS_TYPE_SOURCE)", "STRINGIZE(RDBS_TYPE_CAT)") AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)")) %s INTERSECT SELECT "DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" list JOIN "TABLE_NAME_RESTRICTIONS" rest WHERE (SELECT COUNT() = 0 FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") OR (rest."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)" AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" AND list."DBNAMETOID(RDBS_dataType)" = rest."DBNAMETOID(RDBS_dataType)") GROUP BY "DBNAMETOID(RDB_ID)" HAVING COUNT("DBNAMETOID(RDB_ID)") >= (SELECT COUNT() FROM "TABLE_NAME_RESTRICTIONS" WHERE "TABLE_NAME_RESTRICTIONS"."DBNAMETOID(RDBS_dataType)" = "STRINGIZE(RDBS_TYPE_TAG)") ORDER BY "DBNAMETOID(RDB_ID)" ASC;", additionnalRequest);
+			//We discard any data that is over the current item were evaluating
+			while(indexInIntermediary[posInIntermediary] < nbElemInData[posInIntermediary] &&
+				  currentID > intermediaryData[posInIntermediary][indexInIntermediary[posInIntermediary]])
+				indexInIntermediary[posInIntermediary]++;
+			
+			//If a list is over, then none of the following data can be in all of them
+			if(indexInIntermediary[posInIntermediary] >= nbElemInData[posInIntermediary])
+			{
+				reachedEndOfAList = true;
+				break;
+			}
+			
+			//If the item doesn't match, it's missing from this list
+			if(currentID != intermediaryData[posInIntermediary][indexInIntermediary[posInIntermediary]])
+			{
+				itemValidated = false;
+				break;
+			}
+		}
+		
+		//If the item is validated
+		if(itemValidated)
+		{
+			output[validateLength++] = currentID;
+		}
 	}
 	
-	if((request = createRequest(cache, requestString)) == NULL)
-	{
-#ifdef EXTENSIVE_LOGGING
-		logR(requestString);
-#endif
-		free(output);
-		return NULL;
-	}
+	//Release the allocated data
+	for(uint i = 0; i < dataCount; ++i)
+		free(intermediaryData[i]);
 	
-	size_t realLength = 0;
-	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
-	{
-		output[realLength++] = (uint32_t) sqlite3_column_int(request, 0);
-	}
-	
-	destroyRequest(request);
-	
-	*dataLength = realLength;
+	*dataLength = validateLength;
 
-	if(realLength < nbElemInCache)
+	if(validateLength < nbElemInCache)
 	{
-		if(realLength == 0)	//No data :/
+		if(validateLength == 0)	//No data :/
 		{
 			free(output);
 			return NULL;
 		}
 			
-		void * tmp = realloc(output, realLength * sizeof(uint));
+		void * tmp = realloc(output, validateLength * sizeof(uint));
 		if(tmp != NULL)
 			output = tmp;
 	}

@@ -293,7 +293,7 @@
 {
 	id output = [item getData];
 	
-	return output != nil ? output : @"Invalid data :(";
+	return output != nil ? output : nil;//@"Invalid data :(";
 }
 
 #pragma mark - Delegate of the view
