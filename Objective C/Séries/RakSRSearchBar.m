@@ -91,6 +91,8 @@
 		_currentPlaceholderState = YES;
 		
 		[self initCell];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fullFlush) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 
 		CONFIGURE_APPEARANCE_DARK(self);
 		self.bezeled = NO;
@@ -191,6 +193,7 @@
 - (void) dealloc
 {
 	[Prefs deRegisterForChange:self forType:KVO_THEME];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Interface
@@ -260,7 +263,13 @@
 
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self.window makeFirstResponder:[[NSApp delegate] serie]];
+		[self performSearch];
 	});
+}
+
+- (void) fullFlush
+{
+	[self cancelProxy];
 }
 
 #pragma mark - View stuffs
@@ -386,15 +395,11 @@
 	
 	else if([textView respondsToSelector:commandSelector])
 	{
-		noRecursive = YES;
-		
 		normalKeyPressed = commandSelector != @selector(insertNewline:);
 		
 		IMP imp = [textView methodForSelector:commandSelector];
 		void (*func)(id, SEL, id) = (void *)imp;
 		func(textView, commandSelector, nil);
-		
-		noRecursive = NO;
 		
 		result = YES;
 	}

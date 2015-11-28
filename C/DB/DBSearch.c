@@ -880,7 +880,7 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 		}
 		else
 		{
-			snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s ORDER BY list."DBNAMETOID(RDB_ID)" ASC", categoryName, categoryName, additionnalRequest);
+			snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s ORDER BY list."DBNAMETOID(RDB_ID)" ASC", categoryName, categoryName, additionnalRequest);
 		}
 	}
 	else if(additionnalRequest[0] != 0)		//Not an empty request
@@ -891,7 +891,7 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 		if(*additionnalRequest == 0)
 			return NULL;
 		
-		snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache WHERE %s ORDER BY "DBNAMETOID(RDB_ID)" ASC", additionnalRequest);
+		snprintf(requestString, sizeof(requestString), "SELECT DISTINCT cache."DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache WHERE %s ORDER BY cache."DBNAMETOID(RDB_ID)" ASC", additionnalRequest);
 	}
 	else
 		snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache ORDER BY "DBNAMETOID(RDB_ID)" ASC");
@@ -930,7 +930,12 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	if(searchLength || wantInstalledOnly || wantFreeOnly || wantFavsOnly)
 	{
 		if(searchLength)
-			snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
+		{
+			if(nbRestrictionSource || nbRestrictionAuthor || nbRestrictionCat || nbRestrictionTag)
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND list."DBNAMETOID(RDB_ID)" = cache."DBNAMETOID(RDB_ID)" AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
+			else
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
+		}
 		
 		if(wantFavsOnly)
 		{
