@@ -218,6 +218,8 @@
 		
 		//	collector:		rankOfIDInSortedArray	->	is selected
 		//	Second:	We can then compress collector, convert back the rankOfIDInSortedArray in rankOfID and we are good
+		//
+		//		- filteredToOrdered:	rankInList ->	rankOfID
 		
 		for(uint i = 0, filteredPos = 0; i < *_nbElemFull && filteredPos < *_nbElemActivated; i++)
 		{
@@ -449,33 +451,42 @@
 	if([self initData:&newProject :&newCacheList :&newFilteredToOrdered :&newOrderedToSorted :&newNbElemFull :&newNbElemActivated : includeCacheRefresh])
 	{
 		//+ 1 to remove the case where newNbElemActivated == 0
-		int64_t removal[nbElemActivated + 1], insertion[newNbElemActivated + 1], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
+		int64_t insertion[newNbElemActivated + 1], nbRemoval = 0, nbInsertion = 0, posOld = 0, posNew = 0;
 		BOOL maskValidated[nbElemFull], newMaskValidated[newNbElemFull];
 		
 		memset(maskValidated, 1, nbElemFull * sizeof(BOOL));
 		memset(newMaskValidated, 1, newNbElemFull * sizeof(BOOL));
 		
 		//First, we detect suppressions/deletions in the global cache list
+		//
+		//	cacheList contain a sorted list of the cacheID of the project in the list
+		//				by looking for variations. CachedID only grows, so if there is a missing entry, something was deleted
+		//				if there is extra entries at the end, there was insertion
+		//
+		//	NB: We don't write the same values in removal and insertion for good reasons, see the deletion/insertion routine to see why
+		//
+		
 		while(posOld < nbElemFull && posNew < newNbElemFull)
 		{
 			//Deletion
 			if(cacheList[posOld] < newCacheList[posNew])
 			{
-				maskValidated[posOld] = NO;	//Invalidate the entry
-				removal[nbRemoval++] = orderedToSorted[posOld++];
+				maskValidated[orderedToSorted[posOld]] = NO;	//Invalidate the entry
+				nbRemoval++;
 			}
 			
-			//Insertion
+			//Insertion, I'm not even sure this option can be hit
 			else if(cacheList[posOld] > newCacheList[posNew])
 			{
-				newMaskValidated[posNew] = NO;	//Invalidate the entry
-				insertion[nbInsertion++] = ++posNew * -1;
+				newMaskValidated[posNew] = NO;				//Invalidate the entry
+				insertion[nbInsertion++] = ++posNew * -1;	//We mark that this is not an index of newFilteredToOrdered, so the diff routine will have to find it itself
 			}
 			
+			//If the name are different, we mark to update the tile (removing + inserting it back)
 			else if(wstrcmp(project[orderedToSorted[posOld]].projectName, newProject[newOrderedToSorted[posNew]].projectName))
 			{
-				removal[nbRemoval++] = orderedToSorted[posOld];				maskValidated[posOld++] = NO;
-				insertion[nbInsertion++] = (posNew + 1) * -1;				newMaskValidated[posNew++] = NO;
+				maskValidated[orderedToSorted[posOld++]] = NO;				nbRemoval++;
+				newMaskValidated[posNew++] = NO;							insertion[nbInsertion++] = (posNew + 1) * -1;
 			}
 			
 			else
@@ -485,50 +496,68 @@
 			}
 		}
 		
-		//Complete the list
+		//Complete the list with all the item we had to catch, basically if extra items at the end were deleted
 		for(; posOld < nbElemFull; posOld++)
 		{
-			if(maskValidated[posOld])
-			{
-				removal[nbRemoval++] = orderedToSorted[posOld];
-				maskValidated[posOld] = NO;
-			}
+			maskValidated[orderedToSorted[posOld]] = NO;
+			nbRemoval++;
 		}
 		
-		for(; posNew < newNbElemFull; posNew++)
+		//We goes through newFilteredToOrdered (rankInList -> rankOfID) and check whenever we find a cacheDBID higher than the last one we matched
+		//This is a bit more expensive (as we go through values already looked up) but enable us not to force the insertion routine to look for the index in filteredToOrdered itself
+		if(posNew < newNbElemFull)
 		{
-			if(newMaskValidated[posNew])
+			for(uint i = 0, lastMatchedID = newCacheList[posNew]; i < nbElemActivated; ++i)
 			{
-				insertion[nbInsertion++] = (posNew + 1) * -1;;
-				newMaskValidated[posNew] = NO;
+				if(newCacheList[newFilteredToOrdered[i]] > lastMatchedID)
+				{
+					insertion[nbInsertion++] = i;
+					newMaskValidated[newFilteredToOrdered[i]] = NO;
+				}
 			}
 		}
 		
-		//We then track modification in the installed list
+		//We then track modification in the installed list by going through filteredToOrdered and newFilteredToOrdered
 		posOld = posNew = 0;
 		uint offsetOld = 0, offsetNew = 0;
 		while(posOld < nbElemActivated && posNew < newNbElemActivated)
 		{
-			if(!maskValidated[filteredToOrdered[posOld]])
+			//Check if the item was not already deleted
+			if(!maskValidated[orderedToSorted[filteredToOrdered[posOld]]])
 			{
 				offsetOld++;
 				posOld++;
 			}
 			
+			//Check if the item was not already inserted
 			else if(!newMaskValidated[newFilteredToOrdered[posNew]])
 			{
 				offsetNew++;
 				posNew++;
 			}
 			
+			//If the index of the posOld nth entry in the sorted list in below the one of posNew,
+			//		this mean the entry pointed by posOld is skipped in the new filteredToOrdered.
+			//If the opposite is true, then some items that were not in the old list are in the new list
+			//
+			//We must keep in mind the items that were already scrapped by the first routine will
+			//		introduce an offset that we must cancel (the positions in the main list will
+			//		be different because some items don't exist anymore in the new list).
+			//
+			//No offset must be introduced in this part because the main list isn't missing entries, they are just skipped by filteredToOrdered
+			
 			//Removal
 			else if(orderedToSorted[filteredToOrdered[posOld]] - offsetOld < newOrderedToSorted[newFilteredToOrdered[posNew]] - offsetNew)
-				removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld++]];
+			{
+				maskValidated[orderedToSorted[filteredToOrdered[posOld++]]] = NO;
+				nbRemoval++;
+			}
 			
 			//Insertion
 			else if(orderedToSorted[filteredToOrdered[posOld]] - offsetOld > newOrderedToSorted[newFilteredToOrdered[posNew]] - offsetNew)
 				insertion[nbInsertion++] = posNew++;
 			
+			//We just go to the next element
 			else
 			{
 				posNew++;
@@ -536,11 +565,14 @@
 			}
 		}
 		
-		//Complete the list
+		//Complete the list: all items not deleted/inserted at this point are either new, or removed
 		for(; MAX(posOld, nbRemoval) < nbElemActivated; posOld++)
 		{
-			if(maskValidated[filteredToOrdered[posOld]])
-				removal[nbRemoval++] = orderedToSorted[filteredToOrdered[posOld]];
+			if(maskValidated[orderedToSorted[filteredToOrdered[posOld]]])
+			{
+				maskValidated[orderedToSorted[filteredToOrdered[posOld++]]] = NO;
+				nbRemoval++;
+			}
 		}
 		
 		for(; posNew < newNbElemActivated; posNew++)
@@ -556,6 +588,7 @@
 		//We replace the old data structure
 		PROJECT_DATA * oldProject = project;
 		uint * oldCacheList = cacheList, * oldFilteredToOrdered = filteredToOrdered, * oldOrderedToSorted = orderedToSorted;
+		uint oldElemActivated = nbElemActivated;
 		
 		project = newProject;
 		cacheList = newCacheList;
@@ -564,20 +597,17 @@
 		nbElemActivated = newNbElemActivated;
 		nbElemFull = newNbElemFull;
 		
-		if(includeCacheRefresh)
-			freeProjectData(oldProject);
-		free(oldCacheList);
-		free(oldFilteredToOrdered);
-		free(oldOrderedToSorted);
-		
 		//Apply changes, yay
 		NSMutableArray *content = [self mutableArrayValueForKey:@"sharedReference"];
 		
-		//We have to start from the end of the sorted array so we don't progressively offset our deletion/insertion cursor
 		if(nbRemoval)
 		{
-			qsort(removal, (uint) nbRemoval, sizeof(int64_t), sortNumbers);
-			for(uint i = nbRemoval; i != 0; [content removeObjectAtIndex:(uint) removal[--i]]);
+			//We look for indexes marked as to delete, and nuke them :]
+			for(uint i = oldElemActivated; i-- > 0;)
+			{
+				if(!maskValidated[oldOrderedToSorted[oldFilteredToOrdered[i]]])
+					[content removeObjectAtIndex:i];
+			}
 		}
 		
 		if(nbInsertion)
@@ -592,6 +622,7 @@
 					indexInFinal = insertion[i];
 					insertion[i] = filteredToOrdered[indexInFinal];
 				}
+				
 				//First part of the routine, this is identified by the value being incremented, then multiplied by -1
 				//This value is directly filteredToOrdered[i] :(
 				//We have to find it to get our insertion point
@@ -611,6 +642,13 @@
 				[content insertObject:element atIndex:indexInFinal++];
 			}
 		}
+		
+		//We release the memory
+		if(includeCacheRefresh)
+			freeProjectData(oldProject);
+		free(oldFilteredToOrdered);
+		free(oldOrderedToSorted);
+		free(oldCacheList);
 		
 		//We fucked up
 		if([content count] != nbElemActivated || nbElemActivated > nbElemFull)
