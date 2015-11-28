@@ -566,11 +566,11 @@
 		}
 		
 		//Complete the list: all items not deleted/inserted at this point are either new, or removed
-		for(; MAX(posOld, nbRemoval) < nbElemActivated; posOld++)
+		for(posOld = MAX(posOld, nbRemoval); posOld < nbElemActivated; posOld++)
 		{
 			if(maskValidated[orderedToSorted[filteredToOrdered[posOld]]])
 			{
-				maskValidated[orderedToSorted[filteredToOrdered[posOld++]]] = NO;
+				maskValidated[orderedToSorted[filteredToOrdered[posOld]]] = NO;
 				nbRemoval++;
 			}
 		}
