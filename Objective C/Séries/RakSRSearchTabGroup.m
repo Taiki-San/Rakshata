@@ -30,6 +30,9 @@ enum
 	{
 		_ID = ID;
 		
+		self.wantsLayer = YES;
+		self.layer.cornerRadius = 3;
+		
 		if(_ID != SEARCH_BAR_ID_EXTRA)
 		{
 			[self loadDataForListAndSearch];
@@ -46,6 +49,7 @@ enum
 				[self addSubview:searchBar];
 			
 			[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+			self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 		}
 		else
 		{
@@ -61,46 +65,57 @@ enum
 				[self addSubview:close];
 			}
 			
-			freeSwitch = [[RakSwitchButton alloc] init];
-			if(freeSwitch != nil)
+			buttonContainer = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, frameRect.size.width, 55)];
+			if(buttonContainer != nil)
 			{
-				freeText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FREE-ONLY", nil) :[self textColor]];
-				if(freeText != nil)
+				buttonContainer.wantsLayer = YES;
+				buttonContainer.layer.cornerRadius = 4;
+				buttonContainer.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
+				
+				freeSwitch = [[RakSwitchButton alloc] init];
+				if(freeSwitch != nil)
 				{
-					freeSwitch.state = NSOffState;
-					freeSwitch.target = self;
-					freeSwitch.action = @selector(triggerFree);
-					
-					[self addSubview:freeSwitch];
-					
-					freeText.clicTarget = self;
-					freeText.clicAction = @selector(switchTriggerFree);
-					
-					[self addSubview:freeText];
+					freeText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FREE-ONLY", nil) :[self textColor]];
+					if(freeText != nil)
+					{
+						freeSwitch.state = NSOffState;
+						freeSwitch.target = self;
+						freeSwitch.action = @selector(triggerFree);
+						
+						[buttonContainer addSubview:freeSwitch];
+						
+						freeText.clicTarget = self;
+						freeText.clicAction = @selector(switchTriggerFree);
+						
+						[buttonContainer addSubview:freeText];
+					}
+					else
+						freeSwitch = nil;
 				}
-				else
-					freeSwitch = nil;
-			}
-			
-			favsSwitch = [[RakSwitchButton alloc] init];
-			if(freeSwitch != nil)
-			{
-				favsText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FAVS-ONLY", nil) :[self textColor]];
-				if(favsText != nil)
+				
+				favsSwitch = [[RakSwitchButton alloc] init];
+				if(freeSwitch != nil)
 				{
-					favsSwitch.state = NSOffState;
-					favsSwitch.target = self;
-					favsSwitch.action = @selector(triggerFavs);
-					
-					[self addSubview:favsSwitch];
-					
-					favsText.clicTarget = self;
-					favsText.clicAction = @selector(switchTriggerFavs);
-					
-					[self addSubview:favsText];
+					favsText = [[RakText alloc] initWithText:NSLocalizedString(@"PROJ-FILTER-FAVS-ONLY", nil) :[self textColor]];
+					if(favsText != nil)
+					{
+						favsSwitch.state = NSOffState;
+						favsSwitch.target = self;
+						favsSwitch.action = @selector(triggerFavs);
+						
+						[buttonContainer addSubview:favsSwitch];
+						
+						favsText.clicTarget = self;
+						favsText.clicAction = @selector(switchTriggerFavs);
+						
+						[buttonContainer addSubview:favsText];
+					}
+					else
+						favsSwitch = nil;
 				}
-				else
-					favsSwitch = nil;
+				
+				[self setSizeContainer];
+				[self addSubview:buttonContainer];
 			}
 			
 			flush = [RakButton allocWithText:NSLocalizedString(@"PROJ-FILTER-FLUSH", nil)];
@@ -116,13 +131,11 @@ enum
 			}
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanupCustomTab) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
+			
+			self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA].CGColor;
 		}
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
-		
-		self.wantsLayer = YES;
-		self.layer.cornerRadius = 3;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 	}
 	
 	return self;
@@ -166,27 +179,11 @@ enum
 		[close setFrameOrigin:newOrigin];
 		
 		//Free button
-		NSRect switchFrame = freeSwitch.frame, textFrame = freeText.frame;
-		CGFloat cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
-		[freeSwitch setFrameOrigin:newOrigin];
+		newOrigin = NSMakePoint(0, newOrigin.y - BORDER_Y_FREE - buttonContainer.bounds.size.height);
+		[buttonContainer setFrameOrigin:newOrigin];
 		
-		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
-		[freeText setFrameOrigin:newOrigin];
-
-		//Favs button
-		switchFrame = favsSwitch.frame;
-		textFrame = favsText.frame;
-		
-		cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
-		[favsSwitch setFrameOrigin:newOrigin];
-		
-		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
-		[favsText setFrameOrigin:newOrigin];
-		
-		switchFrame = flush.bounds;
-		[flush setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
+		NSRect switchFrame = flush.bounds;
+		[flush setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
@@ -201,37 +198,44 @@ enum
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
+		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 2 - close.bounds.size.height);
 		[close.animator setFrameOrigin:newOrigin];
 		
 		//Free button
-		NSRect switchFrame = freeSwitch.frame, textFrame = freeText.frame;
-		CGFloat cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
-		[freeSwitch.animator setFrameOrigin:newOrigin];
+		newOrigin = NSMakePoint(0, newOrigin.y - BORDER_Y_FREE - buttonContainer.bounds.size.height);
+		[buttonContainer.animator setFrameOrigin:newOrigin];
 		
-		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
-		[freeText.animator setFrameOrigin:newOrigin];
-		
-		//Favs button
-		switchFrame = favsSwitch.frame;
-		textFrame = favsText.frame;
-		
-		cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
-		newOrigin = NSMakePoint(frameRect.size.width / 2 - cumulatedWidth / 2, newOrigin.y - BORDER_Y_FREE - textFrame.size.height);
-		[favsSwitch.animator setFrameOrigin:newOrigin];
-		
-		newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (textFrame.size.height / 2 - textFrame.size.height / 2));
-		[favsText.animator setFrameOrigin:newOrigin];
-
-		switchFrame = flush.bounds;
-		[flush.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
+		NSRect switchFrame = flush.bounds;
+		[flush.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
 		[list resizeAnimation:[self getTableFrame:frameRect]];
 		[searchBar resizeAnimation:[self getSearchFrame:frameRect]];
 	}
+}
+
+- (void) setSizeContainer
+{
+	//Free button
+	NSRect bounds = buttonContainer.bounds, switchFrame = freeSwitch.frame, textFrame = freeText.frame;
+	CGFloat cumulatedWidth = switchFrame.size.width + BORDER_FREE_BUTTON_TEXT + textFrame.size.width;
+	NSPoint newOrigin = NSMakePoint(bounds.size.width / 2 - cumulatedWidth / 2, bounds.size.height - BORDER_Y_FREE - textFrame.size.height), oldOrigin = newOrigin;
+	[freeSwitch setFrameOrigin:newOrigin];
+	
+	newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (switchFrame.size.height / 2 - textFrame.size.height / 2));
+	[freeText setFrameOrigin:newOrigin];
+	
+	//Favs button
+	switchFrame = favsSwitch.frame;
+	textFrame = favsText.frame;
+	
+	newOrigin.x = oldOrigin.x;
+	newOrigin.y -= BORDER_Y_FREE + textFrame.size.height;
+	[favsSwitch setFrameOrigin:newOrigin];
+	
+	newOrigin = NSMakePoint(newOrigin.x + switchFrame.size.width + BORDER_FREE_BUTTON_TEXT, newOrigin.y + (switchFrame.size.height / 2 - textFrame.size.height / 2));
+	[favsText setFrameOrigin:newOrigin];
 }
 
 - (NSRect) getSearchFrame : (NSRect) frame
@@ -351,13 +355,20 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
-	
-	if(freeText != nil)
-		freeText.textColor = [self textColor];
-	
-	if(favsText != nil)
-		favsText.textColor = [self textColor];
+	if(_ID == SEARCH_BAR_ID_EXTRA)
+	{
+		buttonContainer.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
+
+		if(freeText != nil)
+			freeText.textColor = [self textColor];
+		
+		if(favsText != nil)
+			favsText.textColor = [self textColor];
+
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA].CGColor;
+	}
+	else
+		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 	
 	[self setNeedsDisplay:YES];
 }

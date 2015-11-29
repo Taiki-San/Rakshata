@@ -21,6 +21,7 @@
 	RakButton * close, *flush;
 	RakSwitchButton * freeSwitch, * favsSwitch;
 	RakText * freeText, * favsText;
+	NSView * buttonContainer;
 	
 	charType ** listData, **_cachedListData;
 	uint nbDataList, _cachedNbDataList;
