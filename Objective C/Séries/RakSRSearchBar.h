@@ -38,7 +38,7 @@ enum
 
 @interface RakSRSearchBar : NSSearchField <NSSearchFieldDelegate>
 {
-	BOOL _currentPlaceholderState;
+	BOOL _currentPlaceholderState, deletinChar, didAuthorizeSearch;
 	byte _ID;
 	
 	BOOL noRecursive, normalKeyPressed;

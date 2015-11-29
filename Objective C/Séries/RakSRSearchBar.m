@@ -263,6 +263,7 @@
 
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self.window makeFirstResponder:[[NSApp delegate] serie]];
+		didAuthorizeSearch = YES;
 		[self performSearch];
 	});
 }
@@ -299,8 +300,10 @@
 
 - (void) performSearch
 {
-	if(noRecursive)
+	if(noRecursive || !didAuthorizeSearch)
 		return;
+	
+	didAuthorizeSearch = NO;
 	
 	if(normalKeyPressed)
 	{
@@ -376,10 +379,15 @@
 	
 	if(!noRecursive && view != nil && ![view.string isEqualToString:@""])
 	{
-		normalKeyPressed = YES;
-		noRecursive = YES;
-		[view complete:nil];
-		noRecursive = NO;
+		if(deletinChar)
+			deletinChar = NO;
+		else
+		{
+			normalKeyPressed = YES;
+			noRecursive = YES;
+			[view complete:nil];
+			noRecursive = NO;
+		}
 	}
 }
 
@@ -395,7 +403,16 @@
 	
 	else if([textView respondsToSelector:commandSelector])
 	{
-		normalKeyPressed = commandSelector != @selector(insertNewline:);
+		if(commandSelector == @selector(deleteBackward:))
+			deletinChar = YES;
+		
+		if(commandSelector == @selector(insertNewline:))
+		{
+			didAuthorizeSearch = YES;
+			normalKeyPressed = NO;
+		}
+		else
+			normalKeyPressed = YES;
 		
 		IMP imp = [textView methodForSelector:commandSelector];
 		void (*func)(id, SEL, id) = (void *)imp;
