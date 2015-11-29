@@ -507,7 +507,8 @@
 		//This is a bit more expensive (as we go through values already looked up) but enable us not to force the insertion routine to look for the index in filteredToOrdered itself
 		if(posNew < newNbElemFull)
 		{
-			for(uint i = 0, lastMatchedID = newCacheList[posNew]; i < nbElemActivated; ++i)
+			uint lastMatchedID = posNew == 0 ? 0 : newCacheList[posNew - 1];
+			for(uint i = 0; i < newNbElemActivated; ++i)
 			{
 				if(newCacheList[newFilteredToOrdered[i]] > lastMatchedID)
 				{
@@ -682,6 +683,14 @@
 - (uint) nbActivatedElement
 {
 	return nbElemActivated;
+}
+
+- (PROJECT_DATA *) getDirectDataAtIndex : (uint) index
+{
+	if(index >= nbElemFull)
+		return NULL;
+	
+	return &(project[index]);
 }
 
 - (PROJECT_DATA *) getDataAtIndex : (uint) index

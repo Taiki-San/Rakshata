@@ -57,6 +57,8 @@
 
 - (uint) nbElement;
 - (uint) nbActivatedElement;
+
+- (PROJECT_DATA *) getDirectDataAtIndex : (uint) index;
 - (PROJECT_DATA *) getDataAtIndex : (uint) index;
 
 @end

@@ -119,7 +119,7 @@
 
 - (uint) cacheIDForIndex : (uint) index
 {
-	PROJECT_DATA * project = [_manager getDataAtIndex:index];
+	PROJECT_DATA * project = [_manager getDirectDataAtIndex:index];
 	
 	if(project == NULL)
 		return INVALID_VALUE;
