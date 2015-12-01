@@ -130,6 +130,18 @@ enum
 				[self addSubview:flush];
 			}
 			
+			if(close != nil && flush != nil)
+			{
+				NSSize closeSize = close.frame.size, flushSize = flush.frame.size;
+				const CGFloat maxWidth = MAX(frameRect.size.width * 9 / 10.f, MAX(closeSize.width, flushSize.width));
+				
+				if(closeSize.width != maxWidth)
+					[close setFrameSize:NSMakeSize(maxWidth, closeSize.height)];
+				
+				if(flushSize.width != maxWidth)
+					[flush setFrameSize:NSMakeSize(maxWidth, flushSize.height)];
+			}
+			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanupCustomTab) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 			
 			self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA].CGColor;
@@ -178,12 +190,13 @@ enum
 		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 5 - close.bounds.size.height);
 		[close setFrameOrigin:newOrigin];
 		
+		NSRect switchFrame = flush.bounds;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height);
+		[flush setFrameOrigin:newOrigin];
+		
 		//Free button
 		newOrigin = NSMakePoint(0, newOrigin.y - BORDER_Y_FREE - buttonContainer.bounds.size.height);
 		[buttonContainer setFrameOrigin:newOrigin];
-		
-		NSRect switchFrame = flush.bounds;
-		[flush setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
@@ -201,12 +214,13 @@ enum
 		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 2 - close.bounds.size.height);
 		[close.animator setFrameOrigin:newOrigin];
 		
+		NSRect switchFrame = flush.bounds;
+		newOrigin = NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height);
+		[flush.animator setFrameOrigin:newOrigin];
+
 		//Free button
 		newOrigin = NSMakePoint(0, newOrigin.y - BORDER_Y_FREE - buttonContainer.bounds.size.height);
 		[buttonContainer.animator setFrameOrigin:newOrigin];
-		
-		NSRect switchFrame = flush.bounds;
-		[flush.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height)];
 	}
 	else
 	{
