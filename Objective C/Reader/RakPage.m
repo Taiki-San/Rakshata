@@ -256,6 +256,7 @@
 			const byte keyCode = [theEvent keyCode];
 			
 			//We get an hardware independant keycode, then check it against a known database
+			//http://boredzo.org/blog/archives/2007-05-22/virtual-key-codes
 			
 			switch (keyCode)
 			{
