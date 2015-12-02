@@ -61,7 +61,7 @@
 		NSArray *componentsWithSpaces = [state componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 		NSArray *dataState = [componentsWithSpaces filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 		
-		if([dataState count] == 8)
+		if([dataState count] == 3)
 		{
 			do
 			{
@@ -74,31 +74,33 @@
 					break;
 				}
 				
-				//Perfect! now, all we have to do is to sanitize last few data :D
-				
-				uint elemToRead, page;
-				BOOL isTome;
-				
-				elemToRead = [[dataState objectAtIndex:3] longLongValue];
-				isTome = [[dataState objectAtIndex:4] boolValue];
-				page = [[dataState objectAtIndex:5] longLongValue];
-				
-				if(((RakAppDelegate*)[NSApp delegate]).CT.initWithNoContent)
-				{
-					[((RakAppDelegate*)[NSApp delegate]).CT updateProject :*project :isTome :elemToRead];
-				}
-				
-				[self startReading: *project: elemToRead: isTome : page];
+				[self restoreProject:*project];
 				
 				free(project);
-				
-				[self setSliderPos:NSMakePoint([[dataState objectAtIndex:6] intValue], [[dataState objectAtIndex:7] intValue])];
 				
 			}while (0);
 		}
 	}
 	
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
+}
+
+- (void) restoreProject : (PROJECT_DATA) project
+{
+	STATE_DUMP savedState = recoverStateForProject(project);
+	
+	if(savedState.isInitialized)
+	{
+		if(((RakAppDelegate *) [NSApp delegate]).CT.initWithNoContent)
+			[((RakAppDelegate *) [NSApp delegate]).CT updateProject :project :savedState.isTome :savedState.CTID];
+		
+		lastKnownMagnification = saveMagnification ? savedState.zoom : 1.0f;
+		
+		[self startReading: project: savedState.CTID: savedState.isTome : savedState.page];
+		
+		if(savedState.scrollerX != CGFLOAT_MAX && savedState.scrollerY != CGFLOAT_MAX)
+			[self setSliderPos:NSMakePoint(savedState.scrollerX, savedState.scrollerY)];
+	}
 }
 
 - (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
@@ -158,7 +160,10 @@
 	NSString * output;
 	
 	if(initialized)
+	{
 		output = [self getContextToGTFO];
+		insertCurrentState(_project, [self exportContext]);
+	}
 	else
 		output = [super byebye];
 	
@@ -479,6 +484,8 @@
 {
 	if(element != INVALID_VALUE)
 	{
+		lastKnownMagnification = saveMagnification && project.isInitialized ? getSavedZoomForProject(project) : 1.0f;
+		
 		[self startReading : project : element : isTome : UINT_MAX];
 		[self ownFocus];
 	}

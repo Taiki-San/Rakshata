@@ -53,6 +53,8 @@
 	BOOL _flushingCache;
 	
 	BOOL _cacheBeingBuilt;
+	BOOL _haveScrollerPosToCommit;
+	NSPoint _scrollerPosToCommit;
 	BOOL _endingTransition;
 	
 	PROJECT_DATA _project;
@@ -75,6 +77,8 @@
 
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
+
+- (void) restoreProject : (PROJECT_DATA) project;
 
 - (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;

@@ -14,7 +14,9 @@
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
-	lastKnownMagnification = 1;
+	if(lastKnownMagnification == 0.0)
+		lastKnownMagnification = 1.0;
+	
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
 	
@@ -38,12 +40,32 @@
 
 - (NSString *) getContextToGTFO
 {
-	NSPoint sliders = NSZeroPoint;
+	return [NSString stringWithFormat:@"%llu\n%d\n%d", getRepoID(_project.repo), _project.projectID, _project.locale];
+}
+
+- (STATE_DUMP) exportContext
+{
+	STATE_DUMP state;
+	bzero(&state, sizeof(state));
 	
+	NSPoint sliders;
 	if(_scrollView != nil)
 		sliders = [_scrollView contentView].bounds.origin;
+	else
+		sliders = NSMakePoint(CGFLOAT_MAX, CGFLOAT_MAX);
 	
-	return [NSString stringWithFormat:@"%llu\n%d\n%d\n%d\n%d\n%d\n%.0f\n%.0f", getRepoID(_project.repo), _project.projectID, _project.locale, _currentElem, self.isTome ? 1 : 0, _data.pageCourante, sliders.x, sliders.y];
+	state.cacheDBID = _project.cacheDBID;
+
+	state.isTome = self.isTome != 0;
+	state.CTID = _currentElem;
+	state.page = _data.pageCourante;
+	state.zoom = saveMagnification && _scrollView != nil ? _scrollView.magnification : 1.0f;
+	state.scrollerX = sliders.x;
+	state.scrollerY = sliders.y;
+	
+	state.isInitialized = true;
+	
+	return state;
 }
 
 /*Handle the position of the whole thing when anything change*/
@@ -125,6 +147,7 @@
 		}
 		
 		_scrollView = (id) view;
+		[self commitSliderPosIfNeeded];
 	}
 	
 	if(self.mainThread != TAB_READER)
@@ -570,6 +593,20 @@
 		[self moveSliderX : newPos.x - point.x];
 		[self moveSliderY : newPos.y - point.y];
 	}
+	else
+	{
+		_haveScrollerPosToCommit = YES;
+		_scrollerPosToCommit = newPos;
+	}
+}
+
+- (void) commitSliderPosIfNeeded
+{
+	if(_haveScrollerPosToCommit)
+	{
+		_haveScrollerPosToCommit = NO;
+		[self setSliderPos:_scrollerPosToCommit];
+	}
 }
 
 /*Active routines*/
@@ -736,6 +773,7 @@
 			}
 			
 			_scrollView = view;
+			[self commitSliderPosIfNeeded];
 		}
 		else
 			_scrollView = nil;
@@ -1494,6 +1532,10 @@
 		}
 
 		_scrollView = view;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self commitSliderPosIfNeeded];
+		});
 	}
 	
 	return retValue;
@@ -1771,6 +1813,9 @@
 - (void) flushCache
 {
 	cacheSession++;		//tell the cache to stop
+	
+	if(_project.isInitialized)
+		insertCurrentState(_project, [self exportContext]);
 	
 	if(mainScroller != nil)
 	{

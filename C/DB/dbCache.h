@@ -65,7 +65,7 @@ void checkIfRemainingAndDelete(uint data, byte type);
 /**DBRecent.c**/
 sqlite3* getPtrRecentDB();
 void closeRecentDB(sqlite3 * database);
-bool checkRecentDBValid(sqlite3 * DB);
+uint checkRecentDBValid(sqlite3 * DB);
 
 bool updateRecentEntry(sqlite3 *database, PROJECT_DATA data, time_t timestamp, bool wasItADL);
 void removeRecentEntry(PROJECT_DATA data);
@@ -126,20 +126,26 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_favoris					29
 #define RDB_isLocal					30
 
-#define RDBS_dataID			21
-#define RDBS_dataType		22
-#define RDBS_tagType		23
+#define RDBS_dataID					21
+#define RDBS_dataType				22
+#define RDBS_tagType				23
 
-#define RDB_tagID			24
-#define RDB_tagName			25
-#define RDB_CAT_ID			26
-#define RDB_CAT_rootID		27
-#define RDB_CAT_name		28
+#define RDB_tagID					24
+#define RDB_tagName					25
+#define RDB_CAT_ID					26
+#define RDB_CAT_rootID				27
+#define RDB_CAT_name				28
 
-#define RDB_REC_lastRead	1
-#define RDB_REC_lastDL		2
-#define RDB_REC_repo		3
-#define RDB_REC_projectID	4
+#define RDB_REC_lastRead			1
+#define RDB_REC_lastDL				2
+#define RDB_REC_repo				3
+#define RDB_REC_projectID			4
+#define RDB_REC_lastIsTome			5
+#define RDB_REC_lastCTID			6
+#define RDB_REC_lastPage			7
+#define RDB_REC_lastZoom			8
+#define RDB_REC_lastScrollerX		9
+#define RDB_REC_lastScrollerY		10
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 

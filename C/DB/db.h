@@ -107,6 +107,20 @@ struct icon_update_waitlist
 	ICONS_UPDATE * next;
 };
 
+typedef struct
+{
+	uint cacheDBID;
+	uint CTID;
+	double zoom;
+	double scrollerX;
+	double scrollerY;
+	
+	uint page;
+	bool isTome;
+	bool isInitialized;
+	
+} STATE_DUMP;
+
 /**DBCache.c**/
 uint setupBDDCache();
 void syncCacheToDisk(byte syncCode);
@@ -184,11 +198,14 @@ bool haveOneOrLessMatchForNameStartingWith(const char * start);
 /**DBRecent.c**/
 void flushRecentMutex();
 
+bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state);
+double getSavedZoomForProject(PROJECT_DATA project);
+STATE_DUMP recoverStateForProject(PROJECT_DATA project);
+
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 
 void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome);
-void setLastChapitreLu(PROJECT_DATA project, bool isTome, uint dernierChapitre);
 
 /**DBRefresh.c**/
 void updateDatabase(bool forced);

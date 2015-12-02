@@ -21,6 +21,7 @@
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (NSString *) getContextToGTFO;
+- (STATE_DUMP) exportContext;
 
 - (void) initialPositionning : (RakPageScrollView *) scrollView;
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
@@ -36,6 +37,7 @@
 - (BOOL) moveSliderX : (int) move;
 - (BOOL) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
+- (void) commitSliderPosIfNeeded;
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (BOOL) changePage : (byte) switchType;
