@@ -25,6 +25,7 @@
 		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
 		[Prefs registerForChange:self forType:KVO_DIROVERRIDE];
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeReading:) name:NOTIFICATION_RESUME_READING object:nil];
 		
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
 		[Prefs getPref:PREFS_GET_DIROVERRIDE :&overrideDirection];
@@ -76,6 +77,7 @@
 				
 				[self restoreProject:*project];
 				
+				releaseCTData(*project);
 				free(project);
 				
 			}while (0);
@@ -290,7 +292,7 @@
 	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
 }
 
-- (void)mouseExited:(NSEvent *)theEvent
+- (void) mouseExited : (NSEvent *) theEvent
 {
 	[self abortFadeTimer];
 }
@@ -489,6 +491,20 @@
 		[self startReading : project : element : isTome : UINT_MAX];
 		[self ownFocus];
 	}
+}
+
+- (void) resumeReading : (NSNotification *) notification
+{
+	uint cacheDBID = [notification.object unsignedIntValue];
+	
+	PROJECT_DATA project = getProjectByID(cacheDBID);
+	if(!project.isInitialized)
+		return;
+	
+	[self restoreProject:project];
+	[self ownFocus];
+
+	releaseCTData(project);
 }
 
 - (void) switchFavs

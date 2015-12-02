@@ -60,15 +60,14 @@
 		[menu addItem:[NSMenuItem separatorItem]];
 	}
 	
-#ifdef RESUME_READING
-	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-RESUME-READING", nil) action:@selector(editSerie) keyEquivalent:@""];
+	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-RESUME-READING", nil) action:@selector(resumeReading) keyEquivalent:@""];
 	if(item != nil)
 	{
+		item.enabled = projectHaveSavedState(_project);
 		item.target = self;
 		[menu addItem:item];
 		[menu addItem:[NSMenuItem separatorItem]];
 	}
-#endif
 	
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-EDIT-SERIE", nil) action:@selector(editSerie) keyEquivalent:@""];
 	if(item != nil)
@@ -100,6 +99,11 @@
 }
 
 //Prevent the menu from appearing if clicking outside the active area
+
+- (void) resumeReading
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_RESUME_READING object:@(_project.cacheDBID)];
+}
 
 - (void) editSerie
 {

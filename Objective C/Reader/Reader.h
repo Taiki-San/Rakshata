@@ -14,6 +14,8 @@
 #import "RakPageScrollView.h"
 #import "RakPageController.h"
 
+#define NOTIFICATION_RESUME_READING		@"JustOneMoreTurn..."
+
 @class RakReaderBottomBar;
 
 @interface Reader : RakTabView

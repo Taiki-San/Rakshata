@@ -26,7 +26,6 @@
 #endif
 
 //UI configuration
-#define SELECT_DOWNLOAD_PROJECT
 #define LARGE_FONT_FOR_PLACEHOLDERS
 //#define SEVERAL_VIEWS	//In series
 //#define CT_LIST_PREFER_LESS_COLUMN
@@ -35,6 +34,5 @@
 //#define FLUSH_UNUSED_REPO
 
 #ifdef DEV_VERSION
-//#define HIDE_EVERYTHING
-#define RESUME_READING
+	//#define HIDE_EVERYTHING
 #endif
