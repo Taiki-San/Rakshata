@@ -419,20 +419,3 @@ void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 	
 	notifyUpdateProject(project);
 }
-
-void setLastChapitreLu(PROJECT_DATA project, bool isTome, uint dernierChapitre)
-{
-	char temp[5*LENGTH_PROJECT_NAME], *encodedRepo = getPathForProject(project);
-	
-	if(encodedRepo == NULL)
-		return;
-
-    if(isTome)
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/"CONFIGFILETOME, encodedRepo);
-	else
-        snprintf(temp, 5*LENGTH_PROJECT_NAME, PROJECT_ROOT"%s/"CONFIGFILE, encodedRepo);
-
-	FILE * fichier = fopen(temp, "w+");
-	fprintf(fichier, "%d", dernierChapitre);
-	fclose(fichier);
-}

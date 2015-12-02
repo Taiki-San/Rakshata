@@ -599,7 +599,6 @@
 	
 	[self updateTitleBar:_project :isTomeRequest :_posElemInStructure];
 	
-	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -940,7 +939,6 @@
 {
 	[self flushCache];
 	
-	setLastChapitreLu(_project, self.isTome, _currentElem);
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

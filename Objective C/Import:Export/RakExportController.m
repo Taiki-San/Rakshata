@@ -293,7 +293,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		if(project->tomesFull == NULL)
 			getUpdatedTomeList(project, true);
 		else
-			getTomeInstalled(project, NULL);
+			getTomeInstalled(project);
 	}
 
 	if((fullProject || !isTome) && project->chapitresInstalled == NULL)
@@ -301,7 +301,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		if(project->chapitresFull == NULL)
 			getUpdatedChapterList(project, true);
 		else
-			getChapterInstalled(project, NULL);
+			getChapterInstalled(project);
 	}
 
 	NSMutableArray * output = nil;

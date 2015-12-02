@@ -344,10 +344,10 @@ void removeFromCache(PROJECT_DATA_PARSED data)
 		data.project.tomesInstalled = NULL;
 
 		if(data.project.nombreTomes)
-			getTomeInstalled(&data.project, NULL);
+			getTomeInstalled(&data.project);
 
 		if(data.project.nombreChapitre)
-			getChapterInstalled(&data.project, NULL);
+			getChapterInstalled(&data.project);
 
 		//Installed content :X
 		if(data.project.nombreChapitreInstalled || data.project.nombreTomesInstalled)

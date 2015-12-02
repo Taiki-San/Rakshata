@@ -13,7 +13,7 @@
 /**Chapitre.c**/
 void refreshChaptersList(PROJECT_DATA *projectDB);
 bool checkChapterReadable(PROJECT_DATA projectDB, uint chapitre);
-void getChapterInstalled(PROJECT_DATA *projectDB, uint *dernierLu);
+void getChapterInstalled(PROJECT_DATA *projectDB);
 void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled);
 void internalDeleteChapitre(PROJECT_DATA projectDB, uint chapitreDelete, bool careAboutLinkedChapters);
 bool isChapterShared(char *path, PROJECT_DATA data, uint ID);
@@ -147,7 +147,7 @@ uint getPosForID(PROJECT_DATA data, bool installed, uint ID);
 void refreshTomeList(PROJECT_DATA *projectDB);
 void setTomeReadable(PROJECT_DATA projectDB, uint ID);
 bool checkTomeReadable(PROJECT_DATA projectDB, uint ID);
-void getTomeInstalled(PROJECT_DATA *project, uint *dernierLu);
+void getTomeInstalled(PROJECT_DATA *project);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);

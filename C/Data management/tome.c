@@ -144,7 +144,7 @@ end:
     return retValue;
 }
 
-void getTomeInstalled(PROJECT_DATA *project, uint *dernierLu)
+void getTomeInstalled(PROJECT_DATA *project)
 {
 	if(project->tomesInstalled != NULL)
 	{
@@ -153,24 +153,6 @@ void getTomeInstalled(PROJECT_DATA *project, uint *dernierLu)
 	
 	if(project->tomesFull == NULL)
 		return;
-	
-    if(dernierLu != NULL)
-    {
-		char temp[LENGTH_PROJECT_NAME*2+100], *encodedPath = getPathForProject(*project);
-		FILE* config;
-		
-		if(encodedPath == NULL)
-			return;
-		
-		snprintf(temp, sizeof(temp), PROJECT_ROOT"%s/"CONFIGFILETOME, encodedPath);
-		free(encodedPath);
-		if((config = fopen(temp, "r")) != NULL)
-		{
-			*dernierLu = INVALID_VALUE;
-			fscanf(config, "%d", dernierLu);
-			fclose(config);
-		}
-    }
 	
 	project->tomesInstalled = malloc(project->nombreTomes * sizeof(META_TOME));
 	if(project->tomesInstalled == NULL)
@@ -202,7 +184,7 @@ void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled)
     refreshTomeList(projectDB);
 	
 	if(getInstalled)
-		getTomeInstalled(projectDB, NULL);
+		getTomeInstalled(projectDB);
 }
 
 void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)

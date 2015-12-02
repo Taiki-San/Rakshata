@@ -123,7 +123,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 			{
 				memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(uint));
 				output->chapitresInstalled = NULL;
-				getChapterInstalled(output, NULL);
+				getChapterInstalled(output);
 			}
 			else
 				output->chapitresInstalled = NULL;
@@ -156,7 +156,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 			{
 				copyTomeList(buffer, output->nombreTomes, output->tomesFull);
 				output->tomesInstalled = NULL;
-				getTomeInstalled(output, NULL);
+				getTomeInstalled(output);
 			}
 			else
 			{

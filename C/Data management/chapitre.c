@@ -57,7 +57,7 @@ bool checkChapterReadable(PROJECT_DATA projectDB, uint chapitre)
     return checkFileExist(pathConfigFile) && !checkFileExist(pathInstallFlag);
 }
 
-void getChapterInstalled(PROJECT_DATA *projectDB, uint *dernierLu)
+void getChapterInstalled(PROJECT_DATA *projectDB)
 {
 	if(projectDB->chapitresInstalled != NULL)
 	{
@@ -86,20 +86,6 @@ void getChapterInstalled(PROJECT_DATA *projectDB, uint *dernierLu)
 		return;
     }
 	
-    if(dernierLu != NULL)
-    {
-		*dernierLu = INVALID_VALUE;
-
-		strlcat(configFilePath, CONFIGFILE, sizeof(configFilePath));
-		FILE* file = fopen(configFilePath, "r");
-		
-		if(file != NULL)
-		{
-			fscanf(file, "%d", dernierLu);
-			fclose(file);
-		}
-    }
-	
 	uint *temporaryInstalledList = malloc(projectDB->nombreChapitre * sizeof(uint));
 	size_t nbElem = 0;
 	
@@ -123,22 +109,6 @@ void getChapterInstalled(PROJECT_DATA *projectDB, uint *dernierLu)
 	}
 	
 	free(temporaryInstalledList);
-
-    if(dernierLu != NULL && *dernierLu != INVALID_VALUE)
-    {
-		if(projectDB->chapitresInstalled != NULL)
-		{
-			int first = (int) projectDB->chapitresInstalled[0], end = (int) projectDB->chapitresInstalled[nbElem-1];
-			
-			if((int) *dernierLu < first)
-				*dernierLu = (uint) first;
-			
-			else if((int) *dernierLu > end)
-				*dernierLu = (uint) end;
-		}
-		else
-			*dernierLu = INVALID_VALUE;
-	}
 }
 
 void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
@@ -146,7 +116,7 @@ void getUpdatedChapterList(PROJECT_DATA *projectDB, bool getInstalled)
     refreshChaptersList(projectDB);
 
 	if(getInstalled)
-		getChapterInstalled(projectDB, NULL);
+		getChapterInstalled(projectDB);
 }
 
 void internalDeleteChapitre(PROJECT_DATA projectDB, uint chapitreDelete, bool careAboutLinkedChapters)

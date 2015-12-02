@@ -40,9 +40,9 @@ void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
 void getCTInstalled(PROJECT_DATA * project, bool isTome)
 {
 	if(isTome)
-		getTomeInstalled(project, NULL);
+		getTomeInstalled(project);
 	else
-		getChapterInstalled(project, NULL);
+		getChapterInstalled(project);
 }
 
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data)
