@@ -248,28 +248,27 @@
 			
 		default:
 		{
-			const char * string = [character UTF8String];
-			char c;
-			
-			if(character == nil || string == nil)
+			if(character == nil)
 				break;
 			
-			if(string[0] >= 'A' && string[0] <= 'Z')
-				c = string[0] + 'a' - 'A';
-			else
-				c = string[0];
+			bool handledChar = false;
+
+			const byte keyCode = [theEvent keyCode];
 			
-			switch (c)
+			//We get an hardware independant keycode, then check it against a known database
+			
+			switch (keyCode)
 			{
-				case 'a':
-				case 'j':
+				case 0:			//a
+				case 38:		//j
 				{
 					[self prevPage];
+					handledChar = true;
 					break;
 				}
 					
-				case 'd':
-				case 'l':
+				case 2:			//d
+				case 37:		//l
 				{
 					if(isModPressed && ((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
 					{
@@ -279,51 +278,76 @@
 					{
 						[self nextPage];
 					}
+
+					handledChar = true;
 					break;
 				}
 					
-				case 'f':
+				case 3:			//f
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
 						[self.window toggleFullScreen:self];
 
+					handledChar = true;
 					break;
 				}
 					
-				case 'q':
-				case 'u':
+				case 12:		//q
+				case 32:		//u
 				{
 					[self prevChapter];
+					handledChar = true;
 					break;
 				}
 					
-				case 'e':
-				case 'o':
+				case 14:		//e
+				case 31:			//o
 				{
 					[self nextChapter];
+					handledChar = true;
 					break;
 				}
 					
-				case 'w':
-				case 'i':
+				case 13:		//w
+				case 34:		//i
 				{
 					[self moveSliderY:PAGE_MOVE];
+					handledChar = true;
 					break;
 				}
 					
-				case 's':
-				case 'k':
+				case 1:			//s
+				case 40:		//k
 				{
 					[self moveSliderY:-PAGE_MOVE];
+					handledChar = true;
 					break;
 				}
 					
-				case ' ':
+				case 49:		//space
 				{
 					[self jumpPressed : isModPressed];
+					handledChar = true;
 					break;
 				}
-					
+			}
+
+			if(handledChar)
+				break;
+			
+			const char * string = [character UTF8String];
+			char c;
+			
+			if(string == nil)
+				break;
+			
+			if(string[0] >= 'A' && string[0] <= 'Z')
+				c = string[0] + 'a' - 'A';
+			else
+				c = string[0];
+
+			switch (c)
+			{
 				//Magnification
 					
 				case '0':
@@ -354,10 +378,6 @@
 					}
 					break;
 				}
-					
-					
-				default:
-					break;
 			}
 		}
 	}
