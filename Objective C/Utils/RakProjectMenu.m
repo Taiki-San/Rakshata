@@ -63,7 +63,7 @@
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"PROJ-MENU-RESUME-READING", nil) action:@selector(resumeReading) keyEquivalent:@""];
 	if(item != nil)
 	{
-		item.enabled = projectHaveSavedState(_project);
+		item.enabled = projectHaveValidSavedState(_project);
 		item.target = self;
 		[menu addItem:item];
 		[menu addItem:[NSMenuItem separatorItem]];

@@ -419,30 +419,11 @@ double getSavedZoomForProject(PROJECT_DATA project)
 	return zoom;
 }
 
-bool projectHaveSavedState(PROJECT_DATA project)
+bool projectHaveValidSavedState(PROJECT_DATA project)
 {
-	bool haveState = false;
+	STATE_DUMP state = recoverStateForProject(project);
 	
-	sqlite3 * database = getPtrRecentDB();
-	if(database != NULL)
-	{
-		sqlite3_stmt * request = createRequest(database, "SELECT COUNT() FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
-		if(request != NULL)
-		{
-			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));
-			sqlite3_bind_int(request, 2, (int32_t) project.projectID);
-			sqlite3_bind_int(request, 3, project.locale);
-			
-			if(sqlite3_step(request) == SQLITE_ROW)
-				haveState = sqlite3_column_int(request, 0) != 0;
-			
-			destroyRequest(request);
-		}
-		
-		closeRecentDB(database);
-	}
-	
-	return haveState;
+	return state.isInitialized && checkReadable(project, state.isTome, state.CTID);
 }
 
 STATE_DUMP recoverStateForProject(PROJECT_DATA project)

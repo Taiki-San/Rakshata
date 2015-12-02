@@ -96,7 +96,17 @@
 		if(((RakAppDelegate *) [NSApp delegate]).CT.initWithNoContent)
 			[((RakAppDelegate *) [NSApp delegate]).CT updateProject :project :savedState.isTome :savedState.CTID];
 		
-		lastKnownMagnification = saveMagnification ? savedState.zoom : 1.0f;
+		if(saveMagnification)
+		{
+			if(savedState.zoom > READER_MAGNIFICATION_MAX)
+				lastKnownMagnification = READER_MAGNIFICATION_MAX;
+			else if (savedState.zoom < READER_MAGNIFICATION_MIN)
+				lastKnownMagnification = READER_MAGNIFICATION_MIN;
+			else
+				lastKnownMagnification = savedState.zoom;
+		}
+		else
+			lastKnownMagnification = 1.0;
 		
 		[self startReading: project: savedState.CTID: savedState.isTome : savedState.page];
 		

@@ -353,16 +353,17 @@
 				case '0':
 				{
 					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
-						_scrollView.animator.magnification = lastKnownMagnification = 1;
+						_scrollView.animator.magnification = lastKnownMagnification = 1.0;
 					break;
 				}
 					
 				case '+':
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && _scrollView.magnification < 3)
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && _scrollView.magnification < READER_MAGNIFICATION_MAX)
 					{
 						lastKnownMagnification = _scrollView.magnification;
 						lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+						lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
 						_scrollView.animator.magnification = lastKnownMagnification;
 					}
 					break;
@@ -374,6 +375,7 @@
 					{
 						lastKnownMagnification = _scrollView.magnification;
 						lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+						lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
 						_scrollView.animator.magnification = lastKnownMagnification;
 					}
 					break;
@@ -806,8 +808,11 @@
 
 - (void) jumpToPage : (uint) newPage
 {
-	if(newPage == _data.pageCourante || newPage >= _data.nombrePage)
+	if(newPage == _data.pageCourante || _data.nombrePage == 0)
 		return;
+	
+	else if(newPage >= _data.nombrePage)
+		newPage = _data.nombrePage - 1;
 	
 	uint pageCourante = _data.pageCourante;
 	
