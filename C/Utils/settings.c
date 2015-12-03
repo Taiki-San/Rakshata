@@ -183,7 +183,7 @@ char* loadLargePrefs(char* flag)
         free(basePtr);
 	}
 	
-#if 0
+#ifdef DOWNLOAD_DB_WHEN_EMPTY
 	if(flag[0] == SETTINGS_PROJECTDB_FLAG[0] || flag[0] == SETTINGS_REPODB_FLAG[0])
     {
         removeFromPref(flag);
