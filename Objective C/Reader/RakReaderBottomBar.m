@@ -107,15 +107,17 @@
 
 - (void) loadIcons : (Reader*) superview
 {
-	favorite = [RakButton allocForReader:self :@"favs" :[self getPosXElement : 1 : self.frame.size.width] :YES :self :@selector(switchFavs)];
-	fullscreen = [RakButton allocForReader:self :@"fullscreen" :[self getPosXElement : 2 : self.frame.size.width] :YES :superview :@selector(triggerFullscreen)];
+	const CGFloat width = _frame.size.width;
 	
-	prevChapter = [RakButton allocForReader:self :@"prevChap" :[self getPosXElement : 3 : self.frame.size.width] :NO :superview :@selector(prevChapter)];
-	prevPage = [RakButton allocForReader:self :@"prev" :[self getPosXElement : 4 : self.frame.size.width] :NO :superview :@selector(prevPage)];
-	nextPage = [RakButton allocForReader:self :@"next" :[self getPosXElement : 5 : self.frame.size.width] :YES :superview :@selector(nextPage)];
-	nextChapter = [RakButton allocForReader:self :@"nextChap" :[self getPosXElement : 6 : self.frame.size.width] :YES :superview :@selector(nextChapter)];
+	favorite = [RakButton allocForReader:self :@"favs" :[self getPosXElement : 1 : width] :YES :self :@selector(switchFavs)];
+	fullscreen = [RakButton allocForReader:self :@"fullscreen" :[self getPosXElement : 2 : width] :YES :superview :@selector(triggerFullscreen)];
 	
-	trash = [RakReaderBBButton allocForReader:self :@"trash" :[self getPosXElement : 7 : self.frame.size.width] :NO : self :@selector(reactToDelete)];
+	prevChapter = [RakButton allocForReader:self :@"prevChap" :[self getPosXElement : 3 : width] :NO :superview :@selector(prevChapter)];
+	prevPage = [RakButton allocForReader:self :@"prev" :[self getPosXElement : 4 : width] :NO :superview :@selector(prevPage)];
+	nextPage = [RakButton allocForReader:self :@"next" :[self getPosXElement : 5 : width] :YES :superview :@selector(nextPage)];
+	nextChapter = [RakButton allocForReader:self :@"nextChap" :[self getPosXElement : 6 : width] :YES :superview :@selector(nextChapter)];
+	
+	trash = [RakReaderBBButton allocForReader:self :@"trash" :[self getPosXElement : 7 : width] :NO : self :@selector(reactToDelete)];
 	
 	if(favorite != nil && isFaved)	[self favsUpdated:isFaved];
 	if(fullscreen != nil)		[fullscreen.cell setActiveAllowed:NO];
@@ -249,6 +251,12 @@
 	
 	//Repositionate pageCounter
 	[pageCount updateSize:self.frame.size.height : [self getPosXElement : 8 : newWidth]];
+}
+
+- (void) displaySuggestionsForProject : (PROJECT_DATA) project
+{
+	if(project.isInitialized)
+		[[[RakReaderSuggestions alloc] autoInit] launchPopover:nextChapter withProjectID:project.cacheDBID];
 }
 
 #pragma mark - Color stuffs

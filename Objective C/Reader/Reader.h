@@ -111,6 +111,7 @@
 
 @end
 
+#import "RakReaderSuggestions.h"
 #import "RakReaderControllerUIQuery.h"
 #import "RakPageCounter.h"
 #import "RakFavsInfo.h"

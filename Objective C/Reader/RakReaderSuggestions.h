@@ -8,21 +8,14 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-//Don't forget to reflect any addition to +haveAnyRemindedValue
-#define PREFS_REMIND_DELETE @"DefaultPopoverDelete"
-#define PREFS_REMIND_AUTODL @"DefaultPopoverAutoDL"
-#define PREFS_REMIND_FAVS @"PopoverFavoriteDisplayed"
-#define PREFS_REMIND_SUGGESTION @"GetThoseDamnSuggestionsOutOfTheWay"
+@interface RakReaderSuggestions : RakPopoverView
+{
+	uint _cacheDBID;
+}
 
-@interface RakPrefsRemindPopover : NSObject
-
-+ (void) setValueReminded : (NSString *) element : (BOOL) value;
-+ (BOOL) getValueReminded : (NSString *) element : (BOOL *) value;
-+ (void) removeValueReminded : (NSString *) element;
-
-+ (BOOL) haveAnyRemindedValue;
-+ (void) flushRemindedValues;
+- (instancetype) autoInit;
+- (void) launchPopover : (NSView *) anchor withProjectID : (uint) cacheDBID;
 
 @end

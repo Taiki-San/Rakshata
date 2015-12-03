@@ -1841,7 +1841,6 @@
 
 - (BOOL) shouldDisplaySuggestions
 {
-	//Shouldn't display if a following chapter is pending download
 	uint posInList = 0, nbElem = self.isTome ? _project.nbVolumes : _project.nbChapter;
 	
 	if(self.isTome)
@@ -1852,18 +1851,20 @@
 	MDL * tabMDL = [[NSApp delegate] MDL];
 	for(; posInList < nbElem; posInList++)
 	{
-		if(![tabMDL proxyCheckForCollision :_project : self.isTome :ACCESS_DATA(self.isTome, _project.chaptersFull[posInList], _project.volumesFull[posInList].ID)])
+		//Shouldn't display if a following chapter is pending download
+		if([tabMDL proxyCheckForCollision :_project : self.isTome :ACCESS_DATA(self.isTome, _project.chaptersFull[posInList], _project.volumesFull[posInList].ID)])
 			return NO;
 	}
 
 	return YES;
 }
 
-#warning "todo"
 - (void) displaySuggestions
 {
 	if(![self shouldDisplaySuggestions])
 		return;
+	
+	[bottomBar displaySuggestionsForProject:_project];
 }
 
 #pragma mark - Quit

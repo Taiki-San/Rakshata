@@ -43,7 +43,7 @@
 
 + (BOOL) haveAnyRemindedValue
 {
-	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS];
+	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS, PREFS_REMIND_SUGGESTION];
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	
 	if(defaults == nil)
@@ -62,7 +62,7 @@
 
 + (void) flushRemindedValues
 {
-	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS];
+	NSArray * data = @[PREFS_REMIND_DELETE, PREFS_REMIND_AUTODL, PREFS_REMIND_FAVS, PREFS_REMIND_SUGGESTION];
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	
 	if(defaults != nil)
