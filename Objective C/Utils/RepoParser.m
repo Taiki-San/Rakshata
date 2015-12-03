@@ -223,10 +223,10 @@ fail:	//We'll jump back here when it's starting to go wrong
 	
 	output.repoID = [repoID unsignedIntValue];
 	wstrncpy(output.name, REPO_NAME_LENGTH, (void *) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
-	strncpy(output.language, [language UTF8String], REPO_LANGUAGE_LENGTH);
+	usstrcpy(output.language, REPO_LANGUAGE_LENGTH, [language UTF8String]);
 	output.type = [type unsignedCharValue];
-	strncpy(output.URL, [URL UTF8String], REPO_URL_LENGTH);
-	strncpy(output.website, [website UTF8String], REPO_WEBSITE_LENGTH);
+	usstrcpy(output.URL, REPO_URL_LENGTH, [URL UTF8String]);
+	usstrcpy(output.website, REPO_WEBSITE_LENGTH, [website UTF8String]);
 	output.isMature = isMature != nil ? [isMature boolValue] : NO;
 	
 	output.parentRepoID = parentID;
@@ -361,12 +361,12 @@ void * parseSubRepo(NSArray * array, bool wantExtra, uint * nbSubRepo, uint pare
 			
 			if(URLImage != nil)
 			{
-				strncpy(outputExtra[pos].URLImage, [URLImage UTF8String], REPO_URL_LENGTH);
+				usstrcpy(outputExtra[pos].URLImage, REPO_URL_LENGTH, [URLImage UTF8String]);
 				strncpy(outputExtra[pos].hashImage, [hash UTF8String], LENGTH_CRC);
 				
 				if(URLImageRetina != nil)
 				{
-					strncpy(outputExtra[pos].URLImageRetina, [URLImageRetina UTF8String], REPO_URL_LENGTH);
+					usstrcpy(outputExtra[pos].URLImageRetina, REPO_URL_LENGTH, [URLImageRetina UTF8String]);
 					strncpy(outputExtra[pos].hashImageRetina, [hashRetina UTF8String], LENGTH_CRC);
 					outputExtra[pos].haveRetina = true;
 				}

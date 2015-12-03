@@ -95,9 +95,11 @@ void wstrncpy(charType * output, size_t length, const charType * input)
 
 void usstrcpy(void* output, size_t length, const void* input)
 {
-    char *output_char = output;
-    strncpy(output, input, length);
-    output_char[length-1] = 0;
+	if(length > 0 && input != NULL && output != NULL)
+	{
+		strncpy(output, input, length);
+		((char *)output)[length - 1] = 0;
+	}
 }
 
 /**Différent en fonction de l'OS**/
