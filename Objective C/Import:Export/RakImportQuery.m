@@ -197,13 +197,13 @@ enum
 		PROJECT_DATA_PARSED projectData = _item.projectData.data;
 		if(_item.isTome)
 		{
-			if(projectData.nombreTomeLocal > 0 && projectData.tomeLocal[0].readingID != INVALID_SIGNED_VALUE)
+			if(projectData.nbVolumesLocal > 0 && projectData.tomeLocal[0].readingID != INVALID_SIGNED_VALUE)
 				contentID.stringValue = getStringForCTID(projectData.tomeLocal[0].readingID);
 		}
 		else
 		{
-			if(projectData.nombreChapitreLocal > 0 && projectData.chapitresLocal[0] != INVALID_VALUE)
-				contentID.stringValue = getStringForCTID((int) projectData.chapitresLocal[0]);
+			if(projectData.nbChapterLocal > 0 && projectData.chaptersLocal[0] != INVALID_VALUE)
+				contentID.stringValue = getStringForCTID((int) projectData.chaptersLocal[0]);
 		}
 
 		[self addSubview:contentID];
@@ -223,7 +223,7 @@ enum
 		if(_item.isTome)
 		{
 			PROJECT_DATA_PARSED projectData = _item.projectData.data;
-			if(projectData.nombreTomeLocal > 0 && projectData.tomeLocal[0].readingName[0])
+			if(projectData.nbVolumesLocal > 0 && projectData.tomeLocal[0].readingName[0])
 				contentID.stringValue = getStringForWchar(projectData.tomeLocal[0].readingName);
 		}
 		
@@ -1182,7 +1182,7 @@ enum
 		META_TOME tomeData;
 		
 		//Somehow, the volume wasn't registered ¯\_(ツ)_/¯
-		if(project.data.nombreTomeLocal == 0)
+		if(project.data.nbVolumesLocal == 0)
 		{
 			tomeData.ID = getVolumeIDForImport(project.data.project);
 			if(tomeData.ID != INVALID_VALUE)
@@ -1201,15 +1201,15 @@ enum
 				project.data.tomeLocal = malloc(sizeof(META_TOME));
 				if(project.data.tomeLocal != NULL)
 				{
-					project.data.nombreTomeLocal = 1;
+					project.data.nbVolumesLocal = 1;
 					project.data.tomeLocal[0] = tomeData;
 					
 					//If it migrated, we remove the other entry
-					if(project.data.nombreChapitreLocal > 0)
+					if(project.data.nbChapterLocal > 0)
 					{
-						project.data.nombreChapitreLocal = 0;
-						free(project.data.chapitresLocal);
-						project.data.chapitresLocal = NULL;
+						project.data.nbChapterLocal = 0;
+						free(project.data.chaptersLocal);
+						project.data.chaptersLocal = NULL;
 					}
 				}
 				else
@@ -1231,11 +1231,11 @@ enum
 		releaseParsedData(project.data);
 		nullifyParsedPointers(&project.data);
 		
-		project.data.chapitresLocal = malloc(sizeof(uint));
-		if(project.data.chapitresLocal != NULL)
+		project.data.chaptersLocal = malloc(sizeof(uint));
+		if(project.data.chaptersLocal != NULL)
 		{
-			project.data.nombreChapitreLocal = 1;
-			project.data.chapitresLocal[0] = _item.contentID;
+			project.data.nbChapterLocal = 1;
+			project.data.chaptersLocal[0] = _item.contentID;
 			generateCTUsable(&project.data);
 		}
 

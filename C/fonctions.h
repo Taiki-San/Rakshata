@@ -81,7 +81,7 @@ bool createNewMK(char password[50], unsigned char key[SHA256_DIGEST_LENGTH]);
 bool recoverPassFromServ(unsigned char key[SHA256_DIGEST_LENGTH]);
 
 /**lecteur_loading**/
-char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID);
+char ** loadChapterConfigDat(char* input, uint *nbPage, uint ** nameID);
 
 /**Native.c**/
 int mkdirR(const char *path);
@@ -149,7 +149,7 @@ void setTomeReadable(PROJECT_DATA projectDB, uint ID);
 bool checkTomeReadable(PROJECT_DATA projectDB, uint ID);
 void getTomeInstalled(PROJECT_DATA *project);
 void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled);
-void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output);
+void copyTomeList(META_TOME * input, uint nbVolumes, META_TOME * output);
 void freeTomeList(META_TOME * data, uint length, bool includeDetails);
 void freeSingleTome(META_TOME data);
 void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutLinkedChapters);

@@ -115,9 +115,9 @@ typedef struct //project_data_for_drag_drop
 	if(element == INVALID_VALUE)
 	{
 		if(isTome)
-			return (project.nombreTomes != INVALID_VALUE && project.nombreTomes != project.nombreTomesInstalled);
+			return (project.nbVolumes != INVALID_VALUE && project.nbVolumes != project.nbVolumesInstalled);
 		
-		return (project.nombreChapitre != INVALID_VALUE && project.nombreChapitre != project.nombreChapitreInstalled);
+		return (project.nbChapter != INVALID_VALUE && project.nbChapter != project.nbChapterInstalled);
 	}
 	
 	return !checkReadable(project, isTome, (uint) element);
@@ -134,14 +134,14 @@ typedef struct //project_data_for_drag_drop
 		getUpdatedCTList(project, false);
 	}
 	
-	if(project->chapitresFull == NULL && project->tomesFull != NULL)
+	if(project->chaptersFull == NULL && project->volumesFull != NULL)
 		return YES;
-	else if(project->chapitresFull != NULL && project->tomesFull == NULL)
+	else if(project->chaptersFull != NULL && project->volumesFull == NULL)
 		return NO;
-	else if(project->chapitresFull == NULL && project->tomesFull != NULL)
+	else if(project->chaptersFull == NULL && project->volumesFull != NULL)
 		return YES;
 	
-	if(project->tomesInstalled == NULL || project->nombreTomesInstalled < project->nombreTomes)
+	if(project->volumesInstalled == NULL || project->nbVolumesInstalled < project->nbVolumes)
 		return YES;
 	
 	return NO;

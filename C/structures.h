@@ -110,9 +110,9 @@ typedef struct
  **		Root additions
  **			-	descriptions			Tableau de descriptions localisés
  **			-	langueDescriptions		Tableau synchronisé donnant la localisation des descriptions
- **			-	nombreDescriptions		Taille des tableaux sus-nommés
+ **			-	nbDescriptions		Taille des tableaux sus-nommés
  **			-	subRepo					Tableau contenant les données des sous-repos
- **			-	nombreSubrepo			Taille du tableau des sous-repos
+ **			-	nbSubrepo			Taille du tableau des sous-repos
  **			-	subRepoAreExtra			Défini la structure de subRepo (REPO_DATA/REPO_DATA_EXTRA)
  **			-	trusted					Indique si la repo est de confiance
  **
@@ -163,10 +163,10 @@ typedef struct
 	
 	charType ** descriptions;
 	char ** langueDescriptions;
-	uint nombreDescriptions;
+	uint nbDescriptions;
 	
 	REPO_DATA * subRepo;
-	uint nombreSubrepo;
+	uint nbSubrepo;
 	
 	uint repoID;
 	bool trusted;
@@ -198,17 +198,17 @@ typedef struct
 **			- hashSmall					CRC32 de la version courante
 **
 **		Chapitres
-**			-	nombreChapitre			nombre de chapitres total
-**			-	chapitresFull			tableau contenant tous les chapitres classés
-**			-	chapitresPrix			tableau contenant le prix des chapitres
-**			-	nombreChapitreInstalled	nombre de chapitres installés
-**			-	chapitresFullInstalled	tableau contenant tous les chapitres installés classés
+**			-	nbChapter				nombre de chapitre total
+**			-	chaptersFull			tableau contenant tous les chapitres classés
+**			-	chaptersPrix			tableau contenant le prix des chapitres
+**			-	nbChapterInstalled		nombre de chapitres installés
+**			-	chaptersFullInstalled	tableau contenant tous les chapitres installés classés
 **
 **		Tomes
-**			-	nombreTomes				nombre de chapitres total
-**			-	tomesFull				tableau contenant tous les chapitres classés
-**			-	nombreTomesInstalled	nombre de chapitres installés
-**			-	tomesFullInstalled		tableau contenant tous les chapitres installés classés
+**			-	nbVolumes				nombre de tome total
+**			-	volumesFull				tableau contenant tous les tomez classés
+**			-	nbVolumesInstalled		nombre de tome installés
+**			-	volumesFullInstalled	tableau contenant tous les tome installés classés
 **
 **		Module DL
 **			-	favoris					est-ce que c'est un favoris
@@ -222,17 +222,17 @@ typedef struct
 {
 	//Pointeurs, un bloc chacun (64b)
 	REPO_DATA *repo;
-	uint *chapitresFull;
-	uint *chapitresPrix;
-	uint *chapitresInstalled;
-	META_TOME *tomesFull;
-	META_TOME *tomesInstalled;
+	uint *chaptersFull;
+	uint *chaptersPrix;
+	uint *chaptersInstalled;
+	META_TOME *volumesFull;
+	META_TOME *volumesInstalled;
 	
 	//Un bloc de 64b complet chacun
-	size_t nombreChapitre;
-	size_t nombreChapitreInstalled;
-	size_t nombreTomes;
-	size_t nombreTomesInstalled;
+	size_t nbChapter;
+	size_t nbChapterInstalled;
+	size_t nbVolumes;
+	size_t nbVolumesInstalled;
 	
 	charType description[LENGTH_DESCRIPTION];
 	
@@ -266,17 +266,17 @@ typedef struct
 {
 	PROJECT_DATA project;
 
-	uint *chapitresRemote;
-	uint *chapitresLocal;
+	uint *chaptersRemote;
+	uint *chaptersLocal;
 
-	uint nombreChapitreRemote;
-	uint nombreChapitreLocal;
+	uint nbChapterRemote;
+	uint nbChapterLocal;
 
 	META_TOME * tomeRemote;
 	META_TOME * tomeLocal;
 
-	uint nombreTomeRemote;
-	uint nombreTomeLocal;
+	uint nbVolumesRemote;
+	uint nbVolumesLocal;
 
 } PROJECT_DATA_PARSED;
 

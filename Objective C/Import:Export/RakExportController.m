@@ -45,7 +45,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(position == INVALID_VALUE)
 					return nil;
 
-				outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForVolumeFull(project.tomesFull[position])];
+				outputPath = [NSString stringWithFormat:@"%@ - %@", projectPath, getStringForVolumeFull(project.volumesFull[position])];
 			}
 
 			else
@@ -288,17 +288,17 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 + (NSMutableArray *) lineariseContent : (PROJECT_DATA *) project ofProjectID : (uint) projectID fullProject : (BOOL) fullProject isTome : (BOOL) isTome selection : (uint) selection index : (uint *) index
 {
 	//Ensure we have valid data
-	if((fullProject || isTome) && project->tomesInstalled == NULL)
+	if((fullProject || isTome) && project->volumesInstalled == NULL)
 	{
-		if(project->tomesFull == NULL)
+		if(project->volumesFull == NULL)
 			getUpdatedTomeList(project, true);
 		else
 			getTomeInstalled(project);
 	}
 
-	if((fullProject || !isTome) && project->chapitresInstalled == NULL)
+	if((fullProject || !isTome) && project->chaptersInstalled == NULL)
 	{
-		if(project->chapitresFull == NULL)
+		if(project->chaptersFull == NULL)
 			getUpdatedChapterList(project, true);
 		else
 			getChapterInstalled(project);
@@ -316,22 +316,22 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	//Okay, at this point, we craft the array
 	if(selection == INVALID_VALUE)
 	{
-		uint length = ACCESS_DATA(isTome, project->nombreChapitreInstalled, project->nombreTomesInstalled);
+		uint length = ACCESS_DATA(isTome, project->nbChapterInstalled, project->nbVolumesInstalled);
 		NSMutableArray * collector = [NSMutableArray new];
 
 		for(uint i = 0; i < length; ++i)
 		{
-			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, ACCESS_DATA(isTome,  (void *) &project->chapitresInstalled[i], &project->tomesInstalled[i]), index);
+			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, ACCESS_DATA(isTome,  (void *) &project->chaptersInstalled[i], &project->volumesInstalled[i]), index);
 			if(dict != nil)
 				[collector addObject:dict];
 		}
 
 		if(fullProject)
 		{
-			length = project->nombreTomesInstalled;
+			length = project->nbVolumesInstalled;
 			for(uint i = 0; i < length; ++i)
 			{
-				NSDictionary * dict = linearizeContentLine(*project, projectID, true, &project->tomesInstalled[i], index);
+				NSDictionary * dict = linearizeContentLine(*project, projectID, true, &project->volumesInstalled[i], index);
 				if(dict != nil)
 					[collector addObject:dict];
 			}
@@ -383,7 +383,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 		//We check all files exists
 		BOOL problemDetected = NO;
-		for(uint pos = 0; pos < entryData.nombrePage; pos++)
+		for(uint pos = 0; pos < entryData.nbPage; pos++)
 		{
 			if(!checkFileExist(entryData.nomPages[pos]))
 			{
@@ -392,7 +392,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			}
 		}
 
-		if(problemDetected || !entryData.nombrePage)
+		if(problemDetected || !entryData.nbPage)
 		{
 			releaseDataReader(&entryData);
 			[invalidContent addObject:entry];
@@ -411,7 +411,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				continue;
 			}
 
-			volumeMetadata = item.project.tomesInstalled[posSelectionTome];
+			volumeMetadata = item.project.volumesInstalled[posSelectionTome];
 		}
 
 		//Okay, all files exists, let's add them to the archive
@@ -423,13 +423,13 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		createDirInZip(file, rootInzipPath);
 
 		//Initialize the UI
-		controller.nbElementInEntry = entryData.nombrePage;
+		controller.nbElementInEntry = entryData.nbPage;
 
 		//Then add those files
 		BOOL error = NO;
 		char * outFile, * baseInzipPath = NULL;
 		uint baseInzipVolPathLength;
-		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nombrePage && !error; pos++)
+		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nbPage && !error; pos++)
 		{
 			controller.posInEntry = pos;
 
@@ -472,7 +472,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			free(outFile);
 
 			//If we need to insert the config.dat file
-			if(pos + 1 == entryData.nombrePage || entryData.pathNumber[pos] != entryData.pathNumber[pos + 1])
+			if(pos + 1 == entryData.nbPage || entryData.pathNumber[pos] != entryData.pathNumber[pos + 1])
 			{
 				char pathToConfig[basePagePathLength + 50], inzipOfConfig[rootZipPathLength + 50];
 				snprintf(pathToConfig, sizeof(pathToConfig), "%s/"CONFIGFILE, entryData.path[entryData.pathNumber[pos]]);
@@ -481,7 +481,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(!addFileToZip(file, pathToConfig, inzipOfConfig))
 					error = YES;
 
-				if(pos + 1 != entryData.nombrePage)
+				if(pos + 1 != entryData.nbPage)
 					basePagePathLength = strlen(entryData.path[entryData.pathNumber[pos + 1]]);
 
 				//Volumes use a different root than the rootInzipPath
@@ -548,7 +548,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		
 		[dict setObject:@(* (uint *) selection) forKey:RAK_STRING_CONTENT_ID];
 		
-		NSArray * volumeMetadata = recoverVolumeBloc(&(project.tomesInstalled[pos]), 1, project.isPaid);
+		NSArray * volumeMetadata = recoverVolumeBloc(&(project.volumesInstalled[pos]), 1, project.isPaid);
 		if(volumeMetadata != nil && [volumeMetadata count] > 0)
 			[dict setObject:[volumeMetadata objectAtIndex:0] forKey:RAK_STRING_CONTENT_VOL_DETAILS];
 	}

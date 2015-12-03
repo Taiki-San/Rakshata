@@ -674,12 +674,12 @@
 	
 	[self updateProjectReadingOrder];
 	
-	if(startPage == INVALID_VALUE || _data.nombrePage == 0)
+	if(startPage == INVALID_VALUE || _data.nbPage == 0)
 		_data.pageCourante = 0;
-	else if(startPage < _data.nombrePage)
+	else if(startPage < _data.nbPage)
 		_data.pageCourante = startPage;
 	else
-		_data.pageCourante = _data.nombrePage - 1;
+		_data.pageCourante = _data.nbPage - 1;
 	
 	return YES;
 }
@@ -735,7 +735,7 @@
 {
 	if(switchType == READER_ETAT_NEXTPAGE)
 	{
-		if(_data.pageCourante + 1 >= _data.nombrePage)
+		if(_data.pageCourante + 1 >= _data.nbPage)
 		{
 			return [self changeChapter : YES : YES];
 		}
@@ -778,7 +778,7 @@
 	
 	previousMove = switchType;
 	
-	[self updatePage:_data.pageCourante : _data.nombrePage];	//And we update the bar
+	[self updatePage:_data.pageCourante : _data.nbPage];	//And we update the bar
 	
 	if(switchType == READER_ETAT_DEFAULT)
 		[self updateEvnt];
@@ -809,11 +809,11 @@
 
 - (void) jumpToPage : (uint) newPage
 {
-	if(newPage == _data.pageCourante || _data.nombrePage == 0)
+	if(newPage == _data.pageCourante || _data.nbPage == 0)
 		return;
 	
-	else if(newPage >= _data.nombrePage)
-		newPage = _data.nombrePage - 1;
+	else if(newPage >= _data.nbPage)
+		newPage = _data.nbPage - 1;
 	
 	uint pageCourante = _data.pageCourante;
 	
@@ -865,7 +865,7 @@
 			if(previousDataLoaded)
 				releaseDataReader(&_previousData);
 			
-			currentPage = _data.nombrePage + 1;
+			currentPage = _data.nbPage + 1;
 			
 			_previousData = _data;
 			previousDataLoaded = dataLoaded;
@@ -890,7 +890,7 @@
 			memcpy(&_data, &_previousData, sizeof(DATA_LECTURE));
 			
 			if(byChangingPage)
-				_data.pageCourante = _data.nombrePage - 1;
+				_data.pageCourante = _data.nbPage - 1;
 			else
 				_data.pageCourante = 0;
 			
@@ -940,7 +940,7 @@
 		[self updateContext : NO];
 		
 		if(byChangingPage)
-			[self jumpToPage : _data.nombrePage - 1];
+			[self jumpToPage : _data.nbPage - 1];
 	}
 	
 	return YES;
@@ -1014,7 +1014,7 @@
 	{
 		if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
 		{
-			_data.nombrePage = 1;
+			_data.nbPage = 1;
 			[self failure : 0];
 		}
 	}
@@ -1031,7 +1031,7 @@
 	
 	[array addObject:@(-1)];	//Placeholder for last page of previous chapter
 	
-	for(uint i = 0; i < _data.nombrePage; i++)
+	for(uint i = 0; i < _data.nbPage; i++)
 		[array addObject:@([mainScroller getPatchedPosForIndex:i])];
 	
 	[array addObject:@(-2)];	//Placeholder for first page of next chapter
@@ -1062,7 +1062,7 @@
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
 {
-	if(_data.path == NULL || page >= data->nombrePage)
+	if(_data.path == NULL || page >= data->nbPage)
 		return nil;
 	
 	NSData * imageData;
@@ -1107,7 +1107,7 @@
 	
 	if(_project.isInitialized && _posElemInStructure != INVALID_VALUE)
 	{
-		if(_posElemInStructure != (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled))
+		if(_posElemInStructure != (self.isTome ? _project.nbVolumesInstalled : _project.nbChapterInstalled))
 		{
 			if(_posElemInStructure > 0)
 			{
@@ -1125,7 +1125,7 @@
 	}
 
 	_data.pageCourante = 0;
-	_data.nombrePage = 1;
+	_data.nbPage = 1;
 	self.initWithNoContent = YES;
 	[self failure : 0];
 	mainScroller.patchedSelectedIndex = 1;
@@ -1268,7 +1268,7 @@
 {
 	_cacheBeingBuilt = YES;
 	
-	if(mainScroller == nil || _data.pageCourante >= _data.nombrePage)	//Données hors de nos bornes
+	if(mainScroller == nil || _data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
 	{
 		_cacheBeingBuilt = NO;
 		return;
@@ -1309,7 +1309,7 @@
 		else if([self nbEntryRemaining : *data])
 		{
 			int move = previousMove == READER_ETAT_PREVPAGE ? -1 : 1, i;	//Next page by default
-			uint max = _data.nombrePage;
+			uint max = _data.nbPage;
 			int64_t basePage = _data.pageCourante;
 			
 			//_data.pageCourante + i * move is unsigned, so it should work just fine
@@ -1381,9 +1381,9 @@
 		//Load next CT data
 		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, &newData))
 		{
-			if(loadNext && ![self entryValid : data : _data.nombrePage + 1])
+			if(loadNext && ![self entryValid : data : _data.nbPage + 1])
 			{
-				[self loadPageCache : 0 : &newData : currentSession : _data.nombrePage + 1];
+				[self loadPageCache : 0 : &newData : currentSession : _data.nbPage + 1];
 
 				if(!nextDataLoaded && currentSession == cacheSession)
 				{
@@ -1395,7 +1395,7 @@
 			}
 			else if(!loadNext && ![self entryValid : data : 0])
 			{
-				[self loadPageCache : newData.nombrePage - 1 : &newData : currentSession : 0];
+				[self loadPageCache : newData.nbPage - 1 : &newData : currentSession : 0];
 				
 				if(!previousDataLoaded && currentSession == cacheSession)
 				{
@@ -1708,7 +1708,7 @@
 	{
 		[self changeChapter : NO : YES];
 	}
-	else if(index == _data.nombrePage + 1)
+	else if(index == _data.nbPage + 1)
 	{
 		[self changeChapter : YES : YES];
 	}
@@ -1746,7 +1746,7 @@
 	_scrollView.magnification = saveMagnification ? lastKnownMagnification : 1;
 
 	//After the last page
-	if(((NSUInteger) pageController.patchedSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nombreTomesInstalled : _project.nombreChapitreInstalled) - 1 && [pageController.arrangedObjects count] > 2)
+	if(((NSUInteger) pageController.patchedSelectedIndex) == [pageController.arrangedObjects count] - 1 && _posElemInStructure == (self.isTome ? _project.nbVolumesInstalled : _project.nbChapterInstalled) - 1 && [pageController.arrangedObjects count] > 2)
 	{
 		pageController.patchedSelectedIndex = (int64_t) [pageController.arrangedObjects count] - 2;
 		
@@ -1809,18 +1809,18 @@
 	
 	if(!self.isTome)
 	{
-		for(nbElemToGrab = localProject.nombreChapitre - nbElemToGrab; nbElemToGrab < localProject.nombreChapitre; nbElemToGrab++)
+		for(nbElemToGrab = localProject.nbChapter - nbElemToGrab; nbElemToGrab < localProject.nbChapter; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.chapitresFull[nbElemToGrab]])
-				selection[nbElemValidated++] = localProject.chapitresFull[nbElemToGrab];
+			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.chaptersFull[nbElemToGrab]])
+				selection[nbElemValidated++] = localProject.chaptersFull[nbElemToGrab];
 		}
 	}
 	else
 	{
-		for(nbElemToGrab = localProject.nombreTomes - nbElemToGrab; nbElemToGrab < localProject.nombreTomes; nbElemToGrab++)
+		for(nbElemToGrab = localProject.nbVolumes - nbElemToGrab; nbElemToGrab < localProject.nbVolumes; nbElemToGrab++)
 		{
-			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.tomesFull[nbElemToGrab].ID])
-				selection[nbElemValidated++] = localProject.tomesFull[nbElemToGrab].ID;
+			if(![tabMDL proxyCheckForCollision :localProject : self.isTome :localProject.volumesFull[nbElemToGrab].ID])
+				selection[nbElemValidated++] = localProject.volumesFull[nbElemToGrab].ID;
 		}
 	}
 	

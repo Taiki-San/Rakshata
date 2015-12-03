@@ -27,9 +27,9 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 				{
 					(*output)->repoID = previousData->repoID;
 					
-					if((*output)->nombreSubrepo != 0)
+					if((*output)->nbSubrepo != 0)
 					{
-						for(uint i = 0, length = (*output)->nombreSubrepo; i < length; i++)
+						for(uint i = 0, length = (*output)->nbSubrepo; i < length; i++)
 							((REPO_DATA_EXTRA *)(*output)->subRepo)[i].data->parentRepoID = previousData->repoID;
 					}
 				}
@@ -186,10 +186,10 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 			internalBufferOld = oldData[posOld];
 			internalBufferNew = newData[posNew];
 
-			internalBufferNew.chapitresLocal = internalBufferOld.chapitresLocal;
-			internalBufferNew.nombreChapitreLocal = internalBufferOld.nombreChapitreLocal;
+			internalBufferNew.chaptersLocal = internalBufferOld.chaptersLocal;
+			internalBufferNew.nbChapterLocal = internalBufferOld.nbChapterLocal;
 			internalBufferNew.tomeLocal = internalBufferOld.tomeLocal;
-			internalBufferNew.nombreTomeLocal = internalBufferOld.nombreTomeLocal;
+			internalBufferNew.nbVolumesLocal = internalBufferOld.nbVolumesLocal;
 
 			if(!areProjectsIdentical(internalBufferOld, internalBufferNew))	//quelque chose à changé
 			{
@@ -198,10 +198,10 @@ void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, P
 					migrateRemovedInstalledToLocal(internalBufferOld, &internalBufferNew);
 
 				//We craft the update PROJECT_DATA data
-				if(internalBufferNew.nombreChapitreLocal)
+				if(internalBufferNew.nbChapterLocal)
 					consolidateCTLocale(&internalBufferNew, false);
 
-				if(internalBufferNew.nombreTomeLocal)
+				if(internalBufferNew.nbVolumesLocal)
 					consolidateCTLocale(&internalBufferNew, true);
 				
 				generateCTUsable(&internalBufferNew);
@@ -482,39 +482,39 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 	
 	PROJECT_DATA newData = data;
 	
-	if(data.chapitresFull != NULL)
+	if(data.chaptersFull != NULL)
 	{
-		newData.chapitresFull = malloc(data.nombreChapitre * sizeof(uint));
-		if(newData.chapitresFull != NULL)
-			memcpy(newData.chapitresFull, data.chapitresFull, data.nombreChapitre * sizeof(uint));
+		newData.chaptersFull = malloc(data.nbChapter * sizeof(uint));
+		if(newData.chaptersFull != NULL)
+			memcpy(newData.chaptersFull, data.chaptersFull, data.nbChapter * sizeof(uint));
 	}
 	
-	if(data.chapitresPrix != NULL)
+	if(data.chaptersPrix != NULL)
 	{
-		newData.chapitresPrix = malloc(data.nombreChapitre * sizeof(uint));
-		if(newData.chapitresPrix != NULL)
-			memcpy(newData.chapitresPrix, data.chapitresPrix, data.nombreChapitre * sizeof(uint));
+		newData.chaptersPrix = malloc(data.nbChapter * sizeof(uint));
+		if(newData.chaptersPrix != NULL)
+			memcpy(newData.chaptersPrix, data.chaptersPrix, data.nbChapter * sizeof(uint));
 	}
 	
-	if(data.chapitresInstalled != NULL)
+	if(data.chaptersInstalled != NULL)
 	{
-		newData.chapitresInstalled = malloc(data.nombreChapitreInstalled * sizeof(uint));
-		if(newData.chapitresInstalled != NULL)
-			memcpy(newData.chapitresInstalled, data.chapitresInstalled, data.nombreChapitreInstalled * sizeof(uint));
+		newData.chaptersInstalled = malloc(data.nbChapterInstalled * sizeof(uint));
+		if(newData.chaptersInstalled != NULL)
+			memcpy(newData.chaptersInstalled, data.chaptersInstalled, data.nbChapterInstalled * sizeof(uint));
 	}
 	
-	if(data.tomesFull != NULL)
+	if(data.volumesFull != NULL)
 	{
-		newData.tomesFull = malloc(data.nombreTomes * sizeof(META_TOME));
-		if(newData.tomesFull != NULL)
-			copyTomeList(data.tomesFull, data.nombreTomes, newData.tomesFull);
+		newData.volumesFull = malloc(data.nbVolumes * sizeof(META_TOME));
+		if(newData.volumesFull != NULL)
+			copyTomeList(data.volumesFull, data.nbVolumes, newData.volumesFull);
 	}
 	
-	if(data.tomesInstalled != NULL)
+	if(data.volumesInstalled != NULL)
 	{
-		newData.tomesInstalled = malloc(data.nombreTomesInstalled * sizeof(META_TOME));
-		if(newData.tomesInstalled != NULL)
-			copyTomeList(data.tomesInstalled, data.nombreTomesInstalled, newData.tomesInstalled);
+		newData.volumesInstalled = malloc(data.nbVolumesInstalled * sizeof(META_TOME));
+		if(newData.volumesInstalled != NULL)
+			copyTomeList(data.volumesInstalled, data.nbVolumesInstalled, newData.volumesInstalled);
 	}
 	
 	return newData;
@@ -678,13 +678,13 @@ void _freeSingleRootRepo(ROOT_REPO_DATA * root, bool releaseMemory)
 
 	if(root->descriptions != NULL)
 	{
-		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+		for(uint j = 0, length = root->nbDescriptions; j < length; j++)
 			free(root->descriptions[j]);
 	}
 
 	if(root->langueDescriptions != NULL)
 	{
-		for(uint j = 0, length = root->nombreDescriptions; j < length; j++)
+		for(uint j = 0, length = root->nbDescriptions; j < length; j++)
 			free(root->langueDescriptions[j]);
 	}
 

@@ -121,7 +121,7 @@ void setUninstalled(bool isRoot, uint64_t repoID)
 		{
 			if(rootRepoList[i] != NULL && rootRepoList[i]->repoID == repoID)
 			{
-				for(uint posRepo = 0, nbEntry = rootRepoList[i]->nombreSubrepo; posRepo < nbEntry; posRepo++)
+				for(uint posRepo = 0, nbEntry = rootRepoList[i]->nbSubrepo; posRepo < nbEntry; posRepo++)
 				{
 					REPO_DATA repo = rootRepoList[i]->subRepo[posRepo];
 					

@@ -436,10 +436,10 @@
 	if(!tmp.isInitialized)
 		return NO;
 	
-	if(tmp.nombreChapitre != 0)
+	if(tmp.nbChapter != 0)
 		getUpdatedCTList(&tmp, false);
 	
-	if(tmp.nombreTomes != 0)
+	if(tmp.nbVolumes != 0)
 		getUpdatedCTList(&tmp, true);
 	
 	[RakTabView broadcastUpdateContext: content : tmp : NO : INVALID_VALUE];
@@ -676,12 +676,12 @@
 	
 	if(shouldUseVols)
 	{
-		delta = project.nombreTomes - project.nombreTomesInstalled;
+		delta = project.nbVolumes - project.nbVolumesInstalled;
 		output = [NSString stringWithFormat:NSLocalizedString(@"%u-VOLUME%c", nil), delta, delta > 1 ? 's' : '\0'];
 	}
 	else
 	{
-		delta = project.nombreChapitre - project.nombreChapitreInstalled;
+		delta = project.nbChapter - project.nbChapterInstalled;
 		output = [NSString stringWithFormat:NSLocalizedString(@"%u-CHAPTER%c", nil), delta, delta > 1 ? 's' : '\0'];
 	}
 	

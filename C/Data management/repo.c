@@ -40,7 +40,7 @@ void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward)
 	
 	ICONS_UPDATE * begin = NULL, * current, * new;
 	REPO_DATA_EXTRA * data = (void *) root->subRepo;
-	uint nbSubRepo = root->nombreSubrepo;
+	uint nbSubRepo = root->nbSubrepo;
 	char rootPath[64], imagePath[256], crcHash[LENGTH_CRC];
 	
 	if(nbSubRepo == 0)

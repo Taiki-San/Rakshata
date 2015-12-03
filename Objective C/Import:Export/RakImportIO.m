@@ -150,7 +150,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 							extraProject.data.tomeLocal[0].lengthDetails = 1;
 							extraProject.data.tomeLocal[0].readingID = item.contentID == INVALID_VALUE ? INVALID_SIGNED_VALUE : (int) item.contentID;
 							item.contentID = extraProject.data.tomeLocal[0].ID = getVolumeIDForImport(extraProject.data.project);
-							extraProject.data.nombreTomeLocal++;
+							extraProject.data.nbVolumesLocal++;
 						}
 						else
 						{
@@ -162,11 +162,11 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				}
 				else
 				{
-					extraProject.data.chapitresLocal = malloc(sizeof(uint));
-					if(extraProject.data.chapitresLocal != NULL)
+					extraProject.data.chaptersLocal = malloc(sizeof(uint));
+					if(extraProject.data.chaptersLocal != NULL)
 					{
-						extraProject.data.chapitresLocal[0] = item.contentID;
-						extraProject.data.nombreChapitreLocal++;
+						extraProject.data.chaptersLocal[0] = item.contentID;
+						extraProject.data.nbChapterLocal++;
 					}
 				}
 				

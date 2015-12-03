@@ -61,14 +61,14 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
     uint firstNewElem;
     if(isTome)
 	{
-		for(firstNewElem = projectDB->nombreTomes-1; firstNewElem > 0 && projectDB->tomesFull[firstNewElem].ID > CT; firstNewElem--);
-		firstNewElem = projectDB->nombreTomes - 1 - firstNewElem;
+		for(firstNewElem = projectDB->nbVolumes-1; firstNewElem > 0 && projectDB->volumesFull[firstNewElem].ID > CT; firstNewElem--);
+		firstNewElem = projectDB->nbVolumes - 1 - firstNewElem;
 	}
 
     else
 	{
-        for(firstNewElem = projectDB->nombreChapitre-1; firstNewElem > 0 && projectDB->chapitresFull[firstNewElem] > CT; firstNewElem--);
-		firstNewElem = projectDB->nombreChapitre - 1 - firstNewElem;
+        for(firstNewElem = projectDB->nbChapter-1; firstNewElem > 0 && projectDB->chaptersFull[firstNewElem] > CT; firstNewElem--);
+		firstNewElem = projectDB->nbChapter - 1 - firstNewElem;
 	}
     
     return firstNewElem;

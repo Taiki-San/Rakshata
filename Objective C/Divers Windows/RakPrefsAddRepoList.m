@@ -181,7 +181,7 @@ enum
 	{
 		ROOT_REPO_DATA * repo = repoData;
 		
-		for(uint i = 0; i < repo->nombreSubrepo; i++)
+		for(uint i = 0; i < repo->nbSubrepo; i++)
 			repo->subRepo[i].active = state;
 		
 		//We have to refresh all the children

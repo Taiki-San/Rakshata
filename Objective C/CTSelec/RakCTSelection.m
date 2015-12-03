@@ -176,14 +176,14 @@
 	}
 	else
 	{
-		if(data.nombreChapitreInstalled > 0)
+		if(data.nbChapterInstalled > 0)
 		{
 			[_buttons setEnabled : YES forSegment:0];
 			
 			if(!*isTome)
 				[_buttons setSelected : YES forSegment:0];
 			
-			if(data.nombreChapitreInstalled == 1)
+			if(data.nbChapterInstalled == 1)
 			{
 				NSString * name = [_buttons labelForSegment:0];
 				[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:0];
@@ -192,14 +192,14 @@
 		else if(!*isTome)	//Si on recoit une demande incohérante
 			*isTome = YES;
 		
-		if(data.nombreTomesInstalled > 0)
+		if(data.nbVolumesInstalled > 0)
 		{
 			[_buttons setEnabled:YES forSegment:1];
 			
 			if(*isTome)
 				[_buttons setSelected:YES forSegment:1];
 			
-			if(data.nombreTomesInstalled == 1)
+			if(data.nbVolumesInstalled == 1)
 			{
 				NSString * name = [_buttons labelForSegment:1];
 				[_buttons setLabel:[name substringToIndex:[name length] - 1] forSegment:1];
@@ -207,7 +207,7 @@
 		}
 		else if(*isTome)
 		{
-			if(data.nombreChapitreInstalled > 0)
+			if(data.nbChapterInstalled > 0)
 			{
 				[_buttons setSelected:YES forSegment:0];
 				*isTome = NO;
@@ -328,19 +328,19 @@
 	
 	if(_currentContext == TAB_READER)
 	{
-		if(isTome && index < data.nombreTomesInstalled)
-			ID = data.tomesInstalled[index].ID;
-		else if(!isTome && index < data.nombreChapitreInstalled)
-			ID = (uint) data.chapitresInstalled[index];
+		if(isTome && index < data.nbVolumesInstalled)
+			ID = data.volumesInstalled[index].ID;
+		else if(!isTome && index < data.nbChapterInstalled)
+			ID = (uint) data.chaptersInstalled[index];
 		else
 			return;
 	}
 	else
 	{
-		if(isTome && index < data.nombreTomes)
-			ID = data.tomesFull[index].ID;
-		else if(!isTome && index < data.nombreChapitre)
-			ID = (uint) data.chapitresFull[index];
+		if(isTome && index < data.nbVolumes)
+			ID = data.volumesFull[index].ID;
+		else if(!isTome && index < data.nbChapter)
+			ID = (uint) data.chaptersFull[index];
 		else
 			return;
 	}
@@ -421,8 +421,8 @@
 		if(_chapterView != NULL)	[_chapterView resetSelection];
 		if(_volView != NULL)	[_volView resetSelection];
 		
-		free(data.tomesFull);		data.tomesFull = NULL;
-		free(data.tomesInstalled);	data.tomesInstalled = NULL;
+		free(data.volumesFull);		data.volumesFull = NULL;
+		free(data.volumesInstalled);	data.volumesInstalled = NULL;
 		data = getCopyOfProjectData(newData);
 		
 		[self updateTitle];
@@ -434,19 +434,19 @@
 	[_chapterView reloadData : data : YES];
 	[_volView reloadData : data : YES];
 	
-	[_buttons setEnabled:(newData.nombreChapitreInstalled > 0) forSegment:0];
-	[_buttons setEnabled:(newData.nombreTomesInstalled > 0) forSegment:1];
+	[_buttons setEnabled:(newData.nbChapterInstalled > 0) forSegment:0];
+	[_buttons setEnabled:(newData.nbVolumesInstalled > 0) forSegment:1];
 	
 	if(isCompact)
 	{
 		//Update focus
-		if(isTome && data.nombreTomesInstalled == 0)
+		if(isTome && data.nbVolumesInstalled == 0)
 		{
 			[_chapterView setHidden:NO];
 			[_volView setHidden:YES];
 			[_buttons setSelectedSegment:0];
 		}
-		else if(!isTome && data.nombreChapitreInstalled == 0)
+		else if(!isTome && data.nbChapterInstalled == 0)
 		{
 			[_volView setHidden:NO];
 			[_chapterView setHidden:YES];

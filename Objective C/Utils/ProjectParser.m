@@ -610,9 +610,9 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	
 	data.projectID = [ID unsignedIntValue];
 	data.isPaid = isPaidContent;
-	data.chapitresPrix = chaptersPrices;
-	data.chapitresFull = chapters;		data.nombreChapitre = nbChapters;
-	data.tomesFull = volumes;			data.nombreTomes = nbVolumes;
+	data.chaptersPrix = chaptersPrices;
+	data.chaptersFull = chapters;		data.nbChapter = nbChapters;
+	data.volumesFull = volumes;			data.nbVolumes = nbVolumes;
 	data.status = [status unsignedCharValue];
 	if(data.status > STATUS_MAX)	data.status = STATUS_INVALID;
 
@@ -662,7 +662,7 @@ NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 		return nil;
 
 	//No project remaining
-	if(isLocalProject(project.project) && project.project.nombreChapitre == 0 && project.project.nombreTomes == 0)
+	if(isLocalProject(project.project) && project.project.nbChapter == 0 && project.project.nbVolumes == 0)
 		return nil;
 	
 	id buf;
@@ -671,22 +671,22 @@ NSDictionary * reverseParseBloc(PROJECT_DATA_PARSED project)
 	[output setObject:@(project.project.projectID) forKey:JSON_PROJ_ID];
 	[output setObject:getStringForWchar(project.project.projectName) forKey:JSON_PROJ_PROJECT_NAME];
 	
-	buf = recoverChapterStructure(project.project.chapitresFull, YES, project.project.chapitresPrix, project.project.nombreChapitre);
+	buf = recoverChapterStructure(project.project.chaptersFull, YES, project.project.chaptersPrix, project.project.nbChapter);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAPTERS];
 
-	buf = recoverChapterStructure(project.chapitresRemote, YES, NULL, project.nombreChapitreRemote);
+	buf = recoverChapterStructure(project.chaptersRemote, YES, NULL, project.nbChapterRemote);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAP_REMOTE];
 
-	buf = recoverChapterStructure(project.chapitresLocal, YES, NULL, project.nombreChapitreLocal);
+	buf = recoverChapterStructure(project.chaptersLocal, YES, NULL, project.nbChapterLocal);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_CHAP_LOCAL];
 
-	buf = recoverVolumeBloc(project.project.tomesFull, project.project.nombreTomes, project.project.isPaid);
+	buf = recoverVolumeBloc(project.project.volumesFull, project.project.nbVolumes, project.project.isPaid);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOLUMES];
 
-	buf = recoverVolumeBloc(project.tomeRemote, project.nombreTomeRemote, NO);
+	buf = recoverVolumeBloc(project.tomeRemote, project.nbVolumesRemote, NO);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOL_REMOTE];
 
-	buf = recoverVolumeBloc(project.tomeLocal, project.nombreTomeLocal, NO);
+	buf = recoverVolumeBloc(project.tomeLocal, project.nbVolumesLocal, NO);
 	if(buf != nil)		[output setObject:buf forKey:JSON_PROJ_VOL_LOCAL];
 
 	if(project.project.description[0])
@@ -723,65 +723,65 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 
 	output.project = shortData;
 
-	output.chapitresRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nombreChapitreRemote, YES, NO, NULL);
-	output.chapitresLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_LOCAL, nil, [NSArray class]), &output.nombreChapitreLocal, YES, NO, NULL);
-	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nombreTomeRemote, NO, YES);
-	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nombreTomeLocal, NO, NO);
+	output.chaptersRemote = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_REMOTE, nil, [NSArray class]), &output.nbChapterRemote, YES, NO, NULL);
+	output.chaptersLocal = parseChapterStructure(objectForKey(bloc, JSON_PROJ_CHAP_LOCAL, nil, [NSArray class]), &output.nbChapterLocal, YES, NO, NULL);
+	output.tomeRemote = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_REMOTE, nil, [NSArray class]), &output.nbVolumesRemote, NO, YES);
+	output.tomeLocal = getVolumes(objectForKey(bloc, JSON_PROJ_VOL_LOCAL, nil, [NSArray class]), &output.nbVolumesLocal, NO, NO);
 
 	BOOL needRebuildCT = NO;
 
 	//Some inconsistency, weird, let's try to recover
-	if(output.chapitresLocal == NULL && output.chapitresRemote == NULL && output.project.chapitresFull != NULL)
+	if(output.chaptersLocal == NULL && output.chaptersRemote == NULL && output.project.chaptersFull != NULL)
 	{
 		//Hum, let's try to copy what can be copied
-		output.nombreChapitreLocal = 0;
+		output.nbChapterLocal = 0;
 
-		output.chapitresLocal = malloc(output.project.nombreChapitre * sizeof(uint));
-		if(output.chapitresLocal != NULL)
+		output.chaptersLocal = malloc(output.project.nbChapter * sizeof(uint));
+		if(output.chaptersLocal != NULL)
 		{
 			//We move what is installed
-			for(uint currentChap = 0; currentChap < output.project.nombreChapitre; currentChap++)
+			for(uint currentChap = 0; currentChap < output.project.nbChapter; currentChap++)
 			{
-				if(checkChapterReadable(output.project, output.project.chapitresFull[currentChap]))
+				if(checkChapterReadable(output.project, output.project.chaptersFull[currentChap]))
 				{
-					output.chapitresLocal[output.nombreChapitreLocal++] = output.project.chapitresFull[currentChap];
+					output.chaptersLocal[output.nbChapterLocal++] = output.project.chaptersFull[currentChap];
 				}
 			}
 
 			//Nothing remaining, oh shit
-			if(output.nombreChapitreLocal == 0)
+			if(output.nbChapterLocal == 0)
 			{
-				free(output.chapitresLocal);			output.chapitresLocal = NULL;
-				free(output.project.chapitresFull);		output.project.chapitresFull = NULL;
-				output.project.nombreChapitre = 0;
+				free(output.chaptersLocal);			output.chaptersLocal = NULL;
+				free(output.project.chaptersFull);		output.project.chaptersFull = NULL;
+				output.project.nbChapter = 0;
 			}
 
-			//Need to reduce our allocation and update chapitresFull
-			else if(output.nombreChapitreLocal < output.project.nombreChapitre)
+			//Need to reduce our allocation and update chaptersFull
+			else if(output.nbChapterLocal < output.project.nbChapter)
 			{
-				void * tmp = realloc(output.chapitresLocal, output.nombreChapitreLocal * sizeof(uint));
+				void * tmp = realloc(output.chaptersLocal, output.nbChapterLocal * sizeof(uint));
 				if(tmp != NULL)
-					output.chapitresLocal = tmp;
+					output.chaptersLocal = tmp;
 
-				output.project.nombreChapitre = output.nombreChapitreLocal;
-				tmp = realloc(output.project.chapitresFull, output.project.nombreChapitre * sizeof(uint));
+				output.project.nbChapter = output.nbChapterLocal;
+				tmp = realloc(output.project.chaptersFull, output.project.nbChapter * sizeof(uint));
 				if(tmp != NULL)
-					output.project.chapitresFull = tmp;
+					output.project.chaptersFull = tmp;
 
-				memcpy(output.project.chapitresFull, output.chapitresLocal, output.nombreChapitreLocal * sizeof(uint));
+				memcpy(output.project.chaptersFull, output.chaptersLocal, output.nbChapterLocal * sizeof(uint));
 			}
 		}
 	}
-	else if(output.chapitresLocal != NULL)
+	else if(output.chaptersLocal != NULL)
 	{
 		//Ensure everything is installed
-		uint length = output.nombreChapitreLocal;
-		for(uint copyPos = 0, checkPos = 0; checkPos < output.nombreChapitreLocal; checkPos++)
+		uint length = output.nbChapterLocal;
+		for(uint copyPos = 0, checkPos = 0; checkPos < output.nbChapterLocal; checkPos++)
 		{
-			if(checkChapterReadable(output.project, output.chapitresLocal[checkPos]))
+			if(checkChapterReadable(output.project, output.chaptersLocal[checkPos]))
 			{
 				if(checkPos != copyPos)
-					output.chapitresLocal[copyPos] = output.chapitresLocal[checkPos];
+					output.chaptersLocal[copyPos] = output.chaptersLocal[checkPos];
 
 				copyPos++;
 			}
@@ -791,68 +791,68 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 
 		if(length == 0)
 		{
-			free(output.chapitresLocal);
-			output.chapitresLocal = NULL;
-			output.nombreChapitreLocal = 0;
+			free(output.chaptersLocal);
+			output.chaptersLocal = NULL;
+			output.nbChapterLocal = 0;
 			needRebuildCT = YES;
 		}
-		else if(length < output.nombreChapitreLocal)
+		else if(length < output.nbChapterLocal)
 		{
-			void * tmp = realloc(output.chapitresLocal, length * sizeof(uint));
+			void * tmp = realloc(output.chaptersLocal, length * sizeof(uint));
 			if(tmp != NULL)
-				output.chapitresLocal = tmp;
+				output.chaptersLocal = tmp;
 
-			output.nombreChapitreLocal = length;
+			output.nbChapterLocal = length;
 			needRebuildCT = YES;
 		}
 	}
 
-	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.tomesFull != NULL)
+	if(output.tomeLocal == NULL && output.tomeRemote == NULL && output.project.volumesFull != NULL)
 	{
-		output.nombreTomeLocal = 0;
+		output.nbVolumesLocal = 0;
 
-		output.tomeLocal = malloc(output.project.nombreTomes * sizeof(META_TOME));
+		output.tomeLocal = malloc(output.project.nbVolumes * sizeof(META_TOME));
 		if(output.tomeLocal != NULL)
 		{
 			//We move what is installed
-			for(uint currentVol = 0; currentVol < output.project.nombreTomes; currentVol++)
+			for(uint currentVol = 0; currentVol < output.project.nbVolumes; currentVol++)
 			{
-				if(checkTomeReadable(output.project, output.project.tomesFull[currentVol].ID))
-					output.tomeLocal[output.nombreTomeLocal++] = output.project.tomesFull[currentVol];
+				if(checkTomeReadable(output.project, output.project.volumesFull[currentVol].ID))
+					output.tomeLocal[output.nbVolumesLocal++] = output.project.volumesFull[currentVol];
 				else
-					freeSingleTome(output.project.tomesFull[currentVol]);
+					freeSingleTome(output.project.volumesFull[currentVol]);
 			}
 
 			//Nothing remaining, oh shit
-			if(output.nombreTomeLocal == 0)
+			if(output.nbVolumesLocal == 0)
 			{
 				free(output.tomeLocal);				output.tomeLocal = NULL;
-				free(output.project.tomesFull);		output.project.tomesFull = NULL;
-				output.project.nombreTomes = 0;
+				free(output.project.volumesFull);		output.project.volumesFull = NULL;
+				output.project.nbVolumes = 0;
 			}
 
-			//Need to reduce our allocation and update chapitresFull
-			else if(output.nombreTomeLocal < output.project.nombreTomes)
+			//Need to reduce our allocation and update chaptersFull
+			else if(output.nbVolumesLocal < output.project.nbVolumes)
 			{
-				void * tmp = realloc(output.tomeLocal, output.nombreTomeLocal * sizeof(META_TOME));
+				void * tmp = realloc(output.tomeLocal, output.nbVolumesLocal * sizeof(META_TOME));
 				if(tmp != NULL)
 					output.tomeLocal = tmp;
 
-				output.project.nombreTomes = output.nombreTomeLocal;
-				tmp = realloc(output.project.tomesFull, output.project.nombreTomes * sizeof(META_TOME));
+				output.project.nbVolumes = output.nbVolumesLocal;
+				tmp = realloc(output.project.volumesFull, output.project.nbVolumes * sizeof(META_TOME));
 				if(tmp != NULL)
-					output.project.tomesFull = tmp;
+					output.project.volumesFull = tmp;
 			}
 
 			//We need to copy either if there is any data remaining, and if there is none, this is a no-op so let's go
-			copyTomeList(output.tomeLocal, output.nombreTomeLocal, output.project.tomesFull);
+			copyTomeList(output.tomeLocal, output.nbVolumesLocal, output.project.volumesFull);
 		}
 	}
 	else if(output.tomeLocal != NULL)
 	{
 		//Ensure everything is installed
-		uint length = output.nombreTomeLocal;
-		for(uint copyPos = 0, checkPos = 0; checkPos < output.nombreTomeLocal; checkPos++)
+		uint length = output.nbVolumesLocal;
+		for(uint copyPos = 0, checkPos = 0; checkPos < output.nbVolumesLocal; checkPos++)
 		{
 			if(checkTomeReadable(output.project, output.tomeLocal[checkPos].ID))
 			{
@@ -872,16 +872,16 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 		{
 			free(output.tomeLocal);
 			output.tomeLocal = NULL;
-			output.nombreTomeLocal = 0;
+			output.nbVolumesLocal = 0;
 			needRebuildCT = YES;
 		}
-		else if(length < output.nombreTomeLocal)
+		else if(length < output.nbVolumesLocal)
 		{
 			void * tmp = realloc(output.tomeLocal, length * sizeof(META_TOME));
 			if(tmp != NULL)
 				output.tomeLocal = tmp;
 
-			output.nombreTomeLocal = length;
+			output.nbVolumesLocal = length;
 			needRebuildCT = YES;
 		}
 	}
@@ -890,7 +890,7 @@ PROJECT_DATA_PARSED parseDataLocal(NSDictionary * bloc)
 		generateCTUsable(&output);
 
 	//Eh, no data
-	if(output.project.chapitresFull == NULL && output.project.tomesFull == NULL)
+	if(output.project.chaptersFull == NULL && output.project.volumesFull == NULL)
 	{
 		releaseParsedData(output);
 		output = getEmptyParsedProject();
@@ -1024,23 +1024,23 @@ PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint
 	{
 		for(uint pos = 0; pos < *nbElem; pos++)
 		{
-			output[pos].data.chapitresRemote = output[pos].data.project.chapitresFull;
-			output[pos].data.nombreChapitreRemote = output[pos].data.project.nombreChapitre;
-			output[pos].data.tomeRemote = output[pos].data.project.tomesFull;
-			output[pos].data.nombreTomeRemote = output[pos].data.project.nombreTomes;
+			output[pos].data.chaptersRemote = output[pos].data.project.chaptersFull;
+			output[pos].data.nbChapterRemote = output[pos].data.project.nbChapter;
+			output[pos].data.tomeRemote = output[pos].data.project.volumesFull;
+			output[pos].data.nbVolumesRemote = output[pos].data.project.nbVolumes;
 
 #ifndef EXPOSE_DECIMAL_VOLUMES
-			for(uint i = 0, length = output[pos].data.nombreTomeRemote; i < length; ++i)
+			for(uint i = 0, length = output[pos].data.nbVolumesRemote; i < length; ++i)
 			{
 				if(output[pos].data.tomeRemote[i].readingID != INVALID_SIGNED_VALUE)
 					output[pos].data.tomeRemote[i].readingID *= 10;
 			}
 #endif
 
-			output[pos].data.project.chapitresFull = NULL;
-			output[pos].data.project.nombreChapitre = 0;
-			output[pos].data.project.tomesFull = NULL;
-			output[pos].data.project.nombreTomes = 0;
+			output[pos].data.project.chaptersFull = NULL;
+			output[pos].data.project.nbChapter = 0;
+			output[pos].data.project.volumesFull = NULL;
+			output[pos].data.project.nbVolumes = 0;
 		}
 	}
 

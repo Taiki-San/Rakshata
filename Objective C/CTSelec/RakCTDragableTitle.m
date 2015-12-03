@@ -60,7 +60,7 @@
 	[RakDragResponder registerToPasteboard:pBoard];
 
 	//No file drop if nothing installed
-	if(ACCESS_DATA(self.isTome, projectData.nombreChapitreInstalled, projectData.nombreTomesInstalled) != 0)
+	if(ACCESS_DATA(self.isTome, projectData.nbChapterInstalled, projectData.nbVolumesInstalled) != 0)
 		[RakDragResponder patchPasteboardForFiledrop:pBoard forType:ARCHIVE_FILE_EXT];
 	
 	//We create the shared item
@@ -75,7 +75,7 @@
 	//We create the image for the dragging session
 	NSImage * image = [_dragResponder initializeImageForItem : projectData : NSLocalizedString(self.isTome ? @"CT-ALL-VOLUMES" : @"CT-ALL-CHAPTERS", nil) : INVALID_VALUE];
 	
-	couldDL = self.isTome ? (projectData.nombreTomesInstalled < projectData.nombreTomes) : (projectData.nombreChapitreInstalled < projectData.nombreChapitre);
+	couldDL = self.isTome ? (projectData.nbVolumesInstalled < projectData.nbVolumes) : (projectData.nbChapterInstalled < projectData.nbChapter);
 	[RakList propagateDragAndDropChangeState : YES : couldDL];
 	
 #pragma clang diagnostic push

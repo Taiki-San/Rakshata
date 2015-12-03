@@ -303,20 +303,20 @@ enum
 		{
 			if(isRoot)
 			{
-				uint nombreSubrepo = 0;
+				uint nbSubrepo = 0;
 				
-				for(uint i = 0, length = ((ROOT_REPO_DATA *) repo)->nombreSubrepo; i < length; i++)
+				for(uint i = 0, length = ((ROOT_REPO_DATA *) repo)->nbSubrepo; i < length; i++)
 				{
 					if(((ROOT_REPO_DATA *) repo)->subRepo[i].active)
-						nombreSubrepo++;
+						nbSubrepo++;
 				}
 				
-				if(nombreSubrepo == 0)
+				if(nbSubrepo == 0)
 					string = NSLocalizedString(@"PREFS-ROOT-NO-ACTIVE-REPO", nil);
-				else if(nombreSubrepo == 1)
+				else if(nbSubrepo == 1)
 					string = NSLocalizedString(@"PREFS-ROOT-ONE-ACTIVE-REPO", nil);
 				else
-					string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-%zu-ACTIVE-REPO", nil), ((ROOT_REPO_DATA *) repo)->nombreSubrepo];
+					string = [NSString localizedStringWithFormat:NSLocalizedString(@"PREFS-ROOT-%zu-ACTIVE-REPO", nil), ((ROOT_REPO_DATA *) repo)->nbSubrepo];
 			}
 			else
 			{

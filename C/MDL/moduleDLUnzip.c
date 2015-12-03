@@ -45,7 +45,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 	bool ret_value = true;
 
-	uint lengthOutput = strlen(outputPath) + 1, nombreFichiers = 0;
+	uint lengthOutput = strlen(outputPath) + 1, nbFichiers = 0;
 	char ** filename = NULL, *pathToConfigFile = malloc(lengthOutput + 50);
 
 	//Init unzip file
@@ -74,24 +74,24 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
         goto quit;
 
 	//List files
-    ret_value &= unzListArchiveContent(zipFile, &filename, &nombreFichiers);
+    ret_value &= unzListArchiveContent(zipFile, &filename, &nbFichiers);
 	if(ret_value)
 	{
-		uint nombreFichierValide = 0;
+		uint nbFichierValide = 0;
 
 		//Mot de pass des fichiers si la DRM est active
-		unsigned char pass[nombreFichiers][SHA256_DIGEST_LENGTH];
+		unsigned char pass[nbFichiers][SHA256_DIGEST_LENGTH];
 		crashTemp(pass, sizeof(pass));
 
 		//Decompress files
 		unzGoToFirstFile(zipFile);
-		for(uint i = 0; i < nombreFichiers && ret_value; i++)
+		for(uint i = 0; i < nbFichiers && ret_value; i++)
 		{
 			//Name is valid
 			if(checkNameFileZip(filename[i]))
 			{
 				ret_value &= unzExtractOnefile(zipFile, filename[i], outputPath, STRIP_PATH_ALL, project.haveDRM ? pass[i] : NULL);
-				nombreFichierValide++;
+				nbFichierValide++;
 			}
 			else
 			{
@@ -100,7 +100,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			}
 
 			//Go to next file if needed
-			if(i + 1 < nombreFichiers)
+			if(i + 1 < nbFichiers)
 			{
 				if(unzGoToNextFile(zipFile) != UNZ_OK)
 					break;
@@ -112,12 +112,12 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			/*On va écrire les clées dans un config.enc
 			 Pour ça, on va classer les clées en fonction des pages, retirer les éléments invalides, puis on chiffre tout ce beau monde*/
 
-			uint nombreFichierDansConfigFile = 0;
+			uint nbFichierDansConfigFile = 0;
 			char **nomPage = NULL;
 			byte temp[256];
 
 			//On vire les paths des noms de fichiers
-			for(uint i = 0, j, k; i < nombreFichiers; i++)
+			for(uint i = 0, j, k; i < nbFichiers; i++)
 			{
 				if(filename[i] == NULL)
 					continue;
@@ -131,7 +131,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 				}
 			}
 
-			for(uint i = 0; i < nombreFichiers; i++)
+			for(uint i = 0; i < nbFichiers; i++)
 			{
 				if(filename[i] != NULL && !strcmp(filename[i], CONFIGFILE)) //On vire la clées du config.dat
 				{
@@ -141,16 +141,16 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 					do
 					{
 						memcpy(&(pass[i]), &(pass[i + 1]), sizeof(pass[0]));
-					} while(++i < nombreFichiers - 1);
+					} while(++i < nbFichiers - 1);
 
-					nombreFichierValide--;
+					nbFichierValide--;
 
 					break;
 				}
 			}
 
 			//On va classer les fichier et les clées en ce basant sur config.dat
-			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nombreFichierDansConfigFile, NULL)) == NULL || (nombreFichierDansConfigFile != nombreFichierValide && nombreFichierDansConfigFile != nombreFichierValide-1))
+			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nbFichierDansConfigFile, NULL)) == NULL || (nbFichierDansConfigFile != nbFichierValide && nbFichierDansConfigFile != nbFichierValide-1))
 			{
 #ifdef EXTENSIVE_LOGGING
 				logR("config.dat invalid: encryption aborted.\n");
@@ -160,7 +160,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 				if(nomPage != NULL)
 				{
-					for(uint i = 0; nombreFichierDansConfigFile; free(nomPage[i++]));
+					for(uint i = 0; nbFichierDansConfigFile; free(nomPage[i++]));
 					free(nomPage);
 				}
 				ret_value = false;
@@ -173,20 +173,20 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 #endif
 
 			//Classement
-			for(uint j, i = 0; i < nombreFichiers; i++)
+			for(uint j, i = 0; i < nbFichiers; i++)
 			{
 				if(filename[i] == NULL)
 					continue;
 
 				minimizeString(nomPage[i]);
 
-				for(j = i; j < nombreFichiers; j++)
+				for(j = i; j < nbFichiers; j++)
 				{
 					if(filename[j] != NULL && !strcmp(nomPage[i], filename[j]))
 						break;
 				}
 
-				if(j != i && j < nombreFichiers) //Mauvais classement
+				if(j != i && j < nbFichiers) //Mauvais classement
 				{
 					void * entry = filename[i];
 					filename[i] = filename[j];
@@ -201,28 +201,28 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 				}
 			}
 
-			for(uint i = 0; i < nombreFichierDansConfigFile; free(nomPage[i++]));
+			for(uint i = 0; i < nbFichierDansConfigFile; free(nomPage[i++]));
 			free(nomPage);
 
 			//Global encryption buffer
-			byte * hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
+			byte * hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nbFichierValide + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
 			if(hugeBuffer == NULL)
 			{
 #ifdef EXTENSIVE_LOGGING
 				logR("Failed at allocate memory to buffer\n");
 #endif
-				memoryError((SHA256_DIGEST_LENGTH + 1) * nombreFichierValide + 15 + CRYPTO_BUFFER_SIZE);
+				memoryError((SHA256_DIGEST_LENGTH + 1) * nbFichierValide + 15 + CRYPTO_BUFFER_SIZE);
 				removeFolder(outputPath);
 				ret_value = false;
 				goto quit;
 			}
 
 			//Add the number of entries at the begining of the said buffer
-			int sizeWritten = sprintf((char *) hugeBuffer, "%d", nombreFichierValide);
+			int sizeWritten = sprintf((char *) hugeBuffer, "%d", nbFichierValide);
 			uint posBlob = sizeWritten > 0 ? (uint) sizeWritten : 0;
 
 			//Inject the keys in the buffer
-			for(uint i = 0; i < nombreFichiers; i++)
+			for(uint i = 0; i < nbFichiers; i++)
 			{
 				if(filename[i] != NULL)
 				{
@@ -291,7 +291,7 @@ quit:
 
 	if(filename != NULL)
 	{
-		for(uint i = 0; i < nombreFichiers; free(filename[i++]));
+		for(uint i = 0; i < nbFichiers; free(filename[i++]));
 		free(filename);
 	}
 

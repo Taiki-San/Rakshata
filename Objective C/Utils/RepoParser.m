@@ -240,7 +240,7 @@ bool shouldDumpRoot(ROOT_REPO_DATA * root)
 	if(root == NULL)
 		return false;
 	
-	for(uint i = 0; i < root->nombreSubrepo; i++)
+	for(uint i = 0; i < root->nbSubrepo; i++)
 	{
 		if(root->subRepoAreExtra)
 		{
@@ -456,7 +456,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 		rootWip->repoID = [ID unsignedIntValue];
 	}
 
-	rootWip->subRepo = parseSubRepo(objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository", [NSArray class]), wantExtra, &(rootWip->nombreSubrepo), rootWip->repoID, localSource);
+	rootWip->subRepo = parseSubRepo(objectForKey(parseData, JSON_REPO_REPO_TREE, @"repository", [NSArray class]), wantExtra, &(rootWip->nbSubrepo), rootWip->repoID, localSource);
 	rootWip->subRepoAreExtra = wantExtra;
 	
 	wstrncpy(rootWip->name, REPO_NAME_LENGTH, (void*) [name cStringUsingEncoding:NSUTF32LittleEndianStringEncoding]);
@@ -464,7 +464,7 @@ ROOT_REPO_DATA * parseRootRepo(NSDictionary * parseData, bool wantExtra, bool lo
 	
 	rootWip->descriptions = descriptions;
 	rootWip->langueDescriptions = languages;
-	rootWip->nombreDescriptions = nbDescriptions;
+	rootWip->nbDescriptions = nbDescriptions;
 
 	rootWip->type = [type unsignedCharValue];
 	rootWip->trusted = trusted;
@@ -564,15 +564,15 @@ ROOT_REPO_DATA ** parseLocalRepo(char * parseDataRaw, uint * nbElem)
 
 #pragma mark - Linearizer
 
-NSArray * rebuildDescriptions(charType ** descriptions, char ** langueDescriptions, uint nombreDescriptions)
+NSArray * rebuildDescriptions(charType ** descriptions, char ** langueDescriptions, uint nbDescriptions)
 {
-	if(descriptions == NULL || langueDescriptions == NULL || nombreDescriptions == 0)
+	if(descriptions == NULL || langueDescriptions == NULL || nbDescriptions == 0)
 		return nil;
 	
-	NSMutableArray * output = [NSMutableArray arrayWithCapacity:nombreDescriptions];
+	NSMutableArray * output = [NSMutableArray arrayWithCapacity:nbDescriptions];
 	NSMutableDictionary * dictionary;
 	
-	for(uint i = 0; i < nombreDescriptions; i++)
+	for(uint i = 0; i < nbDescriptions; i++)
 	{
 		dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
 		
@@ -585,16 +585,16 @@ NSArray * rebuildDescriptions(charType ** descriptions, char ** langueDescriptio
 	return [NSArray arrayWithArray:output];
 }
 
-NSArray * rebuildRepoTree(REPO_DATA * subRepo, uint nombreSubrepo, bool isExtra)
+NSArray * rebuildRepoTree(REPO_DATA * subRepo, uint nbSubrepo, bool isExtra)
 {
-	if(subRepo == NULL || nombreSubrepo == 0)
+	if(subRepo == NULL || nbSubrepo == 0)
 		return nil;
 	
-	NSMutableArray * output = [NSMutableArray arrayWithCapacity:nombreSubrepo];
+	NSMutableArray * output = [NSMutableArray arrayWithCapacity:nbSubrepo];
 	NSMutableDictionary * dict;
 	REPO_DATA * element;
 	
-	for(uint i = 0; i < nombreSubrepo; i++)
+	for(uint i = 0; i < nbSubrepo; i++)
 	{
 		dict = [NSMutableDictionary dictionaryWithCapacity:7];
 		
@@ -633,14 +633,14 @@ NSDictionary * linearizeRootRepo(ROOT_REPO_DATA * root)
 	[dict setObject:[NSString stringWithUTF8String:root->URL] forKey:JSON_REPO_URL];
 	[dict setObject:@(root->repoID) forKey:JSON_REPO_ID];
 
-	array = rebuildDescriptions(root->descriptions, root->langueDescriptions, root->nombreDescriptions);
+	array = rebuildDescriptions(root->descriptions, root->langueDescriptions, root->nbDescriptions);
 	if(array != nil)
 		[dict setObject:array forKey:JSON_REPO_DESCRIPTION];
 	
 	if(root->trusted)
 		[dict setObject:@(YES) forKey:JSON_REPO_TRUSTED];
 	
-	array = rebuildRepoTree(root->subRepo, root->nombreSubrepo, root->subRepoAreExtra);
+	array = rebuildRepoTree(root->subRepo, root->nbSubrepo, root->subRepoAreExtra);
 	if(array != nil)
 		[dict setObject:array forKey:JSON_REPO_REPO_TREE];
 	

@@ -65,13 +65,13 @@ byte getMasterKey(unsigned char *input)
 	} while(fileInvalid);
 
 	char c;
-	uint nombreCle;
+	uint nbCle;
     FILE * bdd = fopen(SECURE_DATABASE, "rb");
 
-    for(nombreCle = 0; nombreCle < NOMBRE_CLE_MAX_ACCEPTE && (c = fgetc(bdd)) != EOF; nombreCle++) //On charge le contenu de BDD
+    for(nbCle = 0; nbCle < NOMBRE_CLE_MAX_ACCEPTE && (c = fgetc(bdd)) != EOF; nbCle++) //On charge le contenu de BDD
     {
         fseek(bdd, -1, SEEK_CUR);
-        for(uint j = 0; j < MK_CHUNK && (c = fgetc(bdd)) != EOF; bufferLoad[nombreCle][j++] = (byte) c);
+        for(uint j = 0; j < MK_CHUNK && (c = fgetc(bdd)) != EOF; bufferLoad[nbCle][j++] = (byte) c);
     }
     fclose(bdd);
 
@@ -97,7 +97,7 @@ byte getMasterKey(unsigned char *input)
     crashTemp(hash, sizeof(hash));
 #endif
 
-    for(uint i = 0, j; i < nombreCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
+    for(uint i = 0, j; i < nbCle && i < NOMBRE_CLE_MAX_ACCEPTE; i++)
     {
 		/*Décryptage manuel car un petit peu délicat*/
         for(j = 0; j < 3; j++)
@@ -149,7 +149,7 @@ void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH])
     unsigned char randomChar[128];
 
     for(i = 0; i < 128; i++)
-		randomChar[i] = getRandom() % 0xFE + 1; //Génére un nombre ASCII-étendu
+		randomChar[i] = getRandom() % 0xFE + 1; //Génére un nb ASCII-étendu
 
     sha256(randomChar, output);
 #else

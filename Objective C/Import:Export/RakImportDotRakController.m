@@ -165,15 +165,15 @@
 			   volumeData->ID = (uint) item.contentID;
 			
 			projectData.data.tomeLocal = volumeData;
-			projectData.data.nombreTomeLocal = 1;
+			projectData.data.nbVolumesLocal = 1;
 		}
 		else
 		{
-			projectData.data.chapitresLocal = malloc(sizeof(uint));
-			if(projectData.data.chapitresLocal != NULL)
+			projectData.data.chaptersLocal = malloc(sizeof(uint));
+			if(projectData.data.chaptersLocal != NULL)
 			{
-				*projectData.data.chapitresLocal = item.contentID;
-				projectData.data.nombreChapitreLocal = 1;
+				*projectData.data.chaptersLocal = item.contentID;
+				projectData.data.nbChapterLocal = 1;
 			}
 		}
 

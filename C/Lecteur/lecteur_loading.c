@@ -15,7 +15,7 @@
 
 bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure)
 {
-	uint maxValue = isTome ? projectDB.nombreTomesInstalled : projectDB.nombreChapitreInstalled;
+	uint maxValue = isTome ? projectDB.nbVolumesInstalled : projectDB.nbChapterInstalled;
 	
 	//No item, nothing to look for, nothing to find
 	if(maxValue == 0)
@@ -32,7 +32,7 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 	else if(*currentPosIntoStructure >= maxValue)
 		*currentPosIntoStructure = maxValue - 1;
 	
-	while(*currentPosIntoStructure < maxValue && !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chapitresInstalled[*currentPosIntoStructure], projectDB.tomesInstalled[*currentPosIntoStructure].ID)))
+	while(*currentPosIntoStructure < maxValue && !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chaptersInstalled[*currentPosIntoStructure], projectDB.volumesInstalled[*currentPosIntoStructure].ID)))
 		(*currentPosIntoStructure)++;
 	
 	return *currentPosIntoStructure < maxValue;
@@ -40,7 +40,7 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 
 /**	Load the reader data	**/
 
-char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
+char ** loadChapterConfigDat(char* input, uint *nbPage, uint ** nameID)
 {
 	bool haveNameID = nameID != NULL;
 	char ** output, current;
@@ -49,7 +49,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 	if(fileInput == NULL)
 		return NULL;
 	
-	fscanf(fileInput, "%d", nombrePage);
+	fscanf(fileInput, "%d", nbPage);
 	
 	//We go to the next line
 	while((current = fgetc(fileInput)) != EOF && current != '\n' && current != '\r');
@@ -66,14 +66,14 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 			return NULL;
 		}
 		
-		output = calloc(*nombrePage, sizeof(char*));
+		output = calloc(*nbPage, sizeof(char*));
 		if(haveNameID)
 		{
-			*nameID = calloc(*nombrePage, sizeof(uint));
+			*nameID = calloc(*nbPage, sizeof(uint));
 			haveNameID = *nameID != NULL;
 		}
 		
-		for(uint i = 0, j; i < *nombrePage; ++i)
+		for(uint i = 0, j; i < *nbPage; ++i)
 		{
 			output[i] = malloc(LONGUEUR_NOM_PAGE+1);
 			if(output[i] == NULL)
@@ -82,7 +82,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 				while(i-- != 0)
 					free(output[i]);
 				free(output);
-				*nombrePage = 0;
+				*nbPage = 0;
 				return NULL;
 			}
 			
@@ -99,7 +99,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 					return NULL;
 				}
 				
-				*nombrePage = i;
+				*nbPage = i;
 				
 				void * tmp = realloc(output, i * sizeof(char*));
 				if(tmp != NULL)
@@ -120,9 +120,9 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 	}
 	else
 	{
-		output = malloc(++(*nombrePage) * sizeof(char*));
+		output = malloc(++(*nbPage) * sizeof(char*));
 		
-		for(uint i = 0; i < *nombrePage; i++)
+		for(uint i = 0; i < *nbPage; i++)
 		{
 			output[i] = malloc(20);
 			if(output[i] == NULL)
@@ -131,7 +131,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 				while(i-- != 0)
 					free(output[i]);
 				free(output);
-				*nombrePage = 0;
+				*nbPage = 0;
 				return NULL;
 			}
 			else
@@ -152,7 +152,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 	uint pathLength = strlen(input) + LONGUEUR_NOM_PAGE + 1;
 	char temp[pathLength];
 	
-	for(uint i = 0; i < *nombrePage; i++)
+	for(uint i = 0; i < *nbPage; i++)
 	{
 		if(output[i] != NULL && output[i][0])
 		{
@@ -172,16 +172,16 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 	if(needCompact)
 	{
 		uint validEntries = 0;
-		for(uint carry = 0; validEntries < *nombrePage; validEntries++)
+		for(uint carry = 0; validEntries < *nbPage; validEntries++)
 		{
 			if(output[validEntries] == NULL)
 			{
 				if(carry <= validEntries)
 					carry = validEntries + 1;
 				
-				for(; carry < *nombrePage && output[carry] == NULL; carry++);
+				for(; carry < *nbPage && output[carry] == NULL; carry++);
 				
-				if(carry < *nombrePage)
+				if(carry < *nbPage)
 				{
 					output[validEntries] = output[carry];
 					output[carry] = NULL;
@@ -203,7 +203,7 @@ char ** loadChapterConfigDat(char* input, uint *nombrePage, uint ** nameID)
 				*nameID = tmp;
 		}
 		
-		*nombrePage = validEntries;
+		*nbPage = validEntries;
 	}
 	
 	return output;
@@ -224,14 +224,14 @@ bool changeChapter(PROJECT_DATA* projectDB, bool isTome, uint *ptrToSelectedID, 
 			return false;
 	}
 	if(isTome)
-		*ptrToSelectedID = projectDB->tomesInstalled[*posIntoStruc].ID;
+		*ptrToSelectedID = projectDB->volumesInstalled[*posIntoStruc].ID;
 	else
-		*ptrToSelectedID = (uint) projectDB->chapitresInstalled[*posIntoStruc];
+		*ptrToSelectedID = (uint) projectDB->chaptersInstalled[*posIntoStruc];
 	return true;
 }
 
 bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, uint posIntoStruc)
 {
-	return (isTome && posIntoStruc < projectDB->nombreTomesInstalled) || (!isTome && posIntoStruc < projectDB->nombreChapitreInstalled);
+	return (isTome && posIntoStruc < projectDB->nbVolumesInstalled) || (!isTome && posIntoStruc < projectDB->nbChapterInstalled);
 }
 

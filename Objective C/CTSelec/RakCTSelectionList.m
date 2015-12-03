@@ -103,10 +103,10 @@
 	{
 		allocSize = sizeof(META_TOME);
 		
-		nbElem = project.nombreTomes;
-		newData = project.tomesFull;
-		nbInstalledData = project.nombreTomesInstalled;
-		installedData = project.tomesInstalled;
+		nbElem = project.nbVolumes;
+		newData = project.volumesFull;
+		nbInstalledData = project.nbVolumesInstalled;
+		installedData = project.volumesInstalled;
 		
 		if(newData == NULL || nbElem == 0)
 			return NO;
@@ -115,22 +115,22 @@
 	{
 		allocSize = sizeof(uint);
 		
-		nbElem = project.nombreChapitre;
-		newData = project.chapitresFull;
-		installedData = project.chapitresInstalled;
-		nbInstalledData = project.nombreChapitreInstalled;
+		nbElem = project.nbChapter;
+		newData = project.chaptersFull;
+		installedData = project.chaptersInstalled;
+		nbInstalledData = project.nbChapterInstalled;
 		
 		if(newData == NULL || nbElem == 0)
 			return NO;
 		
 		//Price table
-		if(project.isPaid && project.chapitresPrix != NULL)
+		if(project.isPaid && project.chaptersPrix != NULL)
 		{
-			newPrices = calloc(project.nombreChapitre, sizeof(uint));
+			newPrices = calloc(project.nbChapter, sizeof(uint));
 			if(newPrices != NULL)
 			{
-				nbChapterPrice = project.nombreChapitre;
-				memcpy(newPrices, project.chapitresPrix, nbChapterPrice * sizeof(uint));
+				nbChapterPrice = project.nbChapter;
+				memcpy(newPrices, project.chaptersPrix, nbChapterPrice * sizeof(uint));
 			}
 		}
 	}
@@ -317,7 +317,7 @@
 
 - (BOOL) isEmpty
 {
-	return projectData.isInitialized ? (self.isTome ? projectData.nombreTomes == 0 : projectData.nombreChapitre == 0) : YES;
+	return projectData.isInitialized ? (self.isTome ? projectData.nbVolumes == 0 : projectData.nbChapter == 0) : YES;
 }
 
 - (uint) nbElem

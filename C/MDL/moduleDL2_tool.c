@@ -86,10 +86,10 @@ char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
     return output;
 }
 
-DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state)
+DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nbProjectTotal, char * state)
 {
     uint pos;
-	uint8_t nombreEspace = 0;
+	uint8_t nbEspace = 0;
 	bool dernierEspace = true;	//Dernier caractère rencontré est un espace
 	
 	if(state != NULL)
@@ -100,22 +100,22 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 			{
 				if(!dernierEspace)
 				{
-					nombreEspace++;
+					nbEspace++;
 					dernierEspace = true;
 				}
 			}
 			else if(state[pos] == '\n')
 			{
-				if(nombreEspace == 3 && !dernierEspace)
-					(*nombreProjectTotal)++;
-				nombreEspace = 0;
+				if(nbEspace == 3 && !dernierEspace)
+					(*nbProjectTotal)++;
+				nbEspace = 0;
 				dernierEspace = true;
 			}
 			
-			else if((nombreEspace == 2 && (state[pos] != 'C' || state[pos] != 'T') && state[pos + 1] != ' ') || (nombreEspace == 3 && !isNbr(state[pos])) || nombreEspace > 3)
+			else if((nbEspace == 2 && (state[pos] != 'C' || state[pos] != 'T') && state[pos + 1] != ' ') || (nbEspace == 3 && !isNbr(state[pos])) || nbEspace > 3)
 			{
 				for (; state[pos] && state[pos] != '\n'; pos++);	//Ligne dropée
-				nombreEspace = 0;
+				nbEspace = 0;
 				dernierEspace = true;
 			}
 			
@@ -124,19 +124,19 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 		}
 	}
 	else
-		*nombreProjectTotal = 0;
+		*nbProjectTotal = 0;
 
-    if(*nombreProjectTotal)
+    if(*nbProjectTotal)
     {
 		uint posLine, projectID, posPtr = 0, chapitreTmp, posCatalogue = 0;
 		char ligne[2*LONGUEUR_COURT + 20], type[2];
 
 		//Create the new structure, initialized at NULL
-        DATA_LOADED **newBufferTodo = calloc(*nombreProjectTotal, sizeof(DATA_LOADED*));
+        DATA_LOADED **newBufferTodo = calloc(*nbProjectTotal, sizeof(DATA_LOADED*));
 		
 		if(newBufferTodo == NULL)
 		{
-			*nombreProjectTotal = 0;
+			*nbProjectTotal = 0;
 			return NULL;
 		}
 
@@ -145,7 +145,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 		PROJECT_DATA * currentProject;
 		uint64_t repoID;
 		
-		for(pos = 0; state[pos] && posPtr < *nombreProjectTotal;) //On incrémente pas posPtr si la ligne est rejeté
+		for(pos = 0; state[pos] && posPtr < *nbProjectTotal;) //On incrémente pas posPtr si la ligne est rejeté
         {
 			newBufferTodo[posPtr] = NULL;
 			
@@ -155,31 +155,31 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 			for(ligne[posLine] = 0, pos += posLine; state[pos] == '\n'; pos++);
 
 			//Sanity checks,
-			for(posLine = nombreEspace = 0, dernierEspace = true; ligne[posLine] && nombreEspace != 4 && (nombreEspace != 3 || isNbr(ligne[posLine])); posLine++)
+			for(posLine = nbEspace = 0, dernierEspace = true; ligne[posLine] && nbEspace != 4 && (nbEspace != 3 || isNbr(ligne[posLine])); posLine++)
 			{
 				if(ligne[posLine] == ' ')
 				{
 					if(!dernierEspace)
-						nombreEspace++;
+						nbEspace++;
 					dernierEspace = true;
 				}
-				else if(nombreEspace == 2 && (ligne[posLine] != 'C' || ligne[posLine] != 'T') && ligne[posLine + 1] != ' ')
-					nombreEspace = 4; //Invalidation
+				else if(nbEspace == 2 && (ligne[posLine] != 'C' || ligne[posLine] != 'T') && ligne[posLine + 1] != ' ')
+					nbEspace = 4; //Invalidation
 
 				else
 					dernierEspace = false;
 			}
 			
-			if(nombreEspace != 3 || ligne[posLine])
+			if(nbEspace != 3 || ligne[posLine])
 			{
-				(*nombreProjectTotal)--;
+				(*nbProjectTotal)--;
 				continue;
 			}
 
 			//Grab preliminary data
             if(sscanf(ligne, "%llu %d %2s %d", &repoID, &projectID, type, &chapitreTmp) != 4)
 			{
-				(*nombreProjectTotal)--;
+				(*nbProjectTotal)--;
 				continue;
 			}
 			
@@ -196,7 +196,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
                 }
                 else //Couldn't find the project, discard it
 				{
-					(*nombreProjectTotal)--;
+					(*nbProjectTotal)--;
 					continue;
 				}
             }
@@ -205,11 +205,11 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProje
 			newChunk = MDLCreateElement(currentProject, type[0] == 'T', chapitreTmp);
 			
 			//Merge the new data structure to the main one
-			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nombreProjectTotal, &posPtr, &newChunk);
+			newBufferTodo = MDLInjectElementIntoMainList(newBufferTodo, nbProjectTotal, &posPtr, &newChunk);
 
         }
         if(posPtr > 1)
-            qsort(newBufferTodo, *nombreProjectTotal, sizeof(DATA_LOADED*), sortProjectsToDownload);
+            qsort(newBufferTodo, *nbProjectTotal, sizeof(DATA_LOADED*), sortProjectsToDownload);
 
 		return newBufferTodo;
     }
@@ -243,25 +243,25 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element)
 		if(isTome)
 		{
 			uint index = 0;
-			for(; index < data->nombreTomes; index++)
+			for(; index < data->nbVolumes; index++)
 			{
-				if(data->tomesFull[index].ID == element)
+				if(data->volumesFull[index].ID == element)
 					break;
 			}
 			
 			//Couldn't find the entry
-			if(index == data->nombreTomes)
+			if(index == data->nbVolumes)
 			{
 				MDLFlushElement(output);
 				return NULL;
 			}
 
-			if(data->tomesFull[index].readingName[0])
-				output->tomeName = wstrdup(data->tomesFull[index].readingName);
+			if(data->volumesFull[index].readingName[0])
+				output->tomeName = wstrdup(data->volumesFull[index].readingName);
 			
-			output->tomeID = data->tomesFull[index].readingID;
+			output->tomeID = data->volumesFull[index].readingID;
 
-			output->nbElemList = data->tomesFull[index].lengthDetails;
+			output->nbElemList = data->volumesFull[index].lengthDetails;
 			output->listChapitreOfTome = malloc(output->nbElemList * sizeof(CONTENT_TOME));
 			
 			if(output->listChapitreOfTome == NULL)
@@ -270,7 +270,7 @@ DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element)
 				return NULL;
 			}
 			
-			memcpy(output->listChapitreOfTome, data->tomesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));
+			memcpy(output->listChapitreOfTome, data->volumesFull[index].details, output->nbElemList * sizeof(CONTENT_TOME));
 		}
 	}
 	
@@ -302,11 +302,11 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 	
 	if(isSubpartOfTome)	//Un chapitre appartenant à un tome
 	{
-		//Un chapitre interne peut avoir le même ID dans deux tomes différents, on a donc besoin du # du tome
-		if(projectData.tomesFull == NULL || posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes)
+		//Un chapitre interne peut avoir le même ID dans deux volumes différents, on a donc besoin du # du tome
+		if(projectData.volumesFull == NULL || posIndexTome == NULL || *posIndexTome >= projectData.nbVolumes)
 			return ERROR_CHECK;
 		
-		uint IDTome = projectData.tomesFull[*posIndexTome].ID;
+		uint IDTome = projectData.volumesFull[*posIndexTome].ID;
 		if(IDTome == INVALID_VALUE)
 			return ERROR_CHECK;
 		
@@ -365,24 +365,24 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 	}
 	
 	//Le chapitre est pas dans le repertoire par défaut, on va voir si un tome ne l'a pas choppé
-	if(projectData.tomesFull == NULL)
+	if(projectData.volumesFull == NULL)
 		return NOT_INSTALLED;
 	
 	uint pos, pos2;
 	CONTENT_TOME * buf;
 	
-	if(posIndexTome == NULL || *posIndexTome >= projectData.nombreTomes || projectData.tomesFull[*posIndexTome].ID != IDChap)
+	if(posIndexTome == NULL || *posIndexTome >= projectData.nbVolumes || projectData.volumesFull[*posIndexTome].ID != IDChap)
 		pos = 0;
 	else
 		pos = *posIndexTome;
 	
-	for(; pos < projectData.nombreTomes; pos++)
+	for(; pos < projectData.nbVolumes; pos++)
 	{
-		buf = projectData.tomesFull[pos].details;
+		buf = projectData.volumesFull[pos].details;
 		if(buf == NULL)
 			return NOT_INSTALLED;
 		
-		for(pos2 = 0; pos2 < projectData.tomesFull[pos].lengthDetails; pos2++)
+		for(pos2 = 0; pos2 < projectData.volumesFull[pos].lengthDetails; pos2++)
 		{
 			if(buf[pos2].ID == IDChap && !buf[pos2].isPrivate)
 			{
@@ -390,11 +390,11 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 				if(posIndexTome != NULL)
 					*posIndexTome = pos;
 				
-				snprintf(pathConfig, sizeof(pathConfig), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/%s", basePath, projectData.tomesFull[pos].ID, nameChapter, CONFIGFILE);
+				snprintf(pathConfig, sizeof(pathConfig), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/%s", basePath, projectData.volumesFull[pos].ID, nameChapter, CONFIGFILE);
 				if(checkFileExist(pathConfig))
 				{
 #ifdef INSTALLING_CONSIDERED_AS_INSTALLED
-					snprintf(pathInstall, sizeof(pathInstall), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/"CHAPITER_INSTALLING_TOKEN, basePath, projectData.tomesFull[pos].ID, nameChapter);
+					snprintf(pathInstall, sizeof(pathInstall), "%s/"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/%s/"CHAPITER_INSTALLING_TOKEN, basePath, projectData.volumesFull[pos].ID, nameChapter);
 					return checkFileExist(pathInstall) ? INSTALLING : ALTERNATIVE_INSTALLED;
 #else
 					return ALTERNATIVE_INSTALLED;
@@ -409,7 +409,7 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 
 void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 {
-	if(tomeID >= data.nombreTomes || data.tomesFull == NULL || chapitreID == INVALID_VALUE)
+	if(tomeID >= data.nbVolumes || data.volumesFull == NULL || chapitreID == INVALID_VALUE)
 		return;
 	
 	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedPath = getPathForProject(data);
@@ -427,7 +427,7 @@ void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 	FILE * file = fopen(pathToSharedFile, "w+");
 	if(file != NULL)
 	{
-		fprintf(file, "%d", data.tomesFull[tomeID].ID);
+		fprintf(file, "%d", data.volumesFull[tomeID].ID);
 		fclose(file);
 	}
 #ifdef EXTENSIVE_LOGGING

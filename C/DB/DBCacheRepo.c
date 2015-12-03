@@ -12,18 +12,18 @@
 
 #include "dbCache.h"
 
-void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo)
+void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nbRepo)
 {
-	if(data == NULL || nombreRepo == 0)
+	if(data == NULL || nbRepo == 0)
 		return;
 	
 	//On va chercher des collisions
-	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	for(uint posBase = 0; posBase < nbRepo; posBase++)	//On test avec jusqu'à nbRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{
 		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
 			continue;
 		
-		for(uint posToCompareWith = posBase + 1; posToCompareWith < nombreRepo; posToCompareWith++)
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < nbRepo; posToCompareWith++)
 		{
 			if(data[posToCompareWith] == NULL)
 				continue;
@@ -137,9 +137,9 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 			}
 			
 			//We insert the repoID in our children
-			if(newReceiver[pos]->nombreSubrepo > 0 && newReceiver[pos]->subRepo != NULL)
+			if(newReceiver[pos]->nbSubrepo > 0 && newReceiver[pos]->subRepo != NULL)
 			{
-				for (uint i = 0; i < newReceiver[pos]->nombreSubrepo; i++)
+				for (uint i = 0; i < newReceiver[pos]->nbSubrepo; i++)
 					newReceiver[pos]->subRepo[i].parentRepoID = currentID;
 			}
 			
@@ -184,7 +184,7 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 			continue;
 		
 		//We get the size of the chunk to insert
-		for(uint posSub = 0; posSub < element->nombreSubrepo; posSub++)
+		for(uint posSub = 0; posSub < element->nbSubrepo; posSub++)
 		{
 			if(element->subRepo[posSub].active)
 				repoSize[posInOut]++;
@@ -219,7 +219,7 @@ void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries)
 		}
 		
 		//the REPO_DATA structure is thankfully static, so copying it is trivial
-		for(uint posSub = 0, posOut = 0; posSub < element->nombreSubrepo && posOut < repoSize[posInOut]; posSub++)
+		for(uint posSub = 0, posOut = 0; posSub < element->nbSubrepo && posOut < repoSize[posInOut]; posSub++)
 		{
 			if(element->subRepo[posSub].active)
 			{
@@ -322,7 +322,7 @@ void updateRootRepoCache(ROOT_REPO_DATA ** repoData)
 			}
 		}
 		
-		subChildCount = rootRepoList[prevParent]->nombreSubrepo;
+		subChildCount = rootRepoList[prevParent]->nbSubrepo;
 		
 		//Find our specific repo
 		for(prevChild++; prevChild < subChildCount && rootRepoList[prevParent]->subRepo[prevChild].repoID != repoList[pos]->repoID; prevChild++);
@@ -380,7 +380,7 @@ void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveE
 	}
 }
 
-void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_DATA *** wantUpdatedRepo, uint *lengthUpdated)
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nbRepo, REPO_DATA *** wantUpdatedRepo, uint *lengthUpdated)
 {
 	bool wantUpdated = (wantUpdatedRepo != NULL && lengthUpdated != NULL);
 	
@@ -388,12 +388,12 @@ void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_
 		*lengthUpdated = 0;
 	
 	//On va chercher des collisions
-	for(uint posBase = 0; posBase < nombreRepo; posBase++)	//On test avec jusqu'à nombreRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
+	for(uint posBase = 0; posBase < nbRepo; posBase++)	//On test avec jusqu'à nbRepo - 1 mais la boucle interne s'occupera de nous faire dégager donc pas la peine d'aouter ce calcul à cette condition
 	{
 		if(data[posBase] == NULL)	//On peut avoir des trous au milieu de la chaîne
 			continue;
 		
-		for(uint posToCompareWith = posBase + 1; posToCompareWith < nombreRepo; posToCompareWith++)
+		for(uint posToCompareWith = posBase + 1; posToCompareWith < nbRepo; posToCompareWith++)
 		{
 			if(data[posToCompareWith] == NULL)
 				continue;
@@ -408,9 +408,9 @@ void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_
 			//Merge the active state if needed
 			if(wantUpdated)
 			{
-				if(data[posBase]->nombreSubrepo == data[posToCompareWith]->nombreSubrepo)
+				if(data[posBase]->nbSubrepo == data[posToCompareWith]->nbSubrepo)
 				{
-					for(uint i = 0, nbSub = data[posBase]->nombreSubrepo; i < nbSub; i++)
+					for(uint i = 0, nbSub = data[posBase]->nbSubrepo; i < nbSub; i++)
 					{
 						//State update
 						if(data[posBase]->subRepo[i].active == false && data[posToCompareWith]->subRepo[i].active)
@@ -477,7 +477,7 @@ uint getNumberInstalledProjectForRepo(bool isRoot, void * repo)
 			
 			if(root->subRepo != NULL)
 			{
-				for(uint i = 0; i < root->nombreSubrepo; i++)
+				for(uint i = 0; i < root->nbSubrepo; i++)
 				{
 					if(!root->subRepo[i].active)
 						continue;

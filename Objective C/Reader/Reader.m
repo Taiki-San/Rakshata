@@ -149,7 +149,7 @@
 	[bottomBar favsUpdated:project.favoris];
 	
 	if(shouldNotifyBottomBarInitialized)
-		[self updatePage:_data.pageCourante : _data.nombrePage];
+		[self updatePage:_data.pageCourante : _data.nbPage];
 }
 
 - (void) resetReader
@@ -541,17 +541,17 @@
 		
 		if(isTome)
 		{
-			if(project.tomesInstalled == NULL || position >= project.nombreTomesInstalled)
+			if(project.volumesInstalled == NULL || position >= project.nbVolumesInstalled)
 				return;
 
-			string = getStringForVolumeFull(project.tomesInstalled[position]);
+			string = getStringForVolumeFull(project.volumesInstalled[position]);
 		}
 		else
 		{
-			if(project.chapitresInstalled == NULL || position >= project.nombreChapitreInstalled)
+			if(project.chaptersInstalled == NULL || position >= project.nbChapterInstalled)
 				return;
 
-			string = getStringForChapter(project.chapitresInstalled[position]);
+			string = getStringForChapter(project.chaptersInstalled[position]);
 		}
 		
 		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];

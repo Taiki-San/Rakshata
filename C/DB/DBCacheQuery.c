@@ -98,7 +98,7 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		output->tags = NULL;
 	}
 
-	output->nombreChapitre = (uint32_t) sqlite3_column_int(state, RDB_nombreChapitre-1);
+	output->nbChapter = (uint32_t) sqlite3_column_int(state, RDB_nbChapter-1);
 	output->locale = (bool) sqlite3_column_int(state, RDB_isLocal-1);
 	
 	if(copyDynamic)
@@ -106,44 +106,44 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		buffer = (void*) sqlite3_column_int64(state, RDB_chapitresPrice - 1);
 		if(buffer != NULL)
 		{
-			output->chapitresPrix = malloc(output->nombreChapitre * sizeof(uint));
-			if(output->chapitresPrix != NULL)
-				memcpy(output->chapitresPrix, buffer, output->nombreChapitre * sizeof(uint));
+			output->chaptersPrix = malloc(output->nbChapter * sizeof(uint));
+			if(output->chaptersPrix != NULL)
+				memcpy(output->chaptersPrix, buffer, output->nbChapter * sizeof(uint));
 			else
-				output->chapitresPrix = NULL;
+				output->chaptersPrix = NULL;
 		}
 		else
-			output->chapitresPrix = NULL;
+			output->chaptersPrix = NULL;
 		
 		buffer = (void*) sqlite3_column_int64(state, RDB_chapitres-1);
 		if(buffer != NULL)
 		{
-			output->chapitresFull = malloc(output->nombreChapitre * sizeof(uint));
-			if(output->chapitresFull != NULL)
+			output->chaptersFull = malloc(output->nbChapter * sizeof(uint));
+			if(output->chaptersFull != NULL)
 			{
-				memcpy(output->chapitresFull, buffer, output->nombreChapitre * sizeof(uint));
-				output->chapitresInstalled = NULL;
+				memcpy(output->chaptersFull, buffer, output->nbChapter * sizeof(uint));
+				output->chaptersInstalled = NULL;
 				getChapterInstalled(output);
 			}
 			else
-				output->chapitresInstalled = NULL;
+				output->chaptersInstalled = NULL;
 		}
 		else
 		{
-			output->chapitresFull = output->chapitresInstalled = NULL;
-			output->nombreChapitreInstalled = 0;
+			output->chaptersFull = output->chaptersInstalled = NULL;
+			output->nbChapterInstalled = 0;
 			
-			free(output->chapitresPrix);	output->chapitresPrix = NULL;
+			free(output->chaptersPrix);	output->chaptersPrix = NULL;
 		}
 	}
 	else
 	{
-		output->chapitresFull = NULL;
-		output->chapitresInstalled = NULL;
-		output->chapitresPrix = NULL;
+		output->chaptersFull = NULL;
+		output->chaptersInstalled = NULL;
+		output->chaptersPrix = NULL;
 	}
 	
-	output->nombreTomes = (uint32_t) sqlite3_column_int(state, RDB_nombreTomes-1);
+	output->nbVolumes = (uint32_t) sqlite3_column_int(state, RDB_nbVolumes-1);
 	output->haveDRM = sqlite3_column_int(state, RDB_DRM-1);
 	
 	if(copyDynamic)
@@ -151,30 +151,30 @@ bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDy
 		buffer = (void*) sqlite3_column_int64(state, RDB_tomes-1);
 		if(buffer != NULL)
 		{
-			output->tomesFull = malloc(output->nombreTomes * sizeof(META_TOME));
-			if(output->tomesFull != NULL)
+			output->volumesFull = malloc(output->nbVolumes * sizeof(META_TOME));
+			if(output->volumesFull != NULL)
 			{
-				copyTomeList(buffer, output->nombreTomes, output->tomesFull);
-				output->tomesInstalled = NULL;
+				copyTomeList(buffer, output->nbVolumes, output->volumesFull);
+				output->volumesInstalled = NULL;
 				getTomeInstalled(output);
 			}
 			else
 			{
-				output->tomesInstalled = NULL;
-				output->nombreTomesInstalled = 0;
+				output->volumesInstalled = NULL;
+				output->nbVolumesInstalled = 0;
 			}
 		}
 		else
 		{
-			output->tomesFull = NULL;
-			output->tomesInstalled = NULL;
-			output->nombreTomesInstalled = 0;
+			output->volumesFull = NULL;
+			output->volumesInstalled = NULL;
+			output->nbVolumesInstalled = 0;
 		}
 	}
 	else
 	{
-		output->tomesFull = NULL;
-		output->tomesInstalled = NULL;
+		output->volumesFull = NULL;
+		output->volumesInstalled = NULL;
 	}
 	
 	output->favoris = sqlite3_column_int(state, RDB_favoris-1);
@@ -189,76 +189,76 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bo
 		return false;
 
 	//Copy chapitreLocal
-	output->nombreChapitreLocal = (uint32_t) sqlite3_column_int(state, RDB_chapitreLocalLength-1);
+	output->nbChapterLocal = (uint32_t) sqlite3_column_int(state, RDB_chapitreLocalLength-1);
 
 	void * buffer = (void*) sqlite3_column_int64(state, RDB_chapitreLocal-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->chapitresLocal = malloc(output->nombreChapitreLocal * sizeof(uint));
-		if(output->chapitresLocal != NULL)
-			memcpy(output->chapitresLocal, buffer, output->nombreChapitreLocal * sizeof(uint));
+		output->chaptersLocal = malloc(output->nbChapterLocal * sizeof(uint));
+		if(output->chaptersLocal != NULL)
+			memcpy(output->chaptersLocal, buffer, output->nbChapterLocal * sizeof(uint));
 	}
 	else
 	{
-		output->chapitresLocal = NULL;
+		output->chaptersLocal = NULL;
 
 		if(copyDynamic)
-			output->nombreChapitreLocal = 0;
+			output->nbChapterLocal = 0;
 	}
 
 	//Copy chapitreRemote
-	output->nombreChapitreRemote = (uint32_t) sqlite3_column_int(state, RDB_chapitreRemoteLength-1);
+	output->nbChapterRemote = (uint32_t) sqlite3_column_int(state, RDB_chapitreRemoteLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_chapitreRemote-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->chapitresRemote = malloc(output->nombreChapitreRemote * sizeof(uint));
-		if(output->chapitresRemote != NULL)
-			memcpy(output->chapitresRemote, buffer, output->nombreChapitreRemote * sizeof(uint));
+		output->chaptersRemote = malloc(output->nbChapterRemote * sizeof(uint));
+		if(output->chaptersRemote != NULL)
+			memcpy(output->chaptersRemote, buffer, output->nbChapterRemote * sizeof(uint));
 	}
 	else
 	{
-		output->chapitresRemote = NULL;
+		output->chaptersRemote = NULL;
 
 		if(copyDynamic)
-			output->nombreChapitreRemote = 0;
+			output->nbChapterRemote = 0;
 	}
 
 	//Copy tomeLocal
-	output->nombreTomeLocal = (uint32_t) sqlite3_column_int(state, RDB_tomeLocalLength-1);
+	output->nbVolumesLocal = (uint32_t) sqlite3_column_int(state, RDB_tomeLocalLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_tomeLocal-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->tomeLocal = malloc(output->nombreTomeLocal * sizeof(META_TOME));
+		output->tomeLocal = malloc(output->nbVolumesLocal * sizeof(META_TOME));
 		if(output->tomeLocal != NULL)
-			copyTomeList(buffer, output->nombreTomeLocal, output->tomeLocal);
+			copyTomeList(buffer, output->nbVolumesLocal, output->tomeLocal);
 		else
-			output->nombreTomeLocal = 0;
+			output->nbVolumesLocal = 0;
 	}
 	else
 	{
 		output->tomeLocal = NULL;
 
 		if(copyDynamic)
-			output->nombreTomeLocal = 0;
+			output->nbVolumesLocal = 0;
 	}
 
 	//And, finally, tomeRemote
-	output->nombreTomeRemote = (uint32_t) sqlite3_column_int(state, RDB_tomeRemoteLength-1);
+	output->nbVolumesRemote = (uint32_t) sqlite3_column_int(state, RDB_tomeRemoteLength-1);
 	buffer = (void*) sqlite3_column_int64(state, RDB_tomeRemote-1);
 	if(copyDynamic && buffer != NULL)
 	{
-		output->tomeRemote = malloc(output->nombreTomeRemote * sizeof(META_TOME));
+		output->tomeRemote = malloc(output->nbVolumesRemote * sizeof(META_TOME));
 		if(output->tomeRemote != NULL)
-			copyTomeList(buffer, output->nombreTomeRemote, output->tomeRemote);
+			copyTomeList(buffer, output->nbVolumesRemote, output->tomeRemote);
 		else
-			output->nombreTomeRemote = 0;
+			output->nbVolumesRemote = 0;
 	}
 	else
 	{
 		output->tomeRemote = NULL;
 
 		if(copyDynamic)
-			output->nombreTomeRemote = 0;
+			output->nbVolumesRemote = 0;
 	}
 
 	return true;
@@ -569,9 +569,9 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 	sqlite3_stmt* request = NULL;
 
 	if(wantTome)
-		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 	else
-		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nombreChapitre)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
+		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nbChapter)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	sqlite3_bind_int(request, 1, (int32_t) cacheID);
 
@@ -720,7 +720,7 @@ bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy)
 		return false;
 	
 #ifdef FLUSH_UNUSED_REPO
-	if(copy->nombreSubrepo == 0)
+	if(copy->nbSubrepo == 0)
 	{
 		free(copy);
 		return false;
@@ -728,7 +728,7 @@ bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy)
 	else
 	{
 #endif
-		copy->subRepo = calloc(copy->nombreSubrepo, sizeof(REPO_DATA));
+		copy->subRepo = calloc(copy->nbSubrepo, sizeof(REPO_DATA));
 		if(copy->subRepo == NULL)
 		{
 			free(copy);
@@ -739,17 +739,17 @@ bool copyRootRepo(const ROOT_REPO_DATA original, ROOT_REPO_DATA * copy)
 #endif
 	
 	if(copy->subRepo != NULL)
-		memcpy(copy->subRepo, original.subRepo, copy->nombreSubrepo * sizeof(REPO_DATA));
+		memcpy(copy->subRepo, original.subRepo, copy->nbSubrepo * sizeof(REPO_DATA));
 	
 	//Yep, descriptions are a pain in the ass
-	if(copy->nombreDescriptions > 0)
+	if(copy->nbDescriptions > 0)
 	{
-		copy->descriptions = calloc(copy->nombreDescriptions, sizeof(charType*));
-		copy->langueDescriptions = calloc(copy->nombreDescriptions, sizeof(char*));
+		copy->descriptions = calloc(copy->nbDescriptions, sizeof(charType*));
+		copy->langueDescriptions = calloc(copy->nbDescriptions, sizeof(char*));
 		
 		if(copy->descriptions != NULL && copy->langueDescriptions != NULL)
 		{
-			for(uint posDesc = 0; posDesc < copy->nombreDescriptions; posDesc++)
+			for(uint posDesc = 0; posDesc < copy->nbDescriptions; posDesc++)
 			{
 				uint lengthDesc = wstrlen(original.descriptions[posDesc]), lengthLanguage = strlen(original.langueDescriptions[posDesc]);
 				copy->descriptions[posDesc] = malloc((lengthDesc + 1) * sizeof(charType));

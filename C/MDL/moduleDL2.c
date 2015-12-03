@@ -176,19 +176,19 @@ void MDLCleanup(uint nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PR
 }
 
 /*Final processing*/
-char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal)
+char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nbTotal)
 {
-	if(IDToPosition == NULL || nombreTotal == 0)
+	if(IDToPosition == NULL || nbTotal == 0)
 		return NULL;
 	
 	uint sizePerElem = LONGUEUR_URL + LONGUEUR_COURT + 20;
-	size_t fullSize = nombreTotal * sizePerElem;
+	size_t fullSize = nbTotal * sizePerElem;
 	char * output = malloc(fullSize + 1), buffer[sizePerElem];
 	output[0] = 0;
 	
     if(output != NULL)
     {
-        for(uint i = 0, currentPosition; i < nombreTotal; i++)
+        for(uint i = 0, currentPosition; i < nbTotal; i++)
         {
 			currentPosition = IDToPosition[i];
 			

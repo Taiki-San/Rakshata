@@ -99,7 +99,7 @@ ROOT_REPO_DATA ** parserRakSourceFile(NSData * fileContent, uint * nbElem)
 		if(parseRemoteRootRepo(downloadBuffer, repoVersion, &(output[nbRealElements])))
 		{
 			//We have to apply the preselection, we first disable everything (the default) then opt-in
-			uint max = output[nbRealElements]->nombreSubrepo;
+			uint max = output[nbRealElements]->nbSubrepo;
 			
 			for (uint pos = 0; pos < max; pos++)
 				((REPO_DATA_EXTRA*) output[nbRealElements]->subRepo)[pos].data->active = false;

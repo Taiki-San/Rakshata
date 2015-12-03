@@ -12,25 +12,25 @@
 
 void refreshChaptersList(PROJECT_DATA *projectDB)
 {
-    if(projectDB->chapitresFull != NULL || projectDB->chapitresPrix != NULL || projectDB->chapitresInstalled != NULL)
+    if(projectDB->chaptersFull != NULL || projectDB->chaptersPrix != NULL || projectDB->chaptersInstalled != NULL)
 	{
 #ifdef VERBOSE_DB_MANAGEMENT
 		FILE * output = fopen("log/log.txt", "a+");
 		if(output != NULL)
 		{
-			fprintf(output, "Freeing data: %p - %p - %p\n", projectDB->chapitresFull, projectDB->chapitresInstalled, projectDB->chapitresInstalled);
-			logStack(projectDB->chapitresFull);
+			fprintf(output, "Freeing data: %p - %p - %p\n", projectDB->chaptersFull, projectDB->chaptersInstalled, projectDB->chaptersInstalled);
+			logStack(projectDB->chaptersFull);
 			fclose(output);
 		}
 #endif
 		
-		free(projectDB->chapitresFull);		projectDB->chapitresFull = NULL;
-		free(projectDB->chapitresPrix);		projectDB->chapitresPrix = NULL;
-		free(projectDB->chapitresInstalled);	projectDB->chapitresInstalled = NULL;
-		projectDB->nombreChapitre = projectDB->nombreChapitreInstalled = 0;
+		free(projectDB->chaptersFull);		projectDB->chaptersFull = NULL;
+		free(projectDB->chaptersPrix);		projectDB->chaptersPrix = NULL;
+		free(projectDB->chaptersInstalled);	projectDB->chaptersInstalled = NULL;
+		projectDB->nbChapter = projectDB->nbChapterInstalled = 0;
 	}
 
-    projectDB->chapitresFull = getUpdatedCTForID(projectDB->cacheDBID, false, &(projectDB->nombreChapitre), &(projectDB->chapitresPrix));
+    projectDB->chaptersFull = getUpdatedCTForID(projectDB->cacheDBID, false, &(projectDB->nbChapter), &(projectDB->chaptersPrix));
 }
 
 bool checkChapterReadable(PROJECT_DATA projectDB, uint chapitre)
@@ -59,15 +59,15 @@ bool checkChapterReadable(PROJECT_DATA projectDB, uint chapitre)
 
 void getChapterInstalled(PROJECT_DATA *projectDB)
 {
-	if(projectDB->chapitresInstalled != NULL)
+	if(projectDB->chaptersInstalled != NULL)
 	{
-		free(projectDB->chapitresInstalled);
-		projectDB->chapitresInstalled = NULL;
+		free(projectDB->chaptersInstalled);
+		projectDB->chaptersInstalled = NULL;
 	}
 	
-	projectDB->nombreChapitreInstalled = 0;
+	projectDB->nbChapterInstalled = 0;
 	
-    if(projectDB->chapitresFull == NULL || projectDB->nombreChapitre == 0)
+    if(projectDB->chaptersFull == NULL || projectDB->nbChapter == 0)
 		return;
 	
 	char * encodedHash = getPathForProject(*projectDB);
@@ -82,29 +82,29 @@ void getChapterInstalled(PROJECT_DATA *projectDB)
 	
     if(!isInstalled(*projectDB, configFilePath))
     {
-		projectDB->chapitresInstalled = NULL;
+		projectDB->chaptersInstalled = NULL;
 		return;
     }
 	
-	uint *temporaryInstalledList = malloc(projectDB->nombreChapitre * sizeof(uint));
+	uint *temporaryInstalledList = malloc(projectDB->nbChapter * sizeof(uint));
 	size_t nbElem = 0;
 	
 	if(temporaryInstalledList == NULL)
 		return;
 
-    for(size_t pos = 0; pos < projectDB->nombreChapitre; pos++)
+    for(size_t pos = 0; pos < projectDB->nbChapter; pos++)
     {
-        if(checkChapterReadable(*projectDB, projectDB->chapitresFull[pos]))
-            temporaryInstalledList[nbElem++] = projectDB->chapitresFull[pos];
+        if(checkChapterReadable(*projectDB, projectDB->chaptersFull[pos]))
+            temporaryInstalledList[nbElem++] = projectDB->chaptersFull[pos];
     }
 
 	if(nbElem != 0)
 	{
-		projectDB->chapitresInstalled = malloc(nbElem * sizeof(uint));
-		if(projectDB->chapitresInstalled != NULL)
+		projectDB->chaptersInstalled = malloc(nbElem * sizeof(uint));
+		if(projectDB->chaptersInstalled != NULL)
 		{
-			memcpy(projectDB->chapitresInstalled, temporaryInstalledList, nbElem * sizeof(uint));
-			projectDB->nombreChapitreInstalled = nbElem;
+			memcpy(projectDB->chaptersInstalled, temporaryInstalledList, nbElem * sizeof(uint));
+			projectDB->nbChapterInstalled = nbElem;
 		}
 	}
 	

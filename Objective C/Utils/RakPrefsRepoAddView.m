@@ -59,7 +59,7 @@ enum
 		
 		//We craft a linearized list of repos
 		for(_nbRoot = _nbRepo = 0; _nbRoot < nbRoot; _nbRoot++)
-			_nbRepo += root[_nbRoot]->nombreSubrepo;
+			_nbRepo += root[_nbRoot]->nbSubrepo;
 		
 		if(!_nbRepo)
 			return nil;
@@ -71,7 +71,7 @@ enum
 		uint posLin = 0;
 		for(uint posRoot = 0; posRoot < nbRoot && posLin < _nbRepo; posRoot++)
 		{
-			for (uint i = 0, max = root[posRoot]->nombreSubrepo && posLin < _nbRepo; i < max; i++)
+			for (uint i = 0, max = root[posRoot]->nbSubrepo && posLin < _nbRepo; i < max; i++)
 				linearizedRepo[posLin++] = &(root[posRoot]->subRepo[i]);
 		}
 		
@@ -146,7 +146,7 @@ enum
 	//We check which repo are at least partially selected
 	for(uint posRoot = 0; posRoot < _nbRoot; posRoot++)
 	{
-		uint posSub = _root[posRoot]->nombreSubrepo;
+		uint posSub = _root[posRoot]->nbSubrepo;
 		
 		while(posSub-- > 0)
 		{

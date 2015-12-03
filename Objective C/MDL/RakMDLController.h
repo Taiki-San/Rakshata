@@ -10,8 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define MDLCTRL_getDataFull(data, index, isTome) ACCESS_DATA(isTome, data.chapitresFull[index], data.tomesFull[index].ID)
-#define MDLCTRL_getDataInstalled(data, index, isTome) ACCESS_DATA(isTome, data.chapitresInstalled[index], data.tomesInstalled[index].ID)
+#define MDLCTRL_getDataFull(data, index, isTome) ACCESS_DATA(isTome, data.chaptersFull[index], data.volumesFull[index].ID)
+#define MDLCTRL_getDataInstalled(data, index, isTome) ACCESS_DATA(isTome, data.chaptersInstalled[index], data.volumesInstalled[index].ID)
 
 @interface RakMDLController : NSObject
 {

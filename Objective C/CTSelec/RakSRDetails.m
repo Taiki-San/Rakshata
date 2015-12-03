@@ -93,31 +93,31 @@ enum
 {
 	NSString * output = [NSString stringWithFormat:@"%@\n", getStringForWchar(project.authorName)], *current;
 	
-	if(project.nombreTomes && project.nombreChapitre)
+	if(project.nbVolumes && project.nbChapter)
 	{
-		if(project.nombreChapitre > 1)
+		if(project.nbChapter > 1)
 		{
-			if(project.nombreTomes > 1)
-				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES", nil), project.nombreTomes, project.nombreChapitre];
+			if(project.nbVolumes > 1)
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUMES", nil), project.nbVolumes, project.nbChapter];
 			else
-				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUME", nil), project.nombreTomes, project.nombreChapitre];
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTERS-AND-%zu-VOLUME", nil), project.nbVolumes, project.nbChapter];
 		}
 		else
 		{
-			if(project.nombreTomes > 1)
-				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES", nil), project.nombreTomes, project.nombreChapitre];
+			if(project.nbVolumes > 1)
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUMES", nil), project.nbVolumes, project.nbChapter];
 			else
-				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUME", nil), project.nombreTomes, project.nombreChapitre];
+				current = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-DETAILS-%zu-CHAPTER-AND-%zu-VOLUME", nil), project.nbVolumes, project.nbChapter];
 		}
 		
 	}
-	else if(project.nombreTomes)
+	else if(project.nbVolumes)
 	{
-		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreTomes > 1 ? @"PROJ-DETAILS-%zu-VOLUMES" : @"PROJ-DETAILS-%zu-VOLUME", nil), project.nombreTomes];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nbVolumes > 1 ? @"PROJ-DETAILS-%zu-VOLUMES" : @"PROJ-DETAILS-%zu-VOLUME", nil), project.nbVolumes];
 	}
-	else if(project.nombreChapitre)
+	else if(project.nbChapter)
 	{
-		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nombreChapitre > 1 ? @"PROJ-DETAILS-%zu-CHAPTERS" : @"PROJ-DETAILS-%zu-CHAPTER", nil), project.nombreChapitre];
+		current = [NSString localizedStringWithFormat:NSLocalizedString(project.nbChapter > 1 ? @"PROJ-DETAILS-%zu-CHAPTERS" : @"PROJ-DETAILS-%zu-CHAPTER", nil), project.nbChapter];
 	}
 
 	if(current != nil)

@@ -323,7 +323,7 @@ enum
 
 - (charType *) selectDescription : (ROOT_REPO_DATA *) root
 {
-	const uint nbSubRepo = root->nombreSubrepo;
+	const uint nbSubRepo = root->nbSubrepo;
 	
 	if(root == NULL || !nbSubRepo || root->descriptions == NULL || root->langueDescriptions == NULL)
 		return NULL;
@@ -366,7 +366,7 @@ enum
 
 - (void *) dataForMode : (BOOL) rootMode index : (uint) index
 {
-	if(index >= ((ROOT_REPO_DATA *) _repo)->nombreSubrepo)
+	if(index >= ((ROOT_REPO_DATA *) _repo)->nbSubrepo)
 		return NULL;
 	
 	return &(((ROOT_REPO_DATA *) _repo)->subRepo[index]);
@@ -374,7 +374,7 @@ enum
 
 - (uint) sizeForMode : (BOOL) rootMode
 {
-	return ((ROOT_REPO_DATA *) _repo)->nombreSubrepo;
+	return ((ROOT_REPO_DATA *) _repo)->nbSubrepo;
 }
 
 - (void) selectionUpdate : (BOOL) isRoot : (uint) index

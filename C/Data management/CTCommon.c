@@ -16,17 +16,17 @@
 
 void nullifyCTPointers(PROJECT_DATA * project)
 {
-	project->chapitresFull = project->chapitresInstalled = NULL;
-	project->tomesFull = project->tomesInstalled = NULL;
-	project->chapitresPrix = NULL;
+	project->chaptersFull = project->chaptersInstalled = NULL;
+	project->volumesFull = project->volumesInstalled = NULL;
+	project->chaptersPrix = NULL;
 }
 
 void nullifyParsedPointers(PROJECT_DATA_PARSED * project)
 {
 	nullifyCTPointers(&project->project);
-	project->chapitresLocal = project->chapitresRemote = NULL;
+	project->chaptersLocal = project->chaptersRemote = NULL;
 	project->tomeLocal = project->tomeRemote = NULL;
-	project->nombreChapitreLocal = project->nombreChapitreRemote = project->nombreTomeLocal = project->nombreTomeRemote = 0;
+	project->nbChapterLocal = project->nbChapterRemote = project->nbVolumesLocal = project->nbVolumesRemote = 0;
 }
 
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome)
@@ -64,8 +64,8 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 	if(!project.project.isInitialized)
 		return;
 
-	uint length = ACCESS_DATA(isTome, project.nombreChapitreLocal, project.nombreTomeLocal);
-	void * data = ACCESS_DATA(isTome, (void *) project.chapitresLocal, (void *) project.tomeLocal);
+	uint length = ACCESS_DATA(isTome, project.nbChapterLocal, project.nbVolumesLocal);
+	void * data = ACCESS_DATA(isTome, (void *) project.chaptersLocal, (void *) project.tomeLocal);
 
 	for(uint pos = 0; pos < length; pos++)
 	{
@@ -78,15 +78,15 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 			{
 				if(isTome)
 				{
-					freeTomeList(project.tomeLocal, project.nombreTomeLocal, true);
+					freeTomeList(project.tomeLocal, project.nbVolumesLocal, true);
 					project.tomeLocal = NULL;
-					project.nombreTomeLocal = 0;
+					project.nbVolumesLocal = 0;
 				}
 				else
 				{
-					free(project.chapitresLocal);
-					project.chapitresLocal = NULL;
-					project.nombreChapitreLocal = 0;
+					free(project.chaptersLocal);
+					project.chaptersLocal = NULL;
+					project.nbChapterLocal = 0;
 				}
 			}
 			else
@@ -105,18 +105,18 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 				if(isTome)
 				{
 					project.tomeLocal = dataField;
-					project.nombreTomeLocal = length - 1;
+					project.nbVolumesLocal = length - 1;
 				}
 				else
 				{
-					project.chapitresLocal = dataField;
-					project.nombreChapitreLocal = length - 1;
+					project.chaptersLocal = dataField;
+					project.nbChapterLocal = length - 1;
 				}
 			}
 
 			generateCTUsable(&project);
 			
-			if(project.project.nombreChapitre != 0 || project.project.nombreTomes != 0)
+			if(project.project.nbChapter != 0 || project.project.nbVolumes != 0)
 				updateCache(project, RDB_UPDATE_ID, 0);
 			else
 			{
@@ -148,18 +148,18 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 
 		if(!isTome)
 		{
-			nbElemToInject = project->nombreChapitreLocal;
-			dataInject = project->chapitresLocal;
-			nbElemBase = project->nombreChapitreRemote;
-			dataBase = project->chapitresRemote;
+			nbElemToInject = project->nbChapterLocal;
+			dataInject = project->chaptersLocal;
+			nbElemBase = project->nbChapterRemote;
+			dataBase = project->chaptersRemote;
 
 			sizeOfType = sizeof(uint);
 		}
 		else
 		{
-			nbElemToInject = project->nombreTomeLocal;
+			nbElemToInject = project->nbVolumesLocal;
 			dataInject = project->tomeLocal;
-			nbElemBase = project->nombreTomeRemote;
+			nbElemBase = project->nbVolumesRemote;
 			dataBase = project->tomeRemote;
 
 			sizeOfType = sizeof(META_TOME);
@@ -179,7 +179,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 			void * outputData = malloc(sumEntries * sizeOfType);
 			if(outputData != NULL)
 			{
-				if(!isTome && project->project.chapitresPrix != NULL)	//Chapters
+				if(!isTome && project->project.chaptersPrix != NULL)	//Chapters
 				{
 					chaptersPrice = malloc(sumEntries * sizeof(uint));
 					if(chaptersPrice == NULL)
@@ -188,7 +188,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 						continue;
 					}
 
-					memcpy(chaptersPrice, project->project.chapitresPrix, nbElemBase * sizeof(uint));
+					memcpy(chaptersPrice, project->project.chaptersPrix, nbElemBase * sizeof(uint));
 				}
 
 				uint currentLength = nbElemBase;
@@ -305,14 +305,14 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 
 				if(!isTome)
 				{
-					project->project.chapitresFull = outputData;
-					project->project.nombreChapitre = sumEntries;
-					project->project.chapitresPrix = chaptersPrice;
+					project->project.chaptersFull = outputData;
+					project->project.nbChapter = sumEntries;
+					project->project.chaptersPrix = chaptersPrice;
 				}
 				else
 				{
-					project->project.tomesFull = outputData;
-					project->project.nombreTomes = sumEntries;
+					project->project.volumesFull = outputData;
+					project->project.nbVolumes = sumEntries;
 				}
 			}
 		}
@@ -320,20 +320,20 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 		{
 			if(!isTome)
 			{
-				if(project->project.chapitresFull != NULL)
+				if(project->project.chaptersFull != NULL)
 				{
-					free(project->project.chapitresFull);
-					project->project.chapitresFull = NULL;
-					project->project.nombreChapitre = 0;
+					free(project->project.chaptersFull);
+					project->project.chaptersFull = NULL;
+					project->project.nbChapter = 0;
 				}
 			}
 			else
 			{
-				if(project->project.tomesFull != NULL)
+				if(project->project.volumesFull != NULL)
 				{
-					freeTomeList(project->project.tomesFull, project->project.nombreTomes, true);
-					project->project.tomesFull = NULL;
-					project->project.nombreTomes = 0;
+					freeTomeList(project->project.volumesFull, project->project.nbVolumes, true);
+					project->project.volumesFull = NULL;
+					project->project.nbVolumes = 0;
 				}
 			}
 		}
@@ -342,13 +342,13 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 
 bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 {
-	uint lengthLocale = ACCESS_DATA(isTome, project->nombreChapitreLocal, project->nombreTomeLocal);
+	uint lengthLocale = ACCESS_DATA(isTome, project->nbChapterLocal, project->nbVolumesLocal);
 	if(lengthLocale == 0)
 		return false;
 
-	uint lengthSearch = ACCESS_DATA(isTome, project->nombreChapitreRemote, project->nombreTomeRemote), finalLength = lengthLocale;
+	uint lengthSearch = ACCESS_DATA(isTome, project->nbChapterRemote, project->nbVolumesRemote), finalLength = lengthLocale;
 
-	void * dataSet = ACCESS_DATA(isTome, (void*) project->chapitresLocal, (void*) project->tomeLocal), * dataSetSearch = ACCESS_DATA(isTome, (void*) project->chapitresRemote, (void*) project->tomeRemote);
+	void * dataSet = ACCESS_DATA(isTome, (void*) project->chaptersLocal, (void*) project->tomeLocal), * dataSetSearch = ACCESS_DATA(isTome, (void*) project->chaptersRemote, (void*) project->tomeRemote);
 
 	//O(n^2) because I'm busy for now
 	for(uint pos = 0; pos < lengthLocale; pos++)
@@ -369,7 +369,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 					if(isTome)
 						project->tomeLocal[pos].ID = INVALID_VALUE;
 					else
-						project->chapitresLocal[pos] = INVALID_VALUE;
+						project->chaptersLocal[pos] = INVALID_VALUE;
 
 					finalLength--;
 					break;
@@ -388,7 +388,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 				if(isTome)
 					project->tomeLocal[posDuplicate].ID = INVALID_VALUE;
 				else
-					project->chapitresLocal[posDuplicate] = INVALID_VALUE;
+					project->chaptersLocal[posDuplicate] = INVALID_VALUE;
 
 				finalLength--;
 			}
@@ -401,13 +401,13 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	PROJECT_DATA cachedProject = project->project;
 	if(isTome)
 	{
-		cachedProject.tomesFull = dataSet;
-		cachedProject.nombreTomes = lengthLocale;
+		cachedProject.volumesFull = dataSet;
+		cachedProject.nbVolumes = lengthLocale;
 	}
 	else
 	{
-		cachedProject.chapitresFull = dataSet;
-		cachedProject.nombreChapitre = lengthLocale;
+		cachedProject.chaptersFull = dataSet;
+		cachedProject.nbChapter = lengthLocale;
 	}
 
 	for(uint pos = 0; pos < lengthLocale; pos++)
@@ -420,7 +420,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 			if(isTome)
 				project->tomeLocal[pos].ID = INVALID_VALUE;
 			else
-				project->chapitresLocal[pos] = INVALID_VALUE;
+				project->chaptersLocal[pos] = INVALID_VALUE;
 			finalLength--;
 		}
 	}
@@ -433,15 +433,15 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 	{
 		if(isTome)
 		{
-			freeTomeList(project->tomeLocal, project->nombreTomeLocal, true);
+			freeTomeList(project->tomeLocal, project->nbVolumesLocal, true);
 			project->tomeLocal = NULL;
-			project->nombreTomeLocal = 0;
+			project->nbVolumesLocal = 0;
 		}
 		else
 		{
-			free(project->chapitresLocal);
-			project->chapitresLocal = NULL;
-			project->nombreChapitreLocal = 0;
+			free(project->chaptersLocal);
+			project->chaptersLocal = NULL;
+			project->nbChapterLocal = 0;
 		}
 
 	}
@@ -465,7 +465,7 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 
 		//Copy and ship ~
 		memcpy(project->tomeLocal, data, sizeof(data));
-		project->nombreTomeLocal = finalLength;
+		project->nbVolumesLocal = finalLength;
 	}
 	else
 	{
@@ -473,16 +473,16 @@ bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome)
 
 		for(uint pos = 0, posFinal = 0; pos < lengthLocale && posFinal < finalLength; pos++)
 		{
-			if(project->chapitresLocal[pos] != INVALID_VALUE)
-				data[posFinal++] = project->chapitresLocal[pos];
+			if(project->chaptersLocal[pos] != INVALID_VALUE)
+				data[posFinal++] = project->chaptersLocal[pos];
 		}
 
-		void * tmp = realloc(project->chapitresLocal, sizeof(data));
+		void * tmp = realloc(project->chaptersLocal, sizeof(data));
 		if(tmp != NULL)
-			project->chapitresLocal = tmp;
+			project->chaptersLocal = tmp;
 
-		memcpy(project->chapitresLocal, data, sizeof(data));
-		project->nombreChapitreLocal = finalLength;
+		memcpy(project->chaptersLocal, data, sizeof(data));
+		project->nbChapterLocal = finalLength;
 	}
 
 	return true;
@@ -523,10 +523,10 @@ void releaseParsedData(PROJECT_DATA_PARSED data)
 	if(!data.project.isInitialized)
 		return;
 
-	free(data.chapitresLocal);
-	free(data.chapitresRemote);
-	freeTomeList(data.tomeLocal, data.nombreTomeLocal, true);
-	freeTomeList(data.tomeRemote, data.nombreTomeRemote, true);
+	free(data.chaptersLocal);
+	free(data.chaptersRemote);
+	freeTomeList(data.tomeLocal, data.nbVolumesLocal, true);
+	freeTomeList(data.tomeRemote, data.nbVolumesRemote, true);
 
 	releaseCTData(data.project);
 }
@@ -539,17 +539,17 @@ void releaseCTData(PROJECT_DATA data)
 		FILE * output = fopen("log/log.txt", "a+");
 		if(output != NULL)
 		{
-			fprintf(output, "Freeing data: %p - %p - %p - %p - %p\n", data.chapitresFull, data.chapitresInstalled, data.chapitresInstalled, data.tomesFull, data.tomesInstalled);
-			logStack(data.chapitresFull);
+			fprintf(output, "Freeing data: %p - %p - %p - %p - %p\n", data.chaptersFull, data.chaptersInstalled, data.chaptersInstalled, data.volumesFull, data.volumesInstalled);
+			logStack(data.chaptersFull);
 			fclose(output);
 		}
 #endif
 
 		free(data.tags);
-		free(data.chapitresFull);
-		free(data.chapitresInstalled);
-		free(data.chapitresPrix);
-		freeTomeList(data.tomesFull, data.nombreTomes, true);
-		freeTomeList(data.tomesInstalled, data.nombreTomesInstalled, true);
+		free(data.chaptersFull);
+		free(data.chaptersInstalled);
+		free(data.chaptersPrix);
+		freeTomeList(data.volumesFull, data.nbVolumes, true);
+		freeTomeList(data.volumesInstalled, data.nbVolumesInstalled, true);
 	}
 }

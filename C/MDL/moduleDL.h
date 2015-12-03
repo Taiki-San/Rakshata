@@ -177,12 +177,12 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
 bool startWorker(THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab, bool threaded);
 void MDLCleanup(uint nbElemTotal, int8_t ** status, DATA_LOADED *** todoList, PROJECT_DATA ** cache, uint nbElem);
-char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nombreTotal);
+char* MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition, uint nbTotal);
 
 /**ModuleDL2_tool.c**/
 char* MDL_craftDownloadURL(PROXY_DATA_LOADED data);
 char* internalCraftBaseURL(REPO_DATA repoData, uint* length);
-DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nombreProjectTotal, char * state);
+DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nbProjectTotal, char * state);
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, uint * currentPosition, DATA_LOADED ** newChunk);
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element);
 void MDLFlushElement(DATA_LOADED * element);

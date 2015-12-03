@@ -66,17 +66,17 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 		
 		if(count == 0)
 		{
-			lengthA = a.nombreChapitreLocal;
-			aChap = a.chapitresLocal;
-			lengthB = b.nombreChapitreLocal;
-			bChap = b.chapitresLocal;
+			lengthA = a.nbChapterLocal;
+			aChap = a.chaptersLocal;
+			lengthB = b.nbChapterLocal;
+			bChap = b.chaptersLocal;
 		}
 		else
 		{
-			lengthA = a.nombreChapitreRemote;
-			aChap = a.chapitresRemote;
-			lengthB = b.nombreChapitreRemote;
-			bChap = b.chapitresRemote;
+			lengthA = a.nbChapterRemote;
+			aChap = a.chaptersRemote;
+			lengthB = b.nbChapterRemote;
+			bChap = b.chaptersRemote;
 		}
 		
 		if(lengthA != lengthB)
@@ -92,16 +92,16 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 		
 		if(count == 0)
 		{
-			lengthA = a.nombreTomeLocal;
+			lengthA = a.nbVolumesLocal;
 			aTome = a.tomeLocal;
-			lengthB = b.nombreTomeLocal;
+			lengthB = b.nbVolumesLocal;
 			bTome = b.tomeLocal;
 		}
 		else
 		{
-			lengthA = a.nombreTomeRemote;
+			lengthA = a.nbVolumesRemote;
 			aTome = a.tomeRemote;
-			lengthB = b.nombreTomeRemote;
+			lengthB = b.nbVolumesRemote;
 			bTome = b.tomeRemote;
 		}
 		
@@ -113,7 +113,7 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 		
 		if(aTome != NULL && bTome != NULL)
 		{
-			for(uint i = 0; i < a.project.nombreTomes; i++)
+			for(uint i = 0; i < a.project.nbVolumes; i++)
 			{
 				if(aTome[i].price != bTome[i].price)
 					return false;
@@ -157,7 +157,7 @@ bool areProjectsIdentical(PROJECT_DATA_PARSED a, PROJECT_DATA_PARSED b)
 	if(a.project.isPaid != b.project.isPaid)
 		return false;
 	
-	if(a.project.chapitresPrix == NULL ^ b.project.chapitresPrix == NULL)
+	if(a.project.chaptersPrix == NULL ^ b.project.chaptersPrix == NULL)
 		return false;
 	
 	if(wcscmp(a.project.projectName, b.project.projectName) || wcscmp(a.project.authorName, b.project.authorName) || wcscmp(a.project.description, b.project.description))

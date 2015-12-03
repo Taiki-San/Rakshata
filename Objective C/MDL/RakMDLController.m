@@ -387,19 +387,19 @@
 	
 	if(isTome)
 	{
-		if(data.tomesFull == NULL || data.nombreTomes == 0)
+		if(data.volumesFull == NULL || data.nbVolumes == 0)
 			return countInjected;
 		
-		nbFull = data.nombreTomes;
-		nbInst = data.nombreTomesInstalled;
+		nbFull = data.nbVolumes;
+		nbInst = data.nbVolumesInstalled;
 	}
 	else
 	{
-		if(data.chapitresFull == NULL || data.nombreChapitre == 0)
+		if(data.chaptersFull == NULL || data.nbChapter == 0)
 			return countInjected;
 		
-		nbFull = data.nombreChapitre;
-		nbInst = data.nombreChapitreInstalled;
+		nbFull = data.nbChapter;
+		nbInst = data.nbChapterInstalled;
 	}
 	
 	//On choppe les trous

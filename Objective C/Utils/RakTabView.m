@@ -87,7 +87,7 @@
 	
 	//Sanity checks
 	BOOL shouldFreeAfterward = NO;
-	if((project.tomesInstalled == NULL && project.nombreTomesInstalled != 0) || (project.chapitresInstalled == NULL && project.nombreChapitreInstalled != 0))
+	if((project.volumesInstalled == NULL && project.nbVolumesInstalled != 0) || (project.chaptersInstalled == NULL && project.nbChapterInstalled != 0))
 	{
 #ifdef EXTENSIVE_LOGGING
 		NSLog(@"Incomplete structure received, trying to correct it");

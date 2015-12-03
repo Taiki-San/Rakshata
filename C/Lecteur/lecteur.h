@@ -18,13 +18,13 @@
 
 typedef struct
 {
-	uint nombrePage;	//Contexte
+	uint nbPage;	//Contexte
     uint pageCourante;
     uint *pageCouranteDuChapitre;
 
     uint *pathNumber;	//Correspondance entre nomPage et path
     char **nomPages;
-	char **path;		//Path de l'image, utilisé pour les tomes où les fichiers sont dans plusieurs répertoires
+	char **path;		//Path de l'image, utilisé pour les volumes où les fichiers sont dans plusieurs répertoires
 	uint * nameID;		//Utilisé par les PDF pour padder
 
 	uint IDDisplayed;

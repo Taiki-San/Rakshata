@@ -77,11 +77,11 @@ enum
 	{
 		cacheID = project.cacheDBID;
 		
-		numberOfChapters = project.nombreChapitre;
-		numberOfChaptersInstalled = project.nombreChapitreInstalled;
+		numberOfChapters = project.nbChapter;
+		numberOfChaptersInstalled = project.nbChapterInstalled;
 		
-		numberOfVolumes = project.nombreTomes;
-		numberOfVolumesInstalled = project.nombreTomesInstalled;
+		numberOfVolumes = project.nbVolumes;
+		numberOfVolumesInstalled = project.nbVolumesInstalled;
 		
 		status = project.status;
 		category = project.category;

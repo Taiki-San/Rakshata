@@ -38,11 +38,11 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bo
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
 uint getFreeRootRepoID();
-void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nombreRepo);
+void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nbRepo);
 void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries);
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData);
 void removeNonInstalledSubRepo(REPO_DATA ** _subRepo, uint nbSubRepo, bool haveExtra);
-void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nombreRepo, REPO_DATA *** wantUpdatedRepo, uint *lengthUpdated);
+void getRideOfDuplicateInRootRepo(ROOT_REPO_DATA ** data, uint nbRepo, REPO_DATA *** wantUpdatedRepo, uint *lengthUpdated);
 bool isAppropriateNumberOfRepo(uint requestedNumber);
 
 /**DBDebug.c**/
@@ -109,14 +109,14 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_mainTagID				12
 #define RDB_tagData					13
 #define RDB_nbTagData				14
-#define RDB_nombreChapitre			15
+#define RDB_nbChapter			15
 #define RDB_chapitres				16
 #define RDB_chapitreRemote			17
 #define RDB_chapitreRemoteLength	18
 #define RDB_chapitreLocal			19
 #define RDB_chapitreLocalLength		20
 #define RDB_chapitresPrice			21
-#define RDB_nombreTomes				22
+#define RDB_nbVolumes				22
 #define RDB_DRM						23
 #define RDB_tomes					24
 #define RDB_tomeRemote				25

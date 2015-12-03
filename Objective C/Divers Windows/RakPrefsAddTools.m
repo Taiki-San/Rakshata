@@ -25,7 +25,7 @@
 		{
 			self.expanded = YES;
 			dataString = getStringForWchar(((ROOT_REPO_DATA *) _data)->name);
-			_nbChildren = ((ROOT_REPO_DATA *) _data)->nombreSubrepo;
+			_nbChildren = ((ROOT_REPO_DATA *) _data)->nbSubrepo;
 		}
 		else
 		{
@@ -94,7 +94,7 @@
 		ROOT_REPO_DATA * _repo = (void*) _repoUsedInDetail;
 		BOOL haveOne = NO, allAreActive = YES;
 		
-		for(uint i = 0; i < _repo->nombreSubrepo; i++)
+		for(uint i = 0; i < _repo->nbSubrepo; i++)
 		{
 			haveOne |= _repo->subRepo[i].active;
 			allAreActive &= _repo->subRepo[i].active;

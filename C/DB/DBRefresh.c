@@ -82,7 +82,7 @@ void updateRepo()
 		
 		else if(checkKS(*oldRootData[posRepo], dataKS))
 		{
-			for(uint i = 0, length = oldRootData[posRepo]->nombreSubrepo; i < length; i++)
+			for(uint i = 0, length = oldRootData[posRepo]->nbSubrepo; i < length; i++)
 				KSTriggered(oldRootData[posRepo]->subRepo[i]);
 	
 			continue;
@@ -92,7 +92,7 @@ void updateRepo()
 		dataVersion = getUpdatedRepo(&bufferDL, &downloadLength, *oldRootData[posRepo]);
 		if(bufferDL != NULL && downloadLength > 0 && parseRemoteRepoEntry(bufferDL, oldRootData[posRepo], dataVersion, &newData))
 		{
-			removeNonInstalledSubRepo(&(newData->subRepo), newData->nombreSubrepo, true);
+			removeNonInstalledSubRepo(&(newData->subRepo), newData->nbSubrepo, true);
 
 			newIcons = enforceRepoExtra(newData, true);
 			
@@ -235,8 +235,8 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 					if(projectShort[pos].project.isPaid && !paidRepo)
 					{
 						projectShort[pos].project.isPaid = false;
-						free(projectShort[pos].project.chapitresPrix);
-						projectShort[pos].project.chapitresPrix = NULL;
+						free(projectShort[pos].project.chaptersPrix);
+						projectShort[pos].project.chaptersPrix = NULL;
 					}
 #endif
 				}
@@ -392,15 +392,15 @@ void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome)
 			snprintf(path, sizeof(path), PROJECT_ROOT"%s", encodedRepo);
 			removeFolder(path);
 			
-			free(projectParsed.chapitresLocal);		projectParsed.chapitresLocal = NULL;
-			projectParsed.nombreChapitreLocal = 0;
+			free(projectParsed.chaptersLocal);		projectParsed.chaptersLocal = NULL;
+			projectParsed.nbChapterLocal = 0;
 			
-			freeTomeList(projectParsed.tomeLocal, projectParsed.nombreTomeLocal, true);	projectParsed.tomeLocal = NULL;
-			projectParsed.nombreTomeLocal = 0;
+			freeTomeList(projectParsed.tomeLocal, projectParsed.nbVolumesLocal, true);	projectParsed.tomeLocal = NULL;
+			projectParsed.nbVolumesLocal = 0;
 			
 			generateCTUsable(&projectParsed);
 			
-			if(projectParsed.project.nombreTomes == 0 && projectParsed.project.nombreChapitre == 0)
+			if(projectParsed.project.nbVolumes == 0 && projectParsed.project.nbChapter == 0)
 			{
 				removeFromCache(projectParsed);
 				removeFromSearch(NULL, projectParsed.project);

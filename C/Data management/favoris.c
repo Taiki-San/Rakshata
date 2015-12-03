@@ -187,23 +187,23 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 	uint basePos;
 	
 	//The last available volume isn't installed
-	if(project.nombreTomes && (project.tomesInstalled == NULL || !checkReadable(project, true, project.tomesFull[project.nombreTomes-1].ID)))
+	if(project.nbVolumes && (project.volumesInstalled == NULL || !checkReadable(project, true, project.volumesFull[project.nbVolumes-1].ID)))
 	{
 		if(checkOnly)
 			return true;
 		
 		//Find the last volume installed
-		if(project.tomesInstalled != NULL && project.nombreTomesInstalled > 0)
+		if(project.volumesInstalled != NULL && project.nbVolumesInstalled > 0)
 		{
-			uint lastVol = project.tomesInstalled[project.nombreTomesInstalled-1].ID;
+			uint lastVol = project.volumesInstalled[project.nbVolumesInstalled-1].ID;
 			
-			for(basePos = 0; basePos < project.nombreTomes && project.tomesFull[basePos].ID != lastVol; basePos++);
+			for(basePos = 0; basePos < project.nbVolumes && project.volumesFull[basePos].ID != lastVol; basePos++);
 		}
 		else	//If not installed, we install the last NUMBER_FAVORITE_INSTALL_IF_NONE_THERE
-			basePos = project.nombreTomes > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nombreTomes - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
+			basePos = project.nbVolumes > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nbVolumes - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
 		
 		//Download what remains
-		for(; basePos < project.nombreTomes; basePos++)
+		for(; basePos < project.nbVolumes; basePos++)
 		{
 			if(projectInPipeline->isInitialized)
 			{
@@ -216,28 +216,28 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 				*projectInPipeline = project;
 			
 			*isTomePipeline = true;
-			*elementInPipeline = project.tomesFull[basePos].ID;
+			*elementInPipeline = project.volumesFull[basePos].ID;
 		}
 	}
 	
 	//The last available chapter isn't installed
-	if(project.nombreChapitre && (project.chapitresInstalled == NULL || !checkReadable(project, false, project.chapitresFull[project.nombreChapitre-1])))
+	if(project.nbChapter && (project.chaptersInstalled == NULL || !checkReadable(project, false, project.chaptersFull[project.nbChapter-1])))
 	{
 		if(checkOnly)
 			return true;
 		
 		//Find the last volume installed
-		if(project.chapitresInstalled != NULL && project.nombreChapitreInstalled > 0)
+		if(project.chaptersInstalled != NULL && project.nbChapterInstalled > 0)
 		{
-			uint lastChap = project.chapitresInstalled[project.nombreChapitreInstalled-1];
+			uint lastChap = project.chaptersInstalled[project.nbChapterInstalled-1];
 			
-			for(basePos = 0; basePos < project.nombreChapitre && project.chapitresFull[basePos] != lastChap; basePos++);
+			for(basePos = 0; basePos < project.nbChapter && project.chaptersFull[basePos] != lastChap; basePos++);
 		}
 		else
-			basePos = project.nombreChapitre > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nombreChapitre - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
+			basePos = project.nbChapter > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nbChapter - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
 		
 		//Download what remains
-		for(; basePos < project.nombreChapitre; basePos++)
+		for(; basePos < project.nbChapter; basePos++)
 		{
 			if(projectInPipeline->isInitialized)
 			{
@@ -250,7 +250,7 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 				*projectInPipeline = project;
 			
 			*isTomePipeline = false;
-			*elementInPipeline = project.chapitresFull[basePos];
+			*elementInPipeline = project.chaptersFull[basePos];
 		}
 	}
 	
@@ -275,15 +275,15 @@ void getNewFavs()
 		current = &projectDB[posProject];
 		
 		getUpdatedChapterList(current, true);
-		if(current->chapitresFull != NULL && current->nombreChapitre > current->nombreChapitreInstalled)
+		if(current->chaptersFull != NULL && current->nbChapter > current->nbChapterInstalled)
 		{
-			lastInstalled = current->chapitresInstalled[current->nombreChapitreInstalled-1];
-			maxPos = current->nombreChapitre;
+			lastInstalled = current->chaptersInstalled[current->nbChapterInstalled-1];
+			maxPos = current->nbChapter;
 			
-			for (posFull = 0; posFull < maxPos && current->chapitresFull[posFull] <= lastInstalled; posFull++);
+			for (posFull = 0; posFull < maxPos && current->chaptersFull[posFull] <= lastInstalled; posFull++);
 			for(; posFull < maxPos; posFull++)
 			{
-				if(!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chapitresFull[posFull]))
+				if(!checkIfElementAlreadyInMDL(projectDB[posProject], false, current->chaptersFull[posFull]))
 				{
 					if(prevElem != INVALID_VALUE)
 					{
@@ -292,21 +292,21 @@ void getNewFavs()
 					
 					prevProjectIndex = posProject;
 					prevIsTome = false;
-					prevElem = current->chapitresFull[posFull];
+					prevElem = current->chaptersFull[posFull];
 				}
 			}
 		}
 		
 		getUpdatedTomeList(current, true);
-		if(current->tomesFull != NULL && current->nombreTomes > current->nombreTomesInstalled)
+		if(current->volumesFull != NULL && current->nbVolumes > current->nbVolumesInstalled)
 		{
-			lastInstalled = current->tomesInstalled[current->nombreTomesInstalled-1].ID;
-			maxPos = current->nombreTomes;
+			lastInstalled = current->volumesInstalled[current->nbVolumesInstalled-1].ID;
+			maxPos = current->nbVolumes;
 			
-			for (posFull = 0; posFull < maxPos && current->tomesInstalled[posFull].ID <= lastInstalled; posFull++);
+			for (posFull = 0; posFull < maxPos && current->volumesInstalled[posFull].ID <= lastInstalled; posFull++);
 			for(; posFull < maxPos; posFull++)
 			{
-				if(!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->tomesFull[posFull].ID))
+				if(!checkIfElementAlreadyInMDL(projectDB[posProject], true, current->volumesFull[posFull].ID))
 				{
 					if(prevElem != INVALID_VALUE)
 					{
@@ -315,7 +315,7 @@ void getNewFavs()
 					
 					prevProjectIndex = posProject;
 					prevIsTome = true;
-					prevElem = current->tomesFull[posFull].ID;
+					prevElem = current->volumesFull[posFull].ID;
 				}
 			}
 		}

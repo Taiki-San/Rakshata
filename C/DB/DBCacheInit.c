@@ -27,7 +27,7 @@ MUTEX_VAR cacheMutex, cacheParseMutex;
 
 uint setupBDDCache()
 {
-	uint nombreRootRepo = 0, nombreRepo = 0, nombreProject = 0;
+	uint nbRootRepo = 0, nbRepo = 0, nbProject = 0;
 	char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 
@@ -82,15 +82,15 @@ uint setupBDDCache()
 	projectDB = loadLargePrefs(SETTINGS_PROJECTDB_FLAG);
 
 	//Parse the repo, if any
-	ROOT_REPO_DATA ** internalRootRepoList = loadRootRepo(repoDB, &nombreRootRepo);
-	REPO_DATA ** internalRepoList = loadRepo(internalRootRepoList, nombreRootRepo, &nombreRepo);
+	ROOT_REPO_DATA ** internalRootRepoList = loadRootRepo(repoDB, &nbRootRepo);
+	REPO_DATA ** internalRepoList = loadRepo(internalRootRepoList, nbRootRepo, &nbRepo);
 
 	//Post process the repo: release the ressources and purge of duplicates
 	free(repoDB);
-	getRidOfDuplicateInRepo(internalRepoList, nombreRepo);
+	getRidOfDuplicateInRepo(internalRepoList, nbRepo);
 	
 	//Will start loading the projects
-	sqlite3_stmt* request = createRequest(internalDB, "CREATE TABLE "MAIN_CACHE" ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_repo)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_mainTagID)" INTEGER NOT NULL, "DBNAMETOID(RDB_tagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nbTagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nombreChapitre)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER, "DBNAMETOID(RDB_chapitreRemote)" INTEGER, "DBNAMETOID(RDB_chapitreRemoteLength)" INTEGER, "DBNAMETOID(RDB_chapitreLocal)" INTEGER, "DBNAMETOID(RDB_chapitreLocalLength)" INTEGER, "DBNAMETOID(RDB_chapitresPrice)" INTEGER, "DBNAMETOID(RDB_nombreTomes)" INTEGER NOT NULL, "DBNAMETOID(RDB_DRM)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER, "DBNAMETOID(RDB_tomeRemote)" INTEGER, "DBNAMETOID(RDB_tomeRemoteLength)" INTEGER, "DBNAMETOID(RDB_tomeLocal)" INTEGER, "DBNAMETOID(RDB_tomeLocalLength)" INTEGER, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL, "DBNAMETOID(RDB_isLocal)" INTEGER NOT NULL); CREATE UNIQUE INDEX poniesShallRule ON "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)");");
+	sqlite3_stmt* request = createRequest(internalDB, "CREATE TABLE "MAIN_CACHE" ("DBNAMETOID(RDB_ID)" INTEGER PRIMARY KEY AUTOINCREMENT, "DBNAMETOID(RDB_repo)" INTEGER NOT NULL, "DBNAMETOID(RDB_projectID)" INTEGER NOT NULL, "DBNAMETOID(RDB_isInstalled)" INTEGER NOT NULL,"DBNAMETOID(RDB_projectName)" TEXT NOT NULL, "DBNAMETOID(RDB_description)" TEXT, "DBNAMETOID(RDB_authors)" TEXT, "DBNAMETOID(RDB_status)" INTEGER NOT NULL, "DBNAMETOID(RDB_category)" INTEGER NOT NULL, "DBNAMETOID(RDB_asianOrder)" INTEGER NOT NULL, "DBNAMETOID(RDB_isPaid)" INTEGER NOT NULL, "DBNAMETOID(RDB_mainTagID)" INTEGER NOT NULL, "DBNAMETOID(RDB_tagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nbTagData)" INTEGER NOT NULL, "DBNAMETOID(RDB_nbChapter)" INTEGER NOT NULL, "DBNAMETOID(RDB_chapitres)" INTEGER, "DBNAMETOID(RDB_chapitreRemote)" INTEGER, "DBNAMETOID(RDB_chapitreRemoteLength)" INTEGER, "DBNAMETOID(RDB_chapitreLocal)" INTEGER, "DBNAMETOID(RDB_chapitreLocalLength)" INTEGER, "DBNAMETOID(RDB_chapitresPrice)" INTEGER, "DBNAMETOID(RDB_nbVolumes)" INTEGER NOT NULL, "DBNAMETOID(RDB_DRM)" INTEGER NOT NULL, "DBNAMETOID(RDB_tomes)" INTEGER, "DBNAMETOID(RDB_tomeRemote)" INTEGER, "DBNAMETOID(RDB_tomeRemoteLength)" INTEGER, "DBNAMETOID(RDB_tomeLocal)" INTEGER, "DBNAMETOID(RDB_tomeLocalLength)" INTEGER, "DBNAMETOID(RDB_favoris)" INTEGER NOT NULL, "DBNAMETOID(RDB_isLocal)" INTEGER NOT NULL); CREATE UNIQUE INDEX poniesShallRule ON "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)");");
 
 	if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 	{
@@ -138,7 +138,7 @@ uint setupBDDCache()
 			}
 		}
 		
-		PROJECT_DATA_PARSED * projects = parseLocalData(internalRepoList, nombreRepo, decodedProject, &nombreProject);
+		PROJECT_DATA_PARSED * projects = parseLocalData(internalRepoList, nbRepo, decodedProject, &nbProject);
 		
 		free(decodedProject);
 		if(projects != NULL)
@@ -147,30 +147,30 @@ uint setupBDDCache()
 			bool isWorkingOnLocalRepo = false;
 			
 			//Craft the paths of all the available repo. We will need them in the loop
-			char * encodedRepo[nombreRepo + 1];
-			for(uint i = 0; i < nombreRepo; i++)
+			char * encodedRepo[nbRepo + 1];
+			for(uint i = 0; i < nbRepo; i++)
 			{
 				encodedRepo[i] = getPathForRepo(internalRepoList[i]);
 			}
-			encodedRepo[nombreRepo] = getPathForRepo(NULL);		//Local repo
+			encodedRepo[nbRepo] = getPathForRepo(NULL);		//Local repo
 			
 			//Main insertion loop.
 			//We complete some metadata and
-			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nombreProject; pos++)
+			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nbProject; pos++)
 			{
 				projects[pos].project.favoris = checkIfFaved(&projects[pos].project, &cacheFavs);
 				
 				if(isLocalRepo(projects[pos].project.repo))
 				{
 					isWorkingOnLocalRepo = true;
-					posRepo = nombreRepo;
+					posRepo = nbRepo;
 				}
 				else if(internalRepoList[posRepo] != projects[pos].project.repo)
 				{
-					for(posRepo = 0; posRepo < nombreRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get repo index
+					for(posRepo = 0; posRepo < nbRepo && internalRepoList[posRepo] != projects[pos].project.repo; posRepo++);	//Get repo index
 				}
 				
-				if((posRepo < nombreRepo || isWorkingOnLocalRepo) && encodedRepo[posRepo] != NULL)
+				if((posRepo < nbRepo || isWorkingOnLocalRepo) && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%s%d/", encodedRepo[posRepo], projects[pos].project.locale ? LOCAL_PATH_NAME"_" : "", projects[pos].project.projectID);
 					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall), false))
@@ -179,7 +179,7 @@ uint setupBDDCache()
 						FILE * output = fopen("log/log.txt", "a+");
 						if(output != NULL)
 						{
-							fprintf(output, "Validated %ls ~ %p - %p - %p\n", projects[pos].projectName, projects[pos].chapitresFull, projects[pos].chapitresPrix, projects[pos].tomesFull);
+							fprintf(output, "Validated %ls ~ %p - %p - %p\n", projects[pos].projectName, projects[pos].chaptersFull, projects[pos].chaptersPrix, projects[pos].volumesFull);
 							fclose(output);
 						}
 #endif
@@ -194,7 +194,7 @@ uint setupBDDCache()
 			}
 			
 			//Cleanup
-			for(uint i = 0; i < nombreRepo + 1; free(encodedRepo[i++]));
+			for(uint i = 0; i < nbRepo + 1; free(encodedRepo[i++]));
 			
 			free(projects);
 			flushSearchJumpTable(searchData);
@@ -206,13 +206,13 @@ uint setupBDDCache()
 	
 	//Apply the loaded data to the context
 	cache = internalDB;
-	nbElemInCache = nombreProject;
+	nbElemInCache = nbProject;
 	
 	rootRepoList = internalRootRepoList;
-	lengthRootRepo = nombreRootRepo;
+	lengthRootRepo = nbRootRepo;
 	
 	repoList = internalRepoList;
-	lengthRepo = nombreRepo;
+	lengthRepo = nbRepo;
 	
 fail:
 
@@ -221,7 +221,7 @@ fail:
 	free(cacheFavs);
 	free(projectDB);
 
-	return nombreProject;
+	return nbProject;
 }
 
 void syncCacheToDisk(byte syncCode)
@@ -300,7 +300,7 @@ void flushDB()
 
 	MUTEX_LOCK(cacheMutex);
 
-	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nombreTomes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tagData)" FROM "MAIN_CACHE);
+	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tagData)" FROM "MAIN_CACHE);
 
 	if(request != NULL)
 	{
@@ -383,7 +383,7 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 	{
 		if(root[pos] != NULL)
 		{
-			for(uint posSub = 0, length = root[pos]->nombreSubrepo; posSub < length; posSub++)
+			for(uint posSub = 0, length = root[pos]->nbSubrepo; posSub < length; posSub++)
 			{
 				if(root[pos]->subRepo[posSub].active)
 					nbSubRepo++;
@@ -398,7 +398,7 @@ REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo)
 		
 		while(pos < nbSubRepo && indexRoot < nbRoot && root[indexRoot] != NULL)
 		{
-			if(posInRoot >= root[indexRoot]->nombreSubrepo)
+			if(posInRoot >= root[indexRoot]->nbSubrepo)
 			{
 				indexRoot++;
 				posInRoot = 0;

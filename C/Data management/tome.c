@@ -12,11 +12,11 @@
 
 uint getPosForID(PROJECT_DATA data, bool installed, uint ID)
 {
-	if((installed && data.tomesInstalled == NULL) || (!installed && data.tomesFull == NULL))
+	if((installed && data.volumesInstalled == NULL) || (!installed && data.volumesFull == NULL))
 		return INVALID_VALUE;
 	
-	uint pos, nbElem = installed ? data.nombreTomesInstalled : data.nombreTomes;
-	META_TOME * list = installed ? data.tomesInstalled : data.tomesFull;
+	uint pos, nbElem = installed ? data.nbVolumesInstalled : data.nbVolumes;
+	META_TOME * list = installed ? data.volumesInstalled : data.volumesFull;
 
 	for(pos = 0; pos < nbElem && list[pos].ID != ID; pos++);
 	
@@ -25,14 +25,14 @@ uint getPosForID(PROJECT_DATA data, bool installed, uint ID)
 
 void refreshTomeList(PROJECT_DATA *projectDB)
 {
-	if(projectDB->tomesFull != NULL || projectDB->tomesInstalled != NULL)
+	if(projectDB->volumesFull != NULL || projectDB->volumesInstalled != NULL)
 	{
-		free(projectDB->tomesFull);				projectDB->tomesFull = NULL;
-		free(projectDB->tomesInstalled);			projectDB->tomesInstalled = NULL;
+		free(projectDB->volumesFull);				projectDB->volumesFull = NULL;
+		free(projectDB->volumesInstalled);			projectDB->volumesInstalled = NULL;
 	}
-	projectDB->nombreTomes = projectDB->nombreTomesInstalled = 0;
+	projectDB->nbVolumes = projectDB->nbVolumesInstalled = 0;
 	
-	projectDB->tomesFull = getUpdatedCTForID(projectDB->cacheDBID, true, &(projectDB->nombreTomes), NULL);
+	projectDB->volumesFull = getUpdatedCTForID(projectDB->cacheDBID, true, &(projectDB->nbVolumes), NULL);
 }
 
 void setTomeReadable(PROJECT_DATA projectDB, uint ID)
@@ -45,7 +45,7 @@ void setTomeReadable(PROJECT_DATA projectDB, uint ID)
 		snprintf(pathWithoutTemp, sizeof(pathWithoutTemp), PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CONFIGFILETOME, encodedPath, ID);
 		rename(pathWithTemp, pathWithoutTemp);
 		
-		projectDB.tomesFull = projectDB.tomesInstalled = NULL;
+		projectDB.volumesFull = projectDB.volumesInstalled = NULL;
 		getUpdatedTomeList(&projectDB, false);
 		free(encodedPath);
 	}
@@ -59,7 +59,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 {
 	bool releaseAtTheEnd = false, retValue = true;
 
-	if(projectDB.tomesFull == NULL)
+	if(projectDB.volumesFull == NULL)
 	{
 		nullifyCTPointers(&projectDB);
 		getUpdatedTomeList(&projectDB, false);
@@ -68,13 +68,13 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 
 	uint pos = getPosForID(projectDB, false, ID), posDetails;
 	
-	if(pos == INVALID_VALUE || pos >= projectDB.nombreTomes || projectDB.tomesFull[pos].ID != ID || projectDB.tomesFull[pos].details == NULL)
+	if(pos == INVALID_VALUE || pos >= projectDB.nbVolumes || projectDB.volumesFull[pos].ID != ID || projectDB.volumesFull[pos].details == NULL)
 	{
 		retValue = false;
 		goto end;
 	}
 
-	CONTENT_TOME * cache = projectDB.tomesFull[pos].details;
+	CONTENT_TOME * cache = projectDB.volumesFull[pos].details;
 	char basePath[2*LENGTH_PROJECT_NAME + 50], intermediaryDirectory[300], fullPath[2*LENGTH_PROJECT_NAME + 350], *encodedPath = getPathForProject(projectDB);
 	
 	if(cache == NULL || encodedPath == NULL)
@@ -87,7 +87,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 	snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s", encodedPath);
 	free(encodedPath);
 	
-	for(posDetails = 0; posDetails < projectDB.tomesFull[pos].lengthDetails; posDetails++)
+	for(posDetails = 0; posDetails < projectDB.volumesFull[pos].lengthDetails; posDetails++)
 	{
 		if(cache[posDetails].isPrivate)
 		{
@@ -146,34 +146,34 @@ end:
 
 void getTomeInstalled(PROJECT_DATA *project)
 {
-	if(project->tomesInstalled != NULL)
+	if(project->volumesInstalled != NULL)
 	{
-		free(project->tomesInstalled);	project->tomesInstalled = NULL;
+		free(project->volumesInstalled);	project->volumesInstalled = NULL;
 	}
 	
-	if(project->tomesFull == NULL)
+	if(project->volumesFull == NULL)
 		return;
 	
-	project->tomesInstalled = malloc(project->nombreTomes * sizeof(META_TOME));
-	if(project->tomesInstalled == NULL)
+	project->volumesInstalled = malloc(project->nbVolumes * sizeof(META_TOME));
+	if(project->volumesInstalled == NULL)
 		return;
 
-	copyTomeList(project->tomesFull, project->nombreTomes, project->tomesInstalled);
-	project->nombreTomesInstalled = project->nombreTomes;
+	copyTomeList(project->volumesFull, project->nbVolumes, project->volumesInstalled);
+	project->nbVolumesInstalled = project->nbVolumes;
 	
 	size_t deletedItems = 0;
-    for(uint nbElem = 0; nbElem < project->nombreTomes; nbElem++)
+    for(uint nbElem = 0; nbElem < project->nbVolumes; nbElem++)
     {
 		//Vérifie que le tome est bien lisible
-        if(!checkTomeReadable(*project, project->tomesFull[nbElem].ID))
+        if(!checkTomeReadable(*project, project->volumesFull[nbElem].ID))
         {
-            if(project->tomesInstalled[nbElem-deletedItems].details != NULL)
-				free(project->tomesInstalled[nbElem-deletedItems].details);
+            if(project->volumesInstalled[nbElem-deletedItems].details != NULL)
+				free(project->volumesInstalled[nbElem-deletedItems].details);
 			
-			for(uint base = nbElem - deletedItems, length = project->nombreTomesInstalled - 1; base < length; base++)
-				project->tomesInstalled[base] = project->tomesInstalled[base + 1];
+			for(uint base = nbElem - deletedItems, length = project->nbVolumesInstalled - 1; base < length; base++)
+				project->volumesInstalled[base] = project->volumesInstalled[base + 1];
 
-			project->nombreTomesInstalled--;
+			project->nbVolumesInstalled--;
 			deletedItems++;
         }
     }
@@ -187,13 +187,13 @@ void getUpdatedTomeList(PROJECT_DATA *projectDB, bool getInstalled)
 		getTomeInstalled(projectDB);
 }
 
-void copyTomeList(META_TOME * input, uint nombreTomes, META_TOME * output)
+void copyTomeList(META_TOME * input, uint nbVolumes, META_TOME * output)
 {
 	if(input == NULL || output == NULL)
 		return;
 	
-	memcpy(output, input, nombreTomes * sizeof(META_TOME));
-	for(uint pos = 0; pos < nombreTomes && input[pos].ID != INVALID_VALUE; pos++)
+	memcpy(output, input, nbVolumes * sizeof(META_TOME));
+	for(uint pos = 0; pos < nbVolumes && input[pos].ID != INVALID_VALUE; pos++)
 	{
 		if(input[pos].details == NULL)
 			continue;
@@ -229,7 +229,7 @@ void freeSingleTome(META_TOME data)
 
 void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutLinkedChapters)
 {
-	if(projectDB.tomesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
+	if(projectDB.volumesInstalled == NULL)	//Si pas de tome dispo, cette fonction a aucun intérêt
 	{
 #ifdef EXTENSIVE_LOGGING
 		logR("Incoherency when deleting volumes");
@@ -243,14 +243,14 @@ void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutL
 	
 	uint position = getPosForID(projectDB, true, tomeDelete);
 	
-	if(position != INVALID_VALUE && position < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[position].details != NULL)
+	if(position != INVALID_VALUE && position < projectDB.nbVolumesInstalled && projectDB.volumesInstalled[position].details != NULL)
 	{
 		char basePath[2*LENGTH_PROJECT_NAME + 50], dirToChap[2*LENGTH_PROJECT_NAME + 100];
-		CONTENT_TOME * details = projectDB.tomesInstalled[position].details;
+		CONTENT_TOME * details = projectDB.volumesInstalled[position].details;
 		
 		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s", encodedPath);
 		
-		for(uint posDetails = 0, curID; posDetails < projectDB.tomesInstalled[position].lengthDetails; posDetails++)
+		for(uint posDetails = 0, curID; posDetails < projectDB.volumesInstalled[position].lengthDetails; posDetails++)
 		{
 			if(!details[posDetails].isPrivate)
 			{

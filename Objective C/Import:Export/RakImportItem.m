@@ -17,20 +17,20 @@
 	if(!_isTome)
 		return checkReadable(_projectData.data.project, false, _contentID);
 	
-	if(_projectData.data.nombreTomeLocal == 0)
+	if(_projectData.data.nbVolumesLocal == 0)
 		return false;
 
 	//The volume must be in the list
-	META_TOME * tomeFull = _projectData.data.project.tomesFull;
-	uint lengthTomeFull = _projectData.data.project.nombreTomes;
+	META_TOME * tomeFull = _projectData.data.project.volumesFull;
+	uint lengthTomeFull = _projectData.data.project.nbVolumes;
 
-	_projectData.data.project.tomesFull = _projectData.data.tomeLocal;
-	_projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
+	_projectData.data.project.volumesFull = _projectData.data.tomeLocal;
+	_projectData.data.project.nbVolumes = _projectData.data.nbVolumesLocal;
 
 	bool output = checkReadable(_projectData.data.project, true, _projectData.data.tomeLocal[0].ID);
 
-	_projectData.data.project.tomesFull = tomeFull;
-	_projectData.data.project.nombreTomes = lengthTomeFull;
+	_projectData.data.project.volumesFull = tomeFull;
+	_projectData.data.project.nbVolumes = lengthTomeFull;
 
 	return output;
 }
@@ -166,13 +166,13 @@
 
 - (BOOL) updateProject : (PROJECT_DATA) project
 {
-	if(_projectData.data.project.cacheDBID != project.cacheDBID &&  project.nombreTomes > 0 && (project.locale || project.tomesFull[0].ID > MIN_LOCAL_VOLUME_ID))
+	if(_projectData.data.project.cacheDBID != project.cacheDBID &&  project.nbVolumes > 0 && (project.locale || project.volumesFull[0].ID > MIN_LOCAL_VOLUME_ID))
 	{
-		uint ID = project.tomesFull[0].ID;
+		uint ID = project.volumesFull[0].ID;
 		while(checkTomeReadable(project, ID))
 			ID = getVolumeIDForImport(project);
 		
-		project.tomesFull[0].ID = _contentID = ID;
+		project.volumesFull[0].ID = _contentID = ID;
 	}
 	
 	_projectData.data.project = project;
@@ -225,16 +225,16 @@
 		return	internalDeleteCT(_projectData.data.project, false, _contentID);
 
 	//The volume must be in the list
-	META_TOME * tomeFull = _projectData.data.project.tomesFull;
-	uint lengthTomeFull = _projectData.data.project.nombreTomes;
+	META_TOME * tomeFull = _projectData.data.project.volumesFull;
+	uint lengthTomeFull = _projectData.data.project.nbVolumes;
 
-	_projectData.data.project.tomesInstalled = _projectData.data.project.tomesFull = _projectData.data.tomeLocal;
-	_projectData.data.project.nombreTomesInstalled = _projectData.data.project.nombreTomes = _projectData.data.nombreTomeLocal;
+	_projectData.data.project.volumesInstalled = _projectData.data.project.volumesFull = _projectData.data.tomeLocal;
+	_projectData.data.project.nbVolumesInstalled = _projectData.data.project.nbVolumes = _projectData.data.nbVolumesLocal;
 
 	internalDeleteTome(_projectData.data.project, _contentID, true);
 
-	_projectData.data.project.tomesFull = tomeFull;
-	_projectData.data.project.nombreTomes = lengthTomeFull;
+	_projectData.data.project.volumesFull = tomeFull;
+	_projectData.data.project.nbVolumes = lengthTomeFull;
 }
 
 - (void) processThumbs

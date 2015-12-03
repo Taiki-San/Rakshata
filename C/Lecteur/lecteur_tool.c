@@ -18,35 +18,35 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection
 		
 	if(!isTome)
     {
-        if(projectDB.chapitresInstalled == NULL)
+        if(projectDB.chaptersInstalled == NULL)
         {
 #ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;
         }
-        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreChapitreInstalled && projectDB.chapitresInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nbChapterInstalled && projectDB.chaptersInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
 
-		if(curPosIntoStruct == projectDB.nombreChapitreInstalled)
+		if(curPosIntoStruct == projectDB.nbChapterInstalled)
 			return INVALID_VALUE;
 	}
     else
     {
-        if(projectDB.tomesInstalled == NULL)
+        if(projectDB.volumesInstalled == NULL)
         {
 #ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;
 		}
-        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nombreTomesInstalled && projectDB.tomesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nbVolumesInstalled && projectDB.volumesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
 		
-		if(curPosIntoStruct == projectDB.nombreTomesInstalled)
+		if(curPosIntoStruct == projectDB.nbVolumesInstalled)
 			return INVALID_VALUE;
     }
 	
 	//On vérifie que l'entrée est valide
-	if(!checkReadable(projectDB, isTome, ACCESS_ID(isTome, currentSelection, projectDB.tomesInstalled[curPosIntoStruct].ID)))
+	if(!checkReadable(projectDB, isTome, ACCESS_ID(isTome, currentSelection, projectDB.volumesInstalled[curPosIntoStruct].ID)))
 	{
 		if(!reader_getNextReadableElement(projectDB, isTome, &curPosIntoStruct))
 		{
@@ -60,14 +60,14 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection
 
 bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, uint currentSelection)
 {
-	if(isTome && projectDB.tomesInstalled != NULL)
+	if(isTome && projectDB.volumesInstalled != NULL)
 	{
-		return currentSelection == projectDB.tomesInstalled[projectDB.nombreTomesInstalled-1].ID;
+		return currentSelection == projectDB.volumesInstalled[projectDB.nbVolumesInstalled-1].ID;
 	}
 	
-	else if(!isTome && projectDB.chapitresInstalled == NULL)
+	else if(!isTome && projectDB.chaptersInstalled == NULL)
 		return true;
 	
 	//Else
-	return currentSelection == projectDB.chapitresInstalled[projectDB.nombreChapitreInstalled-1];
+	return currentSelection == projectDB.chaptersInstalled[projectDB.nbChapterInstalled-1];
 }

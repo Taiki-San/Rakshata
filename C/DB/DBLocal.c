@@ -56,7 +56,7 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 
 void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 {
-	if(ACCESS_DATA(isTome, (void *) project.chapitresLocal, (void *) project.tomeLocal) == NULL)
+	if(ACCESS_DATA(isTome, (void *) project.chaptersLocal, (void *) project.tomeLocal) == NULL)
 		return;
 
 	//Okay, we have quite some work to do
@@ -105,26 +105,26 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	//We insert the new item
 	if(isTome)
 	{
-		META_TOME * newField = realloc(cachedProject.tomeLocal, (project.nombreTomeLocal + cachedProject.nombreTomeLocal) * sizeof(META_TOME));
+		META_TOME * newField = realloc(cachedProject.tomeLocal, (project.nbVolumesLocal + cachedProject.nbVolumesLocal) * sizeof(META_TOME));
 		if(newField != NULL)
 		{
-			memcpy(&newField[cachedProject.nombreTomeLocal], project.tomeLocal, project.nombreTomeLocal * sizeof(META_TOME));
-			cachedProject.nombreTomeLocal += project.nombreTomeLocal;
+			memcpy(&newField[cachedProject.nbVolumesLocal], project.tomeLocal, project.nbVolumesLocal * sizeof(META_TOME));
+			cachedProject.nbVolumesLocal += project.nbVolumesLocal;
 			cachedProject.tomeLocal = newField;
 
-			qsort(cachedProject.tomeLocal, cachedProject.nombreTomeLocal, sizeof(META_TOME), sortTomes);
+			qsort(cachedProject.tomeLocal, cachedProject.nbVolumesLocal, sizeof(META_TOME), sortTomes);
 		}
 	}
 	else
 	{
-		uint * newField = realloc(cachedProject.chapitresLocal, (project.nombreChapitreLocal + cachedProject.nombreChapitreLocal) * sizeof(uint));
+		uint * newField = realloc(cachedProject.chaptersLocal, (project.nbChapterLocal + cachedProject.nbChapterLocal) * sizeof(uint));
 		if(newField != NULL)
 		{
-			memcpy(&newField[cachedProject.nombreChapitreLocal], project.chapitresLocal, project.nombreChapitreLocal * sizeof(uint));
-			cachedProject.nombreChapitreLocal += project.nombreChapitreLocal;
-			cachedProject.chapitresLocal = newField;
+			memcpy(&newField[cachedProject.nbChapterLocal], project.chaptersLocal, project.nbChapterLocal * sizeof(uint));
+			cachedProject.nbChapterLocal += project.nbChapterLocal;
+			cachedProject.chaptersLocal = newField;
 
-			qsort(cachedProject.chapitresLocal, cachedProject.nombreChapitreLocal, sizeof(uint), sortNumbers);
+			qsort(cachedProject.chaptersLocal, cachedProject.nbChapterLocal, sizeof(uint), sortNumbers);
 		}
 	}
 
@@ -155,18 +155,18 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 
 		if(!isTome)	//chapters
 		{
-			oldProject.project.nombreChapitre = nbOld = oldProject.nombreChapitreRemote;
-			oldProject.project.chapitresFull = dataOld = oldProject.chapitresRemote;
-			nbNew = newProject->nombreChapitreRemote;
-			dataNew = newProject->chapitresRemote;
+			oldProject.project.nbChapter = nbOld = oldProject.nbChapterRemote;
+			oldProject.project.chaptersFull = dataOld = oldProject.chaptersRemote;
+			nbNew = newProject->nbChapterRemote;
+			dataNew = newProject->chaptersRemote;
 
 			sizeOfType = sizeof(uint);
 		}
 		else
 		{
-			oldProject.project.nombreTomes = nbOld = oldProject.nombreTomeRemote;
-			oldProject.project.tomesFull = dataOld = oldProject.tomeRemote;
-			nbNew = newProject->nombreTomeRemote;
+			oldProject.project.nbVolumes = nbOld = oldProject.nbVolumesRemote;
+			oldProject.project.volumesFull = dataOld = oldProject.tomeRemote;
+			nbNew = newProject->nbVolumesRemote;
 			dataNew = newProject->tomeRemote;
 
 			sizeOfType = sizeof(META_TOME);
@@ -180,17 +180,17 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		if(nbNew == 0)
 		{
 			if(isTome)
-				oldProject.project.tomesInstalled = NULL;
+				oldProject.project.volumesInstalled = NULL;
 			else
-				oldProject.project.chapitresInstalled = NULL;
+				oldProject.project.chaptersInstalled = NULL;
 
 			getCTInstalled(&oldProject.project, isTome);
 
-			uint length = ACCESS_DATA(isTome, oldProject.project.nombreChapitreInstalled, oldProject.project.nombreTomesInstalled);
+			uint length = ACCESS_DATA(isTome, oldProject.project.nbChapterInstalled, oldProject.project.nbVolumesInstalled);
 
 			if(length != 0)
 			{
-				collector = ACCESS_DATA(isTome, (void*) oldProject.project.chapitresInstalled, (void*) oldProject.project.tomesInstalled);
+				collector = ACCESS_DATA(isTome, (void*) oldProject.project.chaptersInstalled, (void*) oldProject.project.volumesInstalled);
 				lengthCollector = length;
 			}
 		}
@@ -235,22 +235,22 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 		{
 			if(isTome)
 			{
-				void * tmp = realloc(newProject->tomeLocal, newProject->nombreTomeLocal + lengthCollector);
+				void * tmp = realloc(newProject->tomeLocal, newProject->nbVolumesLocal + lengthCollector);
 				if(tmp != NULL)
 				{
 					newProject->tomeLocal = tmp;
-					memcpy(&(newProject->tomeLocal[newProject->nombreTomeLocal]), collector, lengthCollector * sizeOfType);
-					newProject->nombreTomeLocal += lengthCollector;
+					memcpy(&(newProject->tomeLocal[newProject->nbVolumesLocal]), collector, lengthCollector * sizeOfType);
+					newProject->nbVolumesLocal += lengthCollector;
 				}
 			}
 			else
 			{
-				void * tmp = realloc(newProject->chapitresLocal, newProject->nombreChapitreLocal + lengthCollector);
+				void * tmp = realloc(newProject->chaptersLocal, newProject->nbChapterLocal + lengthCollector);
 				if(tmp != NULL)
 				{
-					newProject->chapitresLocal = tmp;
-					memcpy(&(newProject->chapitresLocal[newProject->nombreChapitreLocal]), collector, lengthCollector * sizeOfType);
-					newProject->nombreChapitreLocal += lengthCollector;
+					newProject->chaptersLocal = tmp;
+					memcpy(&(newProject->chaptersLocal[newProject->nbChapterLocal]), collector, lengthCollector * sizeOfType);
+					newProject->nbChapterLocal += lengthCollector;
 				}
 			}
 		}
