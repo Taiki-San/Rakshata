@@ -123,9 +123,7 @@ enum
 
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
-	if(controller != nil)
-		return [controller checkForCollision:data :isTome :element];
-	return NO;
+	return controller != nil ? [controller checkForCollision:data :isTome :element] : NO;
 }
 
 - (void) removingEmailAddress

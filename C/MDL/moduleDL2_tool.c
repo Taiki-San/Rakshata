@@ -521,18 +521,23 @@ bool dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition
 
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, DATA_LOADED ** list, int8_t ** status, uint nbElem)
 {
-	if(list == NULL || status == NULL || !nbElem || element == INVALID_VALUE)
+	if(list == NULL || status == NULL || !nbElem)
 		return false;
+	
+	bool wildcard = element == INVALID_VALUE;
 	
 	for(uint i = 0; i < nbElem; i++)
 	{
 		if(list[i] == NULL || list[i]->datas == NULL)
 			continue;
 		
-		if(projectToTest.cacheDBID == list[i]->datas->cacheDBID && list[i]->identifier == element && (isTome || list[i]->listChapitreOfTome == NULL))
+		if(projectToTest.cacheDBID == list[i]->datas->cacheDBID)
 		{
-			if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkReadable(projectToTest, isTome, element))
-				return true;
+			if(wildcard || (list[i]->identifier == element && (isTome || list[i]->listChapitreOfTome == NULL)))
+			{
+				if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkReadable(projectToTest, isTome, element))
+					return true;
+			}
 		}
 	}
 	

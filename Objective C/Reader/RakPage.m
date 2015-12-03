@@ -838,13 +838,16 @@
 	{
 		MUTEX_UNLOCK(cacheMutex);
 		
-#ifdef LEAVE_DISTRACTION_FREE_AT_END
 		//Trying to go to the next page from the last available page
-		if(goToNext && byChangingPage && self.distractionFree)
+		if(goToNext && byChangingPage)
 		{
-			[self switchDistractionFree];
-		}
+#ifdef LEAVE_DISTRACTION_FREE_AT_END
+			if(self.distractionFree)
+				[self switchDistractionFree];
 #endif
+			
+			[self displaySuggestions];
+		}
 		return NO;
 	}
 
@@ -1832,6 +1835,35 @@
 		_queryArraySize = nbElemValidated;
 		queryHidden = YES;
 	}
+}
+
+#pragma mark - Display suggestions when done reading stuffs
+
+- (BOOL) shouldDisplaySuggestions
+{
+	//Shouldn't display if a following chapter is pending download
+	uint posInList = 0, nbElem = self.isTome ? _project.nbVolumes : _project.nbChapter;
+	
+	if(self.isTome)
+		while(posInList < _project.nbVolumes && _project.volumesFull[posInList++].ID != _currentElem);
+	else
+		while(posInList < _project.nbChapter && _project.chaptersFull[posInList++] != _currentElem);
+	
+	MDL * tabMDL = [[NSApp delegate] MDL];
+	for(; posInList < nbElem; posInList++)
+	{
+		if(![tabMDL proxyCheckForCollision :_project : self.isTome :ACCESS_DATA(self.isTome, _project.chaptersFull[posInList], _project.volumesFull[posInList].ID)])
+			return NO;
+	}
+
+	return YES;
+}
+
+#warning "todo"
+- (void) displaySuggestions
+{
+	if(![self shouldDisplaySuggestions])
+		return;
 }
 
 #pragma mark - Quit
