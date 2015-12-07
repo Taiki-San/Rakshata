@@ -8,16 +8,13 @@
  **                                                                                         **
  **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakSRSuggestions : RakList
-{
-	RakText * placeholder;
-	NSArray * dataArray;
-}
+@interface RakSuggestionEngine : NSObject
 
-@property uint clickedID;
++ (instancetype) getShared;
 
-- (instancetype) init : (NSRect) frame;
+- (NSArray <NSNumber *> *) getSuggestionForProject : (PROJECT_DATA) project withNumber : (uint) nbSuggestions;
+- (PROJECT_DATA) dataForIndex : (uint) index;
 
 @end

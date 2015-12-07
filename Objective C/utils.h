@@ -102,6 +102,7 @@ void registerDefaultForExtension(NSString * extension);
 #import "RakGradientView.h"
 
 #import "RakDBUpdate.h"
+#import "RakSuggestionEngine.h"
 
 #import "RakCustomWindow.h"
 #import "RakAboutWindow.h"

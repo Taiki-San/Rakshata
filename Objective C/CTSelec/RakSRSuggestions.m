@@ -26,7 +26,7 @@
 		
 		scrollView.verticalScroller.alphaValue = 0;
 
-		[self setEmptyState : _nbData == 0];
+		[self setEmptyState : [dataArray count] == 0];
 	}
 	
 	return self;
@@ -34,50 +34,14 @@
 
 - (void) initModel
 {
-	ID = malloc(10 * sizeof(uint));
-	if(ID == NULL)
-		return;
-	
-	cache = getCopyCache(SORT_NAME, &nbElem);
-	if(cache == NULL && nbElem != 0)	// o_o
-	{
-		free(ID);
-		ID = NULL;
-		return;
-	}
-	
-	_nbData = MIN(nbElem, 10);
-
-	NSMutableArray * array = [NSMutableArray arrayWithCapacity:10], * usedID = [NSMutableArray arrayWithCapacity:10];
-	
-	for (uint i = 0, value; i < _nbData; i++)
-	{
-		//Prevent reusing IDs
-		value = getRandom() % nbElem;
-		while([usedID indexOfObject:@(value)] != NSNotFound)
-		{
-			++value;
-			value %= nbElem;
-		}
-		
-		[usedID addObject:@(value)];
-		[array addObject:getStringForWchar(cache[(ID[i] = value)].projectName)];
-	}
-	
-	names = [NSArray arrayWithArray:array];
+	dataArray = [[RakSuggestionEngine getShared] getSuggestionForProject:getEmptyProject() withNumber:10];
 }
 
 - (void) DBUpdated : (NSNotification*) notification
 {
-	if(getDBCount() == nbElem && ![RakDBUpdate isPluralUpdate:notification.userInfo])
-		return;
-
-	freeProjectData(cache);
-	free(ID);
-	
 	[self initModel];
 	[_tableView reloadData];
-	[self setEmptyState : _nbData == 0];
+	[self setEmptyState : [dataArray count] == 0];
 }
 
 - (void) dealloc
@@ -99,7 +63,7 @@
 
 - (NSInteger) numberOfRowsInTableView : (RakTableView *) tableView
 {
-	return _nbData;
+	return (NSInteger) [dataArray count];
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
@@ -114,7 +78,7 @@
 	
 	if(element == nil)
 	{
-		element = [[RakCTFocusSRItem alloc] initWithProject : cache[ID[row]] reason : reason];
+		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[dataArray[(NSUInteger) row] unsignedIntValue]] reason : reason];
 		element.identifier = _identifier;
 		element.table = self;
 		
@@ -124,7 +88,7 @@
 	else
 	{
 		element.reason = reason;
-		[element updateProject:cache[ID[row]]];
+		[element updateProject:[[RakSuggestionEngine getShared] dataForIndex:[dataArray[(NSUInteger) row] unsignedIntValue]]];
 	}
 	
 	return element;

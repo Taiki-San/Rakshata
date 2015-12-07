@@ -63,6 +63,7 @@
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
+		B62A88521C156BB40082BA3B /* RakSuggestionEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */; };
 		B62B45011A8FAAEA0096FA45 /* RakCTSerieHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */; };
 		B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */ = {isa = PBXBuildFile; fileRef = B62DBB891A118AEF007EBAC6 /* RakDRM.m */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
@@ -412,6 +413,8 @@
 		B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchTabGroup.m; path = "Séries/RakSRSearchTabGroup.m"; sourceTree = "<group>"; };
 		B629891E1AA5E4A30072B5D5 /* RakPrefsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsWindow.h; path = "Divers Windows/RakPrefsWindow.h"; sourceTree = "<group>"; };
 		B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsWindow.m; path = "Divers Windows/RakPrefsWindow.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B62A88501C156BB40082BA3B /* RakSuggestionEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSuggestionEngine.h; path = Utils/RakSuggestionEngine.h; sourceTree = "<group>"; };
+		B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSuggestionEngine.m; path = Utils/RakSuggestionEngine.m; sourceTree = "<group>"; };
 		B62B44FF1A8FAAEA0096FA45 /* RakCTSerieHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSerieHeader.h; path = CTSelec/RakCTSerieHeader.h; sourceTree = "<group>"; };
 		B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTSerieHeader.m; path = CTSelec/RakCTSerieHeader.m; sourceTree = "<group>"; };
 		B62DBB891A118AEF007EBAC6 /* RakDRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDRM.m; path = Reader/RakDRM.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -951,6 +954,15 @@
 			name = Button;
 			sourceTree = "<group>";
 		};
+		B62A88531C156BBA0082BA3B /* Suggestion Engine */ = {
+			isa = PBXGroup;
+			children = (
+				B62A88501C156BB40082BA3B /* RakSuggestionEngine.h */,
+				B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */,
+			);
+			name = "Suggestion Engine";
+			sourceTree = "<group>";
+		};
 		B62B45021A8FAAF20096FA45 /* SR extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -1475,6 +1487,7 @@
 				B68B5229191AE38D0057F35A /* RakProgressBar.h */,
 				B68B522A191AE38D0057F35A /* RakProgressBar.m */,
 				B62935DC1A803A9400DE20E2 /* RakText */,
+				B62A88531C156BBA0082BA3B /* Suggestion Engine */,
 				B67E079118E765C10007EB44 /* utils.h */,
 				B62266A61A55D5B3000A5138 /* Utils.m */,
 				B62935DD1A803AAE00DE20E2 /* Window */,
@@ -2004,6 +2017,7 @@
 				B606EB271B6854F900DDBBBD /* DBCacheInstalled.c in Sources */,
 				B6756C2518C13EBF006E166F /* RakReaderBottomBar.m in Sources */,
 				B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */,
+				B62A88521C156BB40082BA3B /* RakSuggestionEngine.m in Sources */,
 				B6D7EC091B682B90009FCE64 /* RakImportRarController.m in Sources */,
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,
