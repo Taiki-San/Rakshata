@@ -1619,6 +1619,20 @@
 	
 	if(object == nil || ([object class] != [RakPageScrollView class] && [object class] != [RakImageView class]))
 	{
+		BOOL needEmptyView = NO;
+		
+		//Detect when we get before the first page of the first chapter/last page of the last chapter
+		if([object isKindOfClass:[NSNumber class]])
+		{
+			int64_t value = [(NSNumber *) object longLongValue];
+			
+			if((value == -1 && _posElemInStructure == 0) || 	//First page
+			   (value == -2 && !changeChapterAllowed(&_project, self.isTome, _posElemInStructure + 1)))	//Last page
+			{
+				needEmptyView = YES;
+			}
+		}
+		
 		//Somehow, the cache isn't running
 		if(!self.initWithNoContent && !_flushingCache && (!_cacheBeingBuilt || workingCacheSession != cacheSession))
 		{
@@ -1628,7 +1642,7 @@
 			});
 		}
 		
-		NSImage * imagePlaceholder = !self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder;
+		NSImage * imagePlaceholder = needEmptyView ? nil : (!self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder);
 		
 		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
 		[placeholder setImage:imagePlaceholder];

@@ -582,8 +582,9 @@
 				insertion[nbInsertion++] = posNew;
 		}
 		
-#ifdef EXTENSIVE_LOGGING
-		printf("Updating RakSRContentManager: %d - %lld + %lld = %d\n", nbElemActivated, nbRemoval, nbInsertion, newNbElemActivated);
+#ifdef DEV_VERSION
+		if(nbRemoval || nbInsertion)
+			NSLog(@"Updating RakSRContentManager: %d - %lld + %lld = %d\n", nbElemActivated, nbRemoval, nbInsertion, newNbElemActivated);
 #endif
 		
 		//We replace the old data structure
