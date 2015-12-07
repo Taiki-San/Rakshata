@@ -915,6 +915,7 @@
 			
 			MUTEX_LOCK(cacheMutex);
 			mainScroller.arrangedObjects = array;
+			_scrollView = currentPageView;
 			MUTEX_UNLOCK(cacheMutex);
 		}
 	}
