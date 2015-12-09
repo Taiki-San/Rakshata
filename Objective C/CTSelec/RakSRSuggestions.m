@@ -34,7 +34,7 @@
 
 - (void) initModel
 {
-	dataArray = [[RakSuggestionEngine getShared] getSuggestionForProject:getEmptyProject() withNumber:10];
+	dataArray = [[RakSuggestionEngine getShared] getSuggestionForProject:INVALID_VALUE withNumber:10];
 }
 
 - (void) DBUpdated : (NSNotification*) notification
@@ -74,11 +74,9 @@
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	RakCTFocusSRItem * element = [tableView makeViewWithIdentifier : _identifier owner:self];
-	byte reason = row & 1 ? SUGGESTION_REASON_TAG : SUGGESTION_REASON_AUTHOR;
-	
 	if(element == nil)
 	{
-		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[dataArray[(NSUInteger) row] unsignedIntValue]] reason : reason];
+		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[[dataArray[(NSUInteger) row] objectForKey:@"ID"] unsignedIntValue]] reason : [[dataArray[(NSUInteger) row] objectForKey:@"reason"] unsignedIntValue]];
 		element.identifier = _identifier;
 		element.table = self;
 		
@@ -87,8 +85,8 @@
 	}
 	else
 	{
-		element.reason = reason;
-		[element updateProject:[[RakSuggestionEngine getShared] dataForIndex:[dataArray[(NSUInteger) row] unsignedIntValue]]];
+		element.reason = [[dataArray[(NSUInteger) row] objectForKey:@"reason"] unsignedIntValue];
+		[element updateProject:[[RakSuggestionEngine getShared] dataForIndex:[[dataArray[(NSUInteger) row] objectForKey:@"ID"] unsignedIntValue]]];
 	}
 	
 	return element;

@@ -14,7 +14,7 @@
 
 + (instancetype) getShared;
 
-- (NSArray <NSNumber *> *) getSuggestionForProject : (PROJECT_DATA) project withNumber : (uint) nbSuggestions;
+- (NSArray <NSDictionary *> *) getSuggestionForProject : (uint) cacheID withNumber : (uint) nbSuggestions;
 - (PROJECT_DATA) dataForIndex : (uint) index;
 
 @end
