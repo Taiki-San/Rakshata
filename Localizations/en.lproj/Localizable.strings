@@ -137,6 +137,8 @@
 "READER-SETTING-FORCE-BKGD" = "Draw white background (PDF)";
 "READER-SETTING-OVERRIDE-DIR" = "Ignore the reading direction of the serie";
 
+"READER-SUGG-TITLE" = "What do you want to read next?";
+
 //Prefs
 "PREFS-TITLE-GENERAL" = "General";
 "PREFS-TITLE-REPO" = "Sources";
