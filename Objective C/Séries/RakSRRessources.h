@@ -37,7 +37,6 @@
 
 @class RakSRContentManager;
 
-#import "RakSRProjectView.h"
 #import "RakGridView.h"
 
 #import "RakSRContentManager.h"

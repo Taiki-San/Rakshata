@@ -88,8 +88,10 @@ void registerDefaultForExtension(NSString * extension);
 #import "RakProgressBar.h"
 #import "RakBackButton.h"
 #import "RakPopover.h"
+#import "RakProjectView.h"
 
 @class RakProjectMenu;
+
 
 #import "RakAuthForegroundView.h"
 #import "RakTabView.h"

@@ -16,7 +16,7 @@ enum
 	SUGGESTION_REASON_AUTHOR
 };
 
-@interface RakSRProjectView : NSView
+@interface RakBasicProjectView : NSView
 {
 	PROJECT_DATA _project;
 	NSRect _workingArea;
@@ -53,3 +53,19 @@ enum
 - (NSPoint) reloadOrigin;
 
 @end
+
+@interface RakThumbProjectView : RakBasicProjectView
+{
+	RakText * typeProject, * tagProject;
+}
+
+@property byte reason;
+
+- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
+- (void) updateProject : (PROJECT_DATA) project;
+
+- (CGFloat) getMinimumHeight;
+- (NSColor *) borderColor;
+
+@end
+

@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCollectionViewItem : RakSRProjectView
+@interface RakCollectionViewItem : RakBasicProjectView
 {
 	uint * _sharedActive;
 	uint sessionCode;
