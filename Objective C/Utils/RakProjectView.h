@@ -21,7 +21,7 @@ enum
 	PROJECT_DATA _project;
 	NSRect _workingArea;
 	
-	BOOL _animationRequested;
+	BOOL _animationRequested, registerdPref;
 	
 	NSImageView * thumbnail;
 	RakText * projectName, * projectAuthor;

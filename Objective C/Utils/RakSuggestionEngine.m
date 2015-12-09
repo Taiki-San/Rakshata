@@ -60,7 +60,7 @@ __strong RakSuggestionEngine * sharedObject;
 //Random placeholder
 - (NSArray <NSDictionary *> *) getSuggestionForProject : (uint) cacheID withNumber : (uint) nbSuggestions
 {
-	nbSuggestions = MIN(nbElem, nbSuggestions);
+	nbSuggestions = MIN(cacheID != INVALID_VALUE ? nbElem - 1 : nbElem, nbSuggestions);
 	
 	NSMutableArray < NSDictionary * > * array = [[NSMutableArray alloc] initWithCapacity:nbSuggestions];
 	NSMutableArray < NSNumber *> * usedID = [[NSMutableArray alloc] initWithCapacity:nbSuggestions];
@@ -69,7 +69,7 @@ __strong RakSuggestionEngine * sharedObject;
 	{
 		//Prevent reusing IDs
 		value = getRandom() % nbElem;
-		while([usedID indexOfObject:@(value)] != NSNotFound)
+		while(value == cacheID || [usedID indexOfObject:@(value)] != NSNotFound)
 		{
 			++value;
 			value %= nbElem;

@@ -52,6 +52,7 @@ enum
 
 - (void) initContent
 {
+	registerdPref = YES;
 	[Prefs registerForChange:self forType:KVO_THEME];
 	
 	NSImage * image = loadImageGrid(_project);
@@ -81,7 +82,9 @@ enum
 
 - (void) dealloc
 {
-	[Prefs deRegisterForChange:self forType:KVO_THEME];
+	if(registerdPref)
+		[Prefs deRegisterForChange:self forType:KVO_THEME];
+	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[RakDBUpdate unRegister:self];
 }
