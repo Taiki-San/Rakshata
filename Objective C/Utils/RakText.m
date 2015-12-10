@@ -222,7 +222,7 @@
 - (void) setFixedWidth : (CGFloat)fixedWidth
 {
 	haveFixedWidth = fixedWidth != 0;
-	if(_fixedWidth != fixedWidth)
+	if(_fixedWidth != fixedWidth || _bounds.size.width != fixedWidth)
 	{
 		_fixedWidth = fixedWidth;
 		

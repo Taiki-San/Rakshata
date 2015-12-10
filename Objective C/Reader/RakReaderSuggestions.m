@@ -14,6 +14,8 @@
 {
 	RakText * header;
 	NSArray <RakThumbProjectView *> * thumbs;
+	RakButton * cancel, * discardForEvar;
+	BOOL defaultValueDiscard;
 }
 
 @end
@@ -28,8 +30,8 @@
 - (void) launchPopover : (NSView *) anchor withProjectID : (uint) cacheDBID
 {
 	//We check if the user asked not to be annoyed again
-	BOOL answer = NO, haveValue = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_SUGGESTION : &answer];
-	if(!haveValue || !answer || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	BOOL haveValue = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_SUGGESTION : &defaultValueDiscard];
+	if(!haveValue || !defaultValueDiscard || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
 	{
 		_anchor = anchor;
 		_cacheDBID = cacheDBID;
@@ -59,7 +61,10 @@
 		RakThumbProjectView * view = [[RakThumbProjectView alloc] initWithProject:[[RakSuggestionEngine getShared] dataForIndex:[[dict objectForKey:@"ID"] unsignedIntValue]] reason:[(NSNumber *) [dict objectForKey:@"reason"] unsignedCharValue]];
 		
 		if(view != nil)
+		{
+			view.mustHoldTheWidth = YES;
 			[workingThumbs addObject:view];
+		}
 	}
 	
 	thumbs = [NSArray arrayWithArray:workingThumbs];
@@ -70,8 +75,27 @@
 	NSSize firstItemSize = [thumbs firstObject].bounds.size, newSize = _bounds.size;
 	CGFloat baseX = 8;
 	
+	//Create the buttons
+	cancel = [RakButton allocWithText:NSLocalizedString(@"CANCEL", nil)];
+	if(cancel != nil)
+	{
+		cancel.target = self;
+		cancel.action = @selector(close);
+		[self addSubview:cancel];
+	}
+	
+	discardForEvar = [RakButton allocWithText:NSLocalizedString(@"READER-DISCARD-FOREVER", nil)];
+	if(discardForEvar != nil)
+	{
+		((RakButtonCell *) discardForEvar.cell).activeAllowed = YES;
+		discardForEvar.state = defaultValueDiscard ? NSOnState : NSOffState;
+		discardForEvar.target = self;
+		discardForEvar.action = @selector(dontShowAgain);
+		[self addSubview:discardForEvar];
+	}
+	
 	//Update our width
-	[self setFrameSize:newSize = NSMakeSize(baseX + [thumbs count] * (firstItemSize.width + baseX), MAX(newSize.height, firstItemSize.height + 28))];
+	[self setFrameSize:newSize = NSMakeSize(baseX + [thumbs count] * (firstItemSize.width + baseX), firstItemSize.height + 28 + discardForEvar.bounds.size.height + 5)];
 	
 	header = [[RakText alloc] initWithText:NSLocalizedString(@"READER-SUGG-TITLE", nil) :[Prefs getSystemColor:COLOR_SURVOL]];
 	if(header != nil)
@@ -86,13 +110,19 @@
 		[self addSubview:header];
 	}
 	
+	CGFloat baseHeaderY = header.frame.origin.y - 8, baseY = baseHeaderY;
+	
 	for(RakThumbProjectView * view in thumbs)
 	{
-		[view setFrameOrigin:NSMakePoint(baseX, 5)];
+		[view setFrameOrigin:NSMakePoint(baseX, baseHeaderY - view.bounds.size.height)];
 		[self addSubview:view];
 		
 		baseX += 8 + firstItemSize.width;
+		baseY = MIN(baseY, view.frame.origin.y);
 	}
+	
+	[cancel setFrameOrigin:NSMakePoint(newSize.width / 4 - cancel.bounds.size.width / 2, 8)];
+	[discardForEvar setFrameOrigin:NSMakePoint(newSize.width * 3 / 4 - discardForEvar.bounds.size.width / 2, 8)];
 }
 
 - (void) configurePopover:(INPopoverController *)internalPopover
@@ -101,6 +131,18 @@
 	
 	internalPopover.closesWhenApplicationBecomesInactive = YES;
 	internalPopover.closesWhenPopoverResignsKey = YES;
+}
+
+#pragma mark - Button target
+
+- (void) close
+{
+	[self closePopover];
+}
+
+- (void) dontShowAgain
+{
+	[RakPrefsRemindPopover setValueReminded:PREFS_REMIND_SUGGESTION :discardForEvar.state == NSOnState];
 }
 
 @end

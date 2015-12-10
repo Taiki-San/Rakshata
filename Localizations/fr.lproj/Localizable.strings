@@ -138,6 +138,7 @@
 "READER-SETTING-OVERRIDE-DIR" = "Ignore la direction de lecture de la série";
 
 "READER-SUGG-TITLE" = "Que souhaitez vous lire ensuite?";
+"READER-DISCARD-FOREVER" = "Ne plus demander";
 
 //Prefs
 "PREFS-TITLE-GENERAL" = "Général";

@@ -59,6 +59,7 @@ enum
 	RakText * typeProject, * tagProject;
 }
 
+@property (nonatomic) BOOL mustHoldTheWidth;
 @property byte reason;
 
 - (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;

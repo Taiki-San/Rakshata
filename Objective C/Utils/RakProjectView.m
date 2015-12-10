@@ -393,6 +393,36 @@ enum
 
 #pragma mark - Sizing
 
+- (void) updateSizes
+{
+	NSSize size = _bounds.size;
+	
+	//Too small
+	if(size.width < 10)
+		return;
+	
+	size.width -= 10;
+	
+	for(RakText * view in [self getTextWithFixedWidth])
+	{
+		if(_mustHoldTheWidth)
+		{
+			view.enableWraps = YES;
+			view.fixedWidth = size.width;
+		}
+		else
+		{
+			view.enableWraps = NO;
+			[view sizeToFit];	//setting fixedWidth already triggers the resizing
+		}
+	}
+}
+
+- (NSArray <RakText *> *) getTextWithFixedWidth
+{
+	return projectAuthor == nil ? @[projectName] : @[projectName, projectAuthor];
+}
+
 - (NSPoint) resizeContent : (NSSize) newSize : (BOOL) animated
 {
 	NSPoint previousOrigin = [super resizeContent:newSize :animated];
@@ -475,6 +505,31 @@ enum
 - (CGFloat) getMinimumHeight
 {
 	return TOP_BORDER + 1 + BAR_SEPARATOR + (_reason == SUGGESTION_REASON_TAG ? MAX(typeProject.bounds.size.height, tagProject.bounds.size.height) : projectAuthor.bounds.size.height) + projectName.bounds.size.height + BORDER_NAME + [self thumbSize].height + TOP_BORDER;
+}
+
+#pragma mark - Properties
+
+- (void) setMustHoldTheWidth:(BOOL)mustHoldTheWidth
+{
+	if(_mustHoldTheWidth == mustHoldTheWidth)
+		return;
+	
+	_mustHoldTheWidth = mustHoldTheWidth;
+	[self updateSizes];
+	
+	NSPoint newLowestOrigin = [self reloadOrigin];
+	
+	newLowestOrigin.y -= TOP_BORDER;
+	
+	if(newLowestOrigin.y < 0)
+	{
+		NSSize size = _bounds.size;
+		
+		size.height -= newLowestOrigin.y;	//newLowestOrigin is negative
+		
+		[self setFrameSize:size];
+		[self reloadOrigin];
+	}
 }
 
 #pragma mark - Drawing
