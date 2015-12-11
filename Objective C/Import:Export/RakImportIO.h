@@ -44,6 +44,8 @@
 //This is a base class that does the standard work no matter the actual file behind the entity
 @interface RakImportBaseController : NSObject
 
+- (BOOL) noValidFileFoundForDir : (const char *) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString **) redirection;
+
 @end
 
 //This object/structure (required to have a strong relation with IOController) is used to map the directory structure and infer metadata
