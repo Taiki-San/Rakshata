@@ -858,7 +858,7 @@
 	_posElemInStructure = newPosIntoStruct;
 	
 	[self updateTitleBar:_project :self.isTome :_posElemInStructure];
-	[self updateCTTab];
+	[self updateCTTab : NO];
 	
 	if((goToNext && nextDataLoaded && _nextData.IDDisplayed == _currentElem) || (!goToNext && previousDataLoaded && _previousData.IDDisplayed == _currentElem))
 	{
@@ -988,16 +988,19 @@
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
-		[self updateCTTab];
+		[self updateCTTab : YES];
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
 	addRecentEntry(_project, false);
 }
 
-- (void) updateCTTab
+- (void) updateCTTab : (BOOL) shouldOverwriteActiveProject
 {
-	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate]CT];
+	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate] CT];
+	
+	if(!shouldOverwriteActiveProject && tabCT.activeProject.cacheDBID != _project.cacheDBID)
+		return;
 	
 	_dontGiveACrapAboutCTPosUpdate = YES;
 	[tabCT selectElem: _project.cacheDBID :self.isTome :_currentElem];

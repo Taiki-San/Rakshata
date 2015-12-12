@@ -189,14 +189,15 @@
 	return string;
 }
 
-- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (uint) element
+- (void) updateProject : (uint) cacheDBID : (BOOL)isTome : (uint) element
 {
-	PROJECT_DATA newProject = getProjectByID(project.cacheDBID);	//Isole le tab des données
+	PROJECT_DATA newProject = getProjectByID(cacheDBID);	//Isole le tab des données
 	
 	if(newProject.isInitialized)
 	{
 		self.initWithNoContent = NO;
 		[coreView updateContext:newProject];
+		[self selectElem:cacheDBID :isTome :element];
 		
 		//Coreview en fait aussi une copie, on doit donc release cette version
 		releaseCTData(newProject);
@@ -346,7 +347,7 @@
 				[CATransaction begin];
 				[CATransaction setDisableActions:YES];
 				
-				[self updateProject : project : isTome : element];
+				[self updateProject : project.cacheDBID : isTome : element];
 				
 				[CATransaction commit];
 				
@@ -371,7 +372,7 @@
 		
 		else	//We bypass the fancy animation
 		{
-			[self updateProject : project : isTome : element];
+			[self updateProject : project.cacheDBID : isTome : element];
 			
 			if(self.mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];

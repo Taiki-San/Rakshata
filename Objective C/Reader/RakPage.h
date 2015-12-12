@@ -44,7 +44,7 @@
 - (void) jumpToPage : (uint) newPage;
 - (BOOL) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
-- (void) updateCTTab;
+- (void) updateCTTab : (BOOL) shouldOverwriteActiveProject;
 - (void) updateContext : (BOOL) dataAlreadyLoaded;
 - (void) updateEvnt;
 - (void) deleteElement;

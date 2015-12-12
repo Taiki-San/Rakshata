@@ -94,7 +94,7 @@
 	if(savedState.isInitialized)
 	{
 		if(((RakAppDelegate *) [NSApp delegate]).CT.initWithNoContent)
-			[((RakAppDelegate *) [NSApp delegate]).CT updateProject :project :savedState.isTome :savedState.CTID];
+			[((RakAppDelegate *) [NSApp delegate]).CT updateProject :project.cacheDBID :savedState.isTome :savedState.CTID];
 		
 		if(saveMagnification)
 		{

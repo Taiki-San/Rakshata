@@ -42,7 +42,7 @@
 
 - (instancetype) init : (NSView *) contentView : (NSString *) state;
 
-- (void) updateProject : (PROJECT_DATA) project : (BOOL)isTome : (uint) element;
+- (void) updateProject : (uint) cacheDBID : (BOOL)isTome : (uint) element;
 - (void) resetTabContent;
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element;

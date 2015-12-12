@@ -474,7 +474,7 @@ enum
 				CTDeleted = YES;
 			}
 			else
-				[CT updateProject:readerProject :reader.isTome :reader.currentElem];
+				[CT updateProject:readerProject.cacheDBID :reader.isTome :reader.currentElem];
 		}
 		
 		//Update focus if required

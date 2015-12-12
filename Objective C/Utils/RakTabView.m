@@ -114,7 +114,7 @@
 
 - (void) contextChanged : (NSNotification*) notification
 {
-	if([[notification object] class] != [self class])
+	if(notification.object == nil || [notification.object class] != [self class])
 	{
 		NSDictionary *userInfo = [notification userInfo];
 		

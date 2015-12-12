@@ -396,16 +396,23 @@
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element
 {
-	if(data.cacheDBID != projectID || self.dontNotify)
+	if(self.dontNotify)
 		return;
 	
-	RakCTSelectionListContainer * tab = isTome ? _volView : _chapterView;
-	
-	if(tab != nil)
+	if(data.cacheDBID != projectID)
 	{
-		uint row = [tab getIndexOfElement:element];
-		[tab selectIndex:row];
-		[tab jumpScrollerToIndex:row];
+		[[[NSApp delegate] CT] updateProject:projectID :isTome :element];
+	}
+	else
+	{
+		RakCTSelectionListContainer * tab = isTome ? _volView : _chapterView;
+		
+		if(tab != nil)
+		{
+			uint row = [tab getIndexOfElement:element];
+			[tab selectIndex:row];
+			[tab jumpScrollerToIndex:row];
+		}
 	}
 }
 
