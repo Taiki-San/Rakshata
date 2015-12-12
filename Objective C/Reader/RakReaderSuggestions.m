@@ -139,6 +139,9 @@
 
 - (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
 {
+	if(selection != THUMBVIEW_CLICK_NONE)
+		[self close];
+
 	if(selection != THUMBVIEW_CLICK_PROJECT)
 		return YES;
 	

@@ -842,6 +842,12 @@
 		//Trying to go to the next page from the last available page
 		if(goToNext && byChangingPage)
 		{
+			NSInteger count = (NSInteger) [mainScroller.arrangedObjects count];
+			if(count > 3 && mainScroller.patchedSelectedIndex == count - 1)
+			{
+				mainScroller.patchedSelectedIndex = count - 2;
+			}
+			
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 			if(self.distractionFree)
 			{
