@@ -15,6 +15,8 @@
 	uint _cacheDBID;
 }
 
+@property BOOL openedLeavingDFMode;
+
 - (instancetype) autoInit;
 - (void) launchPopover : (NSView *) anchor withProjectID : (uint) cacheDBID;
 

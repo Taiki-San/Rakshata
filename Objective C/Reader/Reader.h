@@ -47,7 +47,7 @@
 	uint cacheSession, workingCacheSession;
 	byte previousMove;
 	
-	BOOL bottomBarHidden;
+	BOOL bottomBarHidden, oldDFState;
 	NSTimer * delaySinceLastMove;
 	NSPoint cursorPosBeforeLastMove;
 	

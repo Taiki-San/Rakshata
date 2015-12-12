@@ -844,13 +844,18 @@
 		{
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 			if(self.distractionFree)
+			{
+				oldDFState = YES;
 				[self switchDistractionFree];
+			}
 #endif
 			
 			[self displaySuggestions];
 		}
 		return NO;
 	}
+	else
+		oldDFState = NO;
 
 	MUTEX_UNLOCK(cacheMutex);
 	
@@ -1885,7 +1890,7 @@
 	if(![self shouldDisplaySuggestions])
 		return;
 	
-	[bottomBar displaySuggestionsForProject:_project];
+	[bottomBar displaySuggestionsForProject:_project withOldDFState:oldDFState];
 }
 
 #pragma mark - Quit
@@ -1893,6 +1898,7 @@
 - (void) flushCache
 {
 	cacheSession++;		//tell the cache to stop
+	oldDFState = NO;
 	
 	if(_project.isInitialized)
 		insertCurrentState(_project, [self exportContext]);

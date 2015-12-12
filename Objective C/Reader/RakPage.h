@@ -41,6 +41,7 @@
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (BOOL) changePage : (byte) switchType;
+- (BOOL) changePage : (byte) switchType : (BOOL) animated;
 - (void) jumpToPage : (uint) newPage;
 - (BOOL) changeChapter : (BOOL) goToNext : (BOOL) byChangingPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;

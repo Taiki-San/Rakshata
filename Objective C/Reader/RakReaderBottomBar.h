@@ -64,7 +64,7 @@
 - (void) resizeAnimation : (NSRect) frameRect;
 - (void) recalculateElementsPosition : (BOOL) isAnimated : (CGFloat) newWidth;
 
-- (void) displaySuggestionsForProject : (PROJECT_DATA) project;
+- (void) displaySuggestionsForProject : (PROJECT_DATA) project withOldDFState : (BOOL) oldDFState;
 
 - (NSColor*) getColorFront;
 

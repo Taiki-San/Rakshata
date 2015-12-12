@@ -352,8 +352,12 @@
 {
 	bottomBarHidden = NO;	//We reset it
 	
+	BOOL mustLeaveDFMode = getMainThread() != TAB_READER;
+	if(mustLeaveDFMode && !self.distractionFree)
+		return;
+	
 	//We have to leave distraction-free mode
-	if(self.distractionFree && ![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
+	if(self.distractionFree && (![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1] || mustLeaveDFMode))
 	{
 		self.distractionFree = NO;
 		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0])

@@ -253,10 +253,17 @@
 	[pageCount updateSize:self.frame.size.height : [self getPosXElement : 8 : newWidth]];
 }
 
-- (void) displaySuggestionsForProject : (PROJECT_DATA) project
+- (void) displaySuggestionsForProject : (PROJECT_DATA) project withOldDFState : (BOOL) oldDFState
 {
 	if(project.isInitialized)
-		[[[RakReaderSuggestions alloc] autoInit] launchPopover:nextChapter withProjectID:project.cacheDBID];
+	{
+		RakReaderSuggestions * popover = [[RakReaderSuggestions alloc] autoInit];
+		if(popover != nil)
+		{
+			popover.openedLeavingDFMode = oldDFState;
+			[popover launchPopover:nextChapter withProjectID:project.cacheDBID];
+		}
+	}
 }
 
 #pragma mark - Color stuffs

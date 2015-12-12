@@ -142,12 +142,16 @@
 	if(selection != THUMBVIEW_CLICK_PROJECT)
 		return YES;
 	
-#warning "Need to restore DF mode if we left it there"
-#warning "Need to check the alpha of the bottom bar after the mouse moved once in DF mode"
-	
 	//Return YES will open the CT tab
 	//Return NO will tell the routine we did the work, and to simply return
-	return ![RakSuggestionEngine suggestionWasClicked:project.elementID];
+	BOOL retvalue = ![RakSuggestionEngine suggestionWasClicked:project.elementID];
+	
+	if(!retvalue && [[NSApp delegate] reader].distractionFree != _openedLeavingDFMode)
+	{
+		[[[NSApp delegate] reader] switchDistractionFree];
+	}
+	
+	return retvalue;
 }
 
 - (void) close
