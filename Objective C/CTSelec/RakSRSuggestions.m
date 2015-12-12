@@ -77,8 +77,12 @@
 	if(element == nil)
 	{
 		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[[dataArray[(NSUInteger) row] objectForKey:@"ID"] unsignedIntValue]] reason : [[dataArray[(NSUInteger) row] objectForKey:@"reason"] unsignedIntValue]];
+
 		element.identifier = _identifier;
 		element.table = self;
+		element.controller = self;
+		element.clickValidation = @selector(receiveClick:forClick:);
+		
 		
 		if(row == _nbData - 1)
 			element.last = YES;
@@ -90,6 +94,11 @@
 	}
 	
 	return element;
+}
+
+- (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
+{
+	return ![RakSuggestionEngine suggestionWasClicked:project.elementID];
 }
 
 #pragma mark - Configuration

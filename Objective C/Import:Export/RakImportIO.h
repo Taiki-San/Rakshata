@@ -44,7 +44,7 @@
 //This is a base class that does the standard work no matter the actual file behind the entity
 @interface RakImportBaseController : NSObject
 
-- (BOOL) noValidFileFoundForDir : (const char *) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString **) redirection;
+- (BOOL) noValidFileFoundForDir : (const char * __nullable) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString * __nullable * __nonnull) redirection;
 
 @end
 
