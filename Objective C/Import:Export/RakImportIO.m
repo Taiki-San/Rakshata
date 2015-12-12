@@ -234,7 +234,7 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
         
         currentString = [NSString stringWithUTF8String:filenames[i]];
         
-        if(currentString == nil || [currentString isEqualToString:@""])
+        if(currentString == nil || [currentString isEqualToString:@""] || [currentString hasPrefix:@"__MACOSX/"])
             continue;
         
         extension = [currentString pathExtension];
@@ -257,20 +257,18 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 		path = [path stringByAppendingString:@"/"];
     
     //We craft the config.dat
-    FILE * config = fopen([[path stringByAppendingString:@CONFIGFILE] UTF8String], "w+");
-    
-    if(config == NULL)
-        return;
 	
 	NSMutableString * outputData = [NSMutableString new];
-	
+	NSString * tmpPath = [path stringByAppendingString:@"tmp/"];
 	uint counter = 0, additionnalPages = 0;
-    
+
+	mkdirR([tmpPath UTF8String]);
+
     for(NSString * file in array)
 	{
 		//We need to rename the file with a cleaner name
 		NSString * newFile = [NSString stringWithFormat:@"%d.%@", counter++, [file pathExtension]];
-		rename([[path stringByAppendingString:file] UTF8String], [[path stringByAppendingString:newFile] UTF8String]);
+		rename([[path stringByAppendingString:file] UTF8String], [[tmpPath stringByAppendingString:newFile] UTF8String]);
 		
 		if([[file pathExtension] caseInsensitiveCompare:@"pdf"] != NSEqualToComparison)
 		{
@@ -278,7 +276,7 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 		}
 		else
 		{
-			PDFDocument * document = [[PDFDocument alloc] initWithData:[NSData dataWithContentsOfFile:[path stringByAppendingString:newFile]]];
+			PDFDocument * document = [[PDFDocument alloc] initWithData:[NSData dataWithContentsOfFile:[tmpPath stringByAppendingString:newFile]]];
 			if(document != NULL)
 			{
 				NSArray * list = [document getPages];
@@ -292,9 +290,58 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 		}
 	}
 	
-	fprintf(config, "%u\nN", (uint) [array count] + additionnalPages);
-	fwrite([outputData UTF8String], [outputData length], 1, config);
-    fclose(config);
+	//We remove anything remaining in the directory
+	DIR * directory = opendir([path UTF8String]);
+	if(directory != NULL)
+	{
+		struct dirent * entry;
+
+		//Iterate the directory
+		while ((entry = readdir(directory)) != NULL)
+		{
+			//Dirs we don't care about
+			if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..") || !strcmp(entry->d_name, "tmp") || entry->d_namlen == 0)
+				continue;
+			
+			if((entry->d_type & DT_DIR) != 0)
+				removeFolder([[path stringByAppendingString:[NSString stringWithUTF8String : entry->d_name]] UTF8String]);
+			else
+				remove([[path stringByAppendingString:[NSString stringWithUTF8String : entry->d_name]] UTF8String]);
+		}
+		
+		closedir(directory);
+	}
+	
+	//We then move back all the files from the tmp directory to the main one
+	directory = opendir([tmpPath UTF8String]);
+	if(directory != NULL)
+	{
+		struct dirent * entry;
+		
+		//Iterate the directory
+		while ((entry = readdir(directory)) != NULL)
+		{
+			//Dirs we don't care about
+			if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..") || entry->d_namlen == 0 || (entry->d_type & DT_DIR) != 0)
+				continue;
+
+			NSString * filename = [NSString stringWithUTF8String:entry->d_name];
+			
+			rename([[tmpPath stringByAppendingString:filename] UTF8String], [[path stringByAppendingString:filename] UTF8String]);
+		}
+		
+		closedir(directory);
+	}
+	
+	removeFolder([tmpPath UTF8String]);
+	
+	FILE * config = fopen([[path stringByAppendingString:@CONFIGFILE] UTF8String], "w+");
+	if(config != NULL)
+	{
+		fprintf(config, "%u\nN", (uint) [array count] + additionnalPages);
+		fwrite([outputData UTF8String], [outputData length], 1, config);
+		fclose(config);
+	}
 }
 
 @implementation RakImportNode

@@ -108,7 +108,7 @@ void usstrcpy(void* output, size_t length, const void* input)
 	uint depth = 0;
 #endif
 
-void removeFolder(char *path)
+void removeFolder(const char *path)
 {
 #ifdef EXTENSIVE_LOGGING
 	if(!depth)
