@@ -956,7 +956,9 @@
 	if(_dontGiveACrapAboutCTPosUpdate)
 		return;
 	
-	if(queryHidden && projectRequest.cacheDBID != _project.cacheDBID)
+	BOOL changingProject = projectRequest.cacheDBID != _project.cacheDBID;
+	
+	if(queryHidden && changingProject)
 	{
 		free(_queryArrayData);
 		_queryArrayData = NULL;
@@ -988,7 +990,7 @@
 	
 	if([self initialLoading:projectRequest :elemRequest :isTomeRequest : startPage])
 	{
-		[self updateCTTab : YES];
+		[self updateCTTab : changingProject];
 		[self changePage:READER_ETAT_DEFAULT];
 	}
 	
