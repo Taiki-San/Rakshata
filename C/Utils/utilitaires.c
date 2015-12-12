@@ -109,3 +109,13 @@ bool haveSuffixCaseInsensitive(const char *input, const char * stringToFind)
 		++input;
 	}
 }
+
+bool isStringLongerOrAsLongThan(const char * input, uint length)
+{
+	if(length == 0)
+		return true;
+	
+	for(; *(input++) && length; length--);
+	
+	return length == 0;
+}

@@ -74,11 +74,14 @@
 	//We gather the indexes of the files we'll evaluate
 	for(uint pos = 0; pos < nbFiles; pos++)
 	{
+		if(!isStringLongerOrAsLongThan(filenames[pos], lengthExpected))
+			continue;
+		
 		if(filenames[pos][lengthExpected] != '\0' && (startExpectedPath == NULL || !strncmp(filenames[pos], startExpectedPath, lengthExpected)))
 		{
 			indexOfFiles[nbFileToEvaluate++] = pos;
 		}
-		else if(filenames[pos][lengthExpected] != '\0')
+		else if(filenames[pos][lengthExpected] == '\0')
 		{
 			couldFindDirInArray = true;
 		}
