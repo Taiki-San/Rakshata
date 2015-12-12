@@ -143,9 +143,10 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_REC_lastIsTome			5
 #define RDB_REC_lastCTID			6
 #define RDB_REC_lastPage			7
-#define RDB_REC_lastZoom			8
-#define RDB_REC_lastScrollerX		9
-#define RDB_REC_lastScrollerY		10
+#define RDB_REC_wasLastPageOfCT		8
+#define RDB_REC_lastZoom			9
+#define RDB_REC_lastScrollerX		10
+#define RDB_REC_lastScrollerY		11
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 

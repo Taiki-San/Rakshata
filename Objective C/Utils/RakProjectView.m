@@ -575,36 +575,65 @@ enum
 
 - (void) mouseUp:(NSEvent *)theEvent
 {
+	byte selection = THUMBVIEW_CLICK_NONE;
+	
+	//Determine the item to be clicked
 	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	
 	if(NSPointInRect(point, thumbnail.frame) || NSPointInRect(point, projectName.frame))
-	{
-		PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
-		
-		if(dataToSend.isInitialized)
-			[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_VALUE];
-	}
+		selection = THUMBVIEW_CLICK_PROJECT;
+
 	else if(_reason == SUGGESTION_REASON_AUTHOR && NSPointInRect(point, projectAuthor.frame))
-	{
-		uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_project.authorName));
-		
-		if(ID != UINT_MAX)
-		{
-			[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_project.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
-		}
-	}
+		selection = THUMBVIEW_CLICK_AUTHOR;
+
 	else if(_reason == SUGGESTION_REASON_TAG)
 	{
 		if(NSPointInRect(point, typeProject.frame))
+			selection = THUMBVIEW_CLICK_CAT;
+		
+		else if(NSPointInRect(point, tagProject.frame))
+			selection = THUMBVIEW_CLICK_TAG;
+	}
+	
+	//Call the callback if asked
+	if(_controller != nil && [_controller respondsToSelector:_clickValidation])
+	{
+		IMP imp = [_controller methodForSelector:_clickValidation];
+		if(imp != nil)
 		{
-			uint ID = _getFromSearch(NULL, PULL_SEARCH_CATID, &(_project.category));
+			BOOL (*func)(id, SEL, id, byte) = (void *)imp;
+			if(!func(_controller, _clickValidation, self, selection))
+				return;
+		}
+	}
+	
+	//Notify the UI, most common case
+	switch (selection)
+	{
+		case THUMBVIEW_CLICK_PROJECT:
+		{
+			PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
+			
+			if(dataToSend.isInitialized)
+				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_VALUE];
+			
+			releaseCTData(dataToSend);
+			break;
+		}
+			
+		case THUMBVIEW_CLICK_AUTHOR:
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_AUTHORID, &(_project.authorName));
 			
 			if(ID != UINT_MAX)
 			{
-				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getCatNameForCode(_project.category)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_project.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 			}
+			
+			break;
 		}
-		else if(NSPointInRect(point, tagProject.frame))
+			
+		case THUMBVIEW_CLICK_TAG:
 		{
 			uint ID = _getFromSearch(NULL, PULL_SEARCH_TAGID, &(_project.mainTag));
 			
@@ -612,7 +641,22 @@ enum
 			{
 				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagNameForCode(_project.mainTag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
 			}
+
+			break;
+		}
+			
+		case THUMBVIEW_CLICK_CAT:
+		{
+			uint ID = _getFromSearch(NULL, PULL_SEARCH_CATID, &(_project.category));
+			
+			if(ID != UINT_MAX)
+			{
+				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getCatNameForCode(_project.category)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
+			}
+			
+			break;
 		}
 	}
 }
+
 @end

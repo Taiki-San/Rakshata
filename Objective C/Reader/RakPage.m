@@ -59,6 +59,7 @@
 	state.isTome = self.isTome != 0;
 	state.CTID = _currentElem;
 	state.page = _data.pageCourante;
+	state.wasLastPage = _data.pageCourante == _data.nbPage - 1;
 	state.zoom = saveMagnification && _scrollView != nil ? _scrollView.magnification : 1.0f;
 	state.scrollerX = sliders.x;
 	state.scrollerY = sliders.y;

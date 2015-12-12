@@ -116,6 +116,7 @@ typedef struct
 	double scrollerY;
 	
 	uint page;
+	bool wasLastPage;
 	bool isTome;
 	bool isInitialized;
 	
@@ -200,7 +201,8 @@ void flushRecentMutex();
 
 bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state);
 double getSavedZoomForProject(PROJECT_DATA project);
-bool projectHaveValidSavedState(PROJECT_DATA project);
+bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state);
+STATE_DUMP getEmptyRecoverState();
 STATE_DUMP recoverStateForProject(PROJECT_DATA project);
 
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);

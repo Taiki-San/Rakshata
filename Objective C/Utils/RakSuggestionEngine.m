@@ -69,7 +69,7 @@ __strong RakSuggestionEngine * sharedObject;
 	{
 		//Prevent reusing IDs
 		value = getRandom() % nbElem;
-		while(value == cacheID || [usedID indexOfObject:@(value)] != NSNotFound)
+		while(cache[value].cacheDBID == cacheID || [usedID indexOfObject:@(value)] != NSNotFound)
 		{
 			++value;
 			value %= nbElem;
@@ -82,7 +82,7 @@ __strong RakSuggestionEngine * sharedObject;
 	return [NSArray arrayWithArray:array];
 }
 
-//Actual receipe
+//Current recipe
 //Quand arrive à fin de liste, pop-up sur bouton suivant pour proposer suggestions
 //↪ si un projet est favoris, et il y a un chapitre non-lu, suggestion prioritaire
 //↪ 1 du même tag (si impossible, catégorie)
@@ -94,6 +94,70 @@ __strong RakSuggestionEngine * sharedObject;
 		return getEmptyProject();
 	
 	return cache[index];
+}
+
+#pragma mark - Process a click
+
+//Return YES if could process the suggestion, NO otherwise
++ (BOOL) suggestionWasClicked : (uint) projectID
+{
+	PROJECT_DATA project = getProjectByID(projectID);
+	if(!project.isInitialized)
+		return NO;
+	
+	STATE_DUMP state = recoverStateForProject(project);
+	if(projectHaveValidSavedState(project, state))
+	{
+		//We restore the page if the reading was interrupted
+		if(!state.wasLastPage)
+		{
+			[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_RESUME_READING object:@(projectID)];
+			goto end;
+		}
+		
+		//Okay, it stopped reading at the end of a CT, let's check if there is something after that
+		uint index = reader_getPosIntoContentIndex(project, state.CTID, state.isTome);
+		if(index != INVALID_VALUE && ++index < ACCESS_DATA(state.isTome, project.nbChapterInstalled, project.nbVolumesInstalled))
+		{
+			[RakTabView broadcastUpdateContext: nil : project : state.isTome: ACCESS_DATA(state.isTome, project.chaptersInstalled[index], project.volumesInstalled[index].ID)];
+			goto end;
+		}
+		
+		//Okay, either the CT doesn't exist, or it was the last one
+		//If it was the last one, we'll just loop back to the first one, which is the default behavior
+		//Otherwise, we try to find the closest match
+		if(index == INVALID_VALUE)
+		{
+			//Okayyy, the CT doesn't exist anymore, or was deleted and we couldn't find anything after it, yay
+			//We try to find the first CT following it
+			index = reader_findReadableAfter(project, state.CTID, state.isTome);
+			if(index != INVALID_VALUE)
+			{
+				[RakTabView broadcastUpdateContext:nil :project :state.isTome :ACCESS_DATA(state.isTome, project.chaptersInstalled[index], project.volumesInstalled[index].ID)];
+				goto end;
+			}
+		}
+		
+		//Well, we just give up...
+	}
+	
+	//We haven't read anything yet, but have we downloaded something yet?
+	if(project.nbVolumesInstalled > 0 || project.nbChapterInstalled > 0)
+	{
+		bool isTome = project.nbVolumesInstalled != 0;
+
+		[RakTabView broadcastUpdateContext:nil :project :isTome :ACCESS_DATA(isTome, project.chaptersInstalled[0], project.volumesInstalled[0].ID)];
+	}
+
+	//Nop, let's just open the CT tab
+	else
+	{
+		[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_VALUE];
+	}
+	
+end:
+	releaseCTData(project);
+	return YES;
 }
 
 @end

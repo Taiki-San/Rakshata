@@ -52,8 +52,8 @@ bool changeChapterAllowed(PROJECT_DATA* project, bool isTome, uint posIntoStruc)
 
 /**	lecteur_tool.c	**/
 uint reader_getPosIntoContentIndex(PROJECT_DATA project, uint currentSelection, bool isTome);
+uint reader_findReadableAfter(PROJECT_DATA project, uint closestValue, bool isTome);
 bool reader_isLastElem(PROJECT_DATA project, bool isTome, uint currentSelection);
-
 
 /*Mouvements*/
 #define PAGE_MOVE 50

@@ -13,7 +13,14 @@
 enum
 {
 	SUGGESTION_REASON_TAG = 1,
-	SUGGESTION_REASON_AUTHOR
+	SUGGESTION_REASON_AUTHOR,
+	
+	THUMBVIEW_CLICK_PROJECT = 1,
+	THUMBVIEW_CLICK_AUTHOR,
+	THUMBVIEW_CLICK_TAG,
+	THUMBVIEW_CLICK_CAT,
+	THUMBVIEW_CLICK_NONE
+	
 };
 
 @interface RakBasicProjectView : NSView
@@ -61,6 +68,9 @@ enum
 
 @property (nonatomic) BOOL mustHoldTheWidth;
 @property byte reason;
+
+@property id controller;
+@property SEL clickValidation;	//Expect a selector that looks like - (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
 
 - (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
 - (void) updateProject : (PROJECT_DATA) project;
