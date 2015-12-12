@@ -34,25 +34,25 @@ typedef struct
 	
 } DATA_LECTURE;
 
-bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader);
+bool configFileLoader(PROJECT_DATA project, bool isTome, uint IDRequested, DATA_LECTURE* dataReader);
 void releaseDataReader(DATA_LECTURE *data);
 
 #endif
 
 /** lecteur_check_newElems.c **/
 
-uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT);
+uint checkNewElementInRepo(PROJECT_DATA *project, bool isTome, uint CT);
 
 /** lecteur_loading.c **/
 
-bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure);
+bool reader_getNextReadableElement(PROJECT_DATA project, bool isTome, uint *currentPosIntoStructure);
 
-bool changeChapter(PROJECT_DATA* projectDB, bool isTome, uint *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
-bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, uint posIntoStruc);
+bool changeChapter(PROJECT_DATA* project, bool isTome, uint *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap);
+bool changeChapterAllowed(PROJECT_DATA* project, bool isTome, uint posIntoStruc);
 
 /**	lecteur_tool.c	**/
-uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection, bool isTome);
-bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, uint currentSelection);
+uint reader_getPosIntoContentIndex(PROJECT_DATA project, uint currentSelection, bool isTome);
+bool reader_isLastElem(PROJECT_DATA project, bool isTome, uint currentSelection);
 
 
 /*Mouvements*/

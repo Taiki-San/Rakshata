@@ -13,9 +13,9 @@
 
 /**	Set up the evnt	**/
 
-bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *currentPosIntoStructure)
+bool reader_getNextReadableElement(PROJECT_DATA project, bool isTome, uint *currentPosIntoStructure)
 {
-	uint maxValue = isTome ? projectDB.nbVolumesInstalled : projectDB.nbChapterInstalled;
+	uint maxValue = isTome ? project.nbVolumesInstalled : project.nbChapterInstalled;
 	
 	//No item, nothing to look for, nothing to find
 	if(maxValue == 0)
@@ -32,7 +32,7 @@ bool reader_getNextReadableElement(PROJECT_DATA projectDB, bool isTome, uint *cu
 	else if(*currentPosIntoStructure >= maxValue)
 		*currentPosIntoStructure = maxValue - 1;
 	
-	while(*currentPosIntoStructure < maxValue && !checkReadable(projectDB, isTome, ACCESS_ID(isTome, projectDB.chaptersInstalled[*currentPosIntoStructure], projectDB.volumesInstalled[*currentPosIntoStructure].ID)))
+	while(*currentPosIntoStructure < maxValue && !checkReadable(project, isTome, ACCESS_ID(isTome, project.chaptersInstalled[*currentPosIntoStructure], project.volumesInstalled[*currentPosIntoStructure].ID)))
 		(*currentPosIntoStructure)++;
 	
 	return *currentPosIntoStructure < maxValue;
@@ -209,29 +209,29 @@ char ** loadChapterConfigDat(char* input, uint *nbPage, uint ** nameID)
 	return output;
 }
 
-bool changeChapter(PROJECT_DATA* projectDB, bool isTome, uint *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
+bool changeChapter(PROJECT_DATA* project, bool isTome, uint *ptrToSelectedID, uint *posIntoStruc, bool goToNextChap)
 {
 	if(goToNextChap)
 		(*posIntoStruc)++;
 	else
 		(*posIntoStruc)--;
 	
-	if(!changeChapterAllowed(projectDB, isTome, *posIntoStruc))
+	if(!changeChapterAllowed(project, isTome, *posIntoStruc))
 	{
-		getUpdatedCTList(projectDB, isTome);
+		getUpdatedCTList(project, isTome);
 		
-		if(!changeChapterAllowed(projectDB, isTome, *posIntoStruc))
+		if(!changeChapterAllowed(project, isTome, *posIntoStruc))
 			return false;
 	}
 	if(isTome)
-		*ptrToSelectedID = projectDB->volumesInstalled[*posIntoStruc].ID;
+		*ptrToSelectedID = project->volumesInstalled[*posIntoStruc].ID;
 	else
-		*ptrToSelectedID = (uint) projectDB->chaptersInstalled[*posIntoStruc];
+		*ptrToSelectedID = (uint) project->chaptersInstalled[*posIntoStruc];
 	return true;
 }
 
-bool changeChapterAllowed(PROJECT_DATA* projectDB, bool isTome, uint posIntoStruc)
+bool changeChapterAllowed(PROJECT_DATA* project, bool isTome, uint posIntoStruc)
 {
-	return (isTome && posIntoStruc < projectDB->nbVolumesInstalled) || (!isTome && posIntoStruc < projectDB->nbChapterInstalled);
+	return (isTome && posIntoStruc < project->nbVolumesInstalled) || (!isTome && posIntoStruc < project->nbChapterInstalled);
 }
 

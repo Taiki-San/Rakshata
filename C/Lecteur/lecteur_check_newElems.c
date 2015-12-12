@@ -12,9 +12,9 @@
 
 #include "lecteur.h"
 
-uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
+uint checkNewElementInRepo(PROJECT_DATA *project, bool isTome, uint CT)
 {
-	if(isLocalProject(*projectDB))
+	if(isLocalProject(*project))
 		return false;
 
 	uint posStart, posEnd, nbElemFullData;
@@ -26,7 +26,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
 	//Find the beginning of the repo area
 	for (posStart = 0; posStart < nbElemFullData; posStart++)
 	{
-		if(fullData[posStart].project.repo != NULL && projectDB->repo->parentRepoID == fullData[posStart].project.repo->parentRepoID && projectDB->repo->repoID == fullData[posStart].project.repo->repoID)
+		if(fullData[posStart].project.repo != NULL && project->repo->parentRepoID == fullData[posStart].project.repo->parentRepoID && project->repo->repoID == fullData[posStart].project.repo->repoID)
 			break;
 	}
 	
@@ -40,7 +40,7 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
 	//Find the end of the said area
 	for (posEnd = posStart; posEnd < nbElemFullData; posEnd++)
 	{
-		if(fullData[posEnd].project.repo == NULL || projectDB->repo->parentRepoID != fullData[posEnd].project.repo->parentRepoID || projectDB->repo->repoID != fullData[posEnd].project.repo->repoID)
+		if(fullData[posEnd].project.repo == NULL || project->repo->parentRepoID != fullData[posEnd].project.repo->parentRepoID || project->repo->repoID != fullData[posEnd].project.repo->repoID)
 			break;
 	}
 	
@@ -61,14 +61,14 @@ uint checkNewElementInRepo(PROJECT_DATA *projectDB, bool isTome, uint CT)
     uint firstNewElem;
     if(isTome)
 	{
-		for(firstNewElem = projectDB->nbVolumes-1; firstNewElem > 0 && projectDB->volumesFull[firstNewElem].ID > CT; firstNewElem--);
-		firstNewElem = projectDB->nbVolumes - 1 - firstNewElem;
+		for(firstNewElem = project->nbVolumes-1; firstNewElem > 0 && project->volumesFull[firstNewElem].ID > CT; firstNewElem--);
+		firstNewElem = project->nbVolumes - 1 - firstNewElem;
 	}
 
     else
 	{
-        for(firstNewElem = projectDB->nbChapter-1; firstNewElem > 0 && projectDB->chaptersFull[firstNewElem] > CT; firstNewElem--);
-		firstNewElem = projectDB->nbChapter - 1 - firstNewElem;
+        for(firstNewElem = project->nbChapter-1; firstNewElem > 0 && project->chaptersFull[firstNewElem] > CT; firstNewElem--);
+		firstNewElem = project->nbChapter - 1 - firstNewElem;
 	}
     
     return firstNewElem;

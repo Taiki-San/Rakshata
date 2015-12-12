@@ -12,43 +12,43 @@
 
 #include "lecteur.h"
 
-uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection, bool isTome)
+uint reader_getPosIntoContentIndex(PROJECT_DATA project, uint currentSelection, bool isTome)
 {
 	uint curPosIntoStruct;
 		
 	if(!isTome)
     {
-        if(projectDB.chaptersInstalled == NULL)
+        if(project.chaptersInstalled == NULL)
         {
 #ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;
         }
-        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nbChapterInstalled && projectDB.chaptersInstalled[curPosIntoStruct] < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; curPosIntoStruct < project.nbChapterInstalled && project.chaptersInstalled[curPosIntoStruct] != currentSelection; curPosIntoStruct++);
 
-		if(curPosIntoStruct == projectDB.nbChapterInstalled)
+		if(curPosIntoStruct == project.nbChapterInstalled)
 			return INVALID_VALUE;
 	}
     else
     {
-        if(projectDB.volumesInstalled == NULL)
+        if(project.volumesInstalled == NULL)
         {
 #ifdef EXTENSIVE_LOGGING
 			logR("Error: failed at loading available content for the project");
 #endif
 			return INVALID_VALUE;
 		}
-        for(curPosIntoStruct = 0; curPosIntoStruct < projectDB.nbVolumesInstalled && projectDB.volumesInstalled[curPosIntoStruct].ID < currentSelection; curPosIntoStruct++);
+        for(curPosIntoStruct = 0; curPosIntoStruct < project.nbVolumesInstalled && project.volumesInstalled[curPosIntoStruct].ID != currentSelection; curPosIntoStruct++);
 		
-		if(curPosIntoStruct == projectDB.nbVolumesInstalled)
+		if(curPosIntoStruct == project.nbVolumesInstalled)
 			return INVALID_VALUE;
     }
 	
 	//On vérifie que l'entrée est valide
-	if(!checkReadable(projectDB, isTome, ACCESS_ID(isTome, currentSelection, projectDB.volumesInstalled[curPosIntoStruct].ID)))
+	if(!checkReadable(project, isTome, ACCESS_ID(isTome, currentSelection, project.volumesInstalled[curPosIntoStruct].ID)))
 	{
-		if(!reader_getNextReadableElement(projectDB, isTome, &curPosIntoStruct))
+		if(!reader_getNextReadableElement(project, isTome, &curPosIntoStruct))
 		{
 			logR("Error: failed at finding an acceptable project");
 			return INVALID_VALUE;
@@ -58,16 +58,16 @@ uint reader_getPosIntoContentIndex(PROJECT_DATA projectDB, uint currentSelection
 	return curPosIntoStruct;
 }
 
-bool reader_isLastElem(PROJECT_DATA projectDB, bool isTome, uint currentSelection)
+bool reader_isLastElem(PROJECT_DATA project, bool isTome, uint currentSelection)
 {
-	if(isTome && projectDB.volumesInstalled != NULL)
+	if(isTome && project.volumesInstalled != NULL)
 	{
-		return currentSelection == projectDB.volumesInstalled[projectDB.nbVolumesInstalled-1].ID;
+		return currentSelection == project.volumesInstalled[project.nbVolumesInstalled-1].ID;
 	}
 	
-	else if(!isTome && projectDB.chaptersInstalled == NULL)
+	else if(!isTome && project.chaptersInstalled == NULL)
 		return true;
 	
 	//Else
-	return currentSelection == projectDB.chaptersInstalled[projectDB.nbChapterInstalled-1];
+	return currentSelection == project.chaptersInstalled[project.nbChapterInstalled-1];
 }
