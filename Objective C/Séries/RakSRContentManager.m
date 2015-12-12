@@ -471,7 +471,7 @@
 			//Deletion
 			if(cacheList[posOld] < newCacheList[posNew])
 			{
-				maskValidated[orderedToSorted[posOld]] = NO;	//Invalidate the entry
+				maskValidated[orderedToSorted[posOld++]] = NO;	//Invalidate the entry
 				nbRemoval++;
 			}
 			
