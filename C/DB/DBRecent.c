@@ -452,6 +452,42 @@ double getSavedZoomForProject(PROJECT_DATA project, bool isTome)
 	return zoom;
 }
 
+uint getSavedIDForProject(void * database, PROJECT_DATA project, bool isTome)
+{
+	uint ID = INVALID_VALUE;
+	bool needFreeDB;
+	
+	if(database == NULL)
+	{
+		database = getPtrRecentDB();
+		needFreeDB = true;
+	}
+	else
+		needFreeDB = false;
+	
+	if(database != NULL)
+	{
+		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastZoom)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND "DBNAMETOID(RDB_REC_lastIsTome)" = ?4;");
+		if(request != NULL)
+		{
+			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));
+			sqlite3_bind_int(request, 2, (int32_t) project.projectID);
+			sqlite3_bind_int(request, 3, project.locale);
+			sqlite3_bind_int(request, 4, isTome);
+			
+			if(sqlite3_step(request) == SQLITE_ROW)
+				ID = (uint) sqlite3_column_int(request, 0);
+			
+			destroyRequest(request);
+		}
+		
+		if(needFreeDB)
+			closeRecentDB(database);
+	}
+	
+	return ID;
+}
+
 bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state)
 {
 	if(!state.isInitialized)
