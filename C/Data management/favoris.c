@@ -184,73 +184,78 @@ bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline,
 	if(!project.isInitialized)
 		return false;
 	
-	uint basePos;
+	uint basePos, savedID, nbFull, nbInstalled;
+	void * fullList, * installedList;
 	
-	//The last available volume isn't installed
-	if(project.nbVolumes && (project.volumesInstalled == NULL || !checkReadable(project, true, project.volumesFull[project.nbVolumes-1].ID)))
+	for(byte isTome = 0; isTome <= 1; isTome++)
 	{
-		if(checkOnly)
-			return true;
-		
-		//Find the last volume installed
-		if(project.volumesInstalled != NULL && project.nbVolumesInstalled > 0)
+		basePos = INVALID_VALUE;
+		//Setup the context of the pass
+		if(isTome)
 		{
-			uint lastVol = project.volumesInstalled[project.nbVolumesInstalled-1].ID;
-			
-			for(basePos = 0; basePos < project.nbVolumes && project.volumesFull[basePos].ID != lastVol; basePos++);
-		}
-		else	//If not installed, we install the last NUMBER_FAVORITE_INSTALL_IF_NONE_THERE
-			basePos = project.nbVolumes > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nbVolumes - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
-		
-		//Download what remains
-		for(; basePos < project.nbVolumes; basePos++)
-		{
-			if(projectInPipeline->isInitialized)
-			{
-				addElementToMDL(*projectInPipeline, *isTomePipeline, *elementInPipeline, true);
-				
-				if(projectInPipeline->cacheDBID != project.cacheDBID)
-					*projectInPipeline = project;
-			}
-			else
-				*projectInPipeline = project;
-			
-			*isTomePipeline = true;
-			*elementInPipeline = project.volumesFull[basePos].ID;
-		}
-	}
-	
-	//The last available chapter isn't installed
-	if(project.nbChapter && (project.chaptersInstalled == NULL || !checkReadable(project, false, project.chaptersFull[project.nbChapter-1])))
-	{
-		if(checkOnly)
-			return true;
-		
-		//Find the last volume installed
-		if(project.chaptersInstalled != NULL && project.nbChapterInstalled > 0)
-		{
-			uint lastChap = project.chaptersInstalled[project.nbChapterInstalled-1];
-			
-			for(basePos = 0; basePos < project.nbChapter && project.chaptersFull[basePos] != lastChap; basePos++);
+			fullList = project.volumesFull;
+			installedList = project.volumesInstalled;
+			nbFull = project.nbVolumes;
+			nbInstalled = project.nbVolumesInstalled;
 		}
 		else
-			basePos = project.nbChapter > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? project.nbChapter - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
-		
-		//Download what remains
-		for(; basePos < project.nbChapter; basePos++)
 		{
-			if(projectInPipeline->isInitialized)
+			fullList = project.chaptersFull;
+			installedList = project.chaptersInstalled;
+			nbFull = project.nbChapter;
+			nbInstalled = project.nbChapterInstalled;
+		}
+		
+		//The last available CT isn't installed
+		if(nbFull != 0 && (installedList == NULL || !checkReadable(project, isTome, ACCESS_ID(isTome, ((uint *) fullList)[nbFull - 1], ((META_TOME *)fullList)[nbFull - 1].ID))))
+		{
+			//We check if the last volume wasn't already read
+			if((savedID = getSavedIDForProject(NULL, project, isTome)) != INVALID_VALUE)
 			{
-				addElementToMDL(*projectInPipeline, *isTomePipeline, *elementInPipeline, true);
+				for(basePos = nbFull - 1; basePos != 0 && ACCESS_ID(isTome, ((uint *) fullList)[basePos], ((META_TOME *)fullList)[basePos].ID) == savedID; basePos--);
 				
-				if(projectInPipeline->cacheDBID != project.cacheDBID)
-					*projectInPipeline = project;
+				if(ACCESS_ID(isTome, ((uint *) fullList)[basePos], ((META_TOME *)fullList)[basePos].ID) != savedID || basePos >= nbFull - 1)
+					basePos = nbFull;
+				else
+				{
+					//skip everything downloaded, if basePos == nbFull, it is skipped
+					for(basePos++; basePos < nbFull && checkReadable(project, isTome, ACCESS_ID(isTome, ((uint *) fullList)[basePos], ((META_TOME *)fullList)[basePos].ID)); basePos++);
+				}
 			}
-			else
-				*projectInPipeline = project;
 			
-			*isTomePipeline = false;
-			*elementInPipeline = project.chaptersFull[basePos];
+			if(checkOnly)
+				return basePos != nbFull;
+			
+			//If we already found the base CT from which we should download, no need to look for it more naively
+			if(basePos == INVALID_VALUE)
+			{
+				//Find the last CT installed
+				if(installedList != NULL && nbInstalled > 0)
+				{
+					uint lastVol = ACCESS_ID(isTome, ((uint *) installedList)[nbInstalled - 1], ((META_TOME *) installedList)[nbInstalled - 1].ID);
+					
+					for(basePos = 0; basePos < nbFull && ACCESS_ID(isTome, ((uint *) fullList)[basePos], ((META_TOME *)fullList)[basePos].ID) != lastVol; basePos++);
+				}
+				else //If not installed, we install the last NUMBER_FAVORITE_INSTALL_IF_NONE_THERE
+					basePos = nbFull > NUMBER_FAVORITE_INSTALL_IF_NONE_THERE ? nbFull - NUMBER_FAVORITE_INSTALL_IF_NONE_THERE : 0;
+			}
+			
+			//Download what remains
+			for(; basePos < nbFull; basePos++)
+			{
+				if(projectInPipeline->isInitialized)
+				{
+					addElementToMDL(*projectInPipeline, *isTomePipeline, *elementInPipeline, true);
+					
+					if(projectInPipeline->cacheDBID != project.cacheDBID)
+						*projectInPipeline = project;
+				}
+				else
+					*projectInPipeline = project;
+				
+				*isTomePipeline = isTome;
+				*elementInPipeline = ACCESS_ID(isTome, ((uint *) fullList)[basePos], ((META_TOME *)fullList)[basePos].ID);
+			}
 		}
 	}
 	
