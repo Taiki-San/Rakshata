@@ -31,6 +31,7 @@ bool mutexInitialized = false;
 sqlite3* getPtrRecentDB()
 {
 	sqlite3 * internalDB = NULL;
+	bool initialCheckRequired = mutexInitialized;
 	
 	if(!mutexInitialized)
 	{
@@ -45,7 +46,7 @@ sqlite3* getPtrRecentDB()
 		logR("Couldn't open the recent database, abort :(");
 		internalDB = NULL;
 	}
-	else
+	else if(initialCheckRequired)
 	{
 		uint retValue = checkRecentDBValid(internalDB);
 		
