@@ -20,7 +20,9 @@ enum
 };
 
 #define PROJECT_TABLE	"RakHL3IsALie"
+#define PROJECT_TABLE_SIZE	5
 #define STATE_TABLE		"Saitama_IsStrongerThanGoku"
+#define STATE_TABLE_SIZE	10
 
 //DB Setup
 MUTEX_VAR recentMutex;
@@ -113,17 +115,44 @@ uint checkRecentDBValid(sqlite3 * DB)
 
 	if(request == NULL || sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 1)
 		retValue |= RECENT_CHECK_RETVAL_INVALID_PROJ;
+	else
+	{
+		destroyRequest(request);
+		request = createRequest(DB, "pragma table_info ("PROJECT_TABLE");");
+		if(request != NULL)
+		{
+			uint count = 0;
+			while(sqlite3_step(request) == SQLITE_ROW)
+				count += 1;
+			
+			if(count != PROJECT_TABLE_SIZE)
+				retValue |= RECENT_CHECK_RETVAL_INVALID_PROJ;
+			
+		}
+	}
 	
 	destroyRequest(request);
-	
-	request = createRequest(DB, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='"STATE_TABLE"';");
 
+	request = createRequest(DB, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='"STATE_TABLE"';");
 	if(request == NULL || sqlite3_step(request) != SQLITE_ROW || sqlite3_column_int(request, 0) != 1)
 		retValue |= RECENT_CHECK_RETVAL_INVALID_STATE;
-
-	destroyRequest(request);
-	//Si on voulais faire nos paranos, on checkerais le schéma de la table
+	else
+	{
+		destroyRequest(request);
+		request = createRequest(DB, "pragma table_info ("STATE_TABLE");");
+		if(request != NULL)
+		{
+			uint count = 0;
+			while(sqlite3_step(request) == SQLITE_ROW)
+				count += 1;
+			
+			if(count != STATE_TABLE_SIZE)
+				retValue |= RECENT_CHECK_RETVAL_INVALID_STATE;
+			
+		}
+	}
 	
+	destroyRequest(request);
 	return retValue;
 }
 
