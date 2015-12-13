@@ -19,10 +19,10 @@ enum
 	RECENT_CHECK_RETVAL_INVALID_STATE = 0x2
 };
 
-#define PROJECT_TABLE	"RakHL3IsALie"
+#define PROJECT_TABLE		"RakHL3IsALie"
 #define PROJECT_TABLE_SIZE	5
-#define STATE_TABLE		"Saitama_IsStrongerThanGoku"
-#define STATE_TABLE_SIZE	10
+#define STATE_TABLE			"SaitamaIsStrongerThanGoku"
+#define STATE_TABLE_SIZE	11
 
 //DB Setup
 MUTEX_VAR recentMutex;
@@ -72,11 +72,11 @@ sqlite3* getPtrRecentDB()
 			if(internalDB != NULL && retValue & RECENT_CHECK_RETVAL_INVALID_STATE)
 			{
 				//On la détruit, et on recrée
-				sqlite3_stmt * request = createRequest(internalDB, "DROP TABLE IF EXISTS `"PROJECT_TABLE"`");
+				sqlite3_stmt * request = createRequest(internalDB, "DROP TABLE IF EXISTS `"STATE_TABLE"`");
 				sqlite3_step(request);
 				destroyRequest(request);
 				
-				request = createRequest(internalDB, "CREATE TABLE "STATE_TABLE" ("DBNAMETOID(RDB_REC_repo)" INTEGER, "DBNAMETOID(RDB_REC_projectID)" INTEGER, "DBNAMETOID(RDB_isLocal)" INTEGER, "DBNAMETOID(RDB_REC_lastIsTome)" INTEGER, "DBNAMETOID(RDB_REC_lastCTID)" INTEGER, "DBNAMETOID(RDB_REC_lastPage)" INTEGER, "DBNAMETOID(RDB_REC_wasLastPageOfCT)" INTEGER, "DBNAMETOID(RDB_REC_lastZoom)" FLOAT, "DBNAMETOID(RDB_REC_lastScrollerX)" FLOAT, "DBNAMETOID(RDB_REC_lastScrollerY)" FLOAT, PRIMARY KEY("DBNAMETOID(RDB_REC_repo)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)")) WITHOUT ROWID;");
+				request = createRequest(internalDB, "CREATE TABLE "STATE_TABLE" ("DBNAMETOID(RDB_REC_repo)" INTEGER, "DBNAMETOID(RDB_REC_projectID)" INTEGER, "DBNAMETOID(RDB_isLocal)" INTEGER, "DBNAMETOID(RDB_REC_lastIsTome)" INTEGER, "DBNAMETOID(RDB_REC_lastCTID)" INTEGER, "DBNAMETOID(RDB_REC_lastPage)" INTEGER, "DBNAMETOID(RDB_REC_wasLastPageOfCT)" INTEGER, "DBNAMETOID(RDB_REC_lastZoom)" FLOAT, "DBNAMETOID(RDB_REC_lastScrollerX)" FLOAT, "DBNAMETOID(RDB_REC_lastScrollerY)" FLOAT, "DBNAMETOID(RDB_REC_lastChange)" INTEGER, PRIMARY KEY("DBNAMETOID(RDB_REC_repo)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)", "DBNAMETOID(RDB_REC_lastIsTome)")) WITHOUT ROWID;");
 				if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
 				{
 					destroyRequest(request);
@@ -397,7 +397,7 @@ bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state)
 	sqlite3 * database = getPtrRecentDB();
 	if(database != NULL)
 	{
-		sqlite3_stmt * request = createRequest(database, "INSERT OR REPLACE INTO "STATE_TABLE" ("DBNAMETOID(RDB_REC_repo)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)", "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10);");
+		sqlite3_stmt * request = createRequest(database, "INSERT OR REPLACE INTO "STATE_TABLE" ("DBNAMETOID(RDB_REC_repo)", "DBNAMETOID(RDB_REC_projectID)", "DBNAMETOID(RDB_isLocal)", "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)", "DBNAMETOID(RDB_REC_lastChange)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11);");
 		
 		if(request != NULL)
 		{
@@ -411,6 +411,7 @@ bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state)
 			sqlite3_bind_double(request, 8, state.zoom + 1.0);
 			sqlite3_bind_double(request, 9, state.scrollerX + 1.0);
 			sqlite3_bind_double(request, 10, state.scrollerY + 1.0);
+			sqlite3_bind_int(request, 11, time(NULL));
 			
 			success = sqlite3_step(request) == SQLITE_DONE;
 			
@@ -423,19 +424,20 @@ bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state)
 	return success;
 }
 
-double getSavedZoomForProject(PROJECT_DATA project)
+double getSavedZoomForProject(PROJECT_DATA project, bool isTome)
 {
 	double zoom = 1.0;
 	
 	sqlite3 * database = getPtrRecentDB();
 	if(database != NULL)
 	{
-		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastZoom)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
+		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastZoom)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND "DBNAMETOID(RDB_REC_lastIsTome)" = ?4;");
 		if(request != NULL)
 		{
 			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));
 			sqlite3_bind_int(request, 2, (int32_t) project.projectID);
 			sqlite3_bind_int(request, 3, project.locale);
+			sqlite3_bind_int(request, 4, isTome);
 			
 			if(sqlite3_step(request) == SQLITE_ROW)
 				zoom = sqlite3_column_double(request, 0) - 1.0;
@@ -473,7 +475,7 @@ STATE_DUMP recoverStateForProject(PROJECT_DATA project)
 	sqlite3 * database = getPtrRecentDB();
 	if(database != NULL)
 	{
-		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3;");
+		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 ORDER BY "DBNAMETOID(RDB_REC_lastChange)" DESC LIMIT 1;");
 		if(request != NULL)
 		{
 			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));

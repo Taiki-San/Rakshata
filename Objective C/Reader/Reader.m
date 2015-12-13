@@ -500,7 +500,7 @@
 {
 	if(element != INVALID_VALUE)
 	{
-		lastKnownMagnification = saveMagnification && project.isInitialized ? getSavedZoomForProject(project) : 1.0f;
+		lastKnownMagnification = saveMagnification && project.isInitialized ? getSavedZoomForProject(project, isTome) : 1.0f;
 		
 		[self startReading : project : element : isTome : UINT_MAX];
 		[self ownFocus];

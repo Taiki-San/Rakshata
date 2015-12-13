@@ -109,7 +109,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_mainTagID				12
 #define RDB_tagData					13
 #define RDB_nbTagData				14
-#define RDB_nbChapter			15
+#define RDB_nbChapter				15
 #define RDB_chapitres				16
 #define RDB_chapitreRemote			17
 #define RDB_chapitreRemoteLength	18
@@ -147,6 +147,7 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_REC_lastZoom			9
 #define RDB_REC_lastScrollerX		10
 #define RDB_REC_lastScrollerY		11
+#define RDB_REC_lastChange			12
 
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 
