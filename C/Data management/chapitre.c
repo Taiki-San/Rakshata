@@ -181,7 +181,7 @@ bool isChapterShared(char *path, PROJECT_DATA data, uint ID)
 		return checkFileExist(newPath);
 	}
 	
-	if(ID != INVALID_VALUE)
+	if(ID == INVALID_VALUE)
 		return false;
 	
 	char newPath[2*LENGTH_PROJECT_NAME + 50], *encodedRepo = getPathForProject(data);
