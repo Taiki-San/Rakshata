@@ -45,6 +45,14 @@ void getCTInstalled(PROJECT_DATA * project, bool isTome)
 		getChapterInstalled(project);
 }
 
+bool checkSoonToBeReadable(PROJECT_DATA project, bool isTome, uint data)
+{
+	if(checkReadable(project, isTome, data))
+		return true;
+	
+	return checkIfElementAlreadyInMDL(project, isTome, data);
+}
+
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data)
 {
     if(isTome)

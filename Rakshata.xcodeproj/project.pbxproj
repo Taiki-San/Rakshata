@@ -275,6 +275,7 @@
 		B6E09698197C9DCE0084873C /* theme 2 in Resources */ = {isa = PBXBuildFile; fileRef = B6E09697197C9DCE0084873C /* theme 2 */; };
 		B6E45D7218D5F290007E1D5C /* RakPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E45D7118D5F290007E1D5C /* RakPage.m */; };
 		B6E5146518771492006470ED /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E5146418771492006470ED /* RakButton.m */; };
+		B6E76F491C1CCA89005B8E2E /* DBSuggestion.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */; };
 		B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E89388189EF39700ACAF36 /* CTSelec.m */; };
 		B6E8938C189EF3A600ACAF36 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6E8938A189EF3A600ACAF36 /* Images.xcassets */; };
 		B6E8B9691AE026E7008C11EC /* RakPrefsAddTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E8B9681AE026E7008C11EC /* RakPrefsAddTools.m */; };
@@ -726,6 +727,7 @@
 		B6E45D7018D5F290007E1D5C /* RakPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakPage.h; path = Reader/RakPage.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6E45D7118D5F290007E1D5C /* RakPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPage.m; path = Reader/RakPage.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6E5146418771492006470ED /* RakButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakButton.m; path = Utils/RakButton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBSuggestion.c; path = C/DB/DBSuggestion.c; sourceTree = "<group>"; };
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -1266,6 +1268,7 @@
 				B606EB211B6854F900DDBBBD /* DBRecent.c */,
 				B606EB221B6854F900DDBBBD /* DBRefresh.c */,
 				B606EB231B6854F900DDBBBD /* DBSearch.c */,
+				B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */,
 				B606EB241B6854F900DDBBBD /* DBTags.c */,
 				B606EB251B6854F900DDBBBD /* DBTools.c */,
 			);
@@ -2152,6 +2155,7 @@
 				B606EB2B1B6854F900DDBBBD /* DBDebug.c in Sources */,
 				B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */,
 				B606EB281B6854F900DDBBBD /* DBCacheIO.c in Sources */,
+				B6E76F491C1CCA89005B8E2E /* DBSuggestion.c in Sources */,
 				B6BC73111A90145E00018BE9 /* RakSRSearchBar.m in Sources */,
 				B6748ADF1A936D77003FBC1D /* RakSRDetails.m in Sources */,
 				B69FBE8D1A74FBE1009ACBEF /* RakButtonMorphic.m in Sources */,

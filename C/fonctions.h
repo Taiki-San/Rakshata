@@ -31,6 +31,7 @@ void nullifyParsedPointers(PROJECT_DATA_PARSED * project);
 void getUpdatedCTList(PROJECT_DATA *projectDB, bool isTome);
 void getCTInstalled(PROJECT_DATA * project, bool isTome);
 void generateCTUsable(PROJECT_DATA_PARSED * project);
+bool checkSoonToBeReadable(PROJECT_DATA project, bool isTome, uint data);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data);
 bool checkAlreadyRead(PROJECT_DATA projectDB, bool isTome, uint data);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection);
