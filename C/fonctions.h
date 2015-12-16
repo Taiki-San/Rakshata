@@ -24,6 +24,7 @@ bool checkNetworkState(int state);
 
 /**CTCommon.c**/
 #define ACCESS_DATA(isTome, dataChap, dataTome) (isTome ? dataTome : dataChap)
+#define ACCESS_CT(isTome, dataChap, dataTome, index) (isTome ? ((META_TOME *) dataTome)[index].ID : ((uint *) dataChap)[index])
 #define ACCESS_ID(isTome, dataChap, dataTome) (isTome ? dataTome : (uint) dataChap)
 void nullifyCTPointers(PROJECT_DATA * project);
 void nullifyParsedPointers(PROJECT_DATA_PARSED * project);

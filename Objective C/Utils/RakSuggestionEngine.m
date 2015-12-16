@@ -119,7 +119,7 @@ __strong RakSuggestionEngine * sharedObject;
 		uint index = reader_getPosIntoContentIndex(project, state.CTID, state.isTome);
 		if(index != INVALID_VALUE && ++index < ACCESS_DATA(state.isTome, project.nbChapterInstalled, project.nbVolumesInstalled))
 		{
-			[RakTabView broadcastUpdateContext: nil : project : state.isTome: ACCESS_DATA(state.isTome, project.chaptersInstalled[index], project.volumesInstalled[index].ID)];
+			[RakTabView broadcastUpdateContext: nil : project : state.isTome: ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, index)];
 			goto end;
 		}
 		
@@ -133,7 +133,7 @@ __strong RakSuggestionEngine * sharedObject;
 			index = reader_findReadableAfter(project, state.CTID, state.isTome);
 			if(index != INVALID_VALUE)
 			{
-				[RakTabView broadcastUpdateContext:nil :project :state.isTome :ACCESS_DATA(state.isTome, project.chaptersInstalled[index], project.volumesInstalled[index].ID)];
+				[RakTabView broadcastUpdateContext:nil :project :state.isTome :ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, index)];
 				goto end;
 			}
 		}
@@ -146,7 +146,7 @@ __strong RakSuggestionEngine * sharedObject;
 	{
 		bool isTome = project.nbVolumesInstalled != 0;
 
-		[RakTabView broadcastUpdateContext:nil :project :isTome :ACCESS_DATA(isTome, project.chaptersInstalled[0], project.volumesInstalled[0].ID)];
+		[RakTabView broadcastUpdateContext:nil :project :isTome :ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, 0)];
 	}
 
 	//Nop, let's just open the CT tab

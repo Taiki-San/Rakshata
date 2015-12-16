@@ -1884,7 +1884,7 @@
 	for(; posInList < nbElem; posInList++)
 	{
 		//Shouldn't display if a following chapter is pending download
-		if([tabMDL proxyCheckForCollision :_project : self.isTome :ACCESS_DATA(self.isTome, _project.chaptersFull[posInList], _project.volumesFull[posInList].ID)])
+		if([tabMDL proxyCheckForCollision :_project : self.isTome :ACCESS_CT(self.isTome, _project.chaptersFull, _project.volumesFull, posInList)])
 			return NO;
 	}
 

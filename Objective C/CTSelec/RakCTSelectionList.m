@@ -40,20 +40,10 @@
 		//We check we have valid data
 		if(elemSelected != LIST_INVALID_SELECTION)
 		{
-			if(_isTome)
-			{
-				for(; tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID < elemSelected; tmpRow++);
-				
-				if(tmpRow < _nbData && ((META_TOME*)_data)[tmpRow].ID == elemSelected)
-					row = tmpRow;
-			}
-			else
-			{
-				for(; tmpRow < _nbData && ((int*)_data)[tmpRow] < elemSelected; tmpRow++);
-				
-				if(tmpRow < _nbData && ((int*)_data)[tmpRow] == elemSelected)
-					row = tmpRow;
-			}
+			for(; tmpRow < _nbData && ACCESS_CT(_isTome, _data, _data, tmpRow) < elemSelected; tmpRow++);
+			
+			if(tmpRow < _nbData && ACCESS_CT(_isTome, _data, _data, tmpRow) == elemSelected)
+				row = tmpRow;
 		}
 		
 		[self applyContext : frame : row :scrollerPosition];

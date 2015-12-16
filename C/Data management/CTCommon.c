@@ -12,7 +12,7 @@
 
 #include "dbCache.h"
 
-#define getData(isTome, dataInject, index)	ACCESS_DATA(isTome, ((uint*) dataInject)[index], ((META_TOME*) dataInject)[index].ID)
+#define getData(isTome, dataInject, index)	ACCESS_CT(isTome, dataInject, dataInject, index)
 
 void nullifyCTPointers(PROJECT_DATA * project)
 {

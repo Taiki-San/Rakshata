@@ -138,8 +138,6 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	releaseParsedData(cachedProject);
 }
 
-#define getData(isTome, newData, index)	ACCESS_DATA(isTome, ((uint *) newData)[index], ((META_TOME*) newData)[index].ID)
-
 void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA_PARSED * newProject)
 {
 	uint nbOld, nbNew, lengthCollector;
@@ -212,9 +210,9 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 			for(uint posOld = 0, posNew; posOld < nbOld; ++posOld)
 			{
 				posNew = 0;
-				uint oldDataForIndex = getData(isTome, dataOld, posOld);
+				uint oldDataForIndex = ACCESS_CT(isTome, dataOld, dataOld, posOld);
 
-				for(; posNew < nbNew && getData(isTome, dataNew, posNew) != oldDataForIndex; ++posNew);
+				for(; posNew < nbNew && ACCESS_CT(isTome, dataNew, dataNew, posNew) != oldDataForIndex; ++posNew);
 
 				//The entry still exist, awesome
 				if (posNew != nbNew)
