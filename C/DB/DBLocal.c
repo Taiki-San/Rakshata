@@ -50,6 +50,8 @@ uint getEmptyLocalSlot(PROJECT_DATA project)
 
 		removeFolder(pathFinal);
 	}
+	
+	removeRecentEntryInternal(LOCAL_REPO_ID, baseID, true);
 
 	return baseID++;
 }

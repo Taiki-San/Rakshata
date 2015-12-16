@@ -310,6 +310,17 @@ void removeRecentEntryInternal(uint64_t repoID, uint projectID, bool isLocal)
 	}
 	
 	destroyRequest(request);
+	request = createRequest(database, "DELETE FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3");;
+	if(request != NULL)
+	{
+		sqlite3_bind_int64(request, 1, (int64_t) repoID);
+		sqlite3_bind_int(request, 2, (int32_t) projectID);
+		sqlite3_bind_int(request, 3, isLocal);
+		
+		sqlite3_step(request);
+	}
+	
+	destroyRequest(request);
 	closeRecentDB(database);
 }
 
@@ -486,6 +497,40 @@ uint getSavedIDForProject(void * database, PROJECT_DATA project, bool isTome)
 	}
 	
 	return ID;
+}
+
+bool lastReadAsTome(void * database, PROJECT_DATA project)
+{
+	bool needFreeDB, isTome = false;
+	
+	if(database == NULL)
+	{
+		database = getPtrRecentDB();
+		needFreeDB = true;
+	}
+	else
+		needFreeDB = false;
+	
+	if(database != NULL)
+	{
+		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 ORDER BY "DBNAMETOID(RDB_REC_lastChange)" DESC LIMIT 1;");
+		if(request != NULL)
+		{
+			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));
+			sqlite3_bind_int(request, 2, (int32_t) project.projectID);
+			sqlite3_bind_int(request, 3, project.locale);
+			
+			if(sqlite3_step(request) == SQLITE_ROW)
+				isTome = (uint) sqlite3_column_int(request, 0);
+			
+			destroyRequest(request);
+		}
+		
+		if(needFreeDB)
+			closeRecentDB(database);
+	}
+	
+	return isTome;
 }
 
 bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state)

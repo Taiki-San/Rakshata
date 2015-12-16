@@ -202,6 +202,7 @@ void flushRecentMutex();
 bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state);
 double getSavedZoomForProject(PROJECT_DATA project, bool isTome);
 uint getSavedIDForProject(void * database, PROJECT_DATA project, bool isTome);
+bool lastReadAsTome(void * database, PROJECT_DATA project);
 bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state);
 STATE_DUMP getEmptyRecoverState();
 STATE_DUMP recoverStateForProject(PROJECT_DATA project);
