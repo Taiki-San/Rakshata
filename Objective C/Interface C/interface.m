@@ -302,6 +302,15 @@ bool removeProjectWithContent()
 	return false;
 }
 
+bool shouldSuggestFromLastRead()
+{
+	bool output = false;
+	
+	[Prefs getPref:PREFS_GET_SUGGEST_FROM_LAST_READ :&output];
+
+	return output;
+}
+
 /*****************************************
  **										**
  **				 DB update				**

@@ -422,6 +422,12 @@ enum
 			break;
 		}
 			
+		case PREFS_GET_SUGGEST_FROM_LAST_READ:
+		{
+			* (BOOL *) outputContainer = _suggestFromLastRead;
+			break;
+		}
+			
 		default:
 		{
 			NSLog(@"Couldn't identify request: %d", requestID);
@@ -739,6 +745,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		_favoriteAutoDL = true;
 		_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
 		_overrideDirection = YES;
+		_suggestFromLastRead = YES;
 
 		if(data == nil)
 			self.themeCode = 1;
@@ -842,6 +849,12 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 			case 6:
 			{
 				_overrideDirection = value != 0;
+				break;
+			}
+				
+			case 7:
+			{
+				_suggestFromLastRead = value != 0;
 				break;
 			}
 		}

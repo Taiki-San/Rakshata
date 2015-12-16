@@ -58,6 +58,7 @@ bool shouldDownloadFavorite();
 void notifyEmailUpdate();
 void restorePrefsFile();
 bool removeProjectWithContent();
+bool shouldSuggestFromLastRead();
 
 #ifdef VERBOSE_DB_MANAGEMENT
 void logStack(void * address);

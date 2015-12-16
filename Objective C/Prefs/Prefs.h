@@ -185,6 +185,7 @@ enum KVO_REQUEST {
 @property BOOL havePDFBackground;
 @property BOOL overrideDirection;
 @property BOOL favoriteAutoDL;
+@property BOOL suggestFromLastRead;
 
 + (void) initCache;
 + (NSString *) dumpPrefs;
