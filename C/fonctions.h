@@ -156,6 +156,7 @@ void internalDeleteTome(PROJECT_DATA projectDB, uint tomeDelete, bool careAboutL
 
 /**Unzip.c**/
 bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJECT_DATA project, int entryDetail);
+void finishInstallationAtPath(const char * path);
 
 /**Utilitaires**/
 void checkIfCharToEscapeFromPOST(char * input, uint length, char * output);

@@ -83,7 +83,7 @@
 	if([_IOController respondsToSelector:@selector(willStartEvaluateFromScratch)])
 		[_IOController willStartEvaluateFromScratch];
 
-	__block BOOL foundOneThing = NO;
+	__block BOOL foundOneThing = NO, wantedBroadAccess = NO;
 	__block NSString * basePathObj = [NSString stringWithUTF8String:basePath];
 
 	[_IOController evaluateItemFromDir:_path withInitBlock:^(uint nbItems, BOOL wantBroadWriteAccess) {
@@ -103,6 +103,8 @@
 			else
 				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
 		}
+		else if(wantBroadWriteAccess && self.isTome)
+			wantedBroadAccess = YES;
 		
 		//We create the path if needed
 		if(!checkDirExist([basePathObj UTF8String]))
@@ -125,6 +127,11 @@
 	}];
 	
 	[_IOController generateConfigDatInPath:basePathObj];
+	
+	if(wantedBroadAccess)	//We need to add the unread flag
+		basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/", self.projectData.data.tomeLocal[0].ID]];
+
+	finishInstallationAtPath([basePathObj UTF8String]);
 
 	//Decompression is over, now, we need to ensure everything is fine
 	if((UI != nil && [UI haveCanceled]) || !foundOneThing || ![self isReadable])

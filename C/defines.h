@@ -29,6 +29,7 @@
 #define VOLUME_PRESHARED_DIR "native"
 #define VOLUME_CHAP_SHARED_TOKEN "shared"
 #define CHAPITER_INSTALLING_TOKEN "installing"
+#define CT_UNREAD_FLAG "unread"
 #define CONFIGFILE "config.dat"
 #define CONFIGFILETOME "config.tome.dat"
 #define LOCAL_PATH_NAME "local"

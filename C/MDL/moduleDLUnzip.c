@@ -302,3 +302,16 @@ quit:
 	return ret_value;
 }
 
+void finishInstallationAtPath(const char * path)
+{
+	if (path == NULL)
+		return;
+	
+	uint length = strlen(path) + 50;
+	char finalPath[length];
+	snprintf(finalPath, length, "%s/"CT_UNREAD_FLAG, path);
+	
+	FILE * file = fopen(finalPath, "w+");
+	if(file != NULL)
+		fclose(file);
+}

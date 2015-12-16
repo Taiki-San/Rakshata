@@ -10,6 +10,31 @@
  **                                                                                         **
  ********************************************************************************************/
 
+bool readerConfigFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader)
+{
+	//Remove the unread flag
+	char *encodedPath = getPathForProject(projectDB);
+	if(encodedPath != NULL)
+	{
+		uint length = strlen(encodedPath) + LONGUEUR_NOM_PAGE;
+		char path[length];
+		if(isTome)
+			snprintf(path, length, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CT_UNREAD_FLAG, encodedPath, IDRequested);
+		else
+		{
+			if(IDRequested % 10)
+				snprintf(path, length, PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/"CT_UNREAD_FLAG, encodedPath, IDRequested / 10, IDRequested % 10);
+			else
+				snprintf(path, length, PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/"CT_UNREAD_FLAG, encodedPath, IDRequested / 10);
+		}
+		
+		free(encodedPath);
+		remove(path);
+	}
+
+	return configFileLoader(projectDB, isTome, IDRequested, dataReader);
+}
+
 bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader)
 {
 	uint nbToursRequis, nbPageInChunck = 0, lengthBasePath, lengthFullPath, prevPos = 0, posID = 0;
@@ -78,7 +103,7 @@ bool configFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DAT
 				snprintf(name, LONGUEUR_NOM_PAGE, CHAPTER_PREFIX"%u", IDRequested / 10);
 		}
 		
-		snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/%s", encodedPath, name, CONFIGFILE);
+		snprintf(input_path, LONGUEUR_NOM_PAGE, PROJECT_ROOT"%s/%s/"CONFIGFILE, encodedPath, name);
 		
 		nomPagesTmp = loadChapterConfigDat(input_path, &nbPageInChunck, &tmpNameID);
 		if(nomPagesTmp != NULL)

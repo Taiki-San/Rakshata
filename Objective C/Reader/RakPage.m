@@ -667,7 +667,7 @@
 		});
 	}
 	
-	if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
+	if(!readerConfigFileLoader(_project, self.isTome, _currentElem, &_data))
 	{
 		[self failure];
 		return NO;
@@ -1033,7 +1033,7 @@
 	
 	if(!dataLoaded)
 	{
-		if(!configFileLoader(_project, self.isTome, _currentElem, &_data))
+		if(!readerConfigFileLoader(_project, self.isTome, _currentElem, &_data))
 		{
 			_data.nbPage = 1;
 			[self failure : 0];
@@ -1400,7 +1400,7 @@
 		DATA_LECTURE newData = loadNext ? _nextData : _previousData;
 
 		//Load next CT data
-		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || configFileLoader(_project, self.isTome, nextElement, &newData))
+		if((loadNext && nextDataLoaded) || (!loadNext && previousDataLoaded) || readerConfigFileLoader(_project, self.isTome, nextElement, &newData))
 		{
 			if(loadNext && ![self entryValid : data : _data.nbPage + 1])
 			{

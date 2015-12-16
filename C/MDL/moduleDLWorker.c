@@ -439,6 +439,15 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, uint ch
 		}
     }
 
+	if(wentFine)
+	{
+		//Add a flag signaling the file wasn't read yet
+		if(tome != INVALID_VALUE)
+			snprintf(basePath, 500, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/", encodedPath, tome);
+		
+		finishInstallationAtPath(basePath);
+	}
+
 	free(encodedPath);
     return wentFine;
 }

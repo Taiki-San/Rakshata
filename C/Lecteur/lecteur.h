@@ -34,6 +34,7 @@ typedef struct
 	
 } DATA_LECTURE;
 
+bool readerConfigFileLoader(PROJECT_DATA projectDB, bool isTome, uint IDRequested, DATA_LECTURE* dataReader);	//Remove the unread flag
 bool configFileLoader(PROJECT_DATA project, bool isTome, uint IDRequested, DATA_LECTURE* dataReader);
 void releaseDataReader(DATA_LECTURE *data);
 
