@@ -52,6 +52,31 @@ bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data)
     return checkChapterReadable(projectDB, data);
 }
 
+bool checkAlreadyRead(PROJECT_DATA projectDB, bool isTome, uint data)
+{
+	char *encodedPath = getPathForProject(projectDB);
+	if(encodedPath != NULL)
+	{
+		uint length = strlen(encodedPath) + 1024;
+		char path[length];
+		if(isTome)
+			snprintf(path, length, PROJECT_ROOT"%s/"VOLUME_PREFIX"%u/"CT_UNREAD_FLAG, encodedPath, data);
+		else
+		{
+			if(data % 10)
+				snprintf(path, length, PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/"CT_UNREAD_FLAG, encodedPath, data / 10, data % 10);
+			else
+				snprintf(path, length, PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/"CT_UNREAD_FLAG, encodedPath, data / 10);
+		}
+		
+		free(encodedPath);
+		
+		return !checkFileExist(path);
+	}
+	
+	return true;
+}
+
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 {
     if(isTome)
