@@ -412,23 +412,26 @@ void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 	if(tomeID >= data.nbVolumes || data.volumesFull == NULL || chapitreID == INVALID_VALUE)
 		return;
 	
-	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], *encodedPath = getPathForProject(data);
+	char pathToSharedFile[2*LENGTH_PROJECT_NAME + 256], basePath[2 * LENGTH_PROJECT_NAME + 256], *encodedPath = getPathForProject(data);
 	
 	if(encodedPath == NULL)
 		return;
 	
 	if(chapitreID % 10)
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10, chapitreID % 10);
+		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u.%u/", encodedPath, chapitreID / 10, chapitreID % 10);
 	else
-		snprintf(pathToSharedFile, sizeof(pathToSharedFile), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/"VOLUME_CHAP_SHARED_TOKEN, encodedPath, chapitreID / 10);
+		snprintf(basePath, sizeof(basePath), PROJECT_ROOT"%s/"CHAPTER_PREFIX"%u/", encodedPath, chapitreID / 10);
 	
 	free(encodedPath);
+	snprintf(pathToSharedFile, sizeof(pathToSharedFile), "%s/"VOLUME_CHAP_SHARED_TOKEN, basePath);
 	
 	FILE * file = fopen(pathToSharedFile, "w+");
 	if(file != NULL)
 	{
 		fprintf(file, "%d", data.volumesFull[tomeID].ID);
 		fclose(file);
+		
+		finishInstallationAtPath(basePath);
 	}
 #ifdef EXTENSIVE_LOGGING
 	else
