@@ -65,7 +65,37 @@ __strong RakSuggestionEngine * sharedObject;
 	NSMutableArray < NSDictionary * > * array = [[NSMutableArray alloc] initWithCapacity:nbSuggestions];
 	NSMutableArray < NSNumber *> * usedID = [[NSMutableArray alloc] initWithCapacity:nbSuggestions];
 	
-	for (uint i = 0, value; i < nbSuggestions; i++)
+	uint nbFavs;
+	
+	SUGGESTIONS_FAVS * favorites = getIDOfInterestingFavorites(cacheID, ceil(nbSuggestions / 2.0), &nbFavs);
+	if(favorites != NULL)
+	{
+		for(uint i = 0; i < nbFavs; ++i)
+		{
+			[usedID addObject:@(favorites[i].ID)];
+			
+			byte reason;
+			if(favorites[i].priority != SUGG_PRIORITY_FAVS_OLD)
+				reason = SUGGESTION_REASON_FAVORITE_NEW_STUFFS;
+			else
+				reason = SUGGESTION_REASON_FAVORITE_OLD;
+			
+			NSDictionary * insertionPoint;
+			if(favorites[i].indexInsertionID != INVALID_VALUE)
+				insertionPoint = @{@"isTome" : @(favorites[i].isTome), @"ID" : @(favorites[i].indexInsertionID)};
+			else
+				insertionPoint = @{@"isTome" : @(favorites[i].isTome)};
+			
+			[array addObject:@{@"ID" : @(favorites[i].ID), @"reason" : @(reason), @"insertionPoint" : insertionPoint}];
+		}
+	}
+	
+	return [self fillWithRandomData:array containing:usedID project:cacheID withNumber:nbSuggestions];
+}
+
+- (NSArray <NSDictionary *> *) fillWithRandomData : (NSMutableArray <NSDictionary *> *) array containing: (NSMutableArray <NSNumber *> *) usedID project : (uint) cacheID withNumber : (uint) nbSuggestions
+{
+	for (uint i = [array count], value; i < nbSuggestions; i++)
 	{
 		//Prevent reusing IDs
 		value = getRandom() % nbElem;
@@ -76,7 +106,7 @@ __strong RakSuggestionEngine * sharedObject;
 		}
 		
 		[usedID addObject:@(value)];
-		[array addObject:@{@"ID" : @(value), @"reason" : getRandom() & 0x1 ? @(SUGGESTION_REASON_TAG) : @(SUGGESTION_REASON_AUTHOR)}];
+		[array addObject:@{@"ID" : @(value), @"reason" : @(SUGGESTION_REASON_RANDOM)}];
 	}
 	
 	return [NSArray arrayWithArray:array];
@@ -119,7 +149,7 @@ __strong RakSuggestionEngine * sharedObject;
 		uint index = reader_getPosIntoContentIndex(project, state.CTID, state.isTome);
 		if(index != INVALID_VALUE && ++index < ACCESS_DATA(state.isTome, project.nbChapterInstalled, project.nbVolumesInstalled))
 		{
-			[RakTabView broadcastUpdateContext: nil : project : state.isTome: ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, index)];
+			[RakTabView broadcastUpdateContext: nil : project : state.isTome : ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, index)];
 			goto end;
 		}
 		
@@ -146,13 +176,14 @@ __strong RakSuggestionEngine * sharedObject;
 	{
 		bool isTome = project.nbVolumesInstalled != 0;
 
-		[RakTabView broadcastUpdateContext:nil :project :isTome :ACCESS_CT(state.isTome, project.chaptersInstalled, project.volumesInstalled, 0)];
+		[RakTabView broadcastUpdateContext:nil :project :isTome :ACCESS_CT(isTome, project.chaptersInstalled, project.volumesInstalled, 0)];
 	}
 
 	//Nop, let's just open the CT tab
 	else
 	{
 		[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_VALUE];
+		[[[NSApp delegate] CT] ownFocus];
 	}
 	
 end:
