@@ -53,6 +53,7 @@
 - (void) setupPath;
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
+- (void) triggerPageCounterPopover;
 
 - (void) releaseIcons;
 

@@ -261,8 +261,16 @@
 			
 			switch (keyCode)
 			{
+				case 38:		//j, share the default behavior of a
+				{
+					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					{
+						[bottomBar triggerPageCounterPopover];
+						handledChar = true;
+						break;
+					}
+				}
 				case 0:			//a
-				case 38:		//j
 				{
 					[self prevPage];
 					handledChar = true;
@@ -303,7 +311,7 @@
 				}
 					
 				case 14:		//e
-				case 31:			//o
+				case 31:		//o
 				{
 					[self nextChapter];
 					handledChar = true;
@@ -381,6 +389,25 @@
 						_scrollView.animator.magnification = lastKnownMagnification;
 					}
 					break;
+				}
+					
+				case '=':	//Fill the avaiable width/height
+				{
+					BOOL altPressed = ((RakAppDelegate*)[NSApp delegate]).window.optionPressed, commandPressed = ((RakAppDelegate*)[NSApp delegate]).window.commandPressed;
+					
+					if(altPressed || commandPressed)
+					{
+						lastKnownMagnification = _scrollView.magnification;
+						
+						if(commandPressed)
+							lastKnownMagnification = _scrollView.bounds.size.width / _scrollView.contentFrame.size.width;
+						else
+							lastKnownMagnification = _scrollView.bounds.size.height / _scrollView.contentFrame.size.height;
+						
+						lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
+						lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
+						_scrollView.animator.magnification = lastKnownMagnification;
+					}
 				}
 			}
 		}
@@ -512,6 +539,8 @@
 		return NO;
 	
 	NSPoint point = [[_scrollView contentView] bounds].origin;
+	point.x = round(point.x);
+	point.y = round(point.y);
 	
 	if(move < 0 && point.x <= 0)
 		return NO;
@@ -539,7 +568,7 @@
 			[[NSAnimationContext currentContext] setDuration:0.3];
 		}
 		
-		[_scrollView.contentView.animator setBoundsOrigin:point];
+		[_scrollView scrollWithAnimationToPoint:point];
 		
 		if(!contextExist)
 			[NSAnimationContext endGrouping];
@@ -560,8 +589,10 @@
 		return NO;
 	
 	NSPoint point = _scrollView.contentView.bounds.origin;
+	point.x = round(point.x);
+	point.y = round(point.y);
 	
-	if(move < 0 && point.y == 0)
+	if(move < 0 && point.y <= 0)
 		return NO;
 	else if(move < 0 && point.y < -move)
 		point.y = 0;
@@ -587,7 +618,7 @@
 			[[NSAnimationContext currentContext] setDuration:0.2];
 		}
 		
-		[_scrollView.contentView.animator setBoundsOrigin:point];
+		[_scrollView scrollWithAnimationToPoint:point];
 		
 		if(!contextExist)
 			[NSAnimationContext endGrouping];
@@ -1204,20 +1235,24 @@
 
 - (void) jumpPressed : (BOOL) withShift
 {
-	CGFloat height = self.bounds.size.height, delta = height - READER_PAGE_BOTTOM_BORDER;
+	NSSize size = self.bounds.size;
+	CGFloat height = size.height, delta = height - READER_PAGE_BOTTOM_BORDER;
 	
 	if(!withShift)
 		delta *= -1;
 	
 	if(![self _moveSliderY : delta : YES : NO])
 	{
-		CGFloat width = self.bounds.size.width;
+		CGFloat width = size.width;
 		delta = width - 2 * READER_BORDURE_VERT_PAGE;
 		
-		if(withShift ^ !_project.rightToLeft)
+		if(withShift ^ !mainScroller.flipped)
 			delta *= -1;
 		
-		if(![self _moveSliderX : delta : YES : NO])
+		[NSAnimationContext beginGrouping];
+		[[NSAnimationContext currentContext] setDuration:0.3];
+		
+		if(![self _moveSliderX : delta : YES : YES])
 		{
 			if(withShift)
 			{
@@ -1236,11 +1271,13 @@
 		else
 		{
 			//moveSliderX initiate an animation, so those lines have no effect for now...
-//			if(withShift)
-//				[_scrollView scrollToBottomOfDocument];
-//			else
-//				[_scrollView scrollToTopOfDocument];
+			if(withShift)
+				[_scrollView scrollToBottomOfDocument : YES];
+			else
+				[_scrollView scrollToTopOfDocument : YES];
 		}
+		
+		[NSAnimationContext endGrouping];
 	}
 }
 

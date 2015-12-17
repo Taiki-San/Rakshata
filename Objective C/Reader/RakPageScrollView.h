@@ -11,6 +11,9 @@
  ********************************************************************************************/
 
 @interface RakPageScrollView : NSScrollView
+{
+	NSPoint cachedBounds;
+}
 
 @property NSRect scrollViewFrame;
 @property NSRect contentFrame;
@@ -19,8 +22,8 @@
 @property uint page;
 @property (nonatomic) BOOL isPDF;
 
-- (void) scrollToTopOfDocument;
-- (void) scrollToBottomOfDocument;
+- (void) scrollToTopOfDocument : (BOOL) animated;
+- (void) scrollToBottomOfDocument : (BOOL) animated;
 
 - (void) scrollToBeginningOfDocument;
 - (void) scrollToEndOfDocument;
@@ -28,6 +31,7 @@
 - (NSRect) documentViewFrame;
 
 - (void) scrollToPoint : (NSPoint) origin;
+- (void) scrollWithAnimationToPoint : (NSPoint) origin;
 
 @end
 

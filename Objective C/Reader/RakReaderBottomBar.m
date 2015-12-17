@@ -98,6 +98,12 @@
 	}
 }
 
+- (void) triggerPageCounterPopover
+{
+	if(![pageCount openPopover])
+		[pageCount closePopover];
+}
+
 #pragma mark - Buttons
 
 - (short) numberIconsInBar

@@ -55,25 +55,31 @@
 
 #pragma mark - Size and position manipulation
 
-- (void) scrollToTopOfDocument
+- (void) scrollToTopOfDocument : (BOOL) animated
 {
-	NSPoint sliderStart = NSMakePoint(self.contentView.bounds.origin.x , READER_PAGE_TOP_BORDER);
+	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
 	
 	if(_pageTooHigh)
 		sliderStart.y = documentViewSize.height - scrollviewSize.height;
 	
-	[self scrollToPoint:sliderStart];
+	if(animated)
+		[self scrollWithAnimationToPoint:sliderStart];
+	else
+		[self scrollToPoint:sliderStart];
 }
 
-- (void) scrollToBottomOfDocument
+- (void) scrollToBottomOfDocument : (BOOL) animated
 {
-	[self scrollToPoint:NSMakePoint(self.contentView.bounds.origin.x, 0)];
+	if(animated)
+		[self scrollWithAnimationToPoint:NSMakePoint(cachedBounds.x, 0)];
+	else
+		[self scrollToPoint:NSMakePoint(cachedBounds.x, 0)];
 }
 
 - (void) scrollToBeginningOfDocument
 {
-	NSPoint sliderStart = NSMakePoint(self.contentView.bounds.origin.x , READER_PAGE_TOP_BORDER);
+	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
 	
 	if(_pageTooHigh)
@@ -87,12 +93,19 @@
 
 - (void) scrollToEndOfDocument
 {
-	[self scrollToPoint:NSMakePoint(self.contentView.bounds.origin.x, 0)];
+	[self scrollToPoint:NSMakePoint(cachedBounds.x, 0)];
 }
 
 - (void) scrollToPoint : (NSPoint) origin
 {
+	cachedBounds = origin;
 	[self.contentView scrollToPoint:origin];
+}
+
+- (void) scrollWithAnimationToPoint : (NSPoint) origin
+{
+	cachedBounds = origin;
+	[self.contentView.animator setBoundsOrigin: origin];
 }
 
 - (NSRect) documentViewFrame

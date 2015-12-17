@@ -51,4 +51,7 @@
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 - (void) transmitPageJump : (uint) newPage;
 
+- (BOOL) openPopover;
+- (void) closePopover;
+
 @end
