@@ -12,44 +12,33 @@
 
 #include "dbCache.h"
 
-enum
+SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint nbMax, uint * nbOutputData)
 {
-	SUGG_PRIORITY_FAVS_BEST,
-	SUGG_PRIORITY_FAVS_LOWER
-};
-
-typedef struct
-{
-	uint ID;
-	uint indexInsertionID;
-	bool isTome;
-	byte priority;
-
-} SUGGESTIONS_FAVS;
-
-SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint * nbOutputData)
-{
-	if(cache == NULL)
+	sqlite3 * recentDB;	
+	if(cache == NULL || (recentDB = getPtrRecentDB()) == NULL)
+	{
+		*nbOutputData = 0;
 		return NULL;
-	
-	sqlite3 * recentDB = getPtrRecentDB();
-	if(recentDB == NULL)
+	}
+
+	sqlite3_stmt * request = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_nbChapter)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY RANDOM()");
+	if(request == NULL)
+	{
+		closeRecentDB(recentDB);
+		*nbOutputData = 0;
 		return NULL;
+	}
 	
 	uint nbOutput = 0;
 	SUGGESTIONS_FAVS * output = NULL;
-	
-	sqlite3_stmt * request = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_nbChapter)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomes)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_favoris)" = 1 ORDER BY RANDOM()");
-	if(request == NULL)
-		goto end;
-	
+
 	REPO_DATA repo;
 	PROJECT_DATA project = getEmptyProject();
 	project.repo = &repo;
 	
 	//We are looking for favorites with new, unread content.
 	//Ideally, the insertion point has to be as close from where the reading was suspended as possible.
-	while(sqlite3_step(request) == SQLITE_ROW)
+	while(nbOutput < nbMax && sqlite3_step(request) == SQLITE_ROW)
 	{
 		//We pull everything from the database
 		project.cacheDBID = (uint) sqlite3_column_int(request, 0);
@@ -152,8 +141,10 @@ SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint * nbOutput
 			output = realloc(output, ++nbOutput * sizeof(SUGGESTIONS_FAVS));
 			if(output != NULL)
 			{
+				//If we resume the reading from the previously read point, we return a special value
+				
 				output[nbOutput - 1].ID = project.cacheDBID;
-				output[nbOutput - 1].indexInsertionID = indexLastCT;
+				output[nbOutput - 1].indexInsertionID = indexLastCT == ACCESS_DATA(lastReadWasTome, posLastChapterID, posLastVolumeID) ? INVALID_VALUE : indexLastCT;
 				output[nbOutput - 1].isTome = lastReadWasTome;
 				output[nbOutput - 1].priority = lastReadWasTome == realLastReadWasTome ? SUGG_PRIORITY_FAVS_BEST : SUGG_PRIORITY_FAVS_LOWER;
 			}
@@ -164,7 +155,6 @@ SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint * nbOutput
 		//FIXME: Should cross check volumes/chapter, so if the last volume is read, but new chapters, following the volume are out, detect them
 	}
 	
-end:
 	closeRecentDB(recentDB);
 	
 	*nbOutputData = nbOutput;

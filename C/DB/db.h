@@ -88,6 +88,13 @@ enum
 	THUMBID_DD
 };
 
+enum
+{
+	SUGG_PRIORITY_FAVS_BEST,
+	SUGG_PRIORITY_FAVS_LOWER,
+	SUGG_PRIORITY_FAVS_OLD
+};
+
 //Structure to update icons
 typedef struct icon_update_waitlist ICONS_UPDATE;
 
@@ -121,6 +128,15 @@ typedef struct
 	bool isInitialized;
 	
 } STATE_DUMP;
+
+typedef struct
+{
+	uint ID;
+	uint indexInsertionID;
+	bool isTome;
+	byte priority;
+	
+} SUGGESTIONS_FAVS;
 
 /**DBCache.c**/
 uint setupBDDCache();
@@ -255,3 +271,6 @@ bool getCopyOfCats(CATEGORY_VERBOSE ** newData, uint * nbData);
 
 /**		TagUpdate.c		**/
 void checkIfRefreshTag();
+
+/**DBSuggestion.c**/
+SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint nbMax, uint * nbOutputData);
