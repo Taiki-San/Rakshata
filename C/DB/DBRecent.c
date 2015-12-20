@@ -550,6 +550,11 @@ STATE_DUMP getEmptyRecoverState()
 
 STATE_DUMP recoverStateForProject(PROJECT_DATA project)
 {
+	return _recoverStateForProject(project, false, false);
+}
+
+STATE_DUMP _recoverStateForProject(PROJECT_DATA project, bool haveTome, bool isTome)
+{
 	STATE_DUMP output = getEmptyRecoverState();
 	
 	output.cacheDBID = project.cacheDBID;
@@ -557,12 +562,25 @@ STATE_DUMP recoverStateForProject(PROJECT_DATA project)
 	sqlite3 * database = getPtrRecentDB();
 	if(database != NULL)
 	{
-		sqlite3_stmt * request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 ORDER BY "DBNAMETOID(RDB_REC_lastChange)" DESC LIMIT 1;");
+		sqlite3_stmt * request;
+		
+		if(haveTome)
+		{
+			request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 AND "DBNAMETOID(RDB_REC_lastIsTome)" = ?4 ORDER BY "DBNAMETOID(RDB_REC_lastChange)" DESC LIMIT 1;");
+		}
+		else
+		{
+			request = createRequest(database, "SELECT "DBNAMETOID(RDB_REC_lastIsTome)", "DBNAMETOID(RDB_REC_lastCTID)", "DBNAMETOID(RDB_REC_lastPage)", "DBNAMETOID(RDB_REC_wasLastPageOfCT)", "DBNAMETOID(RDB_REC_lastZoom)", "DBNAMETOID(RDB_REC_lastScrollerX)", "DBNAMETOID(RDB_REC_lastScrollerY)" FROM "STATE_TABLE" WHERE "DBNAMETOID(RDB_REC_repo)" = ?1 AND "DBNAMETOID(RDB_REC_projectID)" = ?2 AND "DBNAMETOID(RDB_isLocal)" = ?3 ORDER BY "DBNAMETOID(RDB_REC_lastChange)" DESC LIMIT 1;");
+		}
+		
 		if(request != NULL)
 		{
 			sqlite3_bind_int64(request, 1, (int64_t) getRepoID(project.repo));
 			sqlite3_bind_int(request, 2, (int32_t) project.projectID);
 			sqlite3_bind_int(request, 3, project.locale);
+
+			if(haveTome)
+				sqlite3_bind_int(request, 4, isTome);
 			
 			if(sqlite3_step(request) == SQLITE_ROW)
 			{

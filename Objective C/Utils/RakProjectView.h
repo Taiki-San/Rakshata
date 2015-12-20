@@ -39,11 +39,14 @@ enum
 
 @property (readonly) uint elementID;
 @property (readonly) NSRect workingArea;
+@property NSDictionary * insertionPoint;
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
+- (instancetype) initWithProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;
 
 - (void) initContent;
 - (void) updateProject : (PROJECT_DATA) project;
+- (void) updateProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;
 
 - (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize;
 
@@ -75,8 +78,8 @@ enum
 @property id controller;
 @property SEL clickValidation;	//Expect a selector that looks like - (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
 
-- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason;
-- (void) updateProject : (PROJECT_DATA) project;
+- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason insertionPoint : (NSDictionary *) insertionPoint;
+- (void) updateProject : (PROJECT_DATA) project insertionPoint : (NSDictionary *) insertionPoint;
 
 - (CGFloat) getMinimumHeight;
 - (NSColor *) borderColor;

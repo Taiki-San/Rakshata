@@ -58,7 +58,7 @@
 	
 	for(NSDictionary * dict in data)
 	{
-		RakThumbProjectView * view = [[RakThumbProjectView alloc] initWithProject:[[RakSuggestionEngine getShared] dataForIndex:[[dict objectForKey:@"ID"] unsignedIntValue]] reason:[(NSNumber *) [dict objectForKey:@"reason"] unsignedCharValue]];
+		RakThumbProjectView * view = [[RakThumbProjectView alloc] initWithProject:[[RakSuggestionEngine getShared] dataForIndex:[[dict objectForKey:@"ID"] unsignedIntValue]] reason:[(NSNumber *) [dict objectForKey:@"reason"] unsignedCharValue] insertionPoint:[dict objectForKey:@"insertionPoint"]];
 		
 		if(view != nil)
 		{
@@ -147,7 +147,7 @@
 	
 	//Return YES will open the CT tab
 	//Return NO will tell the routine we did the work, and to simply return
-	BOOL retvalue = ![RakSuggestionEngine suggestionWasClicked:project.elementID];
+	BOOL retvalue = ![RakSuggestionEngine suggestionWasClicked:project.elementID withInsertionPoint:project.insertionPoint];
 	
 	if(!retvalue && [[NSApp delegate] reader].distractionFree != _openedLeavingDFMode)
 	{

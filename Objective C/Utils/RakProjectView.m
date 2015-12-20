@@ -27,6 +27,11 @@ enum
 
 - (instancetype) initWithProject : (PROJECT_DATA) project
 {
+	return [self initWithProject:project withInsertionPoint:nil];
+}
+
+- (instancetype) initWithProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint
+{
 	if(!project.isInitialized)
 		return nil;
 	
@@ -34,6 +39,8 @@ enum
 	
 	if(self != nil)
 	{
+		_insertionPoint = insertionPoint;
+		
 		//We really don't care about those data, so we don't want the burden of having to update them
 		nullifyCTPointers(&project);
 
@@ -91,10 +98,16 @@ enum
 
 - (void) updateProject : (PROJECT_DATA) project
 {
+	[self updateProject:project withInsertionPoint:nil];
+}
+
+- (void) updateProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint
+{
 	//We really don't care about those data, so we don't want the burden of having to update them
 	nullifyCTPointers(&project);
 	
 	_project = project;
+	_insertionPoint = insertionPoint;
 	
 	if(projectName != nil)
 		projectName.stringValue = getStringForWchar(_project.projectName);
@@ -300,10 +313,10 @@ enum
 
 @implementation RakThumbProjectView
 
-- (instancetype) initWithProject:(PROJECT_DATA)project reason : (byte) reason
+- (instancetype) initWithProject : (PROJECT_DATA) project reason : (byte) reason insertionPoint : (NSDictionary *) insertionPoint
 {
 	_reason = reason;
-	self = [self initWithProject:project];
+	self = [self initWithProject:project withInsertionPoint:insertionPoint];
 	
 	if(self != nil)
 		[self setFrameSize:NSMakeSize(_workingArea.size.width, _workingArea.size.height + 2 * TOP_BORDER)];
@@ -384,9 +397,9 @@ enum
 	}
 }
 
-- (void) updateProject : (PROJECT_DATA) project
+- (void) updateProject : (PROJECT_DATA) project insertionPoint : (NSDictionary *) insertionPoint
 {
-	[super updateProject:project];
+	[super updateProject:project withInsertionPoint:insertionPoint];
 	[self initReason];
 	[self reloadOrigin];
 }

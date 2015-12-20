@@ -222,6 +222,7 @@ bool lastReadAsTome(void * database, PROJECT_DATA project);
 bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state);
 STATE_DUMP getEmptyRecoverState();
 STATE_DUMP recoverStateForProject(PROJECT_DATA project);
+STATE_DUMP _recoverStateForProject(PROJECT_DATA project, bool haveTome, bool isTome);
 
 PROJECT_DATA ** getRecentEntries (bool wantDL, uint8_t * nbElem);
 bool addRecentEntry(PROJECT_DATA data, bool wasItADL);

@@ -129,7 +129,7 @@ __strong RakSuggestionEngine * sharedObject;
 #pragma mark - Process a click
 
 //Return YES if could process the suggestion, NO otherwise
-+ (BOOL) suggestionWasClicked : (uint) projectID
++ (BOOL) suggestionWasClicked : (uint) projectID withInsertionPoint : (NSDictionary *) insertionPoint
 {
 	PROJECT_DATA project = getProjectByID(projectID);
 	if(!project.isInitialized)
@@ -141,7 +141,7 @@ __strong RakSuggestionEngine * sharedObject;
 		//We restore the page if the reading was interrupted
 		if(!state.wasLastPage)
 		{
-			[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_RESUME_READING object:@(projectID)];
+			[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_RESUME_READING object:@(projectID) userInfo:insertionPoint];
 			goto end;
 		}
 		

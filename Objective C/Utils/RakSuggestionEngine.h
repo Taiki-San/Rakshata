@@ -17,6 +17,6 @@
 - (NSArray <NSDictionary *> *) getSuggestionForProject : (uint) cacheID withNumber : (uint) nbSuggestions;
 - (PROJECT_DATA) dataForIndex : (uint) index;
 
-+ (BOOL) suggestionWasClicked : (uint) projectID;
++ (BOOL) suggestionWasClicked : (uint) projectID withInsertionPoint : (NSDictionary *) insertionPoint;
 
 @end

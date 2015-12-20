@@ -73,10 +73,12 @@
 
 - (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
+	NSDictionary * data = dataArray[(NSUInteger) row];
+	
 	RakCTFocusSRItem * element = [tableView makeViewWithIdentifier : _identifier owner:self];
 	if(element == nil)
 	{
-		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[[dataArray[(NSUInteger) row] objectForKey:@"ID"] unsignedIntValue]] reason : [[dataArray[(NSUInteger) row] objectForKey:@"reason"] unsignedIntValue]];
+		element = [[RakCTFocusSRItem alloc] initWithProject : [[RakSuggestionEngine getShared] dataForIndex:[[data objectForKey:@"ID"] unsignedIntValue]] reason : [[data objectForKey:@"reason"] unsignedIntValue] insertionPoint : [data objectForKey:@"insertionPoint"]];
 
 		element.identifier = _identifier;
 		element.table = self;
@@ -89,8 +91,8 @@
 	}
 	else
 	{
-		element.reason = [[dataArray[(NSUInteger) row] objectForKey:@"reason"] unsignedIntValue];
-		[element updateProject:[[RakSuggestionEngine getShared] dataForIndex:[[dataArray[(NSUInteger) row] objectForKey:@"ID"] unsignedIntValue]]];
+		element.reason = [[data objectForKey:@"reason"] unsignedIntValue];
+		[element updateProject:[[RakSuggestionEngine getShared] dataForIndex:[[data objectForKey:@"ID"] unsignedIntValue]] insertionPoint:[data objectForKey:@"insertionPoint"]];
 	}
 	
 	return element;
@@ -98,7 +100,7 @@
 
 - (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
 {
-	return ![RakSuggestionEngine suggestionWasClicked:project.elementID];
+	return ![RakSuggestionEngine suggestionWasClicked:project.elementID withInsertionPoint:project.insertionPoint];
 }
 
 #pragma mark - Configuration

@@ -83,7 +83,7 @@
 - (instancetype) init : (NSView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
-- (void) restoreProject : (PROJECT_DATA) project;
+- (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;
 
 - (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;

@@ -75,7 +75,7 @@
 					break;
 				}
 				
-				[self restoreProject:*project];
+				[self restoreProject:*project withInsertionPoint:nil];
 				
 				releaseCTData(*project);
 				free(project);
@@ -87,9 +87,34 @@
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) restoreProject : (PROJECT_DATA) project
+- (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint
 {
-	STATE_DUMP savedState = recoverStateForProject(project);
+	STATE_DUMP savedState;
+ 
+	if(insertionPoint != nil && [insertionPoint isKindOfClass:[NSDictionary class]] && [[insertionPoint objectForKey:@"isTome"] isKindOfClass:[NSNumber class]])
+	{
+		savedState = _recoverStateForProject(project, true, [[insertionPoint objectForKey:@"isTome"] boolValue]);
+		
+		NSNumber * ID = [insertionPoint objectForKey:@"ID"];
+		if(ID != nil && [ID isKindOfClass:[NSNumber class]])
+		{
+			uint insertionPointID = [ID unsignedIntValue];
+			
+			if(!savedState.isInitialized || savedState.CTID != insertionPointID)
+			{
+				bool oldIsTome = savedState.isTome;
+				
+				savedState = getEmptyRecoverState();
+				savedState.isInitialized = true;
+				savedState.isTome = oldIsTome;
+				savedState.CTID = insertionPointID;
+				savedState.zoom = 1.0;
+				savedState.scrollerX = CGFLOAT_MAX;
+			}
+		}
+	}
+	else
+		savedState = recoverStateForProject(project);
 	
 	if(savedState.isInitialized)
 	{
@@ -515,7 +540,7 @@
 	if(!project.isInitialized)
 		return;
 	
-	[self restoreProject:project];
+	[self restoreProject:project withInsertionPoint:notification.userInfo];
 	[self ownFocus];
 
 	releaseCTData(project);
