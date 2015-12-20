@@ -403,16 +403,18 @@
 	
 	else if([textView respondsToSelector:commandSelector])
 	{
-		if(commandSelector == @selector(deleteBackward:))
-			deletinChar = YES;
-		
 		if(commandSelector == @selector(insertNewline:))
 		{
 			didAuthorizeSearch = YES;
 			normalKeyPressed = NO;
 		}
 		else
+		{
+			if(commandSelector == @selector(deleteBackward:))
+				deletinChar = YES;
+
 			normalKeyPressed = YES;
+		}
 		
 		IMP imp = [textView methodForSelector:commandSelector];
 		void (*func)(id, SEL, id) = (void *)imp;
