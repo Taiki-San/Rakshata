@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakStatusButton : NSView
+@interface RakStatusButton : RakView
 {
 	RakColor * cachedColor,  * cachedBackgroundColor;
 	RakText * text;

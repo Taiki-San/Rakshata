@@ -169,7 +169,7 @@
 		if([postAnimationTarget respondsToSelector:@selector(animationOver:)])
 			[postAnimationTarget performSelector:@selector(animationOver:) withObject:self];
 
-		else if([postAnimationTarget isKindOfClass:[NSView class]])
+		else if([postAnimationTarget isKindOfClass:[RakView class]])
 			[postAnimationTarget display];
 	}
 		

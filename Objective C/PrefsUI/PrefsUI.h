@@ -13,7 +13,7 @@
 //Allow to create NSViewController without NIB
 @interface RakPrefsPopover : NSViewController
 {
-	NSView * mainView;
+	RakView * mainView;
 	
 	uint mainThread;
 	
@@ -32,7 +32,7 @@
 
 @end
 
-@interface PrefsUI : NSView <NSPopoverDelegate>
+@interface PrefsUI : RakView <NSPopoverDelegate>
 {
     RakPrefsPopover *viewControllerHUD;
     NSPopover *popover;

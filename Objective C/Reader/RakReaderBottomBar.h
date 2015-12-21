@@ -22,7 +22,7 @@
 #define READER_BB_ALPHA_DF			0.5f
 #define READER_BB_ALPHA_DF_STATIC	0.05f
 
-@interface RakReaderBottomBar : NSView
+@interface RakReaderBottomBar : RakView
 {
 	/** Images of different icons **/
 	RakButton *favorite;

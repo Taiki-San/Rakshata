@@ -14,13 +14,13 @@
 {
 	PROJECT_DATA _project;
 	
-	NSView * _view;
+	RakView * _view;
 }
 
 - (instancetype) initWithProject : (PROJECT_DATA) project;
 
 - (void) configureMenu : (NSMenu *) menu;
-- (void) configureCleanMenu : (BOOL) optionPressed toView : (NSView *) view;
+- (void) configureCleanMenu : (BOOL) optionPressed toView : (RakView *) view;
 - (void) configureMenu : (NSMenu *) menu withOption : (BOOL) optionPressed;
 
 - (void) deleteSerie;

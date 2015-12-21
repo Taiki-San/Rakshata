@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakMDLFooter : NSView
+@interface RakMDLFooter : RakView
 
 @property RakMDLController * controller;
 

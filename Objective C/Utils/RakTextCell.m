@@ -22,7 +22,7 @@
 	return newRect;
 }
 
-- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
+- (void) selectWithFrame:(NSRect)aRect inView:(RakView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
 {
 	if(self.centered)
 		aRect = [self centerCell:aRect];
@@ -30,7 +30,7 @@
 	[super selectWithFrame:aRect inView:controlView editor:textObj delegate:anObject start:selStart length:selLength];
 }
 
-- (void) editWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
+- (void) editWithFrame:(NSRect)aRect inView:(RakView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
 {
 	if(self.centered)
 		aRect = [self centerCell:aRect];
@@ -96,7 +96,7 @@
 	clearBackground = [color isEqualTo:[RakColor clearColor]];
 }
 
-- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(RakView*)controlView
 {
 	if(flag && clearBackground)
 		self.backgroundColor = [RakColor clearColor];
@@ -125,12 +125,12 @@
 	return [self centerCell :[super drawingRectForBounds:theRect]];
 }
 
-- (void) selectWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
+- (void) selectWithFrame:(NSRect)aRect inView:(RakView *)controlView editor:(NSText *)textObj delegate:(id)anObject start:(NSInteger)selStart length:(NSInteger)selLength
 {
 	[super selectWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject start:selStart length:selLength];
 }
 
-- (void) editWithFrame:(NSRect)aRect inView:(NSView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
+- (void) editWithFrame:(NSRect)aRect inView:(RakView *)controlView editor:(NSText *)textObj delegate:(id)anObject event:(NSEvent *)theEvent
 {
 	[super editWithFrame:[self centerCell:aRect] inView:controlView editor:textObj delegate:anObject event:theEvent];
 }
@@ -149,7 +149,7 @@
 	return originalRect;
 }
 
-- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(RakView*)controlView
 {
 	if(flag)
 		self.backgroundColor = [RakColor clearColor];

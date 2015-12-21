@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTSerieHeader : NSView
+@interface RakCTSerieHeader : RakView
 {
 	NSRect _cachedFrame;
 	NSGradient * _gradient;

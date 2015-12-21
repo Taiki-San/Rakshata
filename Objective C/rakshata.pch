@@ -53,21 +53,28 @@
 	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/
+	#if !TARGET_OS_IPHONE
 
-	#import "MDL.h"
+		#import "MDL.h"
 
-	#import "RakExportController.h"
-	#import "RakImportController.h"
+		#import "RakExportController.h"
+		#import "RakImportController.h"
 
-	#import "RakMenu.h"
+		#import "RakMenu.h"
 
-	#import "Series.h"
-	#import "CTSelec.h"
-	#import "Reader.h"
+		#import "Series.h"
+		#import "CTSelec.h"
+		#import "Reader.h"
 
-	#import "RakAuthController.h"
-	#import "RakContentView.h"
-	#import "RakAppDelegate.h"
+		#import "RakAuthController.h"
+		#import "RakContentView.h"
+		#import "RakAppDelegate.h"
+
+	#else
+
+		#import "RakImportController.h"
+
+	#endif
 
 	#import "Prefs.h"
 

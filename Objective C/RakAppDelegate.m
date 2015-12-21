@@ -59,7 +59,7 @@
 
 - (RakContentView*) getContentView
 {
-	for(id view in ((NSView*)self.window.contentView).subviews)
+	for(id view in ((RakView*)self.window.contentView).subviews)
 	{
 		if([view class] == [RakContentView class])
 			return view;

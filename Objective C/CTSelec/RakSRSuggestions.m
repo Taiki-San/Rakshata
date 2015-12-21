@@ -71,7 +71,7 @@
 	return [self tableView:tableView viewForTableColumn:nil row:row].bounds.size.height;
 }
 
-- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	NSDictionary * data = dataArray[(NSUInteger) row];
 	

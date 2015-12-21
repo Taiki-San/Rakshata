@@ -355,9 +355,9 @@
 - (void) cleanupAfterFocusChange
 {
 #ifdef SEVERAL_VIEWS
-	for(NSView * view in @[backButton, displayType, tagRail, search, storeSwitch, preferenceButton])
+	for(RakView * view in @[backButton, displayType, tagRail, search, storeSwitch, preferenceButton])
 #else
-		for(NSView * view in @[backButton, tagRail, search, storeSwitch, preferenceButton])
+		for(RakView * view in @[backButton, tagRail, search, storeSwitch, preferenceButton])
 #endif
 		{
 			if(view.alphaValue == 0)

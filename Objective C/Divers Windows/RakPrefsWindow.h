@@ -34,8 +34,8 @@ enum
 	
 	RakPrefsGeneralView * generalView;
 	RakPrefsRepoView * repoView;
-	NSView * favoriteView;
-	NSView * customView;
+	RakView * favoriteView;
+	RakView * customView;
 }
 
 - (RakColor *) textColor;

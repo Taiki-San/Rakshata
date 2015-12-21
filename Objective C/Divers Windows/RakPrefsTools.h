@@ -20,7 +20,7 @@ enum
 	PREFS_BUTTON_CODE_DEFAULT = PREFS_BUTTON_CODE_GENERAL
 };
 
-@interface RakPrefsButtons : NSView
+@interface RakPrefsButtons : RakView
 
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakPrefsWindow *) delegate;
 - (void) selectElem : (byte) code;

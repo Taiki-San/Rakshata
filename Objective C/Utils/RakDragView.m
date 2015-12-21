@@ -131,7 +131,7 @@
 - (RakImage *) createImage
 {
 	NSRect frame = NSMakeRect(0, 0, self.frame.size.width + 2 * DRAGVIEW_BORDURE_VERT, self.frame.size.height + 2 * DRAGVIEW_BORDURE_HORIZ);
-	NSView * view = [[NSView alloc] initWithFrame:frame];
+	RakView * view = [[RakView alloc] initWithFrame:frame];
 	
 	if(view == nil)
 		return nil;

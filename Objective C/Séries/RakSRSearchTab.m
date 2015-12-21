@@ -268,7 +268,7 @@ enum
 		return;
 	
 	//We update the state of those 5 linked views
-	for(NSView * view in @[author, source, type, tag, extra])
+	for(RakView * view in @[author, source, type, tag, extra])
 	{
 		if(silentUpdate)
 		{
@@ -300,7 +300,7 @@ enum
 	self.layer.borderColor = [self getBorderColor].CGColor;
 	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
-		for(NSView * view in @[author, source, type, tag, extra, placeholder])
+		for(RakView * view in @[author, source, type, tag, extra, placeholder])
 		{
 			if(view.alphaValue == 0)
 				view.hidden = YES;

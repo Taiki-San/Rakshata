@@ -42,12 +42,12 @@ enum
 
 #pragma mark - Drawing
 
-- (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawWithFrame:(NSRect)cellFrame inView:(RakView *)controlView
 {
 	[self drawInteriorWithFrame:cellFrame inView:controlView];
 }
 
-- (void) drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawInteriorWithFrame:(NSRect)cellFrame inView:(RakView *)controlView
 {
 	//Border
 	if(self.isHighlighted)

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRDetails : NSView
+@interface RakSRDetails : RakView
 {
 	PROJECT_DATA _project;
 	

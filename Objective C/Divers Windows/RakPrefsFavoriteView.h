@@ -12,7 +12,7 @@
 
 #define NOTIFICATION_FAVS_REPO_UPDATE @"RakNotificationFavoriteLocalUpdate"
 
-@interface RakPrefsFavoriteView : NSView
+@interface RakPrefsFavoriteView : RakView
 
 @end
 

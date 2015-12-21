@@ -27,7 +27,7 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 42, 155)];
 }
 
-- (void) launchPopover : (NSView *) anchor withProjectID : (uint) cacheDBID
+- (void) launchPopover : (RakView *) anchor withProjectID : (uint) cacheDBID
 {
 	//We check if the user asked not to be annoyed again
 	BOOL haveValue = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_SUGGESTION : &defaultValueDiscard];

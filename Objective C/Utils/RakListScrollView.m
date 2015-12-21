@@ -83,7 +83,7 @@
 
 - (void) updateScrollerState : (NSRect) frame
 {
-	self.hasVerticalScroller = ((NSView *) self.documentView).bounds.size.height > frame.size.height;
+	self.hasVerticalScroller = ((RakView *) self.documentView).bounds.size.height > frame.size.height;
 }
 
 - (void) scrollWheel:(NSEvent *)event

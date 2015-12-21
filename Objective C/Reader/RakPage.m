@@ -1627,7 +1627,7 @@
 
 #pragma mark - NSPageController interface
 
-- (void) updatePCState : (uint) page : (uint) currentCacheSession : (NSView *) view
+- (void) updatePCState : (uint) page : (uint) currentCacheSession : (RakView *) view
 {
 	MUTEX_LOCK(cacheMutex);
 	
@@ -1651,17 +1651,17 @@
 {
 	NSViewController * controller = [NSViewController new];
 	
-	controller.view = [[NSView alloc] initWithFrame : container.frame];
+	controller.view = [[RakView alloc] initWithFrame : container.frame];
 	
 	return controller;
 }
 
 - (void) pageController : (RakPageController *) pageController prepareViewController : (NSViewController *) viewController withObject : (RakPageScrollView*) object
 {
-	NSView * view = viewController.view;
+	RakView * view = viewController.view;
 	NSArray * subviews = [NSArray arrayWithArray:view.subviews];
 	
-	for(NSView * sub in subviews)
+	for(RakView * sub in subviews)
 	{
 		[sub removeFromSuperview];
 		
@@ -1975,11 +1975,11 @@
 	
 	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
 	
-	for(NSView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
+	for(RakView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
 	{
 		subArray = [NSArray arrayWithArray:view.subviews];
 		
-		for(NSView * subview in subArray)
+		for(RakView * subview in subArray)
 		{
 			[subview removeFromSuperview];
 		}

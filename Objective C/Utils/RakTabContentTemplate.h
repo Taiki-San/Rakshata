@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakTabContentTemplate : NSView
+@interface RakTabContentTemplate : RakView
 {
 	uint mainThread;
 	

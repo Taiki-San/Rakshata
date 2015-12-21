@@ -157,7 +157,7 @@ enum
 	}
 }
 
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+- (RakView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
 	// Get an existing cell with the MyView identifier if it exists
 	RakMDLListView *result = [tableView makeViewWithIdentifier:@"Mane 6" owner:self];
@@ -274,7 +274,7 @@ enum
 
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation
 {
-	NSView * view = _tableView.superview;
+	RakView * view = _tableView.superview;
 	while (view != nil && [view superclass] != [RakTabView class])	{	view = view.superview;	}
 	
 	if(view != nil)

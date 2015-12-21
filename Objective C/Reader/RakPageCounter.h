@@ -14,12 +14,12 @@
 {
 	IBOutlet NSTextField *mainLabel;
 	IBOutlet NSTextField *textField;
-	IBOutlet NSView * gotoButtonContainer;
+	IBOutlet RakView * gotoButtonContainer;
 
 	uint _maxPage;
 }
 
-- (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage;
+- (void) launchPopover : (RakView *) anchor : (uint) curPage : (uint) maxPage;
 
 - (void) locationUpdated : (NSRect) frame : (BOOL) animated;
 
@@ -37,7 +37,7 @@
 	IBOutlet RakPageCounterPopover * popover;
 }
 
-- (instancetype) init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
+- (instancetype) init: (RakView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target;
 - (void) updateContext;
 - (void) updatePopoverFrame : (NSRect) newFrame : (BOOL) animated;
 - (void) stopUsePopover;

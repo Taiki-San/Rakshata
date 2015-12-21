@@ -12,7 +12,7 @@
 
 @class RakSRTagRail;
 
-@interface RakSRTagItem : NSView
+@interface RakSRTagItem : RakView
 {
 	RakText * label;
 	RakButton * close;

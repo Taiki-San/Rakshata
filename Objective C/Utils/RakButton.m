@@ -161,7 +161,7 @@
 
 #pragma mark - Helper
 
-+ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
++ (instancetype) allocForReader : (RakView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall
 {
 	RakButton * button = [self allocImageWithoutBackground:imageName :target :selectorToCall];
 	
@@ -383,7 +383,7 @@
 	}
 }
 
-- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(RakView*)controlView
 {
 	if(textCell)
 	{
@@ -457,7 +457,7 @@
 		[textCell setTextColor:[self getFontColor]];
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void)drawWithFrame:(NSRect)cellFrame inView:(RakView *)controlView
 {
 	if(textCell != nil)
 	{

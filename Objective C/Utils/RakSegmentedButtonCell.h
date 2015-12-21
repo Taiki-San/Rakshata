@@ -31,6 +31,6 @@
 
 - (RakColor *) getFontColor : (uint) cellID;
 - (NSTextFieldCell*) getCellForID : (uint) cellID;
-- (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView;
+- (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(RakView *)controlView;
 
 @end

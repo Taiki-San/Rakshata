@@ -22,7 +22,7 @@
 	RakSerieView * coreView;
 }
 
-- (instancetype) init : (NSView*)contentView : (NSString *) state;
+- (instancetype) init : (RakView*)contentView : (NSString *) state;
 - (CGFloat) getHeightOfMainView;
 
 @end

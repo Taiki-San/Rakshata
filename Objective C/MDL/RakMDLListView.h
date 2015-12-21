@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakMDLListView : NSView
+@interface RakMDLListView : RakView
 {
 	BOOL wasMultiLine;
 	BOOL isSecondTextHidden;

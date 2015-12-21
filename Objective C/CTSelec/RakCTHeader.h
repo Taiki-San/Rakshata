@@ -13,7 +13,7 @@
 #import "RakCTHeaderImage.h"
 #import "RakCTProjectSynopsis.h"
 
-@interface RakCTHeader : NSView
+@interface RakCTHeader : RakView
 {
 	RakCTHeaderImage * header;
 	RakCTProjectSynopsis * synopsis;

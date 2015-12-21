@@ -71,7 +71,7 @@ enum
 	queryWindow = nil;
 }
 
-- (void) setupBaseView : (NSView *) superview
+- (void) setupBaseView : (RakView *) superview
 {
 	NSSize superviewSize = superview.bounds.size;
 	CGFloat currentY = superviewSize.height;

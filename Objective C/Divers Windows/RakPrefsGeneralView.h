@@ -12,6 +12,6 @@
 
 #define NOTIFICATION_MAIL @"RakNotificationEmailUpdate"
 
-@interface RakPrefsGeneralView : NSView
+@interface RakPrefsGeneralView : RakView
 
 @end

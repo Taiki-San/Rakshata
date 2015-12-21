@@ -44,10 +44,10 @@
 	RakGridView * _grid;
 }
 
-@property (weak) NSView * controlView;
+@property (weak) RakView * controlView;
 @property byte activeView;
 
-@property (readonly) NSView * getActiveView;
+@property (readonly) RakView * getActiveView;
 @property NSMutableArray * sharedReference;
 
 - (void) initViews;

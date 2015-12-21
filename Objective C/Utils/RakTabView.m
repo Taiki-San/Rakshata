@@ -14,7 +14,7 @@
 
 #pragma mark - Core view management
 
-- (void) initView: (NSView *)superview : (NSString *) state
+- (void) initView: (RakView *)superview : (NSString *) state
 {
 	[super setFrame:[self createFrameWithSuperView:superview]];
 	
@@ -178,13 +178,13 @@
 
 #pragma mark - General resizing utils
 
-- (void) refreshLevelViews : (NSView*) superview : (byte) context
+- (void) refreshLevelViews : (RakView*) superview : (byte) context
 {
 	[self refreshLevelViewsAnimation:superview];
 	[self animationIsOver : getMainThread() : context];
 }
 
-- (void) refreshLevelViewsAnimation : (NSView*) superview
+- (void) refreshLevelViewsAnimation : (RakView*) superview
 {
 	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
 		[self.window makeFirstResponder: ((RakWindow*) self.window).defaultDispatcher];
@@ -192,7 +192,7 @@
 	[RakTabAnimationResize animateTabs : [superview subviews] : NO];
 }
 
-- (void) fastAnimatedRefreshLevel : (NSView*) superview
+- (void) fastAnimatedRefreshLevel : (RakView*) superview
 {
 	[RakTabAnimationResize animateTabs : [superview subviews] : YES];
 }
@@ -533,7 +533,7 @@
 	return _lastFrame;
 }
 
-- (NSRect) createFrameWithSuperView : (NSView*) superview
+- (NSRect) createFrameWithSuperView : (RakView*) superview
 {
 	if(superview == nil)
 		return NSZeroRect;

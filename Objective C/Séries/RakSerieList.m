@@ -494,9 +494,9 @@
 	return rowView;
 }
 
-- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
+- (RakView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-	NSView * rowView;
+	RakView * rowView;
 	
 	if([item isMainList])
 	{

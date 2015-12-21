@@ -35,7 +35,7 @@
 @property BOOL needUpdateMainViews;
 @property (nonatomic) BOOL wantCollapse;
 
-- (instancetype) init : (NSView*)contentView : (NSString *) state;
+- (instancetype) init : (RakView*)contentView : (NSString *) state;
 - (BOOL) available;
 - (void) wakeUp;
 

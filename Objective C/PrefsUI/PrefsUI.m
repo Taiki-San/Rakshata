@@ -28,7 +28,7 @@ enum
 	self = [super initWithNibName:nil bundle:nil];
 	if(self != nil)
 	{
-		mainView = [[NSView alloc] initWithFrame:frame];
+		mainView = [[RakView alloc] initWithFrame:frame];
 		[self setView:mainView];
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
@@ -64,7 +64,7 @@ enum
 	
 	NSArray * array = [mainView.subviews copy];
 	
-	for(NSView * view in array)
+	for(RakView * view in array)
 		[view removeFromSuperview];
 }
 

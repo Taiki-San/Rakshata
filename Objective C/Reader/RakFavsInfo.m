@@ -17,7 +17,7 @@
 	return [self initWithFrame: NSMakeRect(0, 0, 160, 155)];
 }
 
-- (void) launchPopover : (NSView *) anchor
+- (void) launchPopover : (RakView *) anchor
 {
 	//We check if the user asked not to be annoyed again
 	BOOL alreadyAsked, answer = NO;

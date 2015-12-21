@@ -13,6 +13,6 @@
 @interface RakFavsInfo : RakPopoverView
 
 - (instancetype) autoInit;
-- (void) launchPopover : (NSView *) anchor;
+- (void) launchPopover : (RakView *) anchor;
 
 @end

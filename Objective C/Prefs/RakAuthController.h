@@ -16,9 +16,9 @@
 
 @interface RakAuthController : NSViewController
 {
-	IBOutlet NSView * container;
-	IBOutlet NSView * _containerMail;
-	IBOutlet NSView * _containerPass;
+	IBOutlet RakView * container;
+	IBOutlet RakView * _containerMail;
+	IBOutlet RakView * _containerPass;
 	
 	RakAuthForegroundView * foreground;
 	

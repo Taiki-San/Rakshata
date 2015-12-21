@@ -179,7 +179,7 @@
 	frameRect.origin.x += WIDTH_BORDER_INTERNAL;
 	frameRect.origin.y += WIDTH_BORDER_INTERNAL;
 	
-	for(NSView * view in self.subviews)
+	for(RakView * view in self.subviews)
 	{
 		if(view != titleView && [view class] != [RakBorder class])
 			[view setFrame:frameRect];

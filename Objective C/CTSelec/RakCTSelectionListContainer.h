@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTSelectionListContainer : NSView
+@interface RakCTSelectionListContainer : RakView
 {
 	RakCTDragableTitle * _title;
 	RakCTSelectionList * _content;

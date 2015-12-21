@@ -47,7 +47,7 @@
 	
 	if(oldSelectedSegment != selectedSegment)
 	{
-		NSView* superview = [self controlView];
+		RakView* superview = [self controlView];
 		if([superview respondsToSelector:@selector(setupTransitionAnimation::)])
 		{
 			animationToTheLeft = oldSelectedSegment > selectedSegment;
@@ -68,7 +68,7 @@
 		animationRunning = NO;
 }
 
-- (void) drawWithFrame : (NSRect) cellFrame inView : (NSView *) controlView
+- (void) drawWithFrame : (NSRect) cellFrame inView : (RakView *) controlView
 {
 	[[self getBackgroundColor] setFill];
 	NSRectFill(cellFrame);
@@ -174,7 +174,7 @@
 	return cellID < [fields count] ? [fields objectAtIndex:cellID] : nil;
 }
 
--  (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(NSView *)controlView
+-  (void)drawCell:(uint)cellID inFrame:(NSRect)frame withView:(RakView *)controlView
 {
 	NSTextFieldCell * cell = [self getCellForID:cellID];
 	

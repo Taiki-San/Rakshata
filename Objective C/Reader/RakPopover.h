@@ -17,11 +17,11 @@
 	INPopoverController * _popover;
 }
 
-@property (weak) NSView * anchor;
+@property (weak) RakView * anchor;
 @property NSRect anchorFrame;
 @property INPopoverArrowDirection direction;
 
-- (instancetype) init : (NSView *) contentView;
+- (instancetype) init : (RakView *) contentView;
 - (void) togglePopover : (NSRect) frame;
 
 - (void) additionalConfiguration : (id) target;
@@ -35,12 +35,12 @@
 
 @end
 
-@interface RakPopoverView : NSView <INPopoverControllerDelegate>
+@interface RakPopoverView : RakView <INPopoverControllerDelegate>
 {
 	BOOL prefsRegistered;
 	BOOL additionalConfigRequired;
 	
-	NSView * __weak _anchor;
+	RakView * __weak _anchor;
 
 	RakPopoverWrapper * popover;
 }

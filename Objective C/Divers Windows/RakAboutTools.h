@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAboutContent : NSView
+@interface RakAboutContent : RakView
 
 @property BOOL haveAdditionalDrawing;
 @property (nonatomic, copy) void (^additionalDrawing)(NSSize size);

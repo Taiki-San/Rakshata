@@ -49,7 +49,7 @@ enum
 
 @end
 
-@interface RakAuthText : NSView
+@interface RakAuthText : RakView
 {
 	RakColor * backgroundColor;
 }

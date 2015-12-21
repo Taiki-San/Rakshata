@@ -29,6 +29,6 @@
 - (PROJECT_DATA) exfilterProject : (NSArray **) images;
 - (void) validateMetadata;
 
-- (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver;
+- (BOOL) launchPopover : (RakView *) anchor : (RakImportStatusListRowView*) receiver;
 
 @end

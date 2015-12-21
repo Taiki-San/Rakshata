@@ -154,7 +154,7 @@
 	
 	if(contentManager != nil)
 	{
-		NSView * view = [contentManager getActiveView];
+		RakView * view = [contentManager getActiveView];
 		
 		if(!serieViewHidden)
 			view.hidden = NO;
@@ -184,7 +184,7 @@
 
 - (void) cleanupFocusViewChange
 {
-	for(NSView * view in @[[compactList getContent], headerText, [contentManager getActiveView]])
+	for(RakView * view in @[[compactList getContent], headerText, [contentManager getActiveView]])
 	{
 		if(view.alphaValue == 0)
 			view.hidden = YES;

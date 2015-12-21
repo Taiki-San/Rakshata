@@ -182,7 +182,7 @@ enum
 	func(_target, _action, nil);
 }
 
-- (NSView *) hitTest : (NSPoint) aPoint
+- (RakView *) hitTest : (NSPoint) aPoint
 {
 	if(aPoint.x < [self getMinX])
 		return [super hitTest:aPoint];

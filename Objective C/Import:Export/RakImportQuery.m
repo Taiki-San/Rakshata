@@ -734,7 +734,7 @@ enum
 
 #pragma mark Generic initialization
 
-- (BOOL) launchPopover : (NSView *) anchor : (RakImportStatusListRowView*) receiver
+- (BOOL) launchPopover : (RakView *) anchor : (RakImportStatusListRowView*) receiver
 {
 	[self internalInit:anchor :NSZeroRect :NO];
 	return YES;

@@ -900,7 +900,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 								 reason:@"We didn't had enough memory to do the job, sorry =/" userInfo:nil] raise];
 }
 
-- (NSArray *) setupExecuteConsistencyChecks : (uint8) request
+- (NSArray *) setupExecuteConsistencyChecks : (uint8_t) request
 {
 	NSArray *array = [NSArray alloc];
 	if(array == nil)

@@ -13,3 +13,14 @@
 #define RakView		UIView
 #define RakImage	UIImage
 #define RakColor	UIColor
+
+#define NSSize		CGSize
+#define NSPoint		CGPoint
+#define NSRect		CGRect
+
+#define NSOffState		0
+#define NSOnState		1
+#define NSMixedState	2
+
+#import "RakOutlineListItem.h"
+#define RakOutlineList		NSObject

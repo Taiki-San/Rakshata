@@ -180,7 +180,7 @@ enum
 	return _detailMode ? LIST_ROW_COMPACT_HEIGHT : LIST_ROW_HEIGHT;
 }
 
-- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	void * data = [_responder dataForMode:_rootMode index:row];
 	if(data == NULL)

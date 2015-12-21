@@ -52,11 +52,13 @@ void registerDefaultForExtension(NSString * extension);
 
 @end
 
+#if !TARGET_OS_IPHONE
 @interface PDFDocument (dumpData)
 
 - (NSArray <PDFPage *> *) getPages;
 
 @end
+#endif
 
 @interface RakView (RakUtils)
 
@@ -81,6 +83,7 @@ void registerDefaultForExtension(NSString * extension);
 
 #endif
 
+#if !TARGET_OS_IPHONE
 #import "RakWindow.h"
 #import "RakSheetView.h"
 #import "RakAnimationController.h"
@@ -100,7 +103,6 @@ void registerDefaultForExtension(NSString * extension);
 
 @class RakProjectMenu;
 
-
 #import "RakAuthForegroundView.h"
 #import "RakTabView.h"
 #import "RakTabContentTemplate.h"
@@ -118,6 +120,8 @@ void registerDefaultForExtension(NSString * extension);
 #import "RakAboutWindow.h"
 #import "RakPrefsWindow.h"
 #import "RakAddRepoController.h"
+
+#endif
 
 #import "RakEIStatusController.h"
 

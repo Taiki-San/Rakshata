@@ -138,7 +138,7 @@ enum
 	view.fixedWidth = contentWidth - ([item isRootItem] ? 0 : 5);
 }
 
-- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(RakAddRepoItem *)item
+- (RakView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(RakAddRepoItem *)item
 {
 	RakAddRepoListItemView * rowView;
 	

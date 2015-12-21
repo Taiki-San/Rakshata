@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakBorder : NSView
+@interface RakBorder : RakView
 
 - (instancetype) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (RakColor *) color;
 - (void) setColor : (RakColor *) newColor;

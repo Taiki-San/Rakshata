@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakListItemView : NSView
+@interface RakListItemView : RakView
 {
 	BOOL haveFixedWidth;
 

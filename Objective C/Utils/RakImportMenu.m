@@ -22,7 +22,7 @@
 	return self;
 }
 
-- (void) configureMenu : (NSView *) receiver
+- (void) configureMenu : (RakView *) receiver
 {
 	NSMenu * menu = [[NSMenu alloc] initWithTitle:@"Menu"];
 	if(menu == nil || receiver == nil)

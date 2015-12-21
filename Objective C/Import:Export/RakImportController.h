@@ -54,8 +54,11 @@
 @class RakImportQuery;
 
 #import "RakImportStatusList.h"
-#import "RakImportQuery.h"
 #import "RakImportStatusController.h"
+
+#if !TARGET_OS_IPHONE
+#import "RakImportQuery.h"
+#endif
 
 enum
 {

@@ -373,12 +373,12 @@
 	return preloadedRow.bounds.size.height;
 }
 
-- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+- (RakView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
 	if(row >= _nbData)
 		return nil;
 	
-	NSView * output = [super tableView:tableView viewForTableColumn:tableColumn row:row];
+	RakView * output = [super tableView:tableView viewForTableColumn:tableColumn row:row];
 	
 	if(output != nil && [output isKindOfClass:[RakText class]])
 	{

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakGradientView : NSView
+@interface RakGradientView : RakView
 {
 	//Cached drawing ressources
 	RakColor * _startColor;

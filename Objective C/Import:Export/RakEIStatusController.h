@@ -14,12 +14,14 @@
 {
 	CGFloat cachedPosInExport, cachedPosInEntry;
 
+#if !TARGET_OS_IPHONE
 	RakSheetWindow * queryWindow;
 
 	RakMenuText * title;
 	NSProgressIndicator * progressBar;
 	RakText * percentage;
 	RakButton * cancel;
+#endif
 }
 
 @property BOOL haveCanceled;

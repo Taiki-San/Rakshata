@@ -56,15 +56,17 @@
 
 @end
 
-@interface RakImportStatusListRowView : NSView
+@interface RakImportStatusListRowView : RakView
 {
 	RakImportStatusListItem * listItem;
 
 	RakImportItem * _item;
 	BOOL isRoot;
 
+#if !TARGET_OS_IPHONE
 	RakText * projectName;
 	RakStatusButton * button;
+#endif
 
 	__weak RakImportQuery * alert;
 }

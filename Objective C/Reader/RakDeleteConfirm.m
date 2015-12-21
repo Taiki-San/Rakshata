@@ -23,7 +23,7 @@
 
 //We return if the popover is opened or was aborted, because of the `remind` feature
 
-- (BOOL) launchPopover : (NSView *) anchor : (Reader*) receiver
+- (BOOL) launchPopover : (RakView *) anchor : (Reader*) receiver
 {
 	//We check if the user asked not to be annoyed again
 	BOOL alreadyAsked, answer = NO;

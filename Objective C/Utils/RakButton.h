@@ -25,7 +25,7 @@
 @property BOOL textButton;
 @property BOOL hasBorder;
 
-+ (instancetype) allocForReader : (NSView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
++ (instancetype) allocForReader : (RakView*) superview : (NSString*) imageName : (CGFloat) posX : (BOOL) posXFromLeftSide : (id) target : (SEL) selectorToCall;
 
 + (instancetype) allocImageWithBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall;
 + (instancetype) allocImageWithoutBackground : (NSString*) imageName : (id) target : (SEL) selectorToCall;

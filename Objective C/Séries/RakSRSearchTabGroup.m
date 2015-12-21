@@ -65,7 +65,7 @@ enum
 				[self addSubview:close];
 			}
 			
-			buttonContainer = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, frameRect.size.width, 55)];
+			buttonContainer = [[RakView alloc] initWithFrame:NSMakeRect(0, 0, frameRect.size.width, 55)];
 			if(buttonContainer != nil)
 			{
 				buttonContainer.wantsLayer = YES;

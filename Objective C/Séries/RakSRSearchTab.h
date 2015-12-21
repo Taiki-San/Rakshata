@@ -20,7 +20,7 @@
 #import "RakSRSearchList.h"
 #import "RakSRSearchTabGroup.h"
 
-@interface RakSRSearchTab : NSView
+@interface RakSRSearchTab : RakView
 {
 	BOOL _isVisible;
 	BOOL _collapsed;

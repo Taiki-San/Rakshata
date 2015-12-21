@@ -28,7 +28,7 @@
 @property BOOL loopingBack;
 
 @property (nonatomic) SEL selectorToPing;
-@property NSView * viewToRefresh;
+@property RakView * viewToRefresh;
 
 - (instancetype) initAsLoop;
 

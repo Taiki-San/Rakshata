@@ -12,7 +12,7 @@
 
 #import "RakSRTagItem.h"
 
-@interface RakSRTagRail : NSView
+@interface RakSRTagRail : RakView
 {
 	NSMutableArray * tagList;
 	NSMutableArray * tagNames;

@@ -19,7 +19,7 @@
 }
 
 - (instancetype) autoInit;
-- (BOOL) launchPopover : (NSView *) anchor : (Reader*) receiver;
+- (BOOL) launchPopover : (RakView *) anchor : (Reader*) receiver;
 
 @end
 

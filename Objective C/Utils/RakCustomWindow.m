@@ -56,7 +56,7 @@
 	return NSZeroSize;
 }
 
-- (NSRect) contentFrame : (NSView *) content
+- (NSRect) contentFrame : (RakView *) content
 {
 	return NSMakeRect(WIDTH_BORDER_ALL, WIDTH_BORDER_ALL, content.bounds.size.width - 2 * WIDTH_BORDER_ALL, content.bounds.size.height - 2 * WIDTH_BORDER_ALL);
 }
@@ -65,7 +65,7 @@
 {
 	window.title = @"";
 	
-	NSView * _contentView = (id) window.contentView;
+	RakView * _contentView = (id) window.contentView;
 	
 	if(_contentView == nil)
 		return;
@@ -81,7 +81,7 @@
 
 - (Class) contentClass
 {
-	return [NSView class];
+	return [RakView class];
 }
 
 - (void) resetWindow

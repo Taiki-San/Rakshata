@@ -18,7 +18,7 @@
 #define REORDER_SERIE @"ReorderProjects"
 #define REORDER_MDL @"ReorderMDL"
 
-+ (uint) getOwnerOfTV : (NSView *) view;
++ (uint) getOwnerOfTV : (RakView *) view;
 - (BOOL) supportReorder;
 - (uint) getSelfCode;
 - (PROJECT_DATA) getProjectDataForDrag : (uint) row;
@@ -28,7 +28,7 @@
 - (NSDragOperation) operationForContext : (id < NSDraggingInfo >) item : (uint) sourceTab : (NSInteger) suggestedRow : (NSTableViewDropOperation) operation;
 - (BOOL) grantDropAuthorization : (RakDragItem *) item;
 - (NSDragOperation) defineDropAuthorizations :(id < NSDraggingInfo >)info sender : (uint) sender proposedRow:(NSInteger)row  operation: (NSTableViewDropOperation) operation;
-- (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view;
+- (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (RakView*) view;
 - (RakImage*) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing;
 
 + (void) patchPasteboardForFiledrop : (NSPasteboard *) pBoard forType : (NSString *) type;

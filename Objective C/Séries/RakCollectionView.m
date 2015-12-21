@@ -46,7 +46,7 @@
 
 - (void) viewDidMoveToSuperview
 {
-	NSView * superview = self.superview;
+	RakView * superview = self.superview;
 	
 	while(superview != nil && ![superview isKindOfClass:[NSClipView class]])
 		superview = superview.superview;
@@ -353,13 +353,13 @@ static bool verboseLog = false;
 		return NO;
 	
 	//We validate the number of columns
-	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbColumn].view, *lastOfFirstLine = [self itemAtIndex:nbColumn - 1].view;
+	RakView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbColumn].view, *lastOfFirstLine = [self itemAtIndex:nbColumn - 1].view;
 	return first.frame.origin.y == lastOfFirstLine.frame.origin.y && first.frame.origin.y != nextLine.frame.origin.y;
 }
 
 - (uint) updateNumberColumn
 {
-	NSView * scrollview = self.superview;
+	RakView * scrollview = self.superview;
 	
 	while(scrollview != nil && ![scrollview isKindOfClass:[NSScrollView class]])
 		scrollview = scrollview.superview;
@@ -375,7 +375,7 @@ static bool verboseLog = false;
 		return nbCol;
 	
 	//We validate the number of columns
-	NSView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:MIN(nbCol - 1, nbCol)].view;
+	RakView * first = [self itemAtIndex:0].view, *nextLine = [self itemAtIndex:nbCol].view, *lastOfFirstLine = [self itemAtIndex:MIN(nbCol - 1, nbCol)].view;
 	if(first.frame.origin.y == lastOfFirstLine.frame.origin.y && first.frame.origin.y != nextLine.frame.origin.y)
 		return nbCol;
 	

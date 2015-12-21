@@ -26,7 +26,7 @@ enum {
 	REFRESHVIEWS_NO_CHANGE
 } REFRESHVIEWS_CODE;
 
-@interface RakTabView : NSView <NSDraggingDestination>
+@interface RakTabView : RakView <NSDraggingDestination>
 {
 	BOOL noDrag;
 	BOOL canDeploy;
@@ -47,7 +47,7 @@ enum {
 
 @property BOOL forceNextFrameUpdate;
 
-- (void) initView: (NSView *)superview : (NSString *) state;
+- (void) initView: (RakView *)superview : (NSString *) state;
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
@@ -57,9 +57,9 @@ enum {
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
 - (RakColor*) getMainColor;
-- (void) refreshLevelViews : (NSView*) superview : (byte) context;
-- (void) refreshLevelViewsAnimation : (NSView*) superview;
-- (void) fastAnimatedRefreshLevel : (NSView*) superview;
+- (void) refreshLevelViews : (RakView*) superview : (byte) context;
+- (void) refreshLevelViewsAnimation : (RakView*) superview;
+- (void) fastAnimatedRefreshLevel : (RakView*) superview;
 - (void) resetFrameSize : (BOOL) withAnimation;
 - (void) refreshViewSize;
 - (void) resize : (NSRect) bounds : (BOOL) animated;
@@ -94,7 +94,7 @@ enum {
 - (BOOL) needToConsiderMDL;
 - (void) setLastFrame : (NSRect) frame;
 - (NSRect) lastFrame;
-- (NSRect) createFrameWithSuperView : (NSView*) superview;
+- (NSRect) createFrameWithSuperView : (RakView*) superview;
 
 - (uint) getFrameCode;
 

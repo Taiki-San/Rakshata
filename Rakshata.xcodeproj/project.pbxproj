@@ -60,33 +60,20 @@
 		B62266A71A55D5B3000A5138 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B62266A61A55D5B3000A5138 /* Utils.m */; };
 		B623390A18DBB7F800FC188A /* RakContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B623390918DBB7F800FC188A /* RakContentView.m */; };
 		B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6251F731A98CC92001C4F06 /* RakAboutWindow.m */; };
-		B62575EF1C27711200811C33 /* RakCTTools.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427B197F2D5B000F268E /* RakCTTools.h */; };
-		B62575F01C27711200811C33 /* RakCTTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427C197F2D5B000F268E /* RakCTTools.m */; };
-		B62575F11C27711200811C33 /* RakImportBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */; };
 		B62575F21C27711200811C33 /* RakImportDirController.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E35F51B6E3DE50022C466 /* RakImportDirController.m */; };
 		B62575F31C27711200811C33 /* RakImportDotRakController.m in Sources */ = {isa = PBXBuildFile; fileRef = B67464871B64179600F4A929 /* RakImportDotRakController.m */; };
-		B62575F41C27711200811C33 /* RakImportIO.h in Sources */ = {isa = PBXBuildFile; fileRef = B67464891B64182300F4A929 /* RakImportIO.h */; };
 		B62575F51C27711200811C33 /* RakImportIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E35F31B6DA5030022C466 /* RakImportIO.m */; };
-		B62575F61C27711200811C33 /* RakImportIOController.h in Sources */ = {isa = PBXBuildFile; fileRef = B63805EA1B6C4A060029418C /* RakImportIOController.h */; };
 		B62575F71C27711200811C33 /* RakImportIOTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B63805E81B6BD9F90029418C /* RakImportIOTools.m */; };
 		B62575F81C27711200811C33 /* RakImportRarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC081B682B90009FCE64 /* RakImportRarController.m */; };
 		B62575F91C27711200811C33 /* RakImportZipController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AEB9771B69188B00F233B3 /* RakImportZipController.m */; };
-		B62575FA1C27711200811C33 /* RakExportController.h in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7B1B420D34002CBB45 /* RakExportController.h */; };
 		B62575FB1C27711200811C33 /* RakExportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7C1B420D34002CBB45 /* RakExportController.m */; };
-		B62575FC1C27711200811C33 /* RakImportController.h in Sources */ = {isa = PBXBuildFile; fileRef = B6F131321B372E4100042F8C /* RakImportController.h */; };
 		B62575FD1C27711200811C33 /* RakImportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F131331B372E4100042F8C /* RakImportController.m */; };
 		B62575FE1C27711200811C33 /* RakImportItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */; };
-		B62575FF1C27711200811C33 /* RakPrefsDeepData.h in Sources */ = {isa = PBXBuildFile; fileRef = B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */; };
 		B62576001C27711200811C33 /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
 		B62576011C27711200811C33 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
-		B62576021C27711200811C33 /* RakPrefsTabDeepData.h in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */; };
 		B62576031C27711200811C33 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B62576041C27711200811C33 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
-		B62576051C27711200811C33 /* prefsMagic.h in Sources */ = {isa = PBXBuildFile; fileRef = B6744946187611BF00F96DB4 /* prefsMagic.h */; };
-		B62576061C27711200811C33 /* prefsControl.h in Sources */ = {isa = PBXBuildFile; fileRef = B67449441876116200F96DB4 /* prefsControl.h */; };
-		B62576071C27711200811C33 /* Prefs.h in Sources */ = {isa = PBXBuildFile; fileRef = B62182451873527A008AC5DD /* Prefs.h */; };
 		B62576081C27711200811C33 /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
-		B62576091C27711200811C33 /* RakSuggestionEngine.h in Sources */ = {isa = PBXBuildFile; fileRef = B62A88501C156BB40082BA3B /* RakSuggestionEngine.h */; };
 		B625760A1C27711200811C33 /* RakSuggestionEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */; };
 		B625760B1C27711200811C33 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B62266A61A55D5B3000A5138 /* Utils.m */; };
 		B625760D1C27723400811C33 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760C1C27723400811C33 /* UIKit.framework */; };
@@ -94,6 +81,7 @@
 		B62576121C27725D00811C33 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62576111C27725D00811C33 /* Foundation.framework */; };
 		B62576151C2773CF00811C33 /* RakWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B62576141C2773CF00811C33 /* RakWrapper.m */; };
 		B62576181C27745500811C33 /* RakWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B62576171C27745500811C33 /* RakWrapper.m */; };
+		B625761B1C27883D00811C33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B625761A1C27883D00811C33 /* Assets.xcassets */; };
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
@@ -262,7 +250,6 @@
 		B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutTools.m */; };
 		B67C68821C270698005AB992 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68811C270698005AB992 /* AppDelegate.m */; };
 		B67C688B1C270699005AB992 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C68891C270699005AB992 /* Main.storyboard */; };
-		B67C688D1C270699005AB992 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B67C688C1C270699005AB992 /* Assets.xcassets */; };
 		B67C68901C270699005AB992 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C688E1C270699005AB992 /* LaunchScreen.storyboard */; };
 		B67C689B1C270699005AB992 /* Rakshata_iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */; };
 		B67C68A61C270699005AB992 /* Rakshata_iOSUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */; };
@@ -352,6 +339,13 @@
 		B6BD45CC1A7D602A00C2A675 /* project_large@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6BD45C71A7D602A00C2A675 /* project_large@2x.png */; };
 		B6BD45D41A7D62A100C2A675 /* defaultSRImage.png in Resources */ = {isa = PBXBuildFile; fileRef = B6BD45D21A7D628100C2A675 /* defaultSRImage.png */; };
 		B6BD45D51A7D62A100C2A675 /* defaultSRImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6BD45D31A7D628100C2A675 /* defaultSRImage@2x.png */; };
+		B6BE93481C28199100BCD3E3 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93411C28199100BCD3E3 /* libarchive.a */; };
+		B6BE93491C28199100BCD3E3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93421C28199100BCD3E3 /* libcrypto.a */; };
+		B6BE934A1C28199100BCD3E3 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93431C28199100BCD3E3 /* libcurl.a */; };
+		B6BE934B1C28199100BCD3E3 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93441C28199100BCD3E3 /* libsqlite.a */; };
+		B6BE934C1C28199100BCD3E3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93451C28199100BCD3E3 /* libssl.a */; };
+		B6BE934D1C28199100BCD3E3 /* libtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93461C28199100BCD3E3 /* libtls.a */; };
+		B6BE934E1C28199100BCD3E3 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93471C28199100BCD3E3 /* libz.a */; };
 		B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */; };
 		B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
@@ -403,13 +397,6 @@
 		B6F6ED1718A3001400E3B55B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE318A3001400E3B55B /* unzip.c */; };
 		B6FB5C071A7994F100EF99E6 /* RakSRTagRail.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */; };
 		B6FB5C0A1A79958E00EF99E6 /* RakSRTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */; };
-		B6FBD8BA1BD3E5EC00A0A7A5 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */; };
-		B6FBD8BB1BD3E5EC00A0A7A5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */; };
-		B6FBD8BC1BD3E5EC00A0A7A5 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */; };
-		B6FBD8BD1BD3E5EC00A0A7A5 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */; };
-		B6FBD8BE1BD3E5EC00A0A7A5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */; };
-		B6FBD8BF1BD3E5EC00A0A7A5 /* libtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */; };
-		B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */; };
 		B6FBE6CF1B385D3D005D2CC6 /* RakImportItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */; };
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 /* End PBXBuildFile section */
@@ -531,6 +518,7 @@
 		B62576141C2773CF00811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = "OS X/RakWrapper.m"; sourceTree = "<group>"; };
 		B62576161C27745500811C33 /* RakiOSWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakiOSWrapper.h; path = iOS/RakiOSWrapper.h; sourceTree = SOURCE_ROOT; };
 		B62576171C27745500811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = iOS/RakWrapper.m; sourceTree = SOURCE_ROOT; };
+		B625761A1C27883D00811C33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = iOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		B62935D11A7E65EC00DE20E2 /* RakSRSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchList.h; path = "Séries/RakSRSearchList.h"; sourceTree = "<group>"; };
 		B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchList.m; path = "Séries/RakSRSearchList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTabGroup.h; path = "Séries/RakSRSearchTabGroup.h"; sourceTree = "<group>"; };
@@ -679,7 +667,6 @@
 		B67C0F371A9FDD35003A2086 /* RakAboutTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutTools.h; path = "Divers Windows/RakAboutTools.h"; sourceTree = "<group>"; };
 		B67C0F381A9FDD35003A2086 /* RakAboutTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutTools.m; path = "Divers Windows/RakAboutTools.m"; sourceTree = "<group>"; };
 		B67C687B1C270698005AB992 /* Rakshata iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rakshata iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B67C687E1C270698005AB992 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B67C68801C270698005AB992 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B67C68811C270698005AB992 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B67C68831C270698005AB992 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
@@ -687,7 +674,6 @@
 		B67C68861C270698005AB992 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		B67C68871C270698005AB992 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		B67C688A1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		B67C688C1C270699005AB992 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B67C688F1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Rakshata_iOSTests.m; sourceTree = "<group>"; };
@@ -831,6 +817,13 @@
 		B6BD45C71A7D602A00C2A675 /* project_large@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "project_large@2x.png"; path = "default/project_large@2x.png"; sourceTree = "<group>"; };
 		B6BD45D21A7D628100C2A675 /* defaultSRImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = defaultSRImage.png; path = default/defaultSRImage.png; sourceTree = "<group>"; };
 		B6BD45D31A7D628100C2A675 /* defaultSRImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "defaultSRImage@2x.png"; path = "default/defaultSRImage@2x.png"; sourceTree = "<group>"; };
+		B6BE93411C28199100BCD3E3 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = "OS X/Libraries/lib/libarchive.a"; sourceTree = "<group>"; };
+		B6BE93421C28199100BCD3E3 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "OS X/Libraries/lib/libcrypto.a"; sourceTree = "<group>"; };
+		B6BE93431C28199100BCD3E3 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = "OS X/Libraries/lib/libcurl.a"; sourceTree = "<group>"; };
+		B6BE93441C28199100BCD3E3 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = "OS X/Libraries/lib/libsqlite.a"; sourceTree = "<group>"; };
+		B6BE93451C28199100BCD3E3 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "OS X/Libraries/lib/libssl.a"; sourceTree = "<group>"; };
+		B6BE93461C28199100BCD3E3 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = "OS X/Libraries/lib/libtls.a"; sourceTree = "<group>"; };
+		B6BE93471C28199100BCD3E3 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "OS X/Libraries/lib/libz.a"; sourceTree = "<group>"; };
 		B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeaderImage.h; path = CTSelec/RakCTHeaderImage.h; sourceTree = "<group>"; };
 		B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeaderImage.m; path = CTSelec/RakCTHeaderImage.m; sourceTree = "<group>"; };
 		B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHImage.h; path = CTSelec/RakCTHImage.h; sourceTree = "<group>"; };
@@ -927,13 +920,6 @@
 		B6FB5C061A7994F100EF99E6 /* RakSRTagRail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagRail.m; path = "Séries/RakSRTagRail.m"; sourceTree = "<group>"; };
 		B6FB5C081A79958E00EF99E6 /* RakSRTagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagItem.h; path = "Séries/RakSRTagItem.h"; sourceTree = "<group>"; };
 		B6FB5C091A79958E00EF99E6 /* RakSRTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRTagItem.m; path = "Séries/RakSRTagItem.m"; sourceTree = "<group>"; };
-		B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = Libraries/lib/libarchive.a; sourceTree = "<group>"; };
-		B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/lib/libcrypto.a; sourceTree = "<group>"; };
-		B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/lib/libcurl.a; sourceTree = "<group>"; };
-		B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = Libraries/lib/libsqlite.a; sourceTree = "<group>"; };
-		B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/lib/libssl.a; sourceTree = "<group>"; };
-		B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = Libraries/lib/libtls.a; sourceTree = "<group>"; };
-		B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/lib/libz.a; sourceTree = "<group>"; };
 		B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportItem.m; path = "Import:Export/RakImportItem.m"; sourceTree = "<group>"; };
 		B6FC0D8119E1EC7C00D94284 /* RakCTProjectSynopsis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTProjectSynopsis.h; path = CTSelec/RakCTProjectSynopsis.h; sourceTree = "<group>"; };
 		B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTProjectSynopsis.m; path = CTSelec/RakCTProjectSynopsis.m; sourceTree = "<group>"; };
@@ -969,21 +955,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6FBD8BE1BD3E5EC00A0A7A5 /* libssl.a in Frameworks */,
-				B6FBD8BD1BD3E5EC00A0A7A5 /* libsqlite.a in Frameworks */,
-				B6FBD8BA1BD3E5EC00A0A7A5 /* libarchive.a in Frameworks */,
 				B68EAF6F1BD517E800F6AB97 /* SystemConfiguration.framework in Frameworks */,
 				B6E9C0B61BFCDB42003770D8 /* HockeySDK.framework in Frameworks */,
-				B6FBD8C01BD3E5EC00A0A7A5 /* libz.a in Frameworks */,
+				B6BE934C1C28199100BCD3E3 /* libssl.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
 				B68EAF731BD5180C00F6AB97 /* AppKit.framework in Frameworks */,
 				B667B1161BFA857D00BB1971 /* Sparkle.framework in Frameworks */,
+				B6BE934E1C28199100BCD3E3 /* libz.a in Frameworks */,
+				B6BE934A1C28199100BCD3E3 /* libcurl.a in Frameworks */,
+				B6BE934B1C28199100BCD3E3 /* libsqlite.a in Frameworks */,
 				B63A5D971BE81D3C005E6EBC /* Quartz.framework in Frameworks */,
-				B6FBD8BF1BD3E5EC00A0A7A5 /* libtls.a in Frameworks */,
+				B6BE934D1C28199100BCD3E3 /* libtls.a in Frameworks */,
+				B6BE93491C28199100BCD3E3 /* libcrypto.a in Frameworks */,
+				B6BE93481C28199100BCD3E3 /* libarchive.a in Frameworks */,
 				B68EAF751BD5180C00F6AB97 /* Foundation.framework in Frameworks */,
 				B68EAF741BD5180C00F6AB97 /* Cocoa.framework in Frameworks */,
-				B6FBD8BC1BD3E5EC00A0A7A5 /* libcurl.a in Frameworks */,
-				B6FBD8BB1BD3E5EC00A0A7A5 /* libcrypto.a in Frameworks */,
 				B6DDBB071BDBED5E00B9E6AC /* INPopoverController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1371,23 +1357,14 @@
 		B67C687C1C270698005AB992 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				B67C688C1C270699005AB992 /* Assets.xcassets */,
+				B625761A1C27883D00811C33 /* Assets.xcassets */,
 				B62576191C27746400811C33 /* garbage */,
 				B67110E11C276C9200E0BFD9 /* Info.plist */,
 				B62576161C27745500811C33 /* RakiOSWrapper.h */,
 				B62576171C27745500811C33 /* RakWrapper.m */,
-				B67C687D1C270698005AB992 /* Supporting Files */,
 			);
 			name = iOS;
 			path = "Rakshata iOS";
-			sourceTree = "<group>";
-		};
-		B67C687D1C270698005AB992 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				B67C687E1C270698005AB992 /* main.m */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		B67C68991C270699005AB992 /* Rakshata iOSTests */ = {
@@ -1783,13 +1760,6 @@
 				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B62576101C27724900811C33 /* iOS */,
-				B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */,
-				B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */,
-				B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */,
-				B6FBD8B61BD3E5EC00A0A7A5 /* libsqlite.a */,
-				B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */,
-				B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */,
-				B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */,
 				B6CF07C01868DD58009B16A3 /* OS X */,
 				B667B1151BFA857D00BB1971 /* Sparkle.framework */,
 			);
@@ -1799,6 +1769,13 @@
 		B6CF07C01868DD58009B16A3 /* OS X */ = {
 			isa = PBXGroup;
 			children = (
+				B6BE93411C28199100BCD3E3 /* libarchive.a */,
+				B6BE93421C28199100BCD3E3 /* libcrypto.a */,
+				B6BE93431C28199100BCD3E3 /* libcurl.a */,
+				B6BE93441C28199100BCD3E3 /* libsqlite.a */,
+				B6BE93451C28199100BCD3E3 /* libssl.a */,
+				B6BE93461C28199100BCD3E3 /* libtls.a */,
+				B6BE93471C28199100BCD3E3 /* libz.a */,
 				B68EAF701BD5180C00F6AB97 /* AppKit.framework */,
 				B68EAF711BD5180C00F6AB97 /* Cocoa.framework */,
 				B68EAF721BD5180C00F6AB97 /* Foundation.framework */,
@@ -2225,7 +2202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B67C68901C270699005AB992 /* LaunchScreen.storyboard in Resources */,
-				B67C688D1C270699005AB992 /* Assets.xcassets in Resources */,
+				B625761B1C27883D00811C33 /* Assets.xcassets in Resources */,
 				B67C688B1C270699005AB992 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2367,33 +2344,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B62575EF1C27711200811C33 /* RakCTTools.h in Sources */,
-				B62575F01C27711200811C33 /* RakCTTools.m in Sources */,
-				B62575F11C27711200811C33 /* RakImportBaseController.m in Sources */,
 				B62575F21C27711200811C33 /* RakImportDirController.m in Sources */,
 				B62575F31C27711200811C33 /* RakImportDotRakController.m in Sources */,
-				B62575F41C27711200811C33 /* RakImportIO.h in Sources */,
 				B62575F51C27711200811C33 /* RakImportIO.m in Sources */,
-				B62575F61C27711200811C33 /* RakImportIOController.h in Sources */,
 				B62575F71C27711200811C33 /* RakImportIOTools.m in Sources */,
 				B62575F81C27711200811C33 /* RakImportRarController.m in Sources */,
 				B62575F91C27711200811C33 /* RakImportZipController.m in Sources */,
-				B62575FA1C27711200811C33 /* RakExportController.h in Sources */,
 				B62575FB1C27711200811C33 /* RakExportController.m in Sources */,
-				B62575FC1C27711200811C33 /* RakImportController.h in Sources */,
 				B62575FD1C27711200811C33 /* RakImportController.m in Sources */,
 				B62575FE1C27711200811C33 /* RakImportItem.m in Sources */,
-				B62575FF1C27711200811C33 /* RakPrefsDeepData.h in Sources */,
 				B62576001C27711200811C33 /* RakPrefsDeepData.m in Sources */,
 				B62576011C27711200811C33 /* RakPrefsMDLDeepData.m in Sources */,
-				B62576021C27711200811C33 /* RakPrefsTabDeepData.h in Sources */,
 				B62576031C27711200811C33 /* RakPrefsTabDeepData.m in Sources */,
 				B62576041C27711200811C33 /* RakPrefsTabSize.m in Sources */,
-				B62576051C27711200811C33 /* prefsMagic.h in Sources */,
-				B62576061C27711200811C33 /* prefsControl.h in Sources */,
-				B62576071C27711200811C33 /* Prefs.h in Sources */,
 				B62576081C27711200811C33 /* Prefs.m in Sources */,
-				B62576091C27711200811C33 /* RakSuggestionEngine.h in Sources */,
 				B625760A1C27711200811C33 /* RakSuggestionEngine.m in Sources */,
 				B625760B1C27711200811C33 /* Utils.m in Sources */,
 				B67111381C276CEE00E0BFD9 /* rakshata.c in Sources */,
@@ -2764,7 +2728,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Libraries/include";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/iOS/Libraries/include";
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2804,7 +2768,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Libraries/include";
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/iOS/Libraries/include";
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -3037,7 +3001,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Libraries/include",
+					"$(PROJECT_DIR)/OS\\ X/Libraries/include",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -3047,8 +3011,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"$(PROJECT_DIR)/Libraries",
-					"$(PROJECT_DIR)/Libraries/lib",
+					"$(PROJECT_DIR)/OS\\ X/Libraries",
+					"$(PROJECT_DIR)/OS\\ X/Libraries/lib",
 				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -3125,7 +3089,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/Libraries/include",
+					"$(PROJECT_DIR)/OS\\ X/Libraries/include",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -3135,8 +3099,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"$(PROJECT_DIR)/Libraries",
-					"$(PROJECT_DIR)/Libraries/lib",
+					"$(PROJECT_DIR)/OS\\ X/Libraries",
+					"$(PROJECT_DIR)/OS\\ X/Libraries/lib",
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;

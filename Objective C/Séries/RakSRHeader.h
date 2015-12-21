@@ -17,7 +17,7 @@
 
 #define SR_HEADER_HEIGHT_SINGLE_ROW (RBB_TOP_BORDURE + SR_HEADER_ROW_HEIGHT + RBB_TOP_BORDURE)
 
-@interface RakSRHeader : NSView
+@interface RakSRHeader : RakView
 {
 	RakButton *preferenceButton;
 #ifdef SEVERAL_VIEWS

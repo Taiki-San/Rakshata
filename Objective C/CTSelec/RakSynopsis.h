@@ -15,7 +15,7 @@
 #define SYNOPSIS_BORDER 			BORDER_CT_FOCUS
 #define SYNOPSIS_MAIN_TEXT_BORDER 	10
 
-@interface RakSynopsis : NSView
+@interface RakSynopsis : RakView
 {
 	RakListScrollView * _scrollview;
 	RakText * _synopsis;

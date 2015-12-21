@@ -241,7 +241,7 @@
 	_grid = [[RakGridView alloc] initWithFrame : previousFrame : self];
 	if(_grid != nil)
 	{
-		NSView * view = _grid.contentView;
+		RakView * view = _grid.contentView;
 		
 		if(_activeView != SR_CELLTYPE_GRID)
 		{
@@ -257,10 +257,10 @@
 
 #pragma mark - Property
 
-- (NSView *) getActiveView
+- (RakView *) getActiveView
 {
 	if(_activeView == SR_CELLTYPE_GRID)
-		return (NSView*) _grid;
+		return (RakView*) _grid;
 	
 	else if(_activeView == SR_CELLTYPE_REPO)
 		return nil;

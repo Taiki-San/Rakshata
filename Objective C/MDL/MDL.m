@@ -19,7 +19,7 @@ enum
 
 @implementation MDL
 
-- (instancetype) init : (NSView *) contentView : (NSString *) state
+- (instancetype) init : (RakView *) contentView : (NSString *) state
 {
 	self = [super init];
 	if(self != nil)
@@ -280,7 +280,7 @@ enum
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
 }
 
-- (NSRect) createFrameWithSuperView : (NSView*) superview
+- (NSRect) createFrameWithSuperView : (RakView*) superview
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superview];
 	
@@ -357,7 +357,7 @@ enum
 	_needUpdateMainViews = NO;
 }
 
-- (void) fastAnimatedRefreshLevel : (NSView*) superview
+- (void) fastAnimatedRefreshLevel : (RakView*) superview
 {
 	if(self.mainThread == TAB_SERIES)
 		[[NSApp delegate] serie].forceNextFrameUpdate = YES;

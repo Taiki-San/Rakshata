@@ -75,7 +75,7 @@ typedef struct //smartReload_data
 
 @property (getter=isHidden, setter=setHidden:)				BOOL hidden;
 @property (getter=frame, setter=setFrame:)					NSRect frame;
-@property (weak, getter=superview, setter=setSuperview:)	NSView * superview;
+@property (weak, getter=superview, setter=setSuperview:)	RakView * superview;
 @property BOOL _selectionChangeComeFromClic;
 
 //Simplify the interface for simple use
@@ -117,7 +117,7 @@ typedef struct //smartReload_data
 - (RakColor *) getTextHighlightColor : (uint) column : (uint) row;
 - (RakColor *) getBackgroundHighlightColor;
 
-- (void) graphicSelection : (NSView *) view : (BOOL) select;
+- (void) graphicSelection : (RakView *) view : (BOOL) select;
 - (void) postProcessingSelection : (uint) row;
 
 - (void) selectElement : (uint) element;

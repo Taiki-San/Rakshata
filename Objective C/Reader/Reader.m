@@ -14,7 +14,7 @@
 
 #pragma mark - Main view management
 
-- (instancetype) init : (NSView*)contentView : (NSString *) state
+- (instancetype) init : (RakView*)contentView : (NSString *) state
 {
 	self = [super init];
 	if(self != nil)
@@ -35,7 +35,7 @@
 		
 		pthread_mutex_init(&cacheMutex, NULL);
 		
-		container = [[NSView alloc] initWithFrame:self.bounds];
+		container = [[RakView alloc] initWithFrame:self.bounds];
 		[self addSubview:container];
 		
 		loadingPlaceholder = [RakImage imageNamed:@"loading.gif"];
@@ -344,7 +344,7 @@
 - (void) hideBothTab
 {
 	NSArray *subView = [[self superview] subviews];
-	NSView *subViewView;
+	RakView *subViewView;
 	NSUInteger i, count = [subView count];
 	
 	for(i = 0; i < count; i++)
@@ -360,7 +360,7 @@
 - (void) unhideBothTab
 {
 	NSArray *subView = [[self superview] subviews];
-	NSView *subViewView;
+	RakView *subViewView;
 	NSUInteger i, count = [subView count];
 	
 	for(i = 0; i < count; i++)

@@ -12,7 +12,7 @@
 
 @implementation RakPageCounter
 
-- (instancetype) init: (NSView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
+- (instancetype) init: (RakView*) superview : (CGFloat) posX : (uint) currentPageArg : (uint) pageMaxArg : (Reader *) target
 {
 	if(target.initWithNoContent)
 		return nil;
@@ -218,7 +218,7 @@
 
 @implementation RakPageCounterPopover
 
-- (void) launchPopover : (NSView *) anchor : (uint) curPage : (uint) maxPage
+- (void) launchPopover : (RakView *) anchor : (uint) curPage : (uint) maxPage
 {
 	_anchor = anchor;
 	_maxPage = maxPage;

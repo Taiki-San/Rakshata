@@ -280,7 +280,7 @@ enum
 	return output;
 }
 
-- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	// Get an existing view with the identifier if it exists
 	RakText *result = [tableView makeViewWithIdentifier:@"PFUDOR" owner:self];

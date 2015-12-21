@@ -18,7 +18,7 @@
 #import "RakCTHTableController.h"
 #import "RakCTHContainer.h"
 
-@interface RakCTHeaderImage : NSView
+@interface RakCTHeaderImage : RakView
 {
 	PROJECT_DATA _data;
 	

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakSRSearchTabGroup : NSView
+@interface RakSRSearchTabGroup : RakView
 {
 	byte _ID;
 	
@@ -21,7 +21,7 @@
 	RakButton * close, *flush;
 	RakSwitchButton * freeSwitch, * favsSwitch;
 	RakText * freeText, * favsText;
-	NSView * buttonContainer;
+	RakView * buttonContainer;
 	
 	charType ** listData, **_cachedListData;
 	uint nbDataList, _cachedNbDataList;

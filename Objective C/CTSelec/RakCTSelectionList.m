@@ -768,7 +768,7 @@
 	}
 }
 
-- (NSView*) tableView : (NSTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (NSTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	RakText * output = (RakText *) [super tableView:tableView viewForTableColumn:tableColumn row:row];
 	

@@ -221,7 +221,7 @@
 
 - (void) cleanupFocusViewChange
 {
-	for(NSView * view in @[header, projectName, projectImage, coreview])
+	for(RakView * view in @[header, projectName, projectImage, coreview])
 	{
 		if(view.alphaValue == 0)
 			view.hidden = YES;
@@ -398,7 +398,7 @@ enum
 	[CATransaction commit];
 }
 
-//RakList is more restrictive than NSView, so if it support the call, NSView will
+//RakList is more restrictive than RakView, so if it support the call, RakView will
 - (void) changeSRFocus : (id) oldView : (id) newView : (byte) direction
 {
 	if(![NSThread isMainThread])
@@ -412,7 +412,7 @@ enum
 	//Set the positions of the items
 	[CATransaction begin];
 	
-	if(newView != suggestions && ((NSView *)newView).superview == nil)
+	if(newView != suggestions && ((RakView *)newView).superview == nil)
 		[self addSubview:newView];
 	
 	[newView setFrame:(NSRect) {[self newOriginFocus:newView :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], _bounds.size}];
@@ -435,7 +435,7 @@ enum
 	[NSAnimationContext endGrouping];
 }
 
-- (NSPoint) newOriginFocus : (NSView *) item : (byte) direction
+- (NSPoint) newOriginFocus : (RakView *) item : (byte) direction
 {
 	NSRect itemBounds = item.frame;
 	NSPoint output = NSZeroPoint;

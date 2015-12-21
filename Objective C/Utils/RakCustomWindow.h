@@ -13,7 +13,7 @@
 @interface RakCustomWindow : NSObject <NSWindowDelegate>
 {
 	RakWindow * __strong window;
-	NSView * contentView;
+	RakView * contentView;
 	
 	BOOL _isInitialized;
 }
@@ -23,7 +23,7 @@
 - (void) resetWindow;
 
 + (NSSize) defaultWindowSize;
-- (NSRect) contentFrame : (NSView *) content;
+- (NSRect) contentFrame : (RakView *) content;
 
 - (Class) contentClass;
 

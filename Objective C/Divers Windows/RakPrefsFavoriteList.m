@@ -213,7 +213,7 @@
 	return LIST_WIDE_LINE_HEIGHT;
 }
 
-- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	if(row >= _nbData)
 		return nil;

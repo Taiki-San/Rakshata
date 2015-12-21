@@ -12,7 +12,7 @@
 
 @interface RakListScrollView : NSScrollView
 {
-	NSView* documentViewToResize;
+	RakView* documentViewToResize;
 	
 	BOOL forceUpdate, redirectingClic;
 	NSRect _cachedFrame;

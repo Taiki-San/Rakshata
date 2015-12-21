@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakProgressBar : NSView
+@interface RakProgressBar : RakView
 {
 	NSSize currentSize;
 	CGFloat _width;

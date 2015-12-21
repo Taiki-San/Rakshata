@@ -51,7 +51,7 @@
 
 @end
 
-@interface RakPrefsRepoDetails : NSView
+@interface RakPrefsRepoDetails : RakView
 
 - (instancetype) initWithRepo : (NSRect) frame : (BOOL) isRoot : (void *) repo : (RakPrefsRepoView *) responder;
 - (void) updateContent : (BOOL) isRoot : (void *) repo : (BOOL) animated;
@@ -60,7 +60,7 @@
 
 @end
 
-@interface RakPrefsRepoView : NSView
+@interface RakPrefsRepoView : RakView
 {
 	ROOT_REPO_DATA ** root;
 	REPO_DATA ** repo;

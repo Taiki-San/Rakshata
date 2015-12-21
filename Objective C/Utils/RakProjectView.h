@@ -26,7 +26,7 @@ enum
 	
 };
 
-@interface RakBasicProjectView : NSView
+@interface RakBasicProjectView : RakView
 {
 	PROJECT_DATA _project;
 	NSRect _workingArea;

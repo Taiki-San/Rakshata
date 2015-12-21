@@ -22,7 +22,7 @@
 	return self;
 }
 
-- (void) configureCleanMenu : (BOOL) optionPressed toView : (NSView *) view
+- (void) configureCleanMenu : (BOOL) optionPressed toView : (RakView *) view
 {
 	_view = view;
 	

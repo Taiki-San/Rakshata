@@ -12,7 +12,7 @@
 
 #define CT_CLIC_NOTIFICATION @"RakCTSelectedManually"
 
-@interface RakCTSelection : NSView
+@interface RakCTSelection : RakView
 {
 	PROJECT_DATA data;
 	RakCTCoreViewButtons * _buttons;

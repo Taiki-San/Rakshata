@@ -95,12 +95,12 @@
 	return scrollView;
 }
 
-- (void) setSuperview : (NSView *) superview
+- (void) setSuperview : (RakView *) superview
 {
 	[superview addSubview:scrollView];
 }
 
-- (NSView*) superview
+- (RakView*) superview
 {
 	return scrollView.superview;
 }
@@ -314,7 +314,7 @@
 {
 	RakText * element;
 	RakColor * backgroundColor = [self getBackgroundHighlightColor];
-	NSView * rowView;
+	RakView * rowView;
 	
 	uint lastClickedColumn = _tableView.lastClickedColumn / _nbElemPerCouple;
 	for(uint rowIndex = 0, column, max = [_tableView numberOfRows]; rowIndex < max; rowIndex++)
@@ -361,7 +361,7 @@
 	return [_defaultDataField objectAtIndex: (NSUInteger) row];
 }
 
-- (NSView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
+- (RakView*) tableView : (RakTableView *) tableView viewForTableColumn : (NSTableColumn*) tableColumn row : (NSInteger) row
 {
 	BOOL selected = row == selectedRowIndex;
 	__block uint column = 0;
@@ -434,7 +434,7 @@
 	}
 }
 
-- (void) graphicSelection : (NSView *) view : (BOOL) select
+- (void) graphicSelection : (RakView *) view : (BOOL) select
 {
 	if(view != nil && [view class] == [RakText class])
 	{
@@ -487,7 +487,7 @@
 	else if(selectedRowIndex != LIST_INVALID_SELECTION)
 	{
 		uint column = 0;
-		NSView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
+		RakView * rowView = [tableView rowViewAtRow:selectedRowIndex makeIfNecessary:NO];
 		for(RakText * view in rowView.subviews)
 		{
 			if([view isKindOfClass:[self contentClass]])
@@ -762,7 +762,7 @@
 
 + (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL
 {
-	NSView * view = [[NSApp delegate] serie];
+	RakView * view = [[NSApp delegate] serie];
 	if(view != nil && view.superview != nil)
 	{
 		NSArray * views = [view.superview subviews];

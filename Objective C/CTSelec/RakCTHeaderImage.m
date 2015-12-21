@@ -116,7 +116,7 @@
 	
 	if(needAddBackgroundGradient)
 	{
-		NSView * backgroundGradient = [_background gradientView];
+		RakView * backgroundGradient = [_background gradientView];
 		if(backgroundGradient != nil)
 			[self addSubview:backgroundGradient];	//Add subview may just reorder is needed
 	}

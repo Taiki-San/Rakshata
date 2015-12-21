@@ -59,7 +59,7 @@ enum
 
 @implementation RakPrefsSelectionButtonCell
 
-- (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawWithFrame:(NSRect)cellFrame inView:(RakView *)controlView
 {
 	if(self.image == clicked && clicked != nil)
 	{
@@ -85,7 +85,7 @@ enum
 	return [Prefs getSystemColor:COLOR_PREFS_BUTTON_FOCUS];
 }
 
-- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(RakView*)controlView
 {
 	if(!flag || self.image != clicked)
 		[super highlight:flag withFrame:cellFrame inView:controlView];

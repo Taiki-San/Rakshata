@@ -52,7 +52,7 @@ enum
 
 #define RADIUS_CHK 0.75f
 
-- (void) drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawInteriorWithFrame:(NSRect)cellFrame inView:(RakView *)controlView
 {
 	//Border
 	[borderColor setFill];

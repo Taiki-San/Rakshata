@@ -26,7 +26,7 @@
 	BOOL initialized;
 	
 	uint gonnaReduceTabs;
-	NSView * container;
+	RakView * container;
 	RakReaderBottomBar * bottomBar;
 	RakReaderControllerUIQuery * newStuffsQuery;
 	
@@ -80,7 +80,7 @@
 @property BOOL isTome;
 @property BOOL preventRecursion;
 
-- (instancetype) init : (NSView*)contentView : (NSString *) state;
+- (instancetype) init : (RakView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
 - (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;

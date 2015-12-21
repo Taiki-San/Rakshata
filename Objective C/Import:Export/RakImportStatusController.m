@@ -51,7 +51,7 @@ enum
 
 - (void) setupIssueUI : (NSArray *) dataSet
 {
-	NSView * superview = queryWindow.contentView;
+	RakView * superview = queryWindow.contentView;
 
 	//Title of the new view
 	issueTitle = [[RakMenuText alloc] initWithText:NSZeroRect :NSLocalizedString(@"IMPORT-REPORT", nil)];
@@ -166,7 +166,7 @@ enum
 		[queryWindow setFrame:windowFrame display:YES animate:YES];
 		
 		//Animate the old entities
-		for(NSView * view in @[title, progressBar, percentage, cancel])
+		for(RakView * view in @[title, progressBar, percentage, cancel])
 		{
 			frame = view.frame;
 			frame.origin.x = windowFrame.size.width / 2 - frame.size.width / 2;
@@ -182,7 +182,7 @@ enum
 
 		[NSAnimationContext beginGrouping];
 
-		NSView * views[] = {title, progressBar, percentage, cancel, issueTitle, issueHeader, replaceAll, close, scrollview};
+		RakView * views[] = {title, progressBar, percentage, cancel, issueTitle, issueHeader, replaceAll, close, scrollview};
 
 		//Animate the old entities
 		for(uint i = 0; i < 9; i++)

@@ -337,7 +337,7 @@ enum
 
 - (void) removeRowFromList
 {
-	NSView * tableView = self;
+	RakView * tableView = self;
 	while (tableView != nil && [tableView class] != [RakTableView class])
 		tableView = tableView.superview;
 	

@@ -16,6 +16,6 @@
 }
 
 - (instancetype) initWithResponder : (id) responder;
-- (void) configureMenu : (NSView *) receiver;
+- (void) configureMenu : (RakView *) receiver;
 
 @end

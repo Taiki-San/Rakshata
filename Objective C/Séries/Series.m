@@ -12,7 +12,7 @@
 
 @implementation Series
 
-- (instancetype) init : (NSView*) contentView : (NSString *) state
+- (instancetype) init : (RakView*) contentView : (NSString *) state
 {
 	self = [super init];
 	if(self != nil)

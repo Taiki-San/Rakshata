@@ -27,7 +27,7 @@
 @property BOOL commandPressed;
 
 @property (readonly, getter=isFullscreen) BOOL fullscreen;
-@property (weak) NSView* defaultDispatcher;
+@property (weak) RakView* defaultDispatcher;
 @property (strong) NSResponder* imatureFirstResponder;
 
 - (void) configure;

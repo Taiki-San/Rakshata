@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsRepoAddView : NSView
+@interface RakPrefsRepoAddView : RakView
 
 - (instancetype) initWithRoot : (ROOT_REPO_DATA **) root nbElem : (uint) nbRoot;
 

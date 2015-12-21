@@ -17,7 +17,7 @@
 	return NSMakeSize(PREF_WINDOW_WIDTH, PREF_WINDOW_HEIGHT);
 }
 
-- (NSRect) contentFrame : (NSView *) content
+- (NSRect) contentFrame : (RakView *) content
 {
 	NSRect frame = [super contentFrame:content];
 	
@@ -76,7 +76,7 @@
 
 - (void) focusChanged : (byte) newTab
 {
-	NSView * old = [self viewForCode : activeView : NO], * new = [self viewForCode : newTab : YES];
+	RakView * old = [self viewForCode : activeView : NO], * new = [self viewForCode : newTab : YES];
 	
 	if(old == nil)
 	{
@@ -147,7 +147,7 @@
 	activeView = newTab;
 }
 
-- (NSView *) viewForCode : (byte) code : (BOOL) createIfNeeded
+- (RakView *) viewForCode : (byte) code : (BOOL) createIfNeeded
 {
 	switch (code)
 	{
@@ -212,7 +212,7 @@
 			
 			else if(createIfNeeded)
 			{
-				customView = [[NSView alloc] initWithFrame:[self mainFrame]];
+				customView = [[RakView alloc] initWithFrame:[self mainFrame]];
 				
 				if(customView != nil)
 					[contentView addSubview:customView];

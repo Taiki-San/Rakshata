@@ -15,7 +15,7 @@
 #define WIDTH_BORDER_MIDDLE		1
 #define WIDTH_BORDER_INTERNAL	1
 
-@interface RakContentView : NSView
+@interface RakContentView : RakView
 {
 	uint _mainThread;
 	uint _stateTabsReader;
@@ -32,7 +32,7 @@
 
 @end
 
-@interface RakContentViewBack : NSView
+@interface RakContentViewBack : RakView
 {
 	RakColor * backgroundColor;
 	

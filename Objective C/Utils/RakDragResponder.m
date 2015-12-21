@@ -14,7 +14,7 @@
 
 #pragma mark - Drag'n drop configuration
 
-+ (uint) getOwnerOfTV : (NSView *) view
++ (uint) getOwnerOfTV : (RakView *) view
 {
 	while(view != nil && [view superclass] != [RakTabView class])
 		view = view.superview;
@@ -99,7 +99,7 @@
 	return [self operationForContext:info :sender :row :NSTableViewDropOn];
 }
 
-- (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (NSView*) view
+- (void) beginDraggingSession : (NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes withParent : (RakView*) view
 {
 	if([rowIndexes count] > 1)
 		return;

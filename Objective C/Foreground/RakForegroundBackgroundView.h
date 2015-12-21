@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakForegroundBackgroundView : NSView
+@interface RakForegroundBackgroundView : RakView
 
 @property (weak) id father;
 @property (atomic) BOOL animationInProgress;

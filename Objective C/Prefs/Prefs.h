@@ -159,7 +159,11 @@ enum KVO_REQUEST {
 
 @interface Prefs : NSObject
 {
+#if !TARGET_OS_IPHONE
 	RakContentView* firstResponder;
+#else
+	id firstResponder;
+#endif
 	
 	// Prefs "sécurisés"
 	NSString * email;
@@ -200,7 +204,7 @@ enum KVO_REQUEST {
 
 + (void) getPref : (uint) requestID : (void*) outputContainer;
 + (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;
-+ (BOOL) setPref : (uint) requestID : (uint64) value;
++ (BOOL) setPref : (uint) requestID : (uint64_t) value;
 
 //KVO
 + (void) registerForChange : (id) object forType : (byte) code;
@@ -215,10 +219,13 @@ enum KVO_REQUEST {
 - (NSString*) dumpPrefs;
 - (void) refreshFirstResponder;
 - (void) flushMemory : (BOOL) memoryError;
-- (NSArray *) setupExecuteConsistencyChecks : (uint8) request;
+- (NSArray *) setupExecuteConsistencyChecks : (uint8_t) request;
 @end
 
 #include "prefsControl.h"
 #include "prefsMagic.h"
-#import "PrefsUI.h"
-#import "RakPrefsRemindPopover.h"
+
+#if !TARGET_OS_IPHONE
+	#import "PrefsUI.h"
+	#import "RakPrefsRemindPopover.h"
+#endif

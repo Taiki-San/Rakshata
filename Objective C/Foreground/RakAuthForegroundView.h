@@ -12,7 +12,7 @@
 
 #import "RakForegroundBackgroundView.h"
 
-@interface RakForegroundViewContentView : NSView
+@interface RakForegroundViewContentView : RakView
 
 @end
 
@@ -24,7 +24,7 @@
 
 @property (unsafe_unretained) id delegate;
 
-- (instancetype) init : (NSView *) coreView;
+- (instancetype) init : (RakView *) coreView;
 - (RakForegroundViewContentView *) craftCoreView : (NSRect) contentViewFrame;
 
 - (void) switchState;

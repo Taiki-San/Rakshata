@@ -240,7 +240,7 @@
 	
 	if(currentContext == TAB_READER)
 	{
-		for(NSView * view in @[_buttons, isTome ? _volView : _chapterView])
+		for(RakView * view in @[_buttons, isTome ? _volView : _chapterView])
 		{
 			view.hidden = NO;
 			view.animator.alphaValue = 1;
@@ -276,7 +276,7 @@
 
 - (void) cleanChangeCurrentContext
 {
-	for(NSView * view in @[_buttons, _volView, _chapterView])
+	for(RakView * view in @[_buttons, _volView, _chapterView])
 	{
 		if(view.alphaValue == 0)
 			view.hidden = YES;

@@ -10,7 +10,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakSheetView : NSView
+@interface RakSheetView : RakView
 
 @property NSObject * anchor;	//Prevent releasing the controller too early
 @property RakColor * backgroundColor;

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakDragView : NSView
+@interface RakDragView : RakView
 {
 	IBOutlet NSImageView * projectImage;
 	
