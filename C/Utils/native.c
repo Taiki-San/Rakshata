@@ -307,6 +307,9 @@ void ouvrirSite(const char *URL)
     #ifdef _WIN32
         ShellExecute(NULL, "open", URL, NULL, NULL, SW_SHOWNOACTIVATE);
     #else
+	#ifdef __APPLE__
+			openWebsite(URL);
+	#else
         int i = 0;
         for(; URL[i] && URL[i] != '"'; i++);
         if(URL[i])  return; //Anti escape
@@ -314,15 +317,12 @@ void ouvrirSite(const char *URL)
         bufferCMD = malloc(strlen(URL) + 20);
         if(bufferCMD != NULL)
         {
-            #ifdef __APPLE__
-                snprintf(bufferCMD, strlen(URL) + 20, "open \"%s\" &", URL);
-            #else
-                snprintf(bufferCMD, strlen(URL) + 20, "firefox \"%s\" &", URL);
-            #endif
+			snprintf(bufferCMD, strlen(URL) + 20, "firefox \"%s\" &", URL);
             system(bufferCMD);
             free(bufferCMD);
         }
-    #endif
+	#endif
+	#endif
 }
 
 bool checkDirExist(const char *dirname)

@@ -34,7 +34,7 @@ bool isSandboxed();
 void configureSandbox();
 void registerExtensions();
 int getBuildID();
-
+void openWebsite(const char * URL);
 
 /*****************************************
  **										**

@@ -18,7 +18,7 @@ MUTEX_VAR DBRefreshMutex;
         #undef main
     #endif
 #else
-	int NSApplicationMain(int argc, const char *argv[]);
+	int launchApp(int argc, const char *argv[]);
 #endif
 
 void cleanup()
@@ -51,5 +51,5 @@ int main(int argc, const char *argv[])
 	atexit(cleanup);
 	createNewThread(networkAndVersionTest, NULL); //On met le test dans un nouveau thread pour pas ralentir le démarrage
 	setupBDDCache();
-	return NSApplicationMain(argc, argv);
+	return launchApp(argc, argv);
 }

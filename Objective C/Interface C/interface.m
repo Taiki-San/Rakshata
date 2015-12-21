@@ -69,6 +69,11 @@ int getBuildID()
 	return [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
 }
 
+void openWebsite(const char * URL)
+{
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString: [NSString stringWithUTF8String : URL]]];
+}
+
 /*****************************************
  **										**
  **				   ERROR				**
