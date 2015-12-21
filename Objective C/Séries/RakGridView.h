@@ -19,15 +19,6 @@ enum
 	RCVC_MINIMUM_HEIGHT_OFFSET = (RCVC_MINIMUM_HEIGHT + RCVC_OFFSET),
 };
 
-#define SR_NOTIFICATION_TAG 	@"RakSRTagSelectionNotification"
-#define SR_NOTIFICATION_TYPE 	@"RakSRTypeSelectionNotification"
-#define SR_NOTIFICATION_AUTHOR 	@"RakSRAuthorSelectionNotification"
-#define SR_NOTIFICATION_SOURCE 	@"RakSRSourceSelectionNotification"
-#define SR_NOTIFICATION_FLUSH 	@"RakSRFlushSelectionNotification"
-#define SR_NOTIFICATION_SELECTION_TRIGGERED	@"RakSRSelectionTriggeredNotification"
-#define SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED	@"VacuumCleanerTimeEverybody!"
-
-
 #define RCVC_FOCUS_DELAY 		0.2f
 #define SR_NOTIFICATION_FOCUS	@"RakSRItemFocusChanged"
 #define SR_FOCUS_IN_OR_OUT		@"inOrOut"

@@ -445,14 +445,14 @@ void updateRecentSeries()
 
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element)
 {
-	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * tabMDL = [RakApp MDL];
 
 	return tabMDL == nil ? [tabMDL proxyCheckForCollision:data :isTome :element] : false;
 }
 
 void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch)
 {
-	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * tabMDL = [RakApp MDL];
 	
 	if(tabMDL != nil)
 		[tabMDL proxyAddElement:data isTome:isTome element:element partOfBatch:partOfBatch];
@@ -460,7 +460,7 @@ void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBa
 
 void notifyDownloadOver()
 {
-	if(((RakAppDelegate *) [NSApp delegate]).hasFocus)
+	if(RakApp.hasFocus)
 		return;
 	
 	NSUserNotification *notification = [[NSUserNotification alloc] init];

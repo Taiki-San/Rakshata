@@ -118,8 +118,8 @@
 	
 	if(savedState.isInitialized)
 	{
-		if(((RakAppDelegate *) [NSApp delegate]).CT.initWithNoContent)
-			[((RakAppDelegate *) [NSApp delegate]).CT updateProject :project.cacheDBID :savedState.isTome :savedState.CTID];
+		if(RakApp.CT.initWithNoContent)
+			[RakApp.CT updateProject :project.cacheDBID :savedState.isTome :savedState.CTID];
 		
 		if(saveMagnification)
 		{
@@ -290,7 +290,7 @@
 	
 	if(queryHidden)
 	{
-		MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate]MDL];
+		MDL * tabMDL = [RakApp MDL];
 
 		if(tabMDL != nil)
 			newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData:tabMDL :_project :self.isTome :_queryArrayData :_queryArraySize];
@@ -583,7 +583,7 @@
 			string = getStringForChapter(project.chaptersInstalled[position]);
 		}
 		
-		[((RakAppDelegate *)[NSApp delegate]).window setCTTitle:project :string];
+		[RakApp.window setCTTitle:project :string];
 	}
 }
 

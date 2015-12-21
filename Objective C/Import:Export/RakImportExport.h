@@ -10,19 +10,25 @@
  **                                                                                         **
  *********************************************************************************************/
 
-//Don't forget to reflect any addition to +haveAnyRemindedValue
-#define PREFS_REMIND_DELETE			@"DefaultPopoverDelete"
-#define PREFS_REMIND_AUTODL			@"DefaultPopoverAutoDL"
-#define PREFS_REMIND_FAVS			@"PopoverFavoriteDisplayed"
-#define PREFS_REMIND_SUGGESTION		@"GetThoseDamnSuggestionsOutOfTheWay"
+#if !TARGET_OS_IPHONE
 
-@interface RakPrefsRemindPopover : NSObject
+	#import "RakExportController.h"
+	#import "RakImportController.h"
 
-+ (void) setValueReminded : (NSString *) element : (BOOL) value;
-+ (BOOL) getValueReminded : (NSString *) element : (BOOL *) value;
-+ (void) removeValueReminded : (NSString *) element;
+#else
 
-+ (BOOL) haveAnyRemindedValue;
-+ (void) flushRemindedValues;
+	#import "RakImportController.h"
 
-@end
+#endif
+
+//Extensions
+#define SOURCE_FILE_EXT 		@"rakSource"
+#define ARCHIVE_FILE_EXT		@"rak"
+#define EXTERNAL_FILE_EXT_ZIP	@[@"zip", @"cbz"]
+#define EXTERNAL_FILE_EXT_RAR	@[@"rar", @"cbr"]
+#define EXTERNAL_FILE_EXT_PLAIN @[@"pdf"]
+#define ARCHIVE_SUPPORT			@[@"rak", @"zip", @"cbz", @"rar", @"cbr", @"pdf"]
+#define DEFAULT_ARCHIVE_SUPPORT	@[@"rak", @"cbz", @"cbr"]
+
+//Values
+#define CHAPTER_FOR_IMPORTED_VOLUMES 42

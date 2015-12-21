@@ -141,8 +141,8 @@
 	//The text will be blurry if not on a round origin relative to the display, yeah, awesome...
 	if(self.window == nil)
 	{
-		rectOnScreen = [[(RakAppDelegate *) [NSApp delegate] window] convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
-		factor = [[(RakAppDelegate *) [NSApp delegate] window] backingScaleFactor];		
+		rectOnScreen = [RakApp.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+		factor = [RakApp.window backingScaleFactor];		
 	}
 	else
 	{
@@ -333,9 +333,9 @@
 			result = YES;
 		}
 	}
-	else if ((commandSelector == @selector(noop:)) && [self isCommandEnterEvent:[NSApp currentEvent]])
+	else if ((commandSelector == @selector(noop:)) && [self isCommandEnterEvent:[RakRealApp currentEvent]])
 	{
-		[self.nextResponder keyDown:[NSApp currentEvent]];
+		[self.nextResponder keyDown:[RakRealApp currentEvent]];
 		result = YES;
 	}
 	

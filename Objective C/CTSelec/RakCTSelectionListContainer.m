@@ -157,7 +157,7 @@
 			parentFrame.origin.x = parentFrame.size.width + 20;
 			
 			//If focus chapter, and MDL around, it's below the tome view
-			MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
+			MDL * tabMDL = [[RakApp MDL] getMDL : YES];	//Will validate if we can have it
 			if(tabMDL != nil)
 			{
 				parentFrame.origin.y += [tabMDL lastFrame].size.height;

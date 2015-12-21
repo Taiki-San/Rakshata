@@ -91,7 +91,7 @@ enum
 		[_tableView removeRowsAtIndexes:index withAnimation:NSTableViewAnimationSlideLeft];
 	}
 	
-	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * tabMDL = [RakApp MDL];
 	if(tabMDL != nil)
 	{
 		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];

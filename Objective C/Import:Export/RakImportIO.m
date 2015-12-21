@@ -270,7 +270,7 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 		NSString * newFile = [NSString stringWithFormat:@"%d.%@", counter++, [file pathExtension]];
 		rename([[path stringByAppendingString:file] UTF8String], [[tmpPath stringByAppendingString:newFile] UTF8String]);
 		
-		if([[file pathExtension] caseInsensitiveCompare:@"pdf"] != NSEqualToComparison)
+		if([[file pathExtension] caseInsensitiveCompare:@"pdf"] != NSOrderedSame)
 		{
 			[outputData appendFormat:@"\n0 %@", newFile];
 		}
@@ -279,11 +279,11 @@ void createIOConfigDatForData(NSString * path, char ** filenames, uint nbFiles)
 			PDFDocument * document = [[PDFDocument alloc] initWithData:[NSData dataWithContentsOfFile:[tmpPath stringByAppendingString:newFile]]];
 			if(document != NULL)
 			{
-				NSArray * list = [document getPages];
-				if(list != nil)
+				uint length = [document pageCount];
+				if(length > 0)
 				{
-					additionnalPages += [list count] - 1;
-					for(uint i = 0, length = [list count]; i < length; ++i)
+					additionnalPages += length - 1;
+					for(uint i = 0; i < length; ++i)
 						[outputData appendFormat:@"\n%d %@", i, newFile];
 				}
 			}

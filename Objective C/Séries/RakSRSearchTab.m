@@ -169,7 +169,7 @@ enum
 {
 	boundsFrame.origin = NSZeroPoint;
 	
-	MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
+	MDL * tabMDL = [[RakApp MDL] getMDL : YES];	//Will validate if we can have it
 	
 	if(tabMDL != nil && tabMDL.mainThread == TAB_SERIES)
 	{

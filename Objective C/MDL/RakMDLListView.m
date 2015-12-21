@@ -344,7 +344,7 @@ enum
 	if(tableView != nil)
 		[(RakTableView*) tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex : _row] withAnimation:NSTableViewAnimationSlideLeft];
 	
-	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * tabMDL = [RakApp MDL];
 	if(tabMDL != nil)
 	{
 		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
@@ -502,7 +502,7 @@ enum
 
 - (void) sendRead
 {
-	[[(RakAppDelegate*) [NSApp delegate] MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
+	[[RakApp MDL] propagateContextUpdate:*(*todoList)->datas :(*todoList)->listChapitreOfTome != NULL :(*todoList)->identifier];
 	
 	[_controller discardElement: _row withSimilar: YES];
 }

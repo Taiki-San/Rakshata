@@ -52,13 +52,11 @@ void registerDefaultForExtension(NSString * extension);
 
 @end
 
-#if !TARGET_OS_IPHONE
 @interface PDFDocument (dumpData)
 
 - (NSArray <PDFPage *> *) getPages;
 
 @end
-#endif
 
 @interface RakView (RakUtils)
 
@@ -84,43 +82,46 @@ void registerDefaultForExtension(NSString * extension);
 #endif
 
 #if !TARGET_OS_IPHONE
-#import "RakWindow.h"
-#import "RakSheetView.h"
-#import "RakAnimationController.h"
+	#import "RakWindow.h"
+	#import "RakSheetView.h"
+	#import "RakAnimationController.h"
 
-#import "NSImage+Tint.h"
-#import "RakTextCell.h"
-#import "RakText.h"
-#import "RakButton.h"
-#import "RakScroller.h"
-#import "RakBorder.h"
-#import "RakSegmentedButtonCell.h"
-#import "RakMenuText.h"
-#import "RakProgressBar.h"
-#import "RakBackButton.h"
-#import "RakPopover.h"
-#import "RakProjectView.h"
+	#import "NSImage+Tint.h"
+	#import "RakTextCell.h"
+	#import "RakText.h"
+	#import "RakButton.h"
+	#import "RakScroller.h"
+	#import "RakBorder.h"
+	#import "RakSegmentedButtonCell.h"
+	#import "RakMenuText.h"
+	#import "RakProgressBar.h"
+	#import "RakBackButton.h"
+	#import "RakPopover.h"
+	#import "RakProjectView.h"
 
-@class RakProjectMenu;
+	@class RakProjectMenu;
 
-#import "RakAuthForegroundView.h"
-#import "RakTabView.h"
-#import "RakTabContentTemplate.h"
-#import "RakDragView.h"
-#import "RakDragItem.h"
-#import "RakDragResponder.h"
-#import "RakImageDropArea.h"
-#import "RakList.h"
-#import "RakGradientView.h"
+	#import "RakAuthForegroundView.h"
+	#import "RakTabView.h"
+	#import "RakTabContentTemplate.h"
+	#import "RakDragView.h"
+	#import "RakDragItem.h"
+	#import "RakDragResponder.h"
+	#import "RakImageDropArea.h"
+	#import "RakList.h"
+	#import "RakGradientView.h"
+#endif
 
 #import "RakDBUpdate.h"
 #import "RakSuggestionEngine.h"
 
-#import "RakCustomWindow.h"
-#import "RakAboutWindow.h"
-#import "RakPrefsWindow.h"
-#import "RakAddRepoController.h"
+#import "RakNotification.h"
 
+#if !TARGET_OS_IPHONE
+	#import "RakCustomWindow.h"
+	#import "RakAboutWindow.h"
+	#import "RakPrefsWindow.h"
+	#import "RakAddRepoController.h"
 #endif
 
 #import "RakEIStatusController.h"

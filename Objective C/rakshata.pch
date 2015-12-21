@@ -54,12 +54,12 @@
 
 	/* Différentes super-classes de l'interface	*/
 	#if !TARGET_OS_IPHONE
-
 		#import "MDL.h"
+	#endif
 
-		#import "RakExportController.h"
-		#import "RakImportController.h"
+	#import "RakImportExport.h"
 
+	#if !TARGET_OS_IPHONE
 		#import "RakMenu.h"
 
 		#import "Series.h"
@@ -69,11 +69,6 @@
 		#import "RakAuthController.h"
 		#import "RakContentView.h"
 		#import "RakAppDelegate.h"
-
-	#else
-
-		#import "RakImportController.h"
-
 	#endif
 
 	#import "Prefs.h"

@@ -306,7 +306,7 @@
 			data = newData;
 		}
 		else
-			[[NSApp delegate] CT].initWithNoContent = YES;
+			RakApp.CT.initWithNoContent = YES;
 	}
 }
 
@@ -369,7 +369,7 @@
 	}
 	else
 	{
-		[[[NSApp delegate] MDL] proxyAddElement:data isTome:isTome element:ID partOfBatch:NO];
+		[RakApp.MDL proxyAddElement:data isTome:isTome element:ID partOfBatch:NO];
 	}
 	
 	self.dontNotify = NO;
@@ -401,7 +401,7 @@
 	
 	if(data.cacheDBID != projectID)
 	{
-		[[[NSApp delegate] CT] updateProject:projectID :isTome :element];
+		[RakApp.CT updateProject:projectID :isTome :element];
 	}
 	else
 	{
@@ -472,7 +472,7 @@
 - (void) updateTitle
 {
 	if(_currentContext == TAB_CT)
-		[((RakAppDelegate *)[NSApp delegate]).window setProjectTitle:data];
+		[RakApp.window setProjectTitle:data];
 }
 
 @end

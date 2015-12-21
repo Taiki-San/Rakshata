@@ -183,7 +183,7 @@ __strong RakSuggestionEngine * sharedObject;
 	else
 	{
 		[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_VALUE];
-		[[[NSApp delegate] CT] ownFocus];
+		[RakApp.CT ownFocus];
 	}
 	
 end:

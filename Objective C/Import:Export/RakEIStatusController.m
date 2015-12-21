@@ -59,7 +59,7 @@ enum
 			queryWindow.contentView = mainView;
 			queryWindow.backgroundColor = [RakColor clearColor];
 
-			[[[NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
+			[RakApp.window beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
 			return;
 		}
 	}
@@ -67,7 +67,7 @@ enum
 
 - (void) closeUI
 {
-	[[[NSApp delegate] window] endSheet:queryWindow];
+	[RakApp.window endSheet:queryWindow];
 	queryWindow = nil;
 }
 

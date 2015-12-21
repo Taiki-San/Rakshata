@@ -25,5 +25,3 @@
 @property BOOL unloaded;
 
 @end
-
-#define REFRESH_ADD_REPO_ITEM_STATUS @"RakAddRepoItemNotification"

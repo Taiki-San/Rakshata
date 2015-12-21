@@ -44,11 +44,11 @@
 		uint thread = getMainThread();
 		
 		if(thread == TAB_SERIES)
-			[self makeFirstResponder:[[NSApp delegate] serie]];
+			[self makeFirstResponder:RakApp.serie];
 		else if(thread == TAB_CT)
-			[self makeFirstResponder:[[NSApp delegate] CT]];
+			[self makeFirstResponder:RakApp.CT];
 		else if(thread == TAB_READER)
-			[self makeFirstResponder:[[NSApp delegate] reader]];
+			[self makeFirstResponder:RakApp.reader];
 	}
 	
 	if(!self.fullscreen)
@@ -148,7 +148,7 @@
 	if(files == nil || [files count] == 0)
 		return NO;
 
-	[[NSApp delegate] application:NSApp openFiles:files];
+	[RakApp application:RakRealApp openFiles:files];
 
 	return YES;
 }

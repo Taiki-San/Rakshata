@@ -31,7 +31,7 @@
 {
 	//We check if the user asked not to be annoyed again
 	BOOL haveValue = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_SUGGESTION : &defaultValueDiscard];
-	if(!haveValue || !defaultValueDiscard || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	if(!haveValue || !defaultValueDiscard || [RakApp window].shiftPressed)
 	{
 		_anchor = anchor;
 		_cacheDBID = cacheDBID;
@@ -149,9 +149,9 @@
 	//Return NO will tell the routine we did the work, and to simply return
 	BOOL retvalue = ![RakSuggestionEngine suggestionWasClicked:project.elementID withInsertionPoint:project.insertionPoint];
 	
-	if(!retvalue && [[NSApp delegate] reader].distractionFree != _openedLeavingDFMode)
+	if(!retvalue && RakApp.reader.distractionFree != _openedLeavingDFMode)
 	{
-		[[[NSApp delegate] reader] switchDistractionFree];
+		[RakApp.reader switchDistractionFree];
 	}
 	
 	return retvalue;

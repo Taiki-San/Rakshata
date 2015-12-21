@@ -176,7 +176,7 @@
 	{
 		_nbRow = _currentRow + 1;
 		
-		Series * tabSerie = [(RakAppDelegate *) [NSApp delegate] serie];
+		Series * tabSerie = RakApp.serie;
 		if(tabSerie != nil)
 		{
 			_noReorder = YES;
@@ -253,7 +253,7 @@
 	{
 		_nbRow = _currentRow + 1;
 		
-		Series * tabSerie = [(RakAppDelegate *) [NSApp delegate] serie];
+		Series * tabSerie = RakApp.serie;
 		if(tabSerie != nil)
 		{
 			_noReorder = YES;

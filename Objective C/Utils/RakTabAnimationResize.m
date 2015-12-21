@@ -30,7 +30,7 @@
 			[currentView setUpViewForAnimation : mainThread];
 		
 		//MDL frame is used is some contexts because of where is appear
-		MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate] MDL];
+		MDL * tabMDL = [RakApp MDL];
 		[tabMDL createFrame];
 		tabMDL.needUpdateMainViews = NO;	//We're going to update the frame anyway
 		

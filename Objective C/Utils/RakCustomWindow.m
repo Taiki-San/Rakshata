@@ -23,7 +23,7 @@
 		if(window != nil)
 		{
 			window.styleMask |= NSTexturedBackgroundWindowMask;
-			window.delegate = [NSApp delegate];
+			window.delegate = RakApp;
 			window.contentView = [[RakContentViewBack alloc] initWithFrame:NSMakeRect(0, 0, size.width, size.height)];;
 			
 			[window configure];

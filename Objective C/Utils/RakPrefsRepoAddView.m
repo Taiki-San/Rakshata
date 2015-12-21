@@ -135,7 +135,7 @@ enum
 
 - (void) cancelClicked
 {
-	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
+	[RakApp.window endSheet:self.window];
 }
 
 - (void) confirmClicked
@@ -169,7 +169,7 @@ enum
 	addRootRepoToDB(_root, _nbRoot);
 	
 	//We remove the window
-	[((RakAppDelegate *)[NSApp delegate]).window endSheet:self.window];
+	[RakApp.window endSheet:self.window];
 	
 	//We update the context so dealloc will only deallocate what have to be
 	if(nbRejected)

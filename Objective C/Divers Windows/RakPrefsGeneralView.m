@@ -187,7 +187,7 @@ enum
 
 - (void) disconnect
 {
-	[[[NSApp delegate] MDL] removingEmailAddress];
+	[RakApp.MDL removingEmailAddress];
 	deleteEmail();
 	
 	email.stringValue = [self emailString];

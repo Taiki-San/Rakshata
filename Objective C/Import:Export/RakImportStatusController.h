@@ -25,6 +25,3 @@
 - (void) close;
 
 @end
-
-#define NOTIFICATION_IMPORT_REPLACE_ONE	@"RakImportReplaceOne"
-#define NOTIFICATION_IMPORT_REPLACE_ALL	@"RakImportReplaceAll"

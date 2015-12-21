@@ -246,7 +246,9 @@
 				if(firstElement == UINT_MAX)
 					firstElement = i;
 				
+#ifndef IOS_DIRTY_HACK
 				anythingWasDownloading |= [(__bridge RakMDLListView *) (*todoList)[IDToPosition[i]]->rowViewResponsible abortProcessing];
+#endif
 			}
 			else
 			{
@@ -376,7 +378,9 @@
 			MDLDownloadOver(true);
 		
 		//Worker should be at work, now, let's wake the UI up
+#ifndef IOS_DIRTY_HACK
 		[_tabMDL wakeUp];
+#endif
 	}
 }
 
@@ -505,14 +509,18 @@
 			
 			discardedCount -= nbRemoved;
 			
+#ifndef IOS_DIRTY_HACK
 			[_list deleteElements : indexRemoved : nbRemoved];
+#endif
 		}
 		else
 		{
 			for(uint base = element, max = --discardedCount; base < max; base++)
 				IDToPosition[base] = IDToPosition[base + 1];
 
+#ifndef IOS_DIRTY_HACK
 			[_list deleteElements : &element : 1];
+#endif
 		}
 	}
 }
@@ -532,7 +540,9 @@
 	
 	discardedCount -= nbRemoved;
 	
+#ifndef IOS_DIRTY_HACK
 	[_list deleteElements : indexRemoved : nbRemoved];
+#endif
 }
 
 - (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value
@@ -568,7 +578,9 @@
 	if(nbRemoved != 0)
 	{
 		discardedCount -= nbRemoved;
+#ifndef IOS_DIRTY_HACK
 		[_list deleteElements : indexRemoved : nbRemoved];
+#endif
 	}
 }
 
@@ -581,22 +593,34 @@
 
 - (RakTabForegroundView *) getForegroundView
 {
+#ifndef IOS_DIRTY_HACK
 	return [_tabMDL getForgroundView];
+#else
+	return nil;
+#endif
 }
 
 - (void) setWaitingLogin : (NSNumber *) request
 {
+#ifndef IOS_DIRTY_HACK
 	[_tabMDL setWaitingLoginWrapper : request];
+#endif
 }
 
 - (BOOL) isSerieMainThread
 {
+#ifndef IOS_DIRTY_HACK
 	return _tabMDL.mainThread == TAB_SERIES;
+#else
+	return NO;
+#endif
 }
 
 - (void) collapseStateUpdate : (BOOL) wantCollapse
 {
+#ifndef IOS_DIRTY_HACK
 	_tabMDL.wantCollapse = wantCollapse;
+#endif
 }
 
 @end

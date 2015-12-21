@@ -115,7 +115,7 @@ enum
 - (BOOL) confirmMouseOnMe
 {
 	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
-	RakTabView * group = ID == LEVEL_SERIE ? [[NSApp delegate] serie] : [[NSApp delegate] CT];
+	RakTabView * group = ID == LEVEL_SERIE ? RakApp.serie : RakApp.CT;
 	
 	NSRect frame = _frame;
 	if(group.isFlipped)

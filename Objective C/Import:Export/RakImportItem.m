@@ -284,7 +284,7 @@
 - (BOOL) isEqualTo : (id) object
 {
 	if(![object isKindOfClass:[self class]])
-		return [super isEqualTo:object];
+		return object != nil && [super isEqual:object];
 	
 	RakImportItem * item = object;
 	

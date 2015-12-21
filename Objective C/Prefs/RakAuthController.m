@@ -16,7 +16,7 @@
 
 - (void) launch
 {
-	if([[NSApp delegate] class] != [RakAppDelegate class])
+	if([RakApp class] != [RakAppDelegate class])
 		return;
 	
 	initialAnimation = YES;
@@ -414,7 +414,7 @@
 			[passInput removeFromSuperview];
 			[container removeFromSuperview];
 			
-			[(RakAppDelegate*) [NSApp delegate]loginPromptClosed];
+			[RakApp loginPromptClosed];
 		}
 	}
 }

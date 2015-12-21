@@ -201,7 +201,7 @@
 	if(ID != UINT_MAX)
 	{
 		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_AUTHOR object:getStringForWchar(_data.authorName) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
-		[[[NSApp delegate] serie] ownFocus];
+		[RakApp.serie ownFocus];
 	}
 }
 

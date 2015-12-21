@@ -18,13 +18,13 @@
 		return nil;
 	
 	_anchor = tabMDL;	_project = project;		_isTome = isTome;	_arraySelection = arraySelection;	_sizeArray = sizeArray;
-	_tabReader = [(RakAppDelegate*) [NSApp delegate] reader];
+	_tabReader = [RakApp reader];
 	
 	//We check if the user asked not to be annoyed again
 	BOOL data = NO;
 	
 	_remind = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_AUTODL : &data];
-	if(_remind && ![(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	if(_remind && ![RakApp window].shiftPressed)
 	{
 		if(data)
 			[self confirmed];
@@ -32,7 +32,7 @@
 		return nil;
 	}
 	
-	self = [super initWithFrame : NSMakeRect([((RakAppDelegate *) [NSApp delegate]) window].isFullscreen ? 85 : 0, 0, 170, 170)];
+	self = [super initWithFrame : NSMakeRect(RakApp.window.isFullscreen ? 85 : 0, 0, 170, 170)];
 	
 	if(self != nil)
 	{
@@ -98,7 +98,7 @@
 
 - (void) locationUpdated : (NSRect) MDLFrame : (BOOL) animated
 {
-	NSPoint origin = [_anchor convertPoint:NSMakePoint([((RakAppDelegate *) [NSApp delegate]) window].isFullscreen ? 85 : 0, NSMaxY(MDLFrame)) toView:nil];
+	NSPoint origin = [_anchor convertPoint:NSMakePoint(RakApp.window.isFullscreen ? 85 : 0, NSMaxY(MDLFrame)) toView:nil];
 	origin = [_anchor.window convertRectToScreen: (NSRect) {origin, NSZeroSize}].origin;
 
 	if(_tabReader != nil)

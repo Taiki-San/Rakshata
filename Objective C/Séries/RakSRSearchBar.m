@@ -262,7 +262,7 @@
 		self.cell.stringValue = @"";
 
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[self.window makeFirstResponder:[[NSApp delegate] serie]];
+		[self.window makeFirstResponder:RakApp.serie];
 		didAuthorizeSearch = YES;
 		[self performSearch];
 	});

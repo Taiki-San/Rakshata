@@ -27,9 +27,9 @@ enum
 + (void) initCache
 {
 	if(prefsCache == nil)
-		prefsCache = [[Prefs alloc] init : NSApp.savedContext[0]];
+		prefsCache = [[Prefs alloc] init : RakRealApp.savedContext[0]];
 	
-	((RakAppDelegate *) [NSApp delegate]).haveDistractionFree = prefsCache.mainThread == TAB_READER;
+	RakApp.haveDistractionFree = prefsCache.mainThread == TAB_READER;
 }
 
 + (NSString *) dumpPrefs
@@ -52,7 +52,7 @@ enum
 	
 	prefsCache.themeCode = newTheme;
 	
-	RakAppDelegate * core = [NSApp delegate];
+	RakAppDelegate * core = RakApp;
 	if([core class] == [RakAppDelegate class] && [core.window.contentView class] == [RakContentViewBack class])
 		[(RakContentViewBack*) core.window.contentView updateUI];
 }
@@ -452,7 +452,7 @@ enum
 				prefsCache.mainThread = value & TAB_MASK;
 				[prefsCache refreshFirstResponder];
 				
-				[[NSApp delegate] setHaveDistractionFree : prefsCache.mainThread == TAB_READER];
+				[RakApp setHaveDistractionFree : prefsCache.mainThread == TAB_READER];
 			}
 			
 			break;
@@ -784,7 +784,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(input != recoveryBuffer)
 			free(input);
 		
-		RakAppDelegate * core = [NSApp delegate];
+		RakAppDelegate * core = RakApp;
 		if([core class] == [RakAppDelegate class])
 			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
 		

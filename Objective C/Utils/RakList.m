@@ -762,7 +762,7 @@
 
 + (void) propagateDragAndDropChangeState : (BOOL) started : (BOOL) canDL
 {
-	RakView * view = [[NSApp delegate] serie];
+	RakView * view = RakApp.serie;
 	if(view != nil && view.superview != nil)
 	{
 		NSArray * views = [view.superview subviews];

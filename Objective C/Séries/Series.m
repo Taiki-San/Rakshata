@@ -89,7 +89,7 @@
 
 - (void) seriesIsOpening : (byte) context
 {
-	[((RakAppDelegate *)[NSApp delegate]).window resetTitle];
+	[RakApp.window resetTitle];
 }
 
 #pragma mark - Event
@@ -241,7 +241,7 @@
 	else
 	{
 		//If focus series, and MDL around, it's at our left
-		MDL * tabMDL = [[(RakAppDelegate*) [NSApp delegate] MDL] getMDL : YES];	//Will validate if we can have it
+		MDL * tabMDL = [[RakApp MDL] getMDL : YES];	//Will validate if we can have it
 		if(tabMDL != nil)
 		{
 			CGFloat maxX = NSMaxX([tabMDL lastFrame]);

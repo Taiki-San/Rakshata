@@ -628,7 +628,7 @@ enum
 			PROJECT_DATA dataToSend = getProjectByID(_project.cacheDBID);
 			
 			if(dataToSend.isInitialized)
-				[RakTabView broadcastUpdateContext: [[NSApp delegate] serie] : dataToSend : NO : INVALID_VALUE];
+				[RakTabView broadcastUpdateContext: RakApp.serie : dataToSend : NO : INVALID_VALUE];
 			
 			releaseCTData(dataToSend);
 			break;

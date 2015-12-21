@@ -28,7 +28,7 @@
 	//We check if the user asked not to be annoyed again
 	BOOL alreadyAsked, answer = NO;
 	alreadyAsked = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_DELETE : &answer];
-	if(alreadyAsked && ![(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	if(alreadyAsked && ![RakApp window].shiftPressed)
 	{
 		if(answer)
 			[receiver deleteElement];

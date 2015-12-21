@@ -20,3 +20,12 @@
 + (BOOL) suggestionWasClicked : (uint) projectID withInsertionPoint : (NSDictionary *) insertionPoint;
 
 @end
+
+enum
+{
+	SUGGESTION_REASON_TAG = 1,
+	SUGGESTION_REASON_AUTHOR,
+	SUGGESTION_REASON_FAVORITE_NEW_STUFFS,
+	SUGGESTION_REASON_FAVORITE_OLD,
+	SUGGESTION_REASON_RANDOM,
+};

@@ -63,7 +63,7 @@
 			queryWindow.backgroundColor = [RakColor clearColor];
 			queryWindow.contentView = coreview;
 				
-			[[(RakAppDelegate *) [NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
+			[RakApp.window beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
 		}
 	}
 }
@@ -79,7 +79,7 @@
 
 - (void) close
 {
-	[[(RakAppDelegate *) NSApp.delegate window] endSheet:queryWindow];
+	[RakApp.window endSheet:queryWindow];
 }
 
 - (void) validateMetadata

@@ -10,7 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define SR_NOTIF_NAME_SEARCH_TRIGGERED @"RakSearchFieldWasTriggered"
 #define SR_NOTIF_NEW_STATE @"newState"
 
 #define SRSEARCHTAB_DEFAULT_HEIGHT 1

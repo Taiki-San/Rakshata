@@ -40,7 +40,7 @@
 
 - (void) configureMenu : (NSMenu *) menu
 {
-	[self configureMenu:menu withOption:[(RakAppDelegate *) NSApp.delegate window].optionPressed];
+	[self configureMenu:menu withOption:RakApp.window.optionPressed];
 }
 
 - (void) configureMenu : (NSMenu *) menu withOption : (BOOL) optionPressed

@@ -10,8 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define NOTIFICATION_MAIL @"RakNotificationEmailUpdate"
-
 @interface RakPrefsGeneralView : RakView
 
 @end

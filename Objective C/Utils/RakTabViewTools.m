@@ -83,7 +83,7 @@
 
 - (void) mouseDown : (NSEvent*) theEvent
 {
-	[(RakAppDelegate*) [NSApp delegate]openLoginPrompt];
+	[RakApp openLoginPrompt];
 }
 
 @end

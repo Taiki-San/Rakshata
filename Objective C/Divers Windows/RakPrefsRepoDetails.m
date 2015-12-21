@@ -447,8 +447,8 @@ enum
 - (void) deleteContent : (BOOL) nukeRepo : (REPO_DATA *) repoData
 {
 	NSString * windowTitle = self.window.title;
-	CTSelec * CT = [[NSApp delegate] CT];
-	Reader * reader = [[NSApp delegate] reader];
+	CTSelec * CT = RakApp.CT;
+	Reader * reader = RakApp.reader;
 	
 	PROJECT_DATA readerProject = [reader activeProject], CTProject = [CT activeProject];
 	uint64_t ID = getRepoID(repoData);

@@ -14,7 +14,7 @@
 
 - (instancetype) init
 {
-	return [self initWithFrame:[(RakAppDelegate*)[NSApp delegate] getContentView].bounds];
+	return [self initWithFrame:[RakApp getContentView].bounds];
 }
 
 - (instancetype) initWithFrame:(NSRect)frameRect
@@ -40,7 +40,7 @@
 
 - (void) attachToView
 {
-	[[(RakAppDelegate*)[NSApp delegate] getContentView] addSubview:self];
+	[[RakApp getContentView] addSubview:self];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

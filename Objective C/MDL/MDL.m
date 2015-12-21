@@ -88,7 +88,7 @@ enum
 	_needUpdateMainViews = YES;
 	
 	if(self.mainThread == TAB_SERIES)
-		[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+		RakApp.serie.forceNextFrameUpdate = YES;
 
 	[self updateDependingViews : YES];
 }
@@ -262,7 +262,7 @@ enum
 {
 	seriesCollapsedBySetting = isCollapsed;
 	
-	[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+	RakApp.serie.forceNextFrameUpdate = YES;
 	
 	_needUpdateMainViews = YES;
 	[self updateDependingViews:YES];
@@ -286,7 +286,7 @@ enum
 	
 	//Our height is synced to the height of the coreview of the serie tab if focus is on series
 	if(self.mainThread == TAB_SERIES)
-		maximumSize.size.height = [[[NSApp delegate] serie] getHeightOfMainView];
+		maximumSize.size.height = [RakApp.serie getHeightOfMainView];
 	
 	if(coreView != nil && !self.forcedToShowUp)
 	{
@@ -341,7 +341,7 @@ enum
 	if(!_needUpdateMainViews)
 		return;
 	
-	RakAppDelegate * delegate = (RakAppDelegate *) [NSApp delegate];
+	RakAppDelegate * delegate = RakApp;
 	
 	if(animated)
 	{
@@ -360,10 +360,10 @@ enum
 - (void) fastAnimatedRefreshLevel : (RakView*) superview
 {
 	if(self.mainThread == TAB_SERIES)
-		[[NSApp delegate] serie].forceNextFrameUpdate = YES;
+		RakApp.serie.forceNextFrameUpdate = YES;
 	
 	else if(self.mainThread == TAB_CT)
-		[[NSApp delegate] CT].forceNextFrameUpdate = YES;
+		RakApp.CT.forceNextFrameUpdate = YES;
 	
 	[super fastAnimatedRefreshLevel:superview];
 }
@@ -454,8 +454,8 @@ enum
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
-	[[(RakAppDelegate*) [NSApp delegate] CT]		updateContextNotification : data : isTome : INVALID_VALUE];
-	[[(RakAppDelegate*) [NSApp delegate] reader]	updateContextNotification : data : isTome : element];
+	[[RakApp CT]		updateContextNotification : data : isTome : INVALID_VALUE];
+	[[RakApp reader]	updateContextNotification : data : isTome : element];
 }
 
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover

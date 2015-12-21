@@ -206,7 +206,7 @@
 {
 	NSString*   const   character   =   [theEvent charactersIgnoringModifiers];
 	unichar     const   code        =   [character length] > 0 ? [character characterAtIndex:0] : '\0';
-	BOOL isModPressed = ((RakAppDelegate*)[NSApp delegate]).window.shiftPressed;
+	BOOL isModPressed = RakApp.window.shiftPressed;
 	
 	switch (code)
 	{
@@ -263,7 +263,7 @@
 			{
 				case 38:		//j, share the default behavior of a
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					if(RakApp.window.commandPressed)
 					{
 						[bottomBar triggerPageCounterPopover];
 						handledChar = true;
@@ -280,7 +280,7 @@
 				case 2:			//d
 				case 37:		//l
 				{
-					if(isModPressed && ((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					if(isModPressed && RakApp.window.commandPressed)
 					{
 						[self switchDistractionFree];
 					}
@@ -295,7 +295,7 @@
 					
 				case 3:			//f
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					if(RakApp.window.commandPressed)
 						[self.window toggleFullScreen:self];
 
 					handledChar = true;
@@ -362,14 +362,14 @@
 					
 				case '0':
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed)
+					if(RakApp.window.commandPressed)
 						_scrollView.animator.magnification = lastKnownMagnification = 1.0;
 					break;
 				}
 					
 				case '+':
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && _scrollView.magnification < READER_MAGNIFICATION_MAX)
+					if(RakApp.window.commandPressed && _scrollView.magnification < READER_MAGNIFICATION_MAX)
 					{
 						lastKnownMagnification = _scrollView.magnification;
 						lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
@@ -381,7 +381,7 @@
 					
 				case '-':
 				{
-					if(((RakAppDelegate*)[NSApp delegate]).window.commandPressed && round(_scrollView.magnification * 4) > 1)
+					if(RakApp.window.commandPressed && round(_scrollView.magnification * 4) > 1)
 					{
 						lastKnownMagnification = _scrollView.magnification;
 						lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
@@ -393,7 +393,7 @@
 					
 				case '=':	//Fill the avaiable width/height
 				{
-					BOOL altPressed = ((RakAppDelegate*)[NSApp delegate]).window.optionPressed, commandPressed = ((RakAppDelegate*)[NSApp delegate]).window.commandPressed;
+					BOOL altPressed = RakApp.window.optionPressed, commandPressed = RakApp.window.commandPressed;
 					
 					if(altPressed || commandPressed)
 					{
@@ -732,13 +732,13 @@
 		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
 			_needPassword = YES;
 		
-		MUTEX_VAR * lock = [(RakAppDelegate*) [NSApp delegate]sharedLoginMutex : YES];
+		MUTEX_VAR * lock = [RakApp sharedLoginMutex : YES];
 		
 		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(YES) waitUntilDone:NO];
 		
 		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
 		{
-			pthread_cond_wait([(RakAppDelegate*) [NSApp delegate] sharedLoginLock], lock);
+			pthread_cond_wait([RakApp sharedLoginLock], lock);
 		}
 		
 		pthread_mutex_unlock(lock);
@@ -1041,7 +1041,7 @@
 
 - (void) updateCTTab : (BOOL) shouldOverwriteActiveProject
 {
-	CTSelec * tabCT = [(RakAppDelegate*) [NSApp delegate] CT];
+	CTSelec * tabCT = [RakApp CT];
 	
 	if(!shouldOverwriteActiveProject && tabCT.activeProject.cacheDBID != _project.cacheDBID)
 		return;
@@ -1182,10 +1182,10 @@
 	[self failure : 0];
 	mainScroller.patchedSelectedIndex = 1;
 
-	if([[[NSApp delegate] CT] activeProject].cacheDBID != oldCache)
-		[[[NSApp delegate] CT] ownFocus];
+	if([RakApp.CT activeProject].cacheDBID != oldCache)
+		[RakApp.CT ownFocus];
 	else
-		[[[NSApp delegate] serie] ownFocus];
+		[RakApp.serie ownFocus];
 }
 
 - (void) addPageToView : (RakImage *) page : (RakPageScrollView *) scrollView
@@ -1871,7 +1871,7 @@
 	
 	//We're going to evaluate in which case we are (>= 2 elements, 1, none)
 	uint * selection = calloc(nbElemToGrab, sizeof(uint));
-	MDL * tabMDL = [(RakAppDelegate*) [NSApp delegate]MDL];
+	MDL * tabMDL = [RakApp MDL];
 	
 	if(selection == NULL || tabMDL == nil)
 	{
@@ -1917,7 +1917,7 @@
 	else
 		while(posInList < _project.nbChapter && _project.chaptersFull[posInList++] != _currentElem);
 	
-	MDL * tabMDL = [[NSApp delegate] MDL];
+	MDL * tabMDL = RakApp.MDL;
 	for(; posInList < nbElem; posInList++)
 	{
 		//Shouldn't display if a following chapter is pending download

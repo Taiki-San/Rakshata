@@ -14,8 +14,6 @@
 #import "RakPageScrollView.h"
 #import "RakPageController.h"
 
-#define NOTIFICATION_RESUME_READING		@"JustOneMoreTurn..."
-
 #define READER_MAGNIFICATION_MIN 0.25
 #define READER_MAGNIFICATION_MAX 3.0
 

@@ -246,7 +246,9 @@ void MDLCommunicateOC(uint selfCode, void * UIInstance)
 	
 	if(UIInstance != nil)
 	{
+#ifndef IOS_DIRTY_HACK
 		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
+#endif
 	}
 }
 
@@ -254,7 +256,9 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 {
 	if(rowViewResponsible != NULL)
 	{
+#ifndef IOS_DIRTY_HACK
 		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
+#endif
 	}
 }
 
@@ -278,14 +282,14 @@ void watcherForLoginRequest(MDL_MWORKER_ARG * arg)
 	uint **				IDToPosition =	arg->IDToPosition;
 	
 	free(arg);
-	
-	MUTEX_VAR * lock = [(RakAppDelegate*) [NSApp delegate]sharedLoginMutex : YES];
+
+	MUTEX_VAR * lock = [RakApp sharedLoginMutex : YES];
 	
 	[_mainTab performSelectorOnMainThread:@selector(setWaitingLogin:) withObject:@(true) waitUntilDone:NO];
 	
 	while(![mainTab areCredentialsComplete])
 	{
-		pthread_cond_wait([(RakAppDelegate*) [NSApp delegate]sharedLoginLock], lock);
+		pthread_cond_wait([RakApp sharedLoginLock], lock);
 	}
 	
 	pthread_mutex_unlock(lock);

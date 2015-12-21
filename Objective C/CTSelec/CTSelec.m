@@ -322,8 +322,8 @@
 {
 	if(element == INVALID_VALUE && project.isInitialized)
 	{
-		Reader *readerTab = [(RakAppDelegate*) [NSApp delegate] reader];
-		MDL * MDLTab = [(RakAppDelegate*) [NSApp delegate] MDL];
+		Reader *readerTab = [RakApp reader];
+		MDL * MDLTab = [RakApp MDL];
 		
 		if(readerTab != nil && self.mainThread & TAB_READER)
 		{

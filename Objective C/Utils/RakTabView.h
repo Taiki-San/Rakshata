@@ -12,11 +12,6 @@
 
 #import "RakTabViewTools.h"
 
-#define STATE_EMPTY @"Luna is bored"
-
-#define NOTIFICATION_UPDATE_TAB_FOCUS	@"RakTabUpdateFocusNotification"
-#define NOTIFICATION_UPDATE_TAB_CONTENT	@"RakTabUpdateContentNotification"
-
 #define ANIMATION_DURATION_SHORT 0.1f
 #define ANIMATION_DURATION_LONG 0.2f
 

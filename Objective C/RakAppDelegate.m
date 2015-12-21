@@ -40,10 +40,10 @@
 	self.window.defaultDispatcher = contentView;
 	[self.window makeFirstResponder:contentView];
 	
-	tabSerie = [_tabSerie init:contentView : NSApp.savedContext[1]];
-	tabCT = [_tabCT init:contentView : NSApp.savedContext[2]];
-	tabMDL = [_tabMDL init:contentView : NSApp.savedContext[3]];
-	tabReader = [_tabReader init:contentView : NSApp.savedContext[4]];
+	tabSerie = [_tabSerie init:contentView : RakRealApp.savedContext[1]];
+	tabCT = [_tabCT init:contentView : RakRealApp.savedContext[2]];
+	tabMDL = [_tabMDL init:contentView : RakRealApp.savedContext[3]];
+	tabReader = [_tabReader init:contentView : RakRealApp.savedContext[4]];
 	
 	//Update everything's size now that everything if up to date
 	tabMDL.needUpdateMainViews = YES;
@@ -54,7 +54,7 @@
 	deleteCrashFile();
 
 	_initialized = YES;
-	NSApp.savedContext = nil;
+	RakRealApp.savedContext = nil;
 }
 
 - (RakContentView*) getContentView
@@ -296,7 +296,7 @@
 
 - (IBAction)close : (id)sender
 {
-	[[NSApp keyWindow] close];
+	[[RakRealApp keyWindow] close];
 }
 
 #pragma mark Debug

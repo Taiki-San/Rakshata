@@ -163,7 +163,7 @@ enum
 	}
 	else
 	{
-		[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
+		[RakApp.window makeKeyAndOrderFront:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_FLUSH object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_SOURCE object:getRepoName(_project.repo) userInfo:@{SR_NOTIF_CACHEID : @(getRepoID(_project.repo)), SR_NOTIF_OPTYPE : @(YES)}];
 	}
@@ -178,7 +178,7 @@ enum
 {
 	[RakTabView broadcastUpdateContext:nil :project :NO :INVALID_VALUE];
 	[RakTabView broadcastUpdateFocus:TAB_CT];
-	[[(RakAppDelegate *) [NSApp delegate] window] makeKeyAndOrderFront:nil];
+	[RakApp.window makeKeyAndOrderFront:nil];
 }
 
 - (void) remove

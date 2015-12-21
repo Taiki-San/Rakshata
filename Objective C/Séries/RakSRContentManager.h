@@ -10,11 +10,6 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#define NOTIFICATION_SEARCH_UPDATED	@"RakNotificationSearchUpdated"
-#define NOTIFICATION_INSTALLED_ONLY_STAB @"RakNotificationInstalledOnlyInSerieMode"
-#define NOTIFICATION_FREE_ONLY	@"RakNotificationFreeOnlyInSerieMode"
-#define NOTIFICATION_FAVS_ONLY	@"RakNotificationFavsOnlyInSerieMode"
-
 @interface RakSRStupidDataStructure : NSObject
 
 @property uint index;

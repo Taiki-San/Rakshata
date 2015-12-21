@@ -643,7 +643,7 @@
 
 - (MDL*) getMDL : (BOOL) requireAvailable
 {
-	MDL * sharedTabMDL = [self class] == [MDL class] ? (MDL*) self : [(RakAppDelegate*) [NSApp delegate] MDL];
+	MDL * sharedTabMDL = [self class] == [MDL class] ? (MDL*) self : [RakApp MDL];
 	
 	if(sharedTabMDL != nil && (!requireAvailable || [sharedTabMDL isDisplayed]))
 		return sharedTabMDL;

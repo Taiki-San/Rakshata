@@ -22,7 +22,7 @@
 	//We check if the user asked not to be annoyed again
 	BOOL alreadyAsked, answer = NO;
 	alreadyAsked = [RakPrefsRemindPopover getValueReminded : PREFS_REMIND_FAVS : &answer];
-	if(!alreadyAsked || !answer || [(RakAppDelegate*) [NSApp delegate] window].shiftPressed)
+	if(!alreadyAsked || !answer || [RakApp window].shiftPressed)
 	{
 		_anchor = anchor;
 		

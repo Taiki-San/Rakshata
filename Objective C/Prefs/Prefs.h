@@ -14,6 +14,8 @@
 #include "RakPrefsDeepData.h"
 #import "RakContextRestoration.h"
 
+#define STATE_EMPTY @"Luna is bored"
+
 enum DIRECT_QUERY_REQUEST
 {
 	QUERY_SERIE = 0,	//Unused

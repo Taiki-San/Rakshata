@@ -10,17 +10,58 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define IOS_DIRTY_HACK
+
 #define RakView		UIView
 #define RakImage	UIImage
 #define RakColor	UIColor
 
-#define NSSize		CGSize
-#define NSPoint		CGPoint
 #define NSRect		CGRect
+#define NSZeroRect	CGRectZero
+#define NSMakeRect	CGRectMake
+
+#define NSSize		CGSize
+#define NSZeroSize	CGSizeZero
+#define NSMakeSize	CGSizeMake
+
+#define NSPoint		CGPoint
+#define NSZeroPoint	CGPointZero
+#define NSPointSize	CGPointMake
 
 #define NSOffState		0
 #define NSOnState		1
 #define NSMixedState	2
 
-#import "RakOutlineListItem.h"
+#define RakRealApp	[UIApplication sharedApplication]
+#define RakApp		[RakRealApp delegate]
+
 #define RakOutlineList		NSObject
+#define MDL					NSObject
+#define RakMDLList			NSObject
+#define RakTabForegroundView NSObject
+#define RakMDLListView		NSObject
+
+#import "RakOutlineListItem.h"
+#import "RakMDLController.h"
+
+
+@interface PDFDocument : NSObject
+{
+	CGPDFDocumentRef internalDocument;
+}
+
+- (instancetype) initWithData : (NSData *) data;
+
+- (NSUInteger) pageCount;
+
+@end
+
+@interface PDFPage : NSObject
+
+@end
+
+@interface NSObject (Comparaison)
+
+- (BOOL)isNotEqualTo:(id)object;
+
+@end

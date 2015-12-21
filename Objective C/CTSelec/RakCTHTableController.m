@@ -244,7 +244,7 @@ enum
 			if(ID != UINT_MAX)
 			{
 				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TYPE object:getStringForWchar(getCatNameForCode(category)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
-				[[[NSApp delegate] serie] ownFocus];
+				[RakApp.serie ownFocus];
 			}
 			break;
 		}
@@ -256,7 +256,7 @@ enum
 			if(ID != UINT_MAX)
 			{
 				[[NSNotificationCenter defaultCenter] postNotificationName:SR_NOTIFICATION_TAG object:getStringForWchar(getTagNameForCode(tag)) userInfo:@{SR_NOTIF_CACHEID : @(ID), SR_NOTIF_OPTYPE : @(YES)}];
-				[[[NSApp delegate] serie] ownFocus];
+				[RakApp.serie ownFocus];
 			}
 			
 			break;
