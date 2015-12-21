@@ -66,7 +66,7 @@
 		NSWindow * queryWindow = [[NSWindow alloc] initWithContentRect:(NSRect) {{200, 200}, mainView.bounds.size} styleMask:0 backing:NSBackingStoreBuffered defer:YES];
 		if(queryWindow != nil)
 		{
-			queryWindow.backgroundColor = [NSColor clearColor];
+			queryWindow.backgroundColor = [RakColor clearColor];
 			queryWindow.contentView = mainView;
 			
 			[window beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];

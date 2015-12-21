@@ -51,7 +51,7 @@
 - (void) deleteElement;
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data;
-- (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView;
+- (void) addPageToView : (RakImage *) page : (RakPageScrollView *) scrollView;
 - (void) buildCache : (NSNumber *) session;
 - (void) updatePCState : (uint) page : (uint) currentCacheSession : (NSView *) view;
 

@@ -40,8 +40,8 @@
 	RakPageScrollView * _scrollView;
 	
 	RakPageController * mainScroller;
-	NSImage * loadingPlaceholder;
-	NSImage * loadingFailedPlaceholder;
+	RakImage * loadingPlaceholder;
+	RakImage * loadingFailedPlaceholder;
 	
 	MUTEX_VAR cacheMutex;
 	uint cacheSession, workingCacheSession;

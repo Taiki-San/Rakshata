@@ -67,6 +67,6 @@
 
 - (void) displaySuggestionsForProject : (PROJECT_DATA) project withOldDFState : (BOOL) oldDFState;
 
-- (NSColor*) getColorFront;
+- (RakColor*) getColorFront;
 
 @end

@@ -12,10 +12,10 @@
 
 @interface RakScroller : NSScroller
 {
-	NSColor *color;
+	RakColor *color;
 	
-	NSColor *passive;
-	NSColor *active;
+	RakColor *passive;
+	RakColor *active;
 	
 	CGContextRef contextBorder;
 
@@ -26,7 +26,7 @@
 }
 
 @property BOOL hideScroller;
-@property NSColor * backgroundColorToReplicate;
+@property RakColor * backgroundColorToReplicate;
 
 + (void) updateScrollers : (NSScrollView *) view;
 + (CGFloat) width;

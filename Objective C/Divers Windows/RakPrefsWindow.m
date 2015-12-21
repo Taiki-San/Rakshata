@@ -67,7 +67,7 @@
 	return frame;
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }

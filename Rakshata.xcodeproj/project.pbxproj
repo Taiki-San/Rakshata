@@ -60,6 +60,40 @@
 		B62266A71A55D5B3000A5138 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B62266A61A55D5B3000A5138 /* Utils.m */; };
 		B623390A18DBB7F800FC188A /* RakContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B623390918DBB7F800FC188A /* RakContentView.m */; };
 		B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6251F731A98CC92001C4F06 /* RakAboutWindow.m */; };
+		B62575EF1C27711200811C33 /* RakCTTools.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427B197F2D5B000F268E /* RakCTTools.h */; };
+		B62575F01C27711200811C33 /* RakCTTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E9427C197F2D5B000F268E /* RakCTTools.m */; };
+		B62575F11C27711200811C33 /* RakImportBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */; };
+		B62575F21C27711200811C33 /* RakImportDirController.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E35F51B6E3DE50022C466 /* RakImportDirController.m */; };
+		B62575F31C27711200811C33 /* RakImportDotRakController.m in Sources */ = {isa = PBXBuildFile; fileRef = B67464871B64179600F4A929 /* RakImportDotRakController.m */; };
+		B62575F41C27711200811C33 /* RakImportIO.h in Sources */ = {isa = PBXBuildFile; fileRef = B67464891B64182300F4A929 /* RakImportIO.h */; };
+		B62575F51C27711200811C33 /* RakImportIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E35F31B6DA5030022C466 /* RakImportIO.m */; };
+		B62575F61C27711200811C33 /* RakImportIOController.h in Sources */ = {isa = PBXBuildFile; fileRef = B63805EA1B6C4A060029418C /* RakImportIOController.h */; };
+		B62575F71C27711200811C33 /* RakImportIOTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B63805E81B6BD9F90029418C /* RakImportIOTools.m */; };
+		B62575F81C27711200811C33 /* RakImportRarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC081B682B90009FCE64 /* RakImportRarController.m */; };
+		B62575F91C27711200811C33 /* RakImportZipController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AEB9771B69188B00F233B3 /* RakImportZipController.m */; };
+		B62575FA1C27711200811C33 /* RakExportController.h in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7B1B420D34002CBB45 /* RakExportController.h */; };
+		B62575FB1C27711200811C33 /* RakExportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7C1B420D34002CBB45 /* RakExportController.m */; };
+		B62575FC1C27711200811C33 /* RakImportController.h in Sources */ = {isa = PBXBuildFile; fileRef = B6F131321B372E4100042F8C /* RakImportController.h */; };
+		B62575FD1C27711200811C33 /* RakImportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F131331B372E4100042F8C /* RakImportController.m */; };
+		B62575FE1C27711200811C33 /* RakImportItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FBE6CE1B385D3D005D2CC6 /* RakImportItem.m */; };
+		B62575FF1C27711200811C33 /* RakPrefsDeepData.h in Sources */ = {isa = PBXBuildFile; fileRef = B668FBEC188344AE00549A3C /* RakPrefsDeepData.h */; };
+		B62576001C27711200811C33 /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
+		B62576011C27711200811C33 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
+		B62576021C27711200811C33 /* RakPrefsTabDeepData.h in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0263188B4F57001F8363 /* RakPrefsTabDeepData.h */; };
+		B62576031C27711200811C33 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
+		B62576041C27711200811C33 /* RakPrefsTabSize.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B3830D188740D7005B5F01 /* RakPrefsTabSize.m */; };
+		B62576051C27711200811C33 /* prefsMagic.h in Sources */ = {isa = PBXBuildFile; fileRef = B6744946187611BF00F96DB4 /* prefsMagic.h */; };
+		B62576061C27711200811C33 /* prefsControl.h in Sources */ = {isa = PBXBuildFile; fileRef = B67449441876116200F96DB4 /* prefsControl.h */; };
+		B62576071C27711200811C33 /* Prefs.h in Sources */ = {isa = PBXBuildFile; fileRef = B62182451873527A008AC5DD /* Prefs.h */; };
+		B62576081C27711200811C33 /* Prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B62182461873527A008AC5DD /* Prefs.m */; };
+		B62576091C27711200811C33 /* RakSuggestionEngine.h in Sources */ = {isa = PBXBuildFile; fileRef = B62A88501C156BB40082BA3B /* RakSuggestionEngine.h */; };
+		B625760A1C27711200811C33 /* RakSuggestionEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */; };
+		B625760B1C27711200811C33 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B62266A61A55D5B3000A5138 /* Utils.m */; };
+		B625760D1C27723400811C33 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760C1C27723400811C33 /* UIKit.framework */; };
+		B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760E1C27723C00811C33 /* QuartzCore.framework */; };
+		B62576121C27725D00811C33 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62576111C27725D00811C33 /* Foundation.framework */; };
+		B62576151C2773CF00811C33 /* RakWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B62576141C2773CF00811C33 /* RakWrapper.m */; };
+		B62576181C27745500811C33 /* RakWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B62576171C27745500811C33 /* RakWrapper.m */; };
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
@@ -152,6 +186,67 @@
 		B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */; };
 		B66ED1941949C77A002A333F /* RakDragView.m in Sources */ = {isa = PBXBuildFile; fileRef = B66ED1931949C77A002A333F /* RakDragView.m */; };
 		B66ED1981949EC20002A333F /* theme 1 in Resources */ = {isa = PBXBuildFile; fileRef = B66ED1971949EC20002A333F /* theme 1 */; };
+		B67110DC1C276C6700E0BFD9 /* RakBridgeiOS.m in Sources */ = {isa = PBXBuildFile; fileRef = B67110DB1C276C6700E0BFD9 /* RakBridgeiOS.m */; };
+		B67110DE1C276C6F00E0BFD9 /* RakBridgeOSX.m in Sources */ = {isa = PBXBuildFile; fileRef = B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */; };
+		B67110E41C276CE100E0BFD9 /* unrar.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC0C1B682D33009FCE64 /* unrar.c */; };
+		B67110E61C276CE100E0BFD9 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECDB18A3001400E3B55B /* ioapi.c */; };
+		B67110E81C276CE100E0BFD9 /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECDF18A3001400E3B55B /* miniunz.c */; };
+		B67110E91C276CE100E0BFD9 /* minizip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E07A1D1B35917B0016C9B0 /* minizip.c */; };
+		B67110EB1C276CE100E0BFD9 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECE318A3001400E3B55B /* unzip.c */; };
+		B67110ED1C276CE100E0BFD9 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E07A1A1B3575F60016C9B0 /* zip.c */; };
+		B67110F21C276CE100E0BFD9 /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB461B6855D300DDBBBD /* check.c */; };
+		B67110F31C276CE100E0BFD9 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417A1B685692008A7521 /* crc32.c */; };
+		B67110F51C276CE100E0BFD9 /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417C1B685692008A7521 /* pbkdf2.c */; };
+		B67110F61C276CE100E0BFD9 /* Rijndael.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417D1B685692008A7521 /* Rijndael.c */; };
+		B67110F81C276CE100E0BFD9 /* Serpent.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417F1B685692008A7521 /* Serpent.c */; };
+		B67110F91C276CE100E0BFD9 /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA41801B685692008A7521 /* sha256.c */; };
+		B67110FB1C276CE100E0BFD9 /* Twofish.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA41821B685692008A7521 /* Twofish.c */; };
+		B67110FC1C276CE100E0BFD9 /* whirlpool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA41831B685692008A7521 /* whirlpool.c */; };
+		B67110FD1C276CE100E0BFD9 /* download.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB471B6855D300DDBBBD /* download.c */; };
+		B67110FE1C276CE100E0BFD9 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB481B6855D300DDBBBD /* error.c */; };
+		B67110FF1C276CE100E0BFD9 /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB631B68564B00DDBBBD /* keys.c */; };
+		B67111001C276CE100E0BFD9 /* native.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB491B6855D300DDBBBD /* native.c */; };
+		B67111011C276CE100E0BFD9 /* natsort.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB4A1B6855D300DDBBBD /* natsort.c */; };
+		B67111021C276CE100E0BFD9 /* securite.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB641B68564B00DDBBBD /* securite.c */; };
+		B67111031C276CE100E0BFD9 /* settings.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB4B1B6855D300DDBBBD /* settings.c */; };
+		B67111041C276CE100E0BFD9 /* sorting.c in Sources */ = {isa = PBXBuildFile; fileRef = B66392241BD65A00003FD758 /* sorting.c */; };
+		B67111051C276CE100E0BFD9 /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB4C1B6855D300DDBBBD /* thread.c */; };
+		B67111061C276CE100E0BFD9 /* utilitaires.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB4D1B6855D300DDBBBD /* utilitaires.c */; };
+		B67111071C276CE100E0BFD9 /* chapitre.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB561B68560600DDBBBD /* chapitre.c */; };
+		B67111081C276CE100E0BFD9 /* CTCommon.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB571B68560600DDBBBD /* CTCommon.c */; };
+		B671110A1C276CE100E0BFD9 /* DBCacheInit.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB191B6854F900DDBBBD /* DBCacheInit.c */; };
+		B671110B1C276CE100E0BFD9 /* DBCacheInstalled.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1A1B6854F900DDBBBD /* DBCacheInstalled.c */; };
+		B671110C1C276CE100E0BFD9 /* DBCacheIO.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1B1B6854F900DDBBBD /* DBCacheIO.c */; };
+		B671110D1C276CE100E0BFD9 /* DBCacheQuery.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1C1B6854F900DDBBBD /* DBCacheQuery.c */; };
+		B671110E1C276CE100E0BFD9 /* DBCacheRepo.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1D1B6854F900DDBBBD /* DBCacheRepo.c */; };
+		B671110F1C276CE100E0BFD9 /* DBDebug.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1E1B6854F900DDBBBD /* DBDebug.c */; };
+		B67111101C276CE100E0BFD9 /* DBLocal.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB1F1B6854F900DDBBBD /* DBLocal.c */; };
+		B67111121C276CE100E0BFD9 /* DBRecent.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB211B6854F900DDBBBD /* DBRecent.c */; };
+		B67111131C276CE100E0BFD9 /* DBRefresh.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB221B6854F900DDBBBD /* DBRefresh.c */; };
+		B67111141C276CE100E0BFD9 /* DBSearch.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB231B6854F900DDBBBD /* DBSearch.c */; };
+		B67111151C276CE100E0BFD9 /* DBSuggestion.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */; };
+		B67111161C276CE100E0BFD9 /* DBTags.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB241B6854F900DDBBBD /* DBTags.c */; };
+		B67111171C276CE100E0BFD9 /* DBTools.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB251B6854F900DDBBBD /* DBTools.c */; };
+		B67111181C276CE100E0BFD9 /* DotRakSourceParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */; };
+		B67111191C276CE100E0BFD9 /* favoris.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB581B68560600DDBBBD /* favoris.c */; };
+		B671111B1C276CE100E0BFD9 /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
+		B671111C1C276CE100E0BFD9 /* repo.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB591B68560600DDBBBD /* repo.c */; };
+		B671111D1C276CE100E0BFD9 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
+		B671111F1C276CE100E0BFD9 /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6885A281B08E67A00C2D7DD /* tagSyncParser.m */; };
+		B67111201C276CE100E0BFD9 /* tagUpdate.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB611B68562600DDBBBD /* tagUpdate.c */; };
+		B67111211C276CE100E0BFD9 /* tome.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB5A1B68560600DDBBBD /* tome.c */; };
+		B67111221C276CE100E0BFD9 /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = B67845A119631311007372C7 /* encoding.c */; };
+		B671112D1C276CE100E0BFD9 /* interface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA520618A4111000A9B16E /* interface.m */; };
+		B671112E1C276CE100E0BFD9 /* lecteur_check_newElems.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB3F1B68556900DDBBBD /* lecteur_check_newElems.c */; };
+		B671112F1C276CE100E0BFD9 /* lecteur_loading.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB401B68556900DDBBBD /* lecteur_loading.c */; };
+		B67111301C276CE100E0BFD9 /* lecteur_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB411B68556900DDBBBD /* lecteur_tool.c */; };
+		B67111321C276CE100E0BFD9 /* moduleDL2_paid.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA418C1B6856DD008A7521 /* moduleDL2_paid.c */; };
+		B67111331C276CE100E0BFD9 /* moduleDL2_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA418D1B6856DD008A7521 /* moduleDL2_tool.c */; };
+		B67111341C276CE100E0BFD9 /* moduleDL2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA418E1B6856DD008A7521 /* moduleDL2.c */; };
+		B67111351C276CE100E0BFD9 /* moduleDLMainWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AA418F1B6856DD008A7521 /* moduleDLMainWorker.m */; };
+		B67111361C276CE100E0BFD9 /* moduleDLUnzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA41901B6856DD008A7521 /* moduleDLUnzip.c */; };
+		B67111371C276CE100E0BFD9 /* moduleDLWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA41911B6856DD008A7521 /* moduleDLWorker.c */; };
+		B67111381C276CEE00E0BFD9 /* rakshata.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD118A3001400E3B55B /* rakshata.c */; };
 		B67464881B64179600F4A929 /* RakImportDotRakController.m in Sources */ = {isa = PBXBuildFile; fileRef = B67464871B64179600F4A929 /* RakImportDotRakController.m */; };
 		B6748ADF1A936D77003FBC1D /* RakSRDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748ADE1A936D77003FBC1D /* RakSRDetails.m */; };
 		B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6748AE11A936E80003FBC1D /* RakSynopsis.m */; };
@@ -165,6 +260,12 @@
 		B678D034197717A600D7FE6A /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
 		B67920F71C18938B00185E60 /* RakProjectView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67920F61C18938B00185E60 /* RakProjectView.m */; };
 		B67C0F391A9FDD35003A2086 /* RakAboutTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C0F381A9FDD35003A2086 /* RakAboutTools.m */; };
+		B67C68821C270698005AB992 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68811C270698005AB992 /* AppDelegate.m */; };
+		B67C688B1C270699005AB992 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C68891C270699005AB992 /* Main.storyboard */; };
+		B67C688D1C270699005AB992 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B67C688C1C270699005AB992 /* Assets.xcassets */; };
+		B67C68901C270699005AB992 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C688E1C270699005AB992 /* LaunchScreen.storyboard */; };
+		B67C689B1C270699005AB992 /* Rakshata_iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */; };
+		B67C68A61C270699005AB992 /* Rakshata_iOSUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */; };
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
 		B67E65DF1BFF3CD1008C483D /* RakImportMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E65DE1BFF3CD1008C483D /* RakImportMenu.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
@@ -313,6 +414,23 @@
 		B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC0D8219E1EC7C00D94284 /* RakCTProjectSynopsis.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B67C68971C270699005AB992 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6CF07B31868DD58009B16A3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B67C687A1C270698005AB992;
+			remoteInfo = "Rakshata iOS";
+		};
+		B67C68A21C270699005AB992 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6CF07B31868DD58009B16A3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B67C687A1C270698005AB992;
+			remoteInfo = "Rakshata iOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		B6EBD80D1953942C00642EB8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -406,6 +524,13 @@
 		B6245AD019F698A60015F11B /* configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = configuration.h; path = C/configuration.h; sourceTree = "<group>"; };
 		B6251F721A98CC92001C4F06 /* RakAboutWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutWindow.h; path = "Divers Windows/RakAboutWindow.h"; sourceTree = "<group>"; };
 		B6251F731A98CC92001C4F06 /* RakAboutWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutWindow.m; path = "Divers Windows/RakAboutWindow.m"; sourceTree = "<group>"; };
+		B625760C1C27723400811C33 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		B625760E1C27723C00811C33 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		B62576111C27725D00811C33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		B62576131C2773CF00811C33 /* RakOSXWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOSXWrapper.h; path = "OS X/RakOSXWrapper.h"; sourceTree = "<group>"; };
+		B62576141C2773CF00811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = "OS X/RakWrapper.m"; sourceTree = "<group>"; };
+		B62576161C27745500811C33 /* RakiOSWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakiOSWrapper.h; path = iOS/RakiOSWrapper.h; sourceTree = SOURCE_ROOT; };
+		B62576171C27745500811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = iOS/RakWrapper.m; sourceTree = SOURCE_ROOT; };
 		B62935D11A7E65EC00DE20E2 /* RakSRSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchList.h; path = "Séries/RakSRSearchList.h"; sourceTree = "<group>"; };
 		B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchList.m; path = "Séries/RakSRSearchList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTabGroup.h; path = "Séries/RakSRSearchTabGroup.h"; sourceTree = "<group>"; };
@@ -519,6 +644,10 @@
 		B66ED1921949C77A002A333F /* RakDragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragView.h; path = Utils/RakDragView.h; sourceTree = "<group>"; };
 		B66ED1931949C77A002A333F /* RakDragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDragView.m; path = Utils/RakDragView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B66ED1971949EC20002A333F /* theme 1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "theme 1"; sourceTree = "<group>"; };
+		B67110DB1C276C6700E0BFD9 /* RakBridgeiOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBridgeiOS.m; path = iOS/RakBridgeiOS.m; sourceTree = SOURCE_ROOT; };
+		B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBridgeOSX.m; path = "OS X/RakBridgeOSX.m"; sourceTree = "<group>"; };
+		B67110DF1C276C8A00E0BFD9 /* info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = info.plist; path = "OS X/info.plist"; sourceTree = "<group>"; };
+		B67110E11C276C9200E0BFD9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = iOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		B67449441876116200F96DB4 /* prefsControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsControl.h; path = Prefs/prefsControl.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
 		B67464871B64179600F4A929 /* RakImportDotRakController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportDotRakController.m; path = "Import:Export/RakImportDotRakController.m"; sourceTree = "<group>"; };
@@ -549,6 +678,23 @@
 		B67983A618DD192E007F18CD /* RakTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakTabView.h; path = Utils/RakTabView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B67C0F371A9FDD35003A2086 /* RakAboutTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutTools.h; path = "Divers Windows/RakAboutTools.h"; sourceTree = "<group>"; };
 		B67C0F381A9FDD35003A2086 /* RakAboutTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutTools.m; path = "Divers Windows/RakAboutTools.m"; sourceTree = "<group>"; };
+		B67C687B1C270698005AB992 /* Rakshata iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rakshata iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B67C687E1C270698005AB992 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B67C68801C270698005AB992 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B67C68811C270698005AB992 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B67C68831C270698005AB992 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
+		B67C68841C270698005AB992 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		B67C68861C270698005AB992 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		B67C68871C270698005AB992 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		B67C688A1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B67C688C1C270699005AB992 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B67C688F1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Rakshata_iOSTests.m; sourceTree = "<group>"; };
+		B67C689C1C270699005AB992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Rakshata_iOSUITests.m; sourceTree = "<group>"; };
+		B67C68A71C270699005AB992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTSelectionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakCTSelectionList.h; path = CTSelec/RakCTSelectionList.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B67E079318E7714B0007EB44 /* RakCTSelectionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSelectionList.m; path = CTSelec/RakCTSelectionList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -569,7 +715,7 @@
 		B68EAF6E1BD517E800F6AB97 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<group>"; };
 		B68EAF701BD5180C00F6AB97 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = ../../../../System/Library/Frameworks/AppKit.framework; sourceTree = "<group>"; };
 		B68EAF711BD5180C00F6AB97 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
-		B68EAF721BD5180C00F6AB97 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = ../../../../System/Library/Frameworks/Foundation.framework; sourceTree = "<group>"; };
+		B68EAF721BD5180C00F6AB97 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		B68ED56B19DAA63100644A79 /* RakCTHTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHTableController.h; path = CTSelec/RakCTHTableController.h; sourceTree = "<group>"; };
 		B68ED56C19DAA63100644A79 /* RakCTHTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHTableController.m; path = CTSelec/RakCTHTableController.m; sourceTree = "<group>"; };
 		B696DDEC194A7D430018CDF9 /* RakDragResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDragResponder.h; path = Utils/RakDragResponder.h; sourceTree = "<group>"; };
@@ -795,6 +941,30 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B67C68781C270698005AB992 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62576121C27725D00811C33 /* Foundation.framework in Frameworks */,
+				B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */,
+				B625760D1C27723400811C33 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C68931C270699005AB992 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C689E1C270699005AB992 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CF07B81868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -878,6 +1048,34 @@
 				B69D467C1AA7C5C600B471AC /* Preferences */,
 			);
 			name = Subwindows;
+			sourceTree = "<group>";
+		};
+		B62576101C27724900811C33 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				B62576111C27725D00811C33 /* Foundation.framework */,
+				B625760E1C27723C00811C33 /* QuartzCore.framework */,
+				B625760C1C27723400811C33 /* UIKit.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		B62576191C27746400811C33 /* garbage */ = {
+			isa = PBXGroup;
+			children = (
+				B67C68801C270698005AB992 /* AppDelegate.h */,
+				B67C68811C270698005AB992 /* AppDelegate.m */,
+				B67C68861C270698005AB992 /* DetailViewController.h */,
+				B67C68871C270698005AB992 /* DetailViewController.m */,
+				B67C688E1C270699005AB992 /* LaunchScreen.storyboard */,
+				B67C68891C270699005AB992 /* Main.storyboard */,
+				B67C68831C270698005AB992 /* MasterViewController.h */,
+				B67C68841C270698005AB992 /* MasterViewController.m */,
+				B67110DB1C276C6700E0BFD9 /* RakBridgeiOS.m */,
+				B67C68991C270699005AB992 /* Rakshata iOSTests */,
+				B67C68A41C270699005AB992 /* Rakshata iOSUITests */,
+			);
+			name = garbage;
 			sourceTree = "<group>";
 		};
 		B62808B119EB00FF0067EE82 /* CT List */ = {
@@ -1168,6 +1366,58 @@
 				B67845A119631311007372C7 /* encoding.c */,
 			);
 			name = Externals;
+			sourceTree = "<group>";
+		};
+		B67C687C1C270698005AB992 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				B67C688C1C270699005AB992 /* Assets.xcassets */,
+				B62576191C27746400811C33 /* garbage */,
+				B67110E11C276C9200E0BFD9 /* Info.plist */,
+				B62576161C27745500811C33 /* RakiOSWrapper.h */,
+				B62576171C27745500811C33 /* RakWrapper.m */,
+				B67C687D1C270698005AB992 /* Supporting Files */,
+			);
+			name = iOS;
+			path = "Rakshata iOS";
+			sourceTree = "<group>";
+		};
+		B67C687D1C270698005AB992 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B67C687E1C270698005AB992 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B67C68991C270699005AB992 /* Rakshata iOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */,
+				B67C689C1C270699005AB992 /* Info.plist */,
+			);
+			path = "Rakshata iOSTests";
+			sourceTree = SOURCE_ROOT;
+		};
+		B67C68A41C270699005AB992 /* Rakshata iOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */,
+				B67C68A71C270699005AB992 /* Info.plist */,
+			);
+			path = "Rakshata iOSUITests";
+			sourceTree = SOURCE_ROOT;
+		};
+		B67C68B11C270921005AB992 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				B67110DF1C276C8A00E0BFD9 /* info.plist */,
+				B66ED18F1949B6D2002A333F /* Interface Builder */,
+				B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */,
+				B62576131C2773CF00811C33 /* RakOSXWrapper.h */,
+				B62576141C2773CF00811C33 /* RakWrapper.m */,
+			);
+			name = "OS X";
 			sourceTree = "<group>";
 		};
 		B6885A2A1B0925A300C2D7DD /* Tag */ = {
@@ -1482,13 +1732,13 @@
 				B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */,
 				B667B1131BF9E96E00BB1971 /* RakEditDetails.m */,
 				B642480919D57DF000679D78 /* RakGradientView.h */,
-				B67920F51C18938B00185E60 /* RakProjectView.h */,
-				B67920F61C18938B00185E60 /* RakProjectView.m */,
 				B642480A19D57DF000679D78 /* RakGradientView.m */,
 				B6A0EDE51B124249009DFC03 /* RakImageLoading.m */,
 				B60DE2831A0D72C8003EA058 /* RakList */,
 				B68B5229191AE38D0057F35A /* RakProgressBar.h */,
 				B68B522A191AE38D0057F35A /* RakProgressBar.m */,
+				B67920F51C18938B00185E60 /* RakProjectView.h */,
+				B67920F61C18938B00185E60 /* RakProjectView.m */,
 				B62935DC1A803A9400DE20E2 /* RakText */,
 				B62A88531C156BBA0082BA3B /* Suggestion Engine */,
 				B67E079118E765C10007EB44 /* utils.h */,
@@ -1502,8 +1752,9 @@
 			isa = PBXGroup;
 			children = (
 				B66B4627189A7129000354D1 /* C Core */,
+				B67C687C1C270698005AB992 /* iOS */,
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
-				B66ED18F1949B6D2002A333F /* Interface Builder */,
+				B67C68B11C270921005AB992 /* OS X */,
 				B6CF07C41868DD58009B16A3 /* Objective-C */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6CF07BC1868DD58009B16A3 /* Products */,
@@ -1519,6 +1770,9 @@
 			children = (
 				B6CF07BB1868DD58009B16A3 /* Rakshata.app */,
 				B6CF07DC1868DD58009B16A3 /* RakshataTests.xctest */,
+				B67C687B1C270698005AB992 /* Rakshata iOS.app */,
+				B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */,
+				B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1528,6 +1782,7 @@
 			children = (
 				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
+				B62576101C27724900811C33 /* iOS */,
 				B6FBD8B31BD3E5EC00A0A7A5 /* libarchive.a */,
 				B6FBD8B41BD3E5EC00A0A7A5 /* libcrypto.a */,
 				B6FBD8B51BD3E5EC00A0A7A5 /* libcurl.a */,
@@ -1535,13 +1790,13 @@
 				B6FBD8B71BD3E5EC00A0A7A5 /* libssl.a */,
 				B6FBD8B81BD3E5EC00A0A7A5 /* libtls.a */,
 				B6FBD8B91BD3E5EC00A0A7A5 /* libz.a */,
-				B6CF07C01868DD58009B16A3 /* Other Frameworks */,
+				B6CF07C01868DD58009B16A3 /* OS X */,
 				B667B1151BFA857D00BB1971 /* Sparkle.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B6CF07C01868DD58009B16A3 /* Other Frameworks */ = {
+		B6CF07C01868DD58009B16A3 /* OS X */ = {
 			isa = PBXGroup;
 			children = (
 				B68EAF701BD5180C00F6AB97 /* AppKit.framework */,
@@ -1551,7 +1806,7 @@
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
 				B68EAF6E1BD517E800F6AB97 /* SystemConfiguration.framework */,
 			);
-			name = "Other Frameworks";
+			name = "OS X";
 			sourceTree = "<group>";
 		};
 		B6CF07C41868DD58009B16A3 /* Objective-C */ = {
@@ -1832,6 +2087,60 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B67C687A1C270698005AB992 /* Rakshata iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B67C68AE1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOS" */;
+			buildPhases = (
+				B67C68771C270698005AB992 /* Sources */,
+				B67C68781C270698005AB992 /* Frameworks */,
+				B67C68791C270698005AB992 /* Resources */,
+				B67110E31C276CA900E0BFD9 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Rakshata iOS";
+			productName = "Rakshata iOS";
+			productReference = B67C687B1C270698005AB992 /* Rakshata iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B67C68951C270699005AB992 /* Rakshata iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B67C68AF1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOSTests" */;
+			buildPhases = (
+				B67C68921C270699005AB992 /* Sources */,
+				B67C68931C270699005AB992 /* Frameworks */,
+				B67C68941C270699005AB992 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B67C68981C270699005AB992 /* PBXTargetDependency */,
+			);
+			name = "Rakshata iOSTests";
+			productName = "Rakshata iOSTests";
+			productReference = B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B67C68A01C270699005AB992 /* Rakshata iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B67C68B01C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOSUITests" */;
+			buildPhases = (
+				B67C689D1C270699005AB992 /* Sources */,
+				B67C689E1C270699005AB992 /* Frameworks */,
+				B67C689F1C270699005AB992 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B67C68A31C270699005AB992 /* PBXTargetDependency */,
+			);
+			name = "Rakshata iOSUITests";
+			productName = "Rakshata iOSUITests";
+			productReference = B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		B6CF07BA1868DD58009B16A3 /* Rakshata */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B6CF07EC1868DD58009B16A3 /* Build configuration list for PBXNativeTarget "Rakshata" */;
@@ -1861,6 +2170,23 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
+					B67C687A1C270698005AB992 = {
+						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = GNHH4Q9D6U;
+						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+						};
+					};
+					B67C68951C270699005AB992 = {
+						CreatedOnToolsVersion = 7.2;
+						TestTargetID = B67C687A1C270698005AB992;
+					};
+					B67C68A01C270699005AB992 = {
+						CreatedOnToolsVersion = 7.2;
+						TestTargetID = B67C687A1C270698005AB992;
+					};
 					B6CF07BA1868DD58009B16A3 = {
 						DevelopmentTeam = GNHH4Q9D6U;
 						SystemCapabilities = {
@@ -1886,11 +2212,38 @@
 			projectRoot = "";
 			targets = (
 				B6CF07BA1868DD58009B16A3 /* Rakshata */,
+				B67C687A1C270698005AB992 /* Rakshata iOS */,
+				B67C68951C270699005AB992 /* Rakshata iOSTests */,
+				B67C68A01C270699005AB992 /* Rakshata iOSUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B67C68791C270698005AB992 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B67C68901C270699005AB992 /* LaunchScreen.storyboard in Resources */,
+				B67C688D1C270699005AB992 /* Assets.xcassets in Resources */,
+				B67C688B1C270699005AB992 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C68941C270699005AB992 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C689F1C270699005AB992 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CF07B91868DD58009B16A3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1993,9 +2346,136 @@
 			shellScript = "buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"";
 			showEnvVarsInLog = 0;
 		};
+		B67110E31C276CA900E0BFD9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B67C68771C270698005AB992 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62575EF1C27711200811C33 /* RakCTTools.h in Sources */,
+				B62575F01C27711200811C33 /* RakCTTools.m in Sources */,
+				B62575F11C27711200811C33 /* RakImportBaseController.m in Sources */,
+				B62575F21C27711200811C33 /* RakImportDirController.m in Sources */,
+				B62575F31C27711200811C33 /* RakImportDotRakController.m in Sources */,
+				B62575F41C27711200811C33 /* RakImportIO.h in Sources */,
+				B62575F51C27711200811C33 /* RakImportIO.m in Sources */,
+				B62575F61C27711200811C33 /* RakImportIOController.h in Sources */,
+				B62575F71C27711200811C33 /* RakImportIOTools.m in Sources */,
+				B62575F81C27711200811C33 /* RakImportRarController.m in Sources */,
+				B62575F91C27711200811C33 /* RakImportZipController.m in Sources */,
+				B62575FA1C27711200811C33 /* RakExportController.h in Sources */,
+				B62575FB1C27711200811C33 /* RakExportController.m in Sources */,
+				B62575FC1C27711200811C33 /* RakImportController.h in Sources */,
+				B62575FD1C27711200811C33 /* RakImportController.m in Sources */,
+				B62575FE1C27711200811C33 /* RakImportItem.m in Sources */,
+				B62575FF1C27711200811C33 /* RakPrefsDeepData.h in Sources */,
+				B62576001C27711200811C33 /* RakPrefsDeepData.m in Sources */,
+				B62576011C27711200811C33 /* RakPrefsMDLDeepData.m in Sources */,
+				B62576021C27711200811C33 /* RakPrefsTabDeepData.h in Sources */,
+				B62576031C27711200811C33 /* RakPrefsTabDeepData.m in Sources */,
+				B62576041C27711200811C33 /* RakPrefsTabSize.m in Sources */,
+				B62576051C27711200811C33 /* prefsMagic.h in Sources */,
+				B62576061C27711200811C33 /* prefsControl.h in Sources */,
+				B62576071C27711200811C33 /* Prefs.h in Sources */,
+				B62576081C27711200811C33 /* Prefs.m in Sources */,
+				B62576091C27711200811C33 /* RakSuggestionEngine.h in Sources */,
+				B625760A1C27711200811C33 /* RakSuggestionEngine.m in Sources */,
+				B625760B1C27711200811C33 /* Utils.m in Sources */,
+				B67111381C276CEE00E0BFD9 /* rakshata.c in Sources */,
+				B67110E41C276CE100E0BFD9 /* unrar.c in Sources */,
+				B67110E61C276CE100E0BFD9 /* ioapi.c in Sources */,
+				B67110E81C276CE100E0BFD9 /* miniunz.c in Sources */,
+				B67110E91C276CE100E0BFD9 /* minizip.c in Sources */,
+				B67110EB1C276CE100E0BFD9 /* unzip.c in Sources */,
+				B67110ED1C276CE100E0BFD9 /* zip.c in Sources */,
+				B67110F21C276CE100E0BFD9 /* check.c in Sources */,
+				B67110F31C276CE100E0BFD9 /* crc32.c in Sources */,
+				B67110F51C276CE100E0BFD9 /* pbkdf2.c in Sources */,
+				B67110F61C276CE100E0BFD9 /* Rijndael.c in Sources */,
+				B67110F81C276CE100E0BFD9 /* Serpent.c in Sources */,
+				B67110F91C276CE100E0BFD9 /* sha256.c in Sources */,
+				B67110FB1C276CE100E0BFD9 /* Twofish.c in Sources */,
+				B67110FC1C276CE100E0BFD9 /* whirlpool.c in Sources */,
+				B67110FD1C276CE100E0BFD9 /* download.c in Sources */,
+				B67110FE1C276CE100E0BFD9 /* error.c in Sources */,
+				B67110FF1C276CE100E0BFD9 /* keys.c in Sources */,
+				B67111001C276CE100E0BFD9 /* native.c in Sources */,
+				B67111011C276CE100E0BFD9 /* natsort.c in Sources */,
+				B67111021C276CE100E0BFD9 /* securite.c in Sources */,
+				B67111031C276CE100E0BFD9 /* settings.c in Sources */,
+				B67111041C276CE100E0BFD9 /* sorting.c in Sources */,
+				B67111051C276CE100E0BFD9 /* thread.c in Sources */,
+				B67111061C276CE100E0BFD9 /* utilitaires.c in Sources */,
+				B67111071C276CE100E0BFD9 /* chapitre.c in Sources */,
+				B67111081C276CE100E0BFD9 /* CTCommon.c in Sources */,
+				B671110A1C276CE100E0BFD9 /* DBCacheInit.c in Sources */,
+				B671110B1C276CE100E0BFD9 /* DBCacheInstalled.c in Sources */,
+				B671110C1C276CE100E0BFD9 /* DBCacheIO.c in Sources */,
+				B671110D1C276CE100E0BFD9 /* DBCacheQuery.c in Sources */,
+				B671110E1C276CE100E0BFD9 /* DBCacheRepo.c in Sources */,
+				B671110F1C276CE100E0BFD9 /* DBDebug.c in Sources */,
+				B67111101C276CE100E0BFD9 /* DBLocal.c in Sources */,
+				B67111121C276CE100E0BFD9 /* DBRecent.c in Sources */,
+				B67111131C276CE100E0BFD9 /* DBRefresh.c in Sources */,
+				B67111141C276CE100E0BFD9 /* DBSearch.c in Sources */,
+				B67111151C276CE100E0BFD9 /* DBSuggestion.c in Sources */,
+				B67111161C276CE100E0BFD9 /* DBTags.c in Sources */,
+				B67111171C276CE100E0BFD9 /* DBTools.c in Sources */,
+				B67111181C276CE100E0BFD9 /* DotRakSourceParser.m in Sources */,
+				B67111191C276CE100E0BFD9 /* favoris.c in Sources */,
+				B671111B1C276CE100E0BFD9 /* ProjectParser.m in Sources */,
+				B671111C1C276CE100E0BFD9 /* repo.c in Sources */,
+				B671111D1C276CE100E0BFD9 /* RepoParser.m in Sources */,
+				B671111F1C276CE100E0BFD9 /* tagSyncParser.m in Sources */,
+				B67111201C276CE100E0BFD9 /* tagUpdate.c in Sources */,
+				B67111211C276CE100E0BFD9 /* tome.c in Sources */,
+				B67111221C276CE100E0BFD9 /* encoding.c in Sources */,
+				B671112D1C276CE100E0BFD9 /* interface.m in Sources */,
+				B671112E1C276CE100E0BFD9 /* lecteur_check_newElems.c in Sources */,
+				B671112F1C276CE100E0BFD9 /* lecteur_loading.c in Sources */,
+				B67111301C276CE100E0BFD9 /* lecteur_tool.c in Sources */,
+				B67111321C276CE100E0BFD9 /* moduleDL2_paid.c in Sources */,
+				B67111331C276CE100E0BFD9 /* moduleDL2_tool.c in Sources */,
+				B67111341C276CE100E0BFD9 /* moduleDL2.c in Sources */,
+				B67111351C276CE100E0BFD9 /* moduleDLMainWorker.m in Sources */,
+				B67111361C276CE100E0BFD9 /* moduleDLUnzip.c in Sources */,
+				B67111371C276CE100E0BFD9 /* moduleDLWorker.c in Sources */,
+				B67C68821C270698005AB992 /* AppDelegate.m in Sources */,
+				B67110DC1C276C6700E0BFD9 /* RakBridgeiOS.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C68921C270699005AB992 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B67C689B1C270699005AB992 /* Rakshata_iOSTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B67C689D1C270699005AB992 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B67C68A61C270699005AB992 /* Rakshata_iOSUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CF07B71868DD58009B16A3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2024,11 +2504,13 @@
 				B6D7EC091B682B90009FCE64 /* RakImportRarController.m in Sources */,
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,
+				B62576151C2773CF00811C33 /* RakWrapper.m in Sources */,
 				B6978A7D1B420D34002CBB45 /* RakExportController.m in Sources */,
 				B606EB4E1B6855D300DDBBBD /* check.c in Sources */,
 				B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */,
 				B678D034197717A600D7FE6A /* ProjectParser.m in Sources */,
 				B6B3830E188740D7005B5F01 /* RakPrefsTabSize.m in Sources */,
+				B67110DE1C276C6F00E0BFD9 /* RakBridgeOSX.m in Sources */,
 				B61EBE7319EC699400EE6837 /* RakCTSelectionListContainer.m in Sources */,
 				B6EBD80519538B6B00642EB8 /* RakPopover.m in Sources */,
 				B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */,
@@ -2174,6 +2656,7 @@
 				B606EB421B68556900DDBBBD /* lecteur_check_newElems.c in Sources */,
 				B67920F71C18938B00185E60 /* RakProjectView.m in Sources */,
 				B6976683190D9B7D00B0A266 /* RakMDLView.m in Sources */,
+				B62576181C27745500811C33 /* RakWrapper.m in Sources */,
 				B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */,
 				B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */,
 				B6EF52D51BCE971400EEEE6A /* RakImportBaseController.m in Sources */,
@@ -2212,6 +2695,19 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B67C68981C270699005AB992 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B67C687A1C270698005AB992 /* Rakshata iOS */;
+			targetProxy = B67C68971C270699005AB992 /* PBXContainerItemProxy */;
+		};
+		B67C68A31C270699005AB992 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B67C687A1C270698005AB992 /* Rakshata iOS */;
+			targetProxy = B67C68A21C270699005AB992 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		B63401371A96A890003DC56E /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
@@ -2223,9 +2719,196 @@
 			path = "../Objective C";
 			sourceTree = "<group>";
 		};
+		B67C68891C270699005AB992 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B67C688A1C270699005AB992 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B67C688E1C270699005AB992 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B67C688F1C270699005AB992 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		B67C68A81C270699005AB992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_FAST_MATH = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Libraries/include";
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		B67C68A91C270699005AB992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_FAST_MATH = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Libraries/include";
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LLVM_LTO = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B67C68AA1C270699005AB992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Rakshata iOSTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rakshata iOS.app/Rakshata iOS";
+			};
+			name = Debug;
+		};
+		B67C68AB1C270699005AB992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Rakshata iOSTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rakshata iOS.app/Rakshata iOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B67C68AC1C270699005AB992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Rakshata iOSUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_TARGET_NAME = "Rakshata iOS";
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		B67C68AD1C270699005AB992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "Rakshata iOSUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_TARGET_NAME = "Rakshata iOS";
+				USES_XCTRUNNER = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		B6CF07EA1868DD58009B16A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2358,7 +3041,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = info.plist;
+				INFOPLIST_FILE = "OS X/info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2445,7 +3129,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = info.plist;
+				INFOPLIST_FILE = "OS X/info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2475,6 +3160,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B67C68AE1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B67C68A81C270699005AB992 /* Debug */,
+				B67C68A91C270699005AB992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B67C68AF1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B67C68AA1C270699005AB992 /* Debug */,
+				B67C68AB1C270699005AB992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B67C68B01C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B67C68AC1C270699005AB992 /* Debug */,
+				B67C68AD1C270699005AB992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B6CF07B61868DD58009B16A3 /* Build configuration list for PBXProject "Rakshata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

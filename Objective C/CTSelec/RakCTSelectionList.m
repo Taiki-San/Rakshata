@@ -883,17 +883,17 @@
 	return output;
 }
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return nil;
 }
 
-- (NSColor *) getTextHighlightColor
+- (RakColor *) getTextHighlightColor
 {
 	return nil;
 }
 
-- (NSColor*) getTextColor:(uint)column :(uint)row
+- (RakColor*) getTextColor:(uint)column :(uint)row
 {
 	row = [self rowFromCoordinates : row : column];
 	
@@ -906,7 +906,7 @@
 	return [Prefs getSystemColor : COLOR_SURVOL];
 }
 
-- (NSColor *) getTextHighlightColor:(uint)column :(uint)row
+- (RakColor *) getTextHighlightColor:(uint)column :(uint)row
 {
 	return [Prefs getSystemColor : COLOR_ACTIVE];
 }

@@ -107,12 +107,12 @@ enum
 	NSRectFill(NSMakeRect(0, 0, _bounds.size.width, 1));
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_PREFS_HEADER_BACKGROUND];
 }
 
-- (NSColor *) borderColor
+- (RakColor *) borderColor
 {
 	return [Prefs getSystemColor:COLOR_PREFS_HEADER_BORDER];
 }

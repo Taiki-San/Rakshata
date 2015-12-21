@@ -56,7 +56,7 @@ enum {
 - (void) ownFocus;
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
-- (NSColor*) getMainColor;
+- (RakColor*) getMainColor;
 - (void) refreshLevelViews : (NSView*) superview : (byte) context;
 - (void) refreshLevelViewsAnimation : (NSView*) superview;
 - (void) fastAnimatedRefreshLevel : (NSView*) superview;

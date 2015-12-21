@@ -42,14 +42,14 @@
 	
 	NSString * _imageName;
 	
-	NSImage *nonClicked;
-	NSImage *clicked;
-	NSImage *unAvailable;
+	RakImage *nonClicked;
+	RakImage *clicked;
+	RakImage *unAvailable;
 	
 	RakCenteredTextFieldCell * textCell;
 }
 
-@property NSColor * customBackgroundColor;
+@property RakColor * customBackgroundColor;
 @property (nonatomic) CGFloat borderWidth;
 @property BOOL forceHighlight;
 @property BOOL hasBorder;
@@ -60,8 +60,8 @@
 - (instancetype) initWithText : (NSString *) text;
 - (void) reloadFontColor;
 - (NSSize) sizeOfTextCell;
-- (NSColor*) getBorderColor;
-- (NSColor*) getBackgroundColor;
-- (NSColor *) getFontColor;
+- (RakColor*) getBorderColor;
+- (RakColor*) getBackgroundColor;
+- (RakColor *) getFontColor;
 
 @end

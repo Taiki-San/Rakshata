@@ -13,8 +13,8 @@
 @interface RakGradientView : NSView
 {
 	//Cached drawing ressources
-	NSColor * _startColor;
-	NSColor * _endColor;
+	RakColor * _startColor;
+	RakColor * _endColor;
 	NSGradient * gradient;
 }
 
@@ -28,7 +28,7 @@
 - (void) updateGradient;
 
 - (NSRect) grandientBounds;
-- (NSColor *) startColor;
-- (NSColor *) endColor : (NSColor *) startColor;
+- (RakColor *) startColor;
+- (RakColor *) endColor : (RakColor *) startColor;
 
 @end

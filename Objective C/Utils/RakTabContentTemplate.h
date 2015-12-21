@@ -41,8 +41,8 @@
 
 - (void) drawFocusRing;
 
-- (NSColor*) getBackgroundColor;
-- (NSColor*) getBorderColor;
+- (RakColor*) getBackgroundColor;
+- (RakColor*) getBorderColor;
 
 - (void) focusViewChanged : (uint) newMainThread;
 - (void) cleanupFocusViewChange;

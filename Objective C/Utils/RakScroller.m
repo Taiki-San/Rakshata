@@ -76,7 +76,7 @@
 	
 	[self setupPath:slotRect : slotRect.size.width : slotRect.size.width / 2.0f];
 	
-	[[NSColor blackColor] set];
+	[[RakColor blackColor] set];
 	
 	CGContextFillPath(contextBorder);
 	
@@ -94,7 +94,7 @@
 	CGContextAddLineToPoint(contextBorder, selfRect.origin.x + selfRect.size.width / 2 - barWidth / 2, selfRect.origin.y + selfRect.size.height - radius);
 }
 
-- (NSColor*) getColorBar
+- (RakColor*) getColorBar
 {
 	return color;
 }
@@ -114,7 +114,7 @@
 
 - (void) drawRect:(NSRect)dirtyRect
 {
-	if(_backgroundColorToReplicate && ![_backgroundColorToReplicate isEqual:[NSColor clearColor]])
+	if(_backgroundColorToReplicate && ![_backgroundColorToReplicate isEqual:[RakColor clearColor]])
 	{
 		[_backgroundColorToReplicate setFill];
 		NSRectFill(dirtyRect);

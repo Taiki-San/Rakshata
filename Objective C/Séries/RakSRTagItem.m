@@ -71,17 +71,17 @@
 	[self setFrameSize:NSMakeSize(NSMaxX(label.frame) + TAG_BORDER_RIGHT_LABEL, TAG_BUTTON_HEIGHT)];
 }
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_TAGITEM_FONT];
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_TAGITEM_BACKGROUND];
 }
 
-- (NSColor *) borderColor
+- (RakColor *) borderColor
 {
 	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT];
 }

@@ -134,12 +134,12 @@ enum
 	return frame;
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_SURVOL];
 }
 
-- (NSColor *) placeholderColor
+- (RakColor *) placeholderColor
 {
 	return [Prefs getSystemColor:COLOR_REPO_TEXT_PLACEHOLDER];
 }

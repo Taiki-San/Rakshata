@@ -111,12 +111,12 @@
 
 #pragma mark - Color
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
-	return [NSColor clearColor];
+	return [RakColor clearColor];
 }
 
-- (NSColor*) getBorderColor
+- (RakColor*) getBorderColor
 {
 	return [Prefs getSystemColor:COLOR_COREVIEW_BORDER];
 }

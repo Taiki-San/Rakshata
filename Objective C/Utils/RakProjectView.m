@@ -62,7 +62,7 @@ enum
 	registerdPref = YES;
 	[Prefs registerForChange:self forType:KVO_THEME];
 	
-	NSImage * image = loadImageGrid(_project);
+	RakImage * image = loadImageGrid(_project);
 	if(image != nil)
 	{
 		thumbnail = [[NSImageView alloc] initWithFrame: (NSRect) {{0,0}, [self thumbSize]}];
@@ -115,7 +115,7 @@ enum
 	if(projectAuthor)
 		projectAuthor.stringValue = getStringForWchar(_project.authorName);
 	
-	NSImage * image = loadImageGrid(_project);
+	RakImage * image = loadImageGrid(_project);
 	if(image != nil)
 		thumbnail.image = image;
 }
@@ -138,7 +138,7 @@ enum
 	}
 }
 
-- (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize
+- (RakText *) getTextElement : (NSString *) string : (RakColor *) color : (byte) fontCode : (CGFloat) fontSize
 {
 	RakText * output = [[RakText alloc] initWithText :string : color];
 	if(output != nil)
@@ -155,17 +155,17 @@ enum
 
 #pragma mark - Color
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
-- (NSColor *) getTagTextColor
+- (RakColor *) getTagTextColor
 {
 	return [Prefs getSystemColor:COLOR_TAGITEM_FONT];
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor : COLOR_GRID_FOCUS_BACKGROUND];
 }
@@ -547,7 +547,7 @@ enum
 
 #pragma mark - Drawing
 
-- (NSColor *) borderColor
+- (RakColor *) borderColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
@@ -556,7 +556,7 @@ enum
 {
 	projectName.textColor = [self getTextColor];
 	
-	NSColor * detailColor = [self getTagTextColor];
+	RakColor * detailColor = [self getTagTextColor];
 	
 	if(projectAuthor != nil)
 		projectAuthor.textColor = detailColor;

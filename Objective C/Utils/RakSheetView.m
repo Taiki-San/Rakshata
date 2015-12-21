@@ -17,7 +17,7 @@
 - (void) drawRect:(NSRect)dirtyRect
 {
 	[_backgroundColor setFill];
-	[[[NSColor whiteColor] colorWithAlphaComponent:0.175] setStroke];
+	[[[RakColor whiteColor] colorWithAlphaComponent:0.175] setStroke];
 
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 

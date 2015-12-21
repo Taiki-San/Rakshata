@@ -20,7 +20,7 @@
 @interface RakCTHImage : NSImageView
 {
 	RakCTHImageGradient * gradient;
-	NSImage * defaultImage;
+	RakImage * defaultImage;
 	
 	PROJECT_DATA _cachedProject;
 }

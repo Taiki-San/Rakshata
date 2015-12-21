@@ -29,7 +29,7 @@ enum
 	CGFloat _gradientXOrigin;
 	CGFloat _gradientAngle;
 	
-	NSColor * _gradientBackgroundColor;
+	RakColor * _gradientBackgroundColor;
 	NSGradient * _gradient;
 }
 
@@ -48,10 +48,10 @@ enum
 
 - (void) additionalDrawing;
 
-- (NSColor *) getTextColor;
-- (NSColor *) getBarColor;
-- (NSColor *) getBackgroundColor;
-- (NSColor *) getGradientBackgroundColor;
+- (RakColor *) getTextColor;
+- (RakColor *) getBarColor;
+- (RakColor *) getBackgroundColor;
+- (RakColor *) getGradientBackgroundColor;
 - (CGFloat) getFontSize;
 
 + (NSFont *) getFont : (CGFloat) fontSize;

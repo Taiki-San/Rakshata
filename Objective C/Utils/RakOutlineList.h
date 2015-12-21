@@ -55,8 +55,8 @@
 - (void) resizeAnimation : (NSRect) frame;
 - (void) additionalResizing : (NSRect) frame : (BOOL) animated;
 
-- (NSColor *) getFontTopColor;
-- (NSColor *) getFontClickableColor;
+- (RakColor *) getFontTopColor;
+- (RakColor *) getFontClickableColor;
 
 - (uint) getNbRoot;
 

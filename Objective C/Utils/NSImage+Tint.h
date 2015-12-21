@@ -10,8 +10,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface NSImage (Tint)
+@interface RakImage (Tint)
 
-- (void) tintWithColor : (NSColor *) color;
+- (void) tintWithColor : (RakColor *) color;
 
 @end

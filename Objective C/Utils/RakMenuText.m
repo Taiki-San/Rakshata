@@ -151,7 +151,7 @@
 
 - (void) generateGradient
 {
-	_gradient = [[NSGradient alloc] initWithStartingColor : [NSColor clearColor] endingColor : [self getGradientBackgroundColor]];
+	_gradient = [[NSGradient alloc] initWithStartingColor : [RakColor clearColor] endingColor : [self getGradientBackgroundColor]];
 }
 
 - (void) setAlignment:(NSTextAlignment)mode
@@ -173,24 +173,24 @@
 
 #pragma mark - Color
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
-- (NSColor *) getBarColor
+- (RakColor *) getBarColor
 {
 	return [Prefs getSystemColor:COLOR_COREVIEW_BORDER];
 }
 
-- (NSColor *) getBackgroundColor
+- (RakColor *) getBackgroundColor
 {
 	if(_haveBackgroundColor)
 		return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 	return nil;
 }
 
-- (NSColor *) getGradientBackgroundColor
+- (RakColor *) getGradientBackgroundColor
 {
 	return [self getBackgroundColor];
 }
@@ -207,7 +207,7 @@
 
 - (void) defineBackgroundColor
 {
-	NSColor * background = [self getBackgroundColor];
+	RakColor * background = [self getBackgroundColor];
 	
 	if(background != nil)
 	{
@@ -216,7 +216,7 @@
 	}
 	else
 	{
-		[self setBackgroundColor:[NSColor clearColor]];
+		[self setBackgroundColor:[RakColor clearColor]];
 		[self setDrawsBackground:NO];
 	}
 }

@@ -34,6 +34,6 @@
 - (void) finishing;
 
 - (NSString *) headerText;
-- (NSColor *) backgroundColor;
+- (RakColor *) backgroundColor;
 
 @end

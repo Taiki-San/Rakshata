@@ -23,7 +23,7 @@
 
 @property BOOL customizedInjectionPoint;
 
-- (instancetype) initWithText : (NSString *) text : (NSColor *) color;
+- (instancetype) initWithText : (NSString *) text : (RakColor *) color;
 
 @end
 

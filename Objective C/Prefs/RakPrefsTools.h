@@ -24,6 +24,6 @@ enum RAKBUTTON_STATES
 
 @interface RakResPath : NSObject
 
-+ (NSImage *) getImage: (NSString*) baseName;
++ (RakImage *) getImage: (NSString*) baseName;
 
 @end

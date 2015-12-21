@@ -113,7 +113,7 @@
 
 - (instancetype) initWithImageName : (PROJECT_DATA) project : (NSRect) superviewFrame
 {
-	NSImage * projectImageBase = loadCTThumb(project);
+	RakImage * projectImageBase = loadCTThumb(project);
 	
 	if(projectImageBase != nil)
 	{
@@ -143,7 +143,7 @@
 
 - (void) updateProject : (PROJECT_DATA) project
 {
-	NSImage * projectImageBase = loadCTThumb(project);
+	RakImage * projectImageBase = loadCTThumb(project);
 	if(projectImageBase != nil)
 	{
 		[self setImage:projectImageBase];

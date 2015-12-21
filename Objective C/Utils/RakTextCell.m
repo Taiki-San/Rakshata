@@ -69,7 +69,7 @@
 	return self;
 }
 
-- (instancetype) initWithText : (NSString *) text : (NSColor *) color
+- (instancetype) initWithText : (NSString *) text : (RakColor *) color
 {
 	self = [self initTextCell:text];
 	if(self != nil)
@@ -78,7 +78,7 @@
 		self.bordered = NO;
 		self.centered = YES;
 		self.drawsBackground = NO;
-		self.backgroundColor = [NSColor clearColor];
+		self.backgroundColor = [RakColor clearColor];
 		self.alignment = NSTextAlignmentCenter;
 		
 		if(color != nil)
@@ -90,16 +90,16 @@
 	return self;
 }
 
-- (void) setBackgroundColor:(NSColor *)color
+- (void) setBackgroundColor:(RakColor *)color
 {
 	[super setBackgroundColor:color];
-	clearBackground = [color isEqualTo:[NSColor clearColor]];
+	clearBackground = [color isEqualTo:[RakColor clearColor]];
 }
 
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
 	if(flag && clearBackground)
-		self.backgroundColor = [NSColor clearColor];
+		self.backgroundColor = [RakColor clearColor];
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
 }
@@ -152,7 +152,7 @@
 - (void) highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
 	if(flag)
-		self.backgroundColor = [NSColor clearColor];
+		self.backgroundColor = [RakColor clearColor];
 	
 	[super highlight:flag withFrame:cellFrame inView:controlView];
 }

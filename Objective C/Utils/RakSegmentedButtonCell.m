@@ -87,7 +87,7 @@
 		
 		if(animationRunning && (i == impactedCell || (isNextCellImpacted && i == impactedCell + 1)))
 		{
-			NSColor * first, * second;
+			RakColor * first, * second;
 			
 			if(i == impactedCell)
 			{
@@ -144,22 +144,22 @@
 	[fields insertObject:cell atIndex:cellID];
 }
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
 	return [Prefs getSystemColor:COLOR_BUTTON_BORDER];
 }
 
-- (NSColor*) getSelectedColor
+- (RakColor*) getSelectedColor
 {
 	return [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_SELECTED];
 }
 
-- (NSColor*) getUnselectedColor
+- (RakColor*) getUnselectedColor
 {
 	return [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED];
 }
 
-- (NSColor *) getFontColor : (uint) cellID
+- (RakColor *) getFontColor : (uint) cellID
 {
 	if(![self isEnabledForSegment:cellID])
 		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_UNAVAILABLE];
@@ -186,7 +186,7 @@
 	
 	else
 	{
-		NSColor * expectedColor = [self getFontColor:cellID];
+		RakColor * expectedColor = [self getFontColor:cellID];
 		
 		if(![expectedColor isEqualTo:[cell textColor]])
 			[cell setTextColor:expectedColor];

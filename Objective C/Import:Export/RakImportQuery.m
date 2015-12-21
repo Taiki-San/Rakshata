@@ -756,17 +756,17 @@ enum
 
 #pragma mark - Color management & UI generation
 
-- (NSColor *) mainTitleColor
+- (RakColor *) mainTitleColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
-- (NSColor *) titleColor
+- (RakColor *) titleColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
@@ -820,7 +820,7 @@ enum
 		NSData * thumbData = [_controller queryThumbOf:_itemOfQueryForMetadata withIndex:ID];
 		if(thumbData != nil)
 		{
-			NSImage * image = [[NSImage alloc] initWithData:thumbData];
+			RakImage * image = [[RakImage alloc] initWithData:thumbData];
 			if(image != nil)
 			{
 				area.image = image;
@@ -834,7 +834,7 @@ enum
 	}
 	else if(_project.isInitialized)
 	{
-		NSImage * image = nil;
+		RakImage * image = nil;
 		
 		switch (ID)
 		{
@@ -879,7 +879,7 @@ enum
 	if(bordersY[0] == 0)
 		return;
 
-	[[[NSColor whiteColor] colorWithAlphaComponent:0.3] setFill];
+	[[[RakColor whiteColor] colorWithAlphaComponent:0.3] setFill];
 
 	dirtyRect.origin.x = dirtyRect.size.width / 6;
 	dirtyRect.size.width = 4 * dirtyRect.origin.x;

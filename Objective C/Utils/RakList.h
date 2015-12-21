@@ -33,7 +33,7 @@
 @property uint lastClickedColumn;
 @property uint preCommitedLastClickedColumn;
 
-- (NSColor *) _dropHighlightColor;
+- (RakColor *) _dropHighlightColor;
 
 //Need to be called when the clicked row/column are validated, and we want to exploit the data
 - (void) commitClic;
@@ -65,9 +65,9 @@ typedef struct //smartReload_data
 	RakProjectMenu * menuHandler;
 	
 	//Color cache
-	NSColor * normal;
-	NSColor * highlight;
-	NSColor * _tmpColor;
+	RakColor * normal;
+	RakColor * highlight;
+	RakColor * _tmpColor;
 
 	NSDraggingSession * draggingSession;
 	NSString * _identifier;
@@ -111,11 +111,11 @@ typedef struct //smartReload_data
 - (float) getSliderPos;
 - (NSInteger) selectedRow;
 
-- (NSColor *) getTextColor;
-- (NSColor *) getTextColor : (uint) column : (uint) row;
-- (NSColor *) getTextHighlightColor;
-- (NSColor *) getTextHighlightColor : (uint) column : (uint) row;
-- (NSColor *) getBackgroundHighlightColor;
+- (RakColor *) getTextColor;
+- (RakColor *) getTextColor : (uint) column : (uint) row;
+- (RakColor *) getTextHighlightColor;
+- (RakColor *) getTextHighlightColor : (uint) column : (uint) row;
+- (RakColor *) getBackgroundHighlightColor;
 
 - (void) graphicSelection : (NSView *) view : (BOOL) select;
 - (void) postProcessingSelection : (uint) row;

@@ -134,7 +134,7 @@ enum
 	if(headerText == nil)
 		return;
 	
-	NSColor * color = [self getBorderColor];
+	RakColor * color = [self getBorderColor];
 	NSRect frame = _bounds;
 	CGFloat radius = self.layer.cornerRadius;
 	
@@ -202,7 +202,7 @@ enum
 
 #pragma mark - Color
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
 	return [Prefs getSystemColor: COLOR_COREVIEW_BACKGROUND];
 }

@@ -57,7 +57,7 @@ enum
 		if(queryWindow != nil)
 		{
 			queryWindow.contentView = mainView;
-			queryWindow.backgroundColor = [NSColor clearColor];
+			queryWindow.backgroundColor = [RakColor clearColor];
 
 			[[[NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
 			return;
@@ -123,7 +123,7 @@ enum
 	return @"";
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_EXPORT_BACKGROUND];
 }

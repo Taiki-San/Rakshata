@@ -144,7 +144,7 @@
 			
 			//Customisation
 			[content setIndentationPerLevel:[content indentationPerLevel] / 2];
-			[content setBackgroundColor:[NSColor clearColor]];
+			[content setBackgroundColor:[RakColor clearColor]];
 			[content setFocusRingType:NSFocusRingTypeNone];
 			[content setAutoresizesOutlineColumn:NO];
 			[content addTableColumn:column];
@@ -231,12 +231,12 @@
 
 #pragma mark - Color
 
-- (NSColor *) getFontTopColor
+- (RakColor *) getFontTopColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
-- (NSColor *) getFontClickableColor
+- (RakColor *) getFontClickableColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }

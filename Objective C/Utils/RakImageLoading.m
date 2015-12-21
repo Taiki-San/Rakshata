@@ -12,9 +12,9 @@
 
 #pragma mark - Repo
 
-NSImage * loadImageForRepo(BOOL isRoot, void* repo)
+RakImage * loadImageForRepo(BOOL isRoot, void* repo)
 {
-	NSImage * image = nil;
+	RakImage * image = nil;
 	char * repoPath = isRoot ? getPathForRootRepo(repo) : getPathForRepo(repo);
 	
 	if(repoPath != NULL)
@@ -26,7 +26,7 @@ NSImage * loadImageForRepo(BOOL isRoot, void* repo)
 		free(repoPath);
 	}
 	
-	return image == nil ? [NSImage imageNamed: isRoot ? @"defaultRepoRoot" : @"defaultRepo"] : image;
+	return image == nil ? [RakImage imageNamed: isRoot ? @"defaultRepoRoot" : @"defaultRepo"] : image;
 }
 
 #pragma mark - Project
@@ -46,9 +46,9 @@ void invalidateCacheForRepoID(uint64_t repoID)
 	}
 }
 
-NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSString * defaultName)
+RakImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSString * defaultName)
 {
-	NSImage * image = nil;
+	RakImage * image = nil;
 	
 	if(project.isInitialized)
 	{
@@ -67,7 +67,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 	if(image != nil || defaultName == nil)
 		return image;
 	
-	image = [NSImage imageNamed:defaultName];
+	image = [RakImage imageNamed:defaultName];
 	
 	NSSize size = [image size];
 	
@@ -87,7 +87,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 			
 			NSPoint point = NSCenterSize(size, text.bounds.size);
 			NSSize oldSize = image.size;
-			NSImage * textImage = [text imageOfView];
+			RakImage * textImage = [text imageOfView];
 			size = textImage.size;
 			
 			[image lockFocus];
@@ -101,7 +101,7 @@ NSImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSSt
 	return image;
 }
 
-NSImage * enforceImageSize(NSImage * image, byte code)
+RakImage * enforceImageSize(RakImage * image, byte code)
 {
 	if(image == nil)
 		return nil;
@@ -121,7 +121,7 @@ NSImage * enforceImageSize(NSImage * image, byte code)
 	return image;
 }
 
-NSSize getThumbSize(NSImage * image)
+NSSize getThumbSize(RakImage * image)
 {
 	NSSize smallestSize = image.size;
 	for(NSImageRep * rep in [image representations])
@@ -133,39 +133,39 @@ NSSize getThumbSize(NSImage * image)
 	return smallestSize;
 }
 
-NSImage * loadCTHeader(const PROJECT_DATA project)
+RakImage * loadCTHeader(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, @"project_large"), THUMB_INDEX_HEAD);
 }
 
-NSImage * loadCTThumb(const PROJECT_DATA project)
+RakImage * loadCTThumb(const PROJECT_DATA project)
 {
-	NSImage * image = enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil), THUMB_INDEX_CT);
+	RakImage * image = enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil), THUMB_INDEX_CT);
 	
 	return image != nil ? image : loadImageGrid(project);
 }
 
-NSImage * loadDDThumbnail(const PROJECT_DATA project)
+RakImage * loadDDThumbnail(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_DD, @"defaultDragImage"), THUMB_INDEX_DD);
 }
 
-NSImage * loadImageGrid(const PROJECT_DATA project)
+RakImage * loadImageGrid(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, @"defaultSRImage"), THUMB_INDEX_SR);
 }
 
-NSImage * loadCTHeaderWithoutDefault(const PROJECT_DATA project)
+RakImage * loadCTHeaderWithoutDefault(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_HEAD, nil), THUMB_INDEX_HEAD);
 }
 
-NSImage * loadDDThumbnailWithoutDefault(const PROJECT_DATA project)
+RakImage * loadDDThumbnailWithoutDefault(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_DD, nil), THUMB_INDEX_DD);
 }
 
-NSImage * loadImageGridWithoutDefault(const PROJECT_DATA project)
+RakImage * loadImageGridWithoutDefault(const PROJECT_DATA project)
 {
 	return enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_SRGRID, nil), THUMB_INDEX_SR);
 }

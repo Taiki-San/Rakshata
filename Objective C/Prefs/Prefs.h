@@ -194,7 +194,7 @@ enum KVO_REQUEST {
 + (uint) getCurrentTheme;
 + (void) setCurrentTheme : (uint) newTheme;
 
-+ (NSColor*) getSystemColor : (byte) context;
++ (RakColor*) getSystemColor : (byte) context;
 
 + (NSString *) getFontName : (byte) context;
 

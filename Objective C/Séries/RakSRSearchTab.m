@@ -207,7 +207,7 @@ enum
 
 #pragma mark - Colors
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
 	if(!_isVisible)
 		return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_BAR];
@@ -218,12 +218,12 @@ enum
 	return [Prefs getSystemColor:COLOR_SEARCHTAB_BORDER_DEPLOYED];
 }
 
-- (NSColor *) getBackgroundColor
+- (RakColor *) getBackgroundColor
 {
 	return [Prefs getSystemColor:COLOR_SEARCHTAB_BACKGROUND];
 }
 
-- (NSColor *) placeholderTextColor
+- (RakColor *) placeholderTextColor
 {
 	return [Prefs getSystemColor:COLOR_SR_PLACEHOLDER_TEXT];
 }

@@ -24,7 +24,7 @@
 	return self;
 }
 
-- (instancetype) initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color
+- (instancetype) initWithText:(NSRect)frame : (NSString *) text : (RakColor *) color
 {
 	self = [self initWithFrame : frame];
 	if(self != nil)
@@ -38,7 +38,7 @@
 	return self;
 }
 
-- (instancetype) initWithText : (NSString *) text : (NSColor *) color
+- (instancetype) initWithText : (NSString *) text : (RakColor *) color
 {
 	self = [super init];
 	
@@ -67,7 +67,7 @@
 	_wantCustomBorder = NO;
 	_forcedOffsetY = 0;
 	self.drawsBackground = NO;
-	self.backgroundColor = [NSColor clearColor];
+	self.backgroundColor = [RakColor clearColor];
 	self.selectable = NO;
 
 	if([self respondsToSelector:@selector(setAllowsDefaultTighteningForTruncation:)])
@@ -92,7 +92,7 @@
 	return [RakTextCell class];
 }
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
 	return _customBorderColor != nil ? _customBorderColor : [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }

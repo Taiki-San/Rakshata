@@ -77,7 +77,7 @@ enum
 - (void) drawRect:(NSRect)dirtyRect
 {
 	[self.cell drawBezelWithFrame:dirtyRect inView:self];
-	[self.cell drawImage:[self.cell image] withFrame:dirtyRect inView:self];
+	[self.cell drawImage:(RakImage *) [self.cell image] withFrame:dirtyRect inView:self];
 }
 
 + (Class) cellClass
@@ -92,12 +92,12 @@ enum
 
 #pragma mark - Color
 
-- (NSColor *) getColorBackground
+- (RakColor *) getColorBackground
 {
 	return [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND];
 }
 
-- (NSColor *) getColorBackgroundSlider
+- (RakColor *) getColorBackgroundSlider
 {
 	return [Prefs getSystemColor:COLOR_BACK_BUTTONS_BACKGROUND_ANIMATING];
 }
@@ -211,7 +211,7 @@ enum
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state
 {
-	NSImage * template = [RakResPath getImage:imageName];
+	RakImage * template = [RakResPath getImage:imageName];
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];
 	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE]];
@@ -250,7 +250,7 @@ enum
 	
 	if([self isHighlighted])
 	{
-		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.35] setFill];
+		[[RakColor colorWithCalibratedWhite:0.0f alpha:0.35] setFill];
 		NSRectFill(frame);
 	}
 	else if(animationInProgress)

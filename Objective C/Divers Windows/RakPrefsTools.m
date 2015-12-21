@@ -80,7 +80,7 @@ enum
 	[self drawTitle:self.attributedTitle withFrame:[self titleRectForBounds:cellFrame] inView:controlView];
 }
 
-- (NSColor *) activeBackground
+- (RakColor *) activeBackground
 {
 	return [Prefs getSystemColor:COLOR_PREFS_BUTTON_FOCUS];
 }

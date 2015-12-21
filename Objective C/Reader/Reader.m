@@ -38,14 +38,14 @@
 		container = [[NSView alloc] initWithFrame:self.bounds];
 		[self addSubview:container];
 		
-		loadingPlaceholder = [NSImage imageNamed:@"loading.gif"];
+		loadingPlaceholder = [RakImage imageNamed:@"loading.gif"];
 		if(loadingPlaceholder != nil)
 		{
 			NSBitmapImageRep *gifRep = (NSBitmapImageRep*) [[loadingPlaceholder representations] objectAtIndex:0];
 			[gifRep setProperty:NSImageLoopCount withValue:@(0)];
 			[gifRep setProperty:NSImageCurrentFrameDuration withValue:@(0.1f)];
 		}
-		loadingFailedPlaceholder = [NSImage imageNamed:@"failed_loading"];
+		loadingFailedPlaceholder = [RakImage imageNamed:@"failed_loading"];
 		
 		[self initReaderMainView : state];
 	}
@@ -315,7 +315,7 @@
 	[super setUpViewForAnimation:mainThread];
 }
 
-- (NSColor*) getMainColor
+- (RakColor*) getMainColor
 {
 	return [Prefs getSystemColor:COLOR_READER_BACKGROUND_INTAB];
 }

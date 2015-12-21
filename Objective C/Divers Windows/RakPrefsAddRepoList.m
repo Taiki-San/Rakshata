@@ -166,7 +166,7 @@ enum
 	 }];
 }
 
-- (NSColor *) headerTextColor
+- (RakColor *) headerTextColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }

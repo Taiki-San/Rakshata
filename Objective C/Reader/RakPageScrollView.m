@@ -186,7 +186,7 @@
 		((NSImageView *) self.documentView).wantsLayer = YES;
 
 	if(view.wantsLayer == YES)
-		((NSImageView *) self.documentView).layer.backgroundColor = (needBackground ? [Prefs getSystemColor:COLOR_PDF_BACKGROUND] : [NSColor clearColor]).CGColor;
+		((NSImageView *) self.documentView).layer.backgroundColor = (needBackground ? [Prefs getSystemColor:COLOR_PDF_BACKGROUND] : [RakColor clearColor]).CGColor;
 	
 	[CATransaction commit];
 
@@ -250,7 +250,7 @@
 
 @implementation RakImageView
 
-- (void) setImage : (NSImage *) newImage
+- (void) setImage : (RakImage *) newImage
 {
 	[super setImage:newImage];
 	

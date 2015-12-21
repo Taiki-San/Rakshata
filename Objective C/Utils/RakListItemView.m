@@ -70,12 +70,12 @@ enum
 
 #pragma mark - Color
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
-- (NSColor *) detailTextColor
+- (RakColor *) detailTextColor
 {
 	return [Prefs getSystemColor:COLOR_SURVOL];
 }

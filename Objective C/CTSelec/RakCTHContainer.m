@@ -242,12 +242,12 @@
 	return NSMakeRect(0, 0, self.bounds.size.width, height);
 }
 
-- (NSColor *) startColor
+- (RakColor *) startColor
 {
 	return [Prefs getSystemColor : COLOR_CTHEADER_GRADIENT_START];
 }
 
-- (NSColor *) endColor : (const NSColor *) startColor
+- (RakColor *) endColor : (const RakColor *) startColor
 {
 	return [Prefs getSystemColor : COLOR_CTHEADER_GRADIENT_END];
 }
@@ -266,7 +266,7 @@
 	[self setNeedsDisplay:YES];
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CTHEADER_FONT];
 }

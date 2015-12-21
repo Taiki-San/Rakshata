@@ -1128,7 +1128,7 @@
 	if(imageData == nil || imageData.length == 0)
 		return nil;
 	
-	NSImage * image = [[NSImage alloc] initWithData : imageData];
+	RakImage * image = [[RakImage alloc] initWithData : imageData];
 	
 #ifdef EXTENSIVE_LOGGING
 	if(image == nil)
@@ -1188,7 +1188,7 @@
 		[[[NSApp delegate] serie] ownFocus];
 }
 
-- (void) addPageToView : (NSImage *) page : (RakPageScrollView *) scrollView
+- (void) addPageToView : (RakImage *) page : (RakPageScrollView *) scrollView
 {
 	if(page == nil || scrollView == nil)
 		return;
@@ -1696,7 +1696,7 @@
 			});
 		}
 		
-		NSImage * imagePlaceholder = needEmptyView ? nil : (!self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder);
+		RakImage * imagePlaceholder = needEmptyView ? nil : (!self.initWithNoContent ? loadingPlaceholder : loadingFailedPlaceholder);
 		
 		RakImageView * placeholder = [[RakImageView alloc] initWithFrame:NSMakeRect(0, 0, imagePlaceholder.size.width, imagePlaceholder.size.height)];
 		[placeholder setImage:imagePlaceholder];

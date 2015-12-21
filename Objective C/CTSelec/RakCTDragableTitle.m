@@ -73,7 +73,7 @@
 	[pBoard setData:[item getData] forType:PROJECT_PASTEBOARD_TYPE];
 	
 	//We create the image for the dragging session
-	NSImage * image = [_dragResponder initializeImageForItem : projectData : NSLocalizedString(self.isTome ? @"CT-ALL-VOLUMES" : @"CT-ALL-CHAPTERS", nil) : INVALID_VALUE];
+	RakImage * image = [_dragResponder initializeImageForItem : projectData : NSLocalizedString(self.isTome ? @"CT-ALL-VOLUMES" : @"CT-ALL-CHAPTERS", nil) : INVALID_VALUE];
 	
 	couldDL = self.isTome ? (projectData.nbVolumesInstalled < projectData.nbVolumes) : (projectData.nbChapterInstalled < projectData.nbChapter);
 	[RakList propagateDragAndDropChangeState : YES : couldDL];

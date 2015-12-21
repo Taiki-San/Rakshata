@@ -17,7 +17,7 @@
 
 - (void) attachToView;
 
-- (NSColor *) getBackgroundColor;
+- (RakColor *) getBackgroundColor;
 
 - (void) mouseEnteredForced : (NSEvent *) theEvent;
 - (void) mouseExitedForced:(NSEvent *)theEvent;

@@ -435,7 +435,7 @@ enum
 
 #pragma mark - Color
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_REPO_LIST_ITEM_BACKGROUND];
 }

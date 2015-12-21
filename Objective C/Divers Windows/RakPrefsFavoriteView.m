@@ -111,7 +111,7 @@ enum
 	return NSMakePoint(NSMaxX(autoDLFrame) + BORDER, SWITCH_Y_OFFSET + (autoDLFrame.size.height / 2 - autoDLMessage.bounds.size.height / 2));
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }

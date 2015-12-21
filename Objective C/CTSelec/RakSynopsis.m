@@ -305,10 +305,10 @@ enum
 	if(_haveBackground)
 		self.layer.backgroundColor = [self backgroundColor].CGColor;
 	else
-		self.layer.backgroundColor = [NSColor clearColor].CGColor;
+		self.layer.backgroundColor = [RakColor clearColor].CGColor;
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_REPO_LIST_BACKGROUND];
 }

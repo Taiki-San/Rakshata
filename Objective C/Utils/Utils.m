@@ -117,9 +117,9 @@ static NSArray * savedContext;
 
 @end
 
-@implementation NSView (RakUtils)
+@implementation RakView (RakUtils)
 
-- (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates
+- (RakView *) findSubviewAtCoordinate : (NSPoint) coordinates
 {
 	NSSize size = self.frame.size;
 
@@ -127,7 +127,7 @@ static NSArray * savedContext;
 		return self;
 	
 	NSRect rect;
-	for(NSView * view in self.subviews)
+	for(RakView * view in self.subviews)
 	{
 		rect = view.frame;
 		if(NSPointInRect(coordinates, rect))
@@ -142,7 +142,7 @@ static NSArray * savedContext;
 	return self;
 }
 
-- (NSImage *) imageOfView
+- (RakImage *) imageOfView
 {
 	NSRect bounds = self.bounds;
 	NSSize size = bounds.size;
@@ -151,7 +151,7 @@ static NSArray * savedContext;
 	[representation setSize:size];
 	[self cacheDisplayInRect:bounds toBitmapImageRep:representation];
 	
-	NSImage* image = [[NSImage alloc] initWithSize:size];
+	RakImage* image = [[RakImage alloc] initWithSize:size];
 	[image addRepresentation:representation];
 	return image;
 }
@@ -251,7 +251,7 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 }
 
 //The retina version pixelSize = 2 x size
-void exportImageToPath(NSImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath)
+void exportImageToPath(RakImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath)
 {
 	NSRect pixelInRect = (NSRect) {{0, 0}, pixelSize};
 	NSBitmapImageRep *workingRep = [[NSBitmapImageRep alloc] initWithCGImage:[image CGImageForProposedRect:&(pixelInRect) context:nil hints:nil]];

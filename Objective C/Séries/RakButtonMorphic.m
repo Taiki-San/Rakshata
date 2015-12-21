@@ -54,7 +54,7 @@
 {
 	NSMutableArray * images = [NSMutableArray array];
 	
-	NSImage * image;
+	RakImage * image;
 	BOOL firstPass = YES;
 	
 	for(NSString * imageName in imageNames)
@@ -84,7 +84,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	NSImage * image = [RakResPath getImage:_imageNames[0]];
+	RakImage * image = [RakResPath getImage:_imageNames[0]];
 	
 	if(image != nil)
 	{

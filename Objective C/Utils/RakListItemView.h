@@ -15,7 +15,7 @@
 	BOOL haveFixedWidth;
 
 	NSRect imageFrame;
-	NSImage * image;
+	RakImage * image;
 	RakText * title;
 }
 
@@ -28,7 +28,7 @@
 
 - (void) frameChanged : (NSSize) newSize;
 
-- (NSColor *) textColor;
-- (NSColor *) detailTextColor;
+- (RakColor *) textColor;
+- (RakColor *) detailTextColor;
 
 @end

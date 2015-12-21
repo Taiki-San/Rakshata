@@ -159,7 +159,7 @@ enum
 	else
 		[self registerProject:project];
 	
-	NSImage * image = loadImageGrid(project);
+	RakImage * image = loadImageGrid(project);
 	if(image != nil)
 	{
 		thumb.image = image;
@@ -195,7 +195,7 @@ enum
 	
 	if([project unsignedIntValue] == _project.projectID && [repo unsignedLongLongValue] == getRepoID(_project.repo))
 	{
-		NSImage * image = loadImageGrid(_project);
+		RakImage * image = loadImageGrid(_project);
 		if(image != nil)
 		{
 			thumb.image = image;
@@ -305,27 +305,27 @@ enum
 	[self setNeedsDisplay:YES];
 }
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
-- (NSColor *) getTagColor
+- (RakColor *) getTagColor
 {
 	return [Prefs getSystemColor:COLOR_TAGITEM_FONT];
 }
 
-- (NSColor *) getSynopsisColor
+- (RakColor *) getSynopsisColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
-- (NSColor *) interTagColor
+- (RakColor *) interTagColor
 {
 	return [self getTextColor];
 }
 
-- (NSColor *) borderColor
+- (RakColor *) borderColor
 {
 	return [self getTextColor];
 }

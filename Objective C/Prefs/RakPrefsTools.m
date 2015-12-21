@@ -98,25 +98,25 @@ NSArray * loadCustomColor(const char * file)
 		
 		//Load the color
 
-		NSColor * newColor = nil;
+		RakColor * newColor = nil;
 		switch ([currentEntry count])
 		{
 			case 1:
 			{
-				newColor = [NSColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f alpha:1];
+				newColor = [RakColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f alpha:1];
 				break;
 			}
 
 			case 2:
 			{
-				newColor = [NSColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+				newColor = [RakColor colorWithDeviceWhite:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
 												   alpha:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f];
 				break;
 			}
 
 			case 3:
 			{
-				newColor = [NSColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+				newColor = [RakColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
 												green:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f
 												 blue:[[currentEntry objectAtIndex:2] unsignedCharValue] / 255.0f
 												alpha:1];
@@ -125,7 +125,7 @@ NSArray * loadCustomColor(const char * file)
 
 			case 4:
 			{
-				newColor = [NSColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
+				newColor = [RakColor colorWithSRGBRed:[[currentEntry objectAtIndex:0] unsignedCharValue] / 255.0f
 											   green:[[currentEntry objectAtIndex:1] unsignedCharValue] / 255.0f
 												blue:[[currentEntry objectAtIndex:2] unsignedCharValue] / 255.0f
 											   alpha:[[currentEntry objectAtIndex:3] unsignedCharValue] / 255.0f];
@@ -146,7 +146,7 @@ NSArray * loadCustomColor(const char * file)
 
 @implementation RakResPath
 
-+ (NSImage *) getImage: (NSString*) baseName
++ (RakImage *) getImage: (NSString*) baseName
 {
 	return [[NSBundle mainBundle] imageForResource:baseName];
 }

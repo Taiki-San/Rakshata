@@ -264,17 +264,17 @@
 
 #pragma mark - Color
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return _isMainWindow ? [Prefs getSystemColor:COLOR_SURVOL] : [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }
 
-- (NSColor *) firstBorderColor
+- (RakColor *) firstBorderColor
 {
 	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_FAREST];
 }
 
-- (NSColor *) middleBorderColor
+- (RakColor *) middleBorderColor
 {
 	if(self.window.isMainWindow)
 		return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE];
@@ -282,7 +282,7 @@
 	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_MIDDLE_NON_MAIN];
 }
 
-- (NSColor *) lastBorderColor
+- (RakColor *) lastBorderColor
 {
 	return [Prefs getSystemColor:COLOR_EXTERNALBORDER_CLOSEST];
 }

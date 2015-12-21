@@ -24,7 +24,7 @@ enum
 
 @interface RakPrefsRepoDetails()
 {
-	NSImage * repoImage;
+	RakImage * repoImage;
 	RakClickableText * URL, * group, * nbElement;
 	RakText * data;
 	
@@ -512,7 +512,7 @@ enum
 
 #pragma mark - Drawing
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }

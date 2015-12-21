@@ -65,7 +65,7 @@ enum
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
 	// Check if the pasteboard contains image data and source/user wants it copied
-	if([NSImage canInitWithPasteboard:[sender draggingPasteboard]] && [sender draggingSourceOperationMask] & NSDragOperationCopy)
+	if([RakImage canInitWithPasteboard:[sender draggingPasteboard]] && [sender draggingSourceOperationMask] & NSDragOperationCopy)
 	{
 		highlighted = YES;
 		[self setNeedsDisplay: YES];
@@ -87,10 +87,10 @@ enum
 	highlighted = NO;
 	[self setNeedsDisplay: YES];
 
-	return [NSImage canInitWithPasteboard: [sender draggingPasteboard]];
+	return [RakImage canInitWithPasteboard: [sender draggingPasteboard]];
 }
 
-- (void) setImage:(NSImage * _Nullable)image
+- (void) setImage:(RakImage * _Nullable)image
 {
 	if(image == nil)
 		[super setImage:image];
@@ -106,7 +106,7 @@ enum
 
 #pragma mark - Color & drawing management
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }

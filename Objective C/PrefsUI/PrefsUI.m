@@ -116,7 +116,7 @@ enum
 
 #pragma mark - Colors
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }

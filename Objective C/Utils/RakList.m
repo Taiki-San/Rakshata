@@ -53,7 +53,7 @@
 	highlight	= [self getTextHighlightColor];
 	
 	_tableView.headerView = nil;
-	_tableView.backgroundColor = [NSColor clearColor];
+	_tableView.backgroundColor = [RakColor clearColor];
 	_tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone;
 	_tableView.focusRingType = NSFocusRingTypeNone;
 	_tableView.allowsMultipleSelection = NO;
@@ -273,27 +273,27 @@
 
 #pragma mark - Colors
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
-- (NSColor *) getTextColor : (uint) column : (uint) row
+- (RakColor *) getTextColor : (uint) column : (uint) row
 {
 	return nil;
 }
 
-- (NSColor *) getTextHighlightColor
+- (RakColor *) getTextHighlightColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
-- (NSColor *) getTextHighlightColor : (uint) column : (uint) row
+- (RakColor *) getTextHighlightColor : (uint) column : (uint) row
 {
 	return nil;
 }
 
-- (NSColor *) getBackgroundHighlightColor
+- (RakColor *) getBackgroundHighlightColor
 {
 	return [Prefs getSystemColor:COLOR_LIST_SELECTED_BACKGROUND];
 }
@@ -313,7 +313,7 @@
 - (void) updateTableElementsColor
 {
 	RakText * element;
-	NSColor * backgroundColor = [self getBackgroundHighlightColor];
+	RakColor * backgroundColor = [self getBackgroundHighlightColor];
 	NSView * rowView;
 	
 	uint lastClickedColumn = _tableView.lastClickedColumn / _nbElemPerCouple;
@@ -828,7 +828,7 @@
 	return self;
 }
 
-- (NSColor *) _dropHighlightColor
+- (RakColor *) _dropHighlightColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }

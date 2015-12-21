@@ -245,12 +245,12 @@ enum
 
 #pragma mark - Color
 
-- (NSColor *) mainTextColor
+- (RakColor *) mainTextColor
 {
 	return [[Prefs getSystemColor:COLOR_CLICKABLE_TEXT] colorWithAlphaComponent:0.9];
 }
 
-- (NSColor *) versionTextColor
+- (RakColor *) versionTextColor
 {
 	return [[Prefs getSystemColor:COLOR_CLICKABLE_TEXT] colorWithAlphaComponent:0.4];
 }

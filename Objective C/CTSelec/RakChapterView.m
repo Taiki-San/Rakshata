@@ -242,7 +242,7 @@
 
 #pragma mark - Color
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
 	byte code;
 	switch (mainThread & TAB_MASK)
@@ -261,7 +261,7 @@
 		}
 			
 		default:
-			return [NSColor clearColor];
+			return [RakColor clearColor];
 	}
 	
 	return [Prefs getSystemColor:code];

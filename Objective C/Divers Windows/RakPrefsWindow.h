@@ -38,7 +38,7 @@ enum
 	NSView * customView;
 }
 
-- (NSColor *) textColor;
+- (RakColor *) textColor;
 
 - (void) focusChanged : (byte) newTab;
 

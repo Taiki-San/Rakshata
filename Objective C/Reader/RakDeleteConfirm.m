@@ -105,7 +105,7 @@
 
 //Colors
 
-- (NSColor *) popoverBorderColor
+- (RakColor *) popoverBorderColor
 {
 	return [Prefs getSystemColor: COLOR_DANGER_POPOVER_BORDER];
 }
@@ -152,7 +152,7 @@
 
 @implementation RakDeleteSegmentedControlCell
 
-- (NSColor *) getFontColor : (uint) cellID
+- (RakColor *) getFontColor : (uint) cellID
 {
 	if([self isSelectedForSegment:cellID])
 		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED];
@@ -173,7 +173,7 @@
 
 @implementation RakDeleteButtonCell
 
-- (NSColor *) getFontColor
+- (RakColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
 		return [Prefs getSystemColor : COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED];

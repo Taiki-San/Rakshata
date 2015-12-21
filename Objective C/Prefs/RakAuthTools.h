@@ -51,12 +51,12 @@ enum
 
 @interface RakAuthText : NSView
 {
-	NSColor * backgroundColor;
+	RakColor * backgroundColor;
 }
 
 @property (strong) NSString * URL;
 
-- (instancetype) initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
+- (instancetype) initWithText:(NSRect)frame : (NSString *) text : (RakColor *) color;
 
 @end
 

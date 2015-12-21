@@ -144,7 +144,7 @@ enum
 	[download setFrameOrigin:NSMakePoint(refresh.frame.origin.x, newSize.height / 2 - download.bounds.size.height / 2)];
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [self detailTextColor];
 }

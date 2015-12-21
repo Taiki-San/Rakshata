@@ -283,17 +283,17 @@ enum
 	return NSMakeRect(BORDER_WIDTH, NSMaxY(title.frame) + LIST_SEPARATOR, WIDTH_BORDERED, LIST_HEIGHT);
 }
 
-- (NSColor *) getTitleColor
+- (RakColor *) getTitleColor
 {
 	return [Prefs getSystemColor:COLOR_SURVOL];
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_ADD_REPO_BACKGROUND];
 }
 
-- (NSColor *) listBackgroundColor
+- (RakColor *) listBackgroundColor
 {
 	return [Prefs getSystemColor:COLOR_LIST_SELECTED_BACKGROUND];
 }

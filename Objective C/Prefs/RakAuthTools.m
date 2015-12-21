@@ -32,7 +32,7 @@
 		[self setBackgroundColor:[Prefs getSystemColor:COLOR_TEXTFIELD_BACKGROUND]];
 		[self setTextColor:[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 		self.maxLength = 100;
-		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [NSColor grayColor]}]];
+		[self.cell setPlaceholderAttributedString : [[NSAttributedString alloc] initWithString:DEFAULT_EMAIL attributes:@{NSForegroundColorAttributeName : [RakColor grayColor]}]];
 		
 		[self setDelegate:self];
 	}
@@ -51,7 +51,7 @@
 	authController = controller;
 }
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
 	if(self.currentStatus != AUTH_STATE_INVALID && !checkNetworkState(CONNEXION_OK) && !checkNetworkState(CONNEXION_TEST_IN_PROGRESS))
 	{
@@ -201,7 +201,7 @@
 	return self;
 }
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
 	switch (self.currentStatus)
 	{
@@ -261,7 +261,7 @@
 
 @implementation RakAuthText
 
-- (instancetype) initWithText : (NSRect)frame : (NSString *) text : (NSColor *) color;
+- (instancetype) initWithText : (NSRect)frame : (NSString *) text : (RakColor *) color;
 {
 	self = [self initWithFrame:frame];
 	

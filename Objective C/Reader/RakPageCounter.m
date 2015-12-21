@@ -98,17 +98,17 @@
 
 #pragma mark - Color stuffs
 
-- (NSColor *) getColorBackground
+- (RakColor *) getColorBackground
 {
 	return [Prefs getSystemColor:COLOR_READER_BAR_PAGE_COUNTER];
 }
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
-	return [NSColor blackColor];
+	return [RakColor blackColor];
 }
 
-- (NSColor *) getFontColor
+- (RakColor *) getFontColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }

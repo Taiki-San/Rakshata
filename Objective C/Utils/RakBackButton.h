@@ -23,8 +23,8 @@
 
 - (void) resizeAnimation : (NSRect) frameRect;
 
-- (NSColor *) getColorBackground;
-- (NSColor *) getColorBackgroundSlider;
+- (RakColor *) getColorBackground;
+- (RakColor *) getColorBackgroundSlider;
 
 @end
 

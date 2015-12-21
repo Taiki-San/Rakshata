@@ -99,7 +99,7 @@
 
 #pragma mark - tableview
 
-- (NSColor *) getTextHighlightColor
+- (RakColor *) getTextHighlightColor
 {
 	return [Prefs getSystemColor:COLOR_SURVOL];
 }
@@ -196,9 +196,9 @@
 	}
 }
 
-- (NSColor *) getBackgroundHighlightColor
+- (RakColor *) getBackgroundHighlightColor
 {
-	return [NSColor clearColor];
+	return [RakColor clearColor];
 }
 
 #pragma mark - Trigger

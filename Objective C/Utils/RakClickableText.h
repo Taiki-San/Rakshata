@@ -14,12 +14,12 @@
 {
 	NSTrackingRectTag tracking;
 	
-	NSColor * classicalTextColor;
+	RakColor * classicalTextColor;
 }
 
 @property id URL;
 @property BOOL ignoreURL;
 
-- (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (NSObject *) responder;
+- (instancetype) initWithText:(NSString *) text : (RakColor *)color responder : (NSObject *) responder;
 
 @end

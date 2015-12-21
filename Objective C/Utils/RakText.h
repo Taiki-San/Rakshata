@@ -19,7 +19,7 @@
 }
 
 @property BOOL wantCustomBorder;
-@property NSColor * customBorderColor;
+@property RakColor * customBorderColor;
 @property CGFloat forcedOffsetY;
 
 @property (nonatomic) BOOL enableMultiLine;
@@ -41,10 +41,10 @@
 @property BOOL wantCompletion;
 @property (copy) NSArray<NSString *> * (^callbackOnCompletion)();
 
-- (instancetype)initWithText:(NSRect)frame : (NSString *) text : (NSColor *) color;
-- (instancetype) initWithText : (NSString *) text : (NSColor *) color;
+- (instancetype)initWithText:(NSRect)frame : (NSString *) text : (RakColor *) color;
+- (instancetype) initWithText : (NSString *) text : (RakColor *) color;
 
-- (NSColor *) getBorderColor;
+- (RakColor *) getBorderColor;
 - (void) additionalDrawing;
 
 - (void) updateMultilineHeight;

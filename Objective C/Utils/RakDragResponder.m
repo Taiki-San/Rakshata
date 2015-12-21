@@ -112,7 +112,7 @@
 								 searchOptions:@{}
 									usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
 	 {
-		 NSImage * image = [self initializeImageForItem : [self getProjectDataForDrag : row] : [self contentNameForDrag : row] : row];
+		 RakImage * image = [self initializeImageForItem : [self getProjectDataForDrag : row] : [self contentNameForDrag : row] : row];
 		 if(image != nil)
 		 {
 			 NSRect frame = NSMakeRect(draggingItem.draggingFrame.origin.x - image.size.width / 3,
@@ -126,7 +126,7 @@
 	 }];
 }
 
-- (NSImage *) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing
+- (RakImage *) initializeImageForItem : (PROJECT_DATA) project : (NSString *) name : (uint) rowForAdditionalDrawing
 {
 	if(project.isInitialized)
 	{

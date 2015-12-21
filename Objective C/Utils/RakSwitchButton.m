@@ -19,8 +19,8 @@ enum
 
 @interface RakSwitchButtonCell : RakCustomButtonCell
 {
-	NSColor * borderColor;
-	NSColor *backgroundMixed, *backgroundOff, *backgroundOn;
+	RakColor * borderColor;
+	RakColor *backgroundMixed, *backgroundOff, *backgroundOn;
 	
 	NSPoint basePoint, inflectionPoint, finishPoint;
 }
@@ -87,7 +87,7 @@ enum
 	}
 	
 	//Checkmark drawing
-	[[NSColor whiteColor] setFill];
+	[[RakColor whiteColor] setFill];
 	
 	if(_animation != nil && !animationIsOver)
 	{

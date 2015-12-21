@@ -52,7 +52,7 @@
 	[self setNeedsDisplay:YES];
 }
 
-- (NSColor *) getBackgroundColor
+- (RakColor *) getBackgroundColor
 {
 	return [Prefs getSystemColor:COLOR_FILTER_FOREGROUND];
 }

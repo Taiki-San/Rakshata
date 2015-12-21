@@ -51,7 +51,7 @@
 	{
 		[view setWantsLayer:YES];
 		[view setAutoresizesSubviews:NO];
-		[view.layer setBackgroundColor : NSColor.redColor.CGColor];
+		[view.layer setBackgroundColor : RakColor.redColor.CGColor];
 	}
 	
 	return view;

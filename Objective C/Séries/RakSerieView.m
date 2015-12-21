@@ -101,7 +101,7 @@
 
 #pragma mark - Color
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
 	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
 }

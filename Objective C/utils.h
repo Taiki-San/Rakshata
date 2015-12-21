@@ -23,13 +23,17 @@ NSString * getRepoName(REPO_DATA * repo);
 
 void registerDefaultForExtension(NSString * extension);
 
+#if TARGET_OS_IPHONE
+@interface UIApplication (contextSave)
+#else
 @interface NSApplication (contextSave)
+#endif
 
 @property NSArray * savedContext;
 
 @end
 
-@interface RakFlippedView : NSView
+@interface RakFlippedView : RakView
 @end
 
 @interface NSArray (dataConversion)
@@ -54,12 +58,14 @@ void registerDefaultForExtension(NSString * extension);
 
 @end
 
-@interface NSView (RakUtils)
+@interface RakView (RakUtils)
 
-- (NSView *) findSubviewAtCoordinate : (NSPoint) coordinates;
-- (NSImage *) imageOfView;
+- (RakView *) findSubviewAtCoordinate : (NSPoint) coordinates;
+- (RakImage *) imageOfView;
 
 @end
+
+#if !TARGET_OS_IPHONE
 
 @interface NSMenuItem (AutoLocalization)
 
@@ -72,6 +78,8 @@ void registerDefaultForExtension(NSString * extension);
 - (void) setAutoLocalizedString : (NSString *) string;
 
 @end
+
+#endif
 
 #import "RakWindow.h"
 #import "RakSheetView.h"
@@ -123,18 +131,18 @@ void registerThumbnailUpdate(id object, SEL selector, byte updateType);
 void flushBundleCache(NSBundle *bundle);
 void invalidateCacheForRepoID(uint64_t repoID);
 
-void exportImageToPath(NSImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath);
+void exportImageToPath(RakImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath);
 
 //Image loading
-NSSize getThumbSize(NSImage * image);
-NSImage * loadImageForRepo(BOOL isRoot, void* repo);
-NSImage * loadCTHeader(const PROJECT_DATA project);
-NSImage * loadCTThumb(const PROJECT_DATA project);
-NSImage * loadDDThumbnail(const PROJECT_DATA project);
-NSImage * loadImageGrid(const PROJECT_DATA project);
+NSSize getThumbSize(RakImage * image);
+RakImage * loadImageForRepo(BOOL isRoot, void* repo);
+RakImage * loadCTHeader(const PROJECT_DATA project);
+RakImage * loadCTThumb(const PROJECT_DATA project);
+RakImage * loadDDThumbnail(const PROJECT_DATA project);
+RakImage * loadImageGrid(const PROJECT_DATA project);
 
-NSImage * loadCTHeaderWithoutDefault(const PROJECT_DATA project);
-NSImage * loadDDThumbnailWithoutDefault(const PROJECT_DATA project);
-NSImage * loadImageGridWithoutDefault(const PROJECT_DATA project);
+RakImage * loadCTHeaderWithoutDefault(const PROJECT_DATA project);
+RakImage * loadDDThumbnailWithoutDefault(const PROJECT_DATA project);
+RakImage * loadImageGridWithoutDefault(const PROJECT_DATA project);
 
 NSSize thumbSizeForID(byte ID);

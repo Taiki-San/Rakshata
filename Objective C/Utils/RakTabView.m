@@ -171,7 +171,7 @@
 
 #pragma mark - Drawing, and FS support
 
-- (NSColor*) getMainColor
+- (RakColor*) getMainColor
 {
 	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }

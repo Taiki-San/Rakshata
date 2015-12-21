@@ -35,11 +35,20 @@
  
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>
-	#import <Cocoa/Cocoa.h>
-	#import <Quartz/Quartz.h>
 	#import <QuartzCore/QuartzCore.h>
-	#import <INPopoverController/INPopoverController.h>
-	#import <HockeySDK/HockeySDK.h>
+
+	#if TARGET_OS_IPHONE
+		#import <UIKit/UIKit.h>
+
+		#import "RakiOSWrapper.h"
+	#else
+		#import <Cocoa/Cocoa.h>
+		#import <Quartz/Quartz.h>
+		#import <INPopoverController/INPopoverController.h>
+		#import <HockeySDK/HockeySDK.h>
+
+		#import "RakOSXWrapper.h"
+	#endif
 
 	#import "utils.h"
 

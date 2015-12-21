@@ -45,8 +45,8 @@
 
 - (void) updateSize : (CGFloat) heightSuperView : (CGFloat) posX;
 
-- (NSColor *) getColorBackground;
-- (NSColor *) getFontColor;
+- (RakColor *) getColorBackground;
+- (RakColor *) getFontColor;
 
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 - (void) transmitPageJump : (uint) newPage;

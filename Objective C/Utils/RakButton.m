@@ -154,7 +154,7 @@
 	return [RakButtonCell class];
 }
 
-- (NSColor *) getBackground
+- (RakColor *) getBackground
 {
 	return [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED];
 }
@@ -336,7 +336,7 @@
 
 - (BOOL) loadIcon : (short) state
 {
-	NSImage * template = [RakResPath getImage:_imageName];
+	RakImage * template = [RakResPath getImage:_imageName];
 	
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];
@@ -393,7 +393,7 @@
 	else if(!notAvailable)
 	{
 		if(flag)
-			self.backgroundColor = [NSColor clearColor];
+			self.backgroundColor = [RakColor clearColor];
 		[super highlight:flag withFrame:cellFrame inView:controlView];
 	}
 }
@@ -429,17 +429,17 @@
 
 #pragma mark - Drawing
 
-- (NSColor*) getBorderColor
+- (RakColor*) getBorderColor
 {
 	return [Prefs getSystemColor:COLOR_BUTTON_BORDER];
 }
 
-- (NSColor*) getBackgroundColor
+- (RakColor*) getBackgroundColor
 {
 	return _customBackgroundColor == nil ? [Prefs getSystemColor:COLOR_BUTTON_BACKGROUND_UNSELECTED] : _customBackgroundColor;
 }
 
-- (NSColor *) getFontColor
+- (RakColor *) getFontColor
 {
 	if([self isHighlighted] || self.forceHighlight)
 		return [Prefs getSystemColor:COLOR_BUTTON_TEXT_HIGHLIGHT];

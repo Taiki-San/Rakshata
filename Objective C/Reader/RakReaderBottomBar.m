@@ -274,12 +274,12 @@
 
 #pragma mark - Color stuffs
 
-- (NSColor*) getMainColor
+- (RakColor*) getMainColor
 {
 	return [Prefs getSystemColor:COLOR_READER_BAR];
 }
 
-- (NSColor*) getColorFront
+- (RakColor*) getColorFront
 {
 	return [Prefs getSystemColor:COLOR_READER_BAR_FRONT];
 }

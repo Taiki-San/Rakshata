@@ -24,7 +24,7 @@
 		
 		self.selectable = YES;
 		self.allowsMultipleSelection = NO;
-		self.backgroundColors = @[[NSColor clearColor]];
+		self.backgroundColors = @[[RakColor clearColor]];
 		self.minItemSize = NSMakeSize(RCVC_MINIMUM_WIDTH_OFFSET, RCVC_MINIMUM_HEIGHT_OFFSET);
 		
 		[self setDraggingSourceOperationMask:NSDragOperationMove | NSDragOperationCopy forLocal:YES];

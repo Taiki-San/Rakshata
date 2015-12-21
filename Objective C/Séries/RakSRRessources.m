@@ -86,7 +86,7 @@
 	return 21;
 }
 
-- (NSColor *) getBackgroundColor
+- (RakColor *) getBackgroundColor
 {
 	return nil;
 }

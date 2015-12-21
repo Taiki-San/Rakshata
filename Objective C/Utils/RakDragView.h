@@ -26,6 +26,6 @@
 - (void) setupContent : (PROJECT_DATA) projectData : (NSString *) selectionNameString;
 - (void) addPrice : (RakText *) price;
 
-- (NSImage *) createImage;
+- (RakImage *) createImage;
 
 @end

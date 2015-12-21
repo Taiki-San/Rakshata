@@ -20,8 +20,8 @@
 	int64_t _speed;
 	RakText * _speedText;
 	
-	NSColor * slotColor;
-	NSColor * progressColor;
+	RakColor * slotColor;
+	RakColor * progressColor;
 	
 	uint _posX;
 	

@@ -12,7 +12,7 @@
 
 @interface RakSlideshowButtonCell : RakCustomButtonCell
 {
-	NSColor * colorIdle, * colorActive;
+	RakColor * colorIdle, * colorActive;
 }
 
 @end

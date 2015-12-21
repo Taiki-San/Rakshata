@@ -12,7 +12,7 @@
 
 @implementation RakClickableText
 
-- (instancetype) initWithText:(NSString *) text : (NSColor *)color responder : (NSObject *) responder
+- (instancetype) initWithText:(NSString *) text : (RakColor *)color responder : (NSObject *) responder
 {
 	self = [super initWithText:text :color];
 	
@@ -82,7 +82,7 @@
 
 #pragma mark - Color
 
-- (NSColor *) focusTextColor
+- (RakColor *) focusTextColor
 {
 	return [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }

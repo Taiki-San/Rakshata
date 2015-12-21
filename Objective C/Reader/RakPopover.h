@@ -51,10 +51,10 @@
 - (void) configurePopover : (INPopoverController*) internalPopover;
 - (void) directConfiguration : (INPopoverController*) internalPopover;
 
-- (NSColor *) popoverBorderColor;
-- (NSColor *) popoverArrowColor;
-- (NSColor *) borderColor;
-- (NSColor *) backgroundColor;
+- (RakColor *) popoverBorderColor;
+- (RakColor *) popoverArrowColor;
+- (RakColor *) borderColor;
+- (RakColor *) backgroundColor;
 
 - (void) updateOrigin : (NSPoint) origin : (BOOL) animated;
 - (void) additionalUpdateOnThemeChange;

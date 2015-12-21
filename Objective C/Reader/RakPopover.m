@@ -94,7 +94,7 @@
 	[self.layer setCornerRadius:4];
 	[self.layer setBorderWidth:1];
 	
-	NSColor * color;
+	RakColor * color;
 	if((color = [self backgroundColor]) != nil)
 		[self.layer setBackgroundColor : color.CGColor];
 	
@@ -156,22 +156,22 @@
 
 #pragma mark - Colors
 
-- (NSColor *) popoverBorderColor
+- (RakColor *) popoverBorderColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
-- (NSColor *) popoverArrowColor
+- (RakColor *) popoverArrowColor
 {
 	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
 
-- (NSColor *) borderColor
+- (RakColor *) borderColor
 {
 	return [Prefs getSystemColor:COLOR_TABS_BORDER];
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return 	[Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }

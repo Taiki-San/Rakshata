@@ -174,7 +174,7 @@ enum
 	
 	//Tableview configuration
 	[_tableView setHeaderView:nil];
-	[_tableView setBackgroundColor:[NSColor clearColor]];
+	[_tableView setBackgroundColor:[RakColor clearColor]];
 	[_tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 	[_tableView setFocusRingType:NSFocusRingTypeNone];
 	[_tableView setAllowsMultipleSelection:NO];
@@ -208,7 +208,7 @@ enum
 	return parentBounds;
 }
 
-- (NSColor *) textColor : (BOOL) title
+- (RakColor *) textColor : (BOOL) title
 {
 	return [Prefs getSystemColor:COLOR_CTHEADER_FONT];
 }

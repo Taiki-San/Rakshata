@@ -109,7 +109,7 @@
 		[super scrollWheel:event];
 }
 
-- (void) setBackgroundColor:(NSColor *)backgroundColor
+- (void) setBackgroundColor:(RakColor *)backgroundColor
 {
 	[super setBackgroundColor:backgroundColor];
 

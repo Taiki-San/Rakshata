@@ -57,7 +57,7 @@ enum
 		[(RakContentViewBack*) core.window.contentView updateUI];
 }
 
-+ (NSColor*) getSystemColor : (byte) context
++ (RakColor*) getSystemColor : (byte) context
 {
 	if(prefsCache == nil)
 		[self initCache];

@@ -128,7 +128,7 @@
 #define DRAGVIEW_BORDURE_VERT 7
 #define DRAGVIEW_BORDURE_HORIZ 7
 
-- (NSImage *) createImage
+- (RakImage *) createImage
 {
 	NSRect frame = NSMakeRect(0, 0, self.frame.size.width + 2 * DRAGVIEW_BORDURE_VERT, self.frame.size.height + 2 * DRAGVIEW_BORDURE_HORIZ);
 	NSView * view = [[NSView alloc] initWithFrame:frame];
@@ -148,7 +148,7 @@
 	NSBitmapImageRep *bir = [view bitmapImageRepForCachingDisplayInRect:[view bounds]];
 	[bir setSize:view.bounds.size];
 	[view cacheDisplayInRect:[view bounds] toBitmapImageRep:bir];
-	NSImage * output = [[NSImage alloc] initWithSize : view.bounds.size];
+	RakImage * output = [[RakImage alloc] initWithSize : view.bounds.size];
 	[output addRepresentation : bir];
 	
 	[self removeFromSuperview];

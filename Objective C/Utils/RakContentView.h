@@ -34,7 +34,7 @@
 
 @interface RakContentViewBack : NSView
 {
-	NSColor * backgroundColor;
+	RakColor * backgroundColor;
 	
 	RakBorder* internalRows1, * internalRows2;
 	

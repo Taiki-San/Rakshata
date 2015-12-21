@@ -198,22 +198,22 @@
 
 #pragma mark - Interface
 
-+ (NSColor *) getBackgroundColor
++ (RakColor *) getBackgroundColor
 {
 	return [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND];
 }
 
-- (NSColor *) getBorderColor
+- (RakColor *) getBorderColor
 {
 	return [Prefs getSystemColor:COLOR_SEARCHBAR_BORDER];
 }
 
-- (NSColor *) getPlaceholderTextColor
+- (RakColor *) getPlaceholderTextColor
 {
 	return [Prefs getSystemColor:COLOR_SEARCHBAR_PLACEHOLDER_TEXT];
 }
 
-- (NSColor *) getTextColor
+- (RakColor *) getTextColor
 {
 	return [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }

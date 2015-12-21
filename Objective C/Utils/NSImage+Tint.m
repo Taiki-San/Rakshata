@@ -10,12 +10,10 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#import "NSImage+Tint.h"
+@implementation RakImage (Tint)
 
-@implementation NSImage (Tint)
-
-//Come from http://stackoverflow.com/questions/1413135/tinting-a-grayscale-nsimage-or-ciimage
-- (void) tintWithColor : (NSColor *) color
+//Come from http://stackoverflow.com/questions/1413135/tinting-a-grayscale-RakImage-or-ciimage
+- (void) tintWithColor : (RakColor *) color
 {
 	NSSize size = self.size;
 	

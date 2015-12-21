@@ -395,12 +395,12 @@ enum
 	[self display];
 }
 
-- (NSColor *) fontColor
+- (RakColor *) fontColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
 
-- (NSColor *) fontPressedColor
+- (RakColor *) fontPressedColor
 {
 	return [Prefs getSystemColor:COLOR_HIGHLIGHT];
 }

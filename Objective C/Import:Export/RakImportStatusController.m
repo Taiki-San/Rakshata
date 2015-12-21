@@ -252,7 +252,7 @@ enum
 	}
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
 }
@@ -274,7 +274,7 @@ enum
 	for(NSDictionary * dict in overridenImages)
 	{
 		byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue], standardCode = retinaCode - retinaCode % 2;
-		NSImage * baseImage = [dict objectForKey:@"data"];
+		RakImage * baseImage = [dict objectForKey:@"data"];
 
 		NSSize retinaSize = thumbSizeForID(retinaCode), standardSize = thumbSizeForID(standardCode);
 

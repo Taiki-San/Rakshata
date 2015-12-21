@@ -59,7 +59,7 @@ enum
 - (void) updatePlaceholder : (BOOL) inactive;
 - (void) willLooseFocus;
 
-+ (NSColor *) getBackgroundColor;
++ (RakColor *) getBackgroundColor;
 
 @end
 

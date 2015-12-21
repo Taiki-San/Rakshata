@@ -105,12 +105,12 @@
 
 @implementation RakCTHImageGradient
 
-- (NSColor *) startColor
+- (RakColor *) startColor
 {
 	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
 }
 
-- (NSColor *) endColor : (NSColor *) startColor
+- (RakColor *) endColor : (RakColor *) startColor
 {
 	return [startColor colorWithAlphaComponent:0];
 }
@@ -139,7 +139,7 @@
 
 - (void) updateGradient
 {
-	NSColor * startColor = [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
+	RakColor * startColor = [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 	_titleGradient = [[NSGradient alloc] initWithStartingColor : startColor endingColor : [self endColor: startColor]];
 	
 	[super updateGradient];

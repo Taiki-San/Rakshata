@@ -12,13 +12,13 @@
 
 @implementation RakBorder
 
-- (void) setColor : (NSColor *) color
+- (void) setColor : (RakColor *) color
 {
 	self.layer.backgroundColor	= color.CGColor;
 	self.layer.borderColor		= color.CGColor;
 }
 
--  (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (NSColor *) color
+-  (id) initWithFrame:(NSRect)frameRect : (CGFloat) borderWidth : (CGFloat) angleRounds : (RakColor *) color
 {
 	self = [super initWithFrame:frameRect];
 	

@@ -76,12 +76,12 @@
 	_width = width;
 }
 
-- (void) setSlotColor : (NSColor *) color
+- (void) setSlotColor : (RakColor *) color
 {
 	slotColor = color;
 }
 
-- (void) setProgressColor : (NSColor *) color
+- (void) setProgressColor : (RakColor *) color
 {
 	progressColor = color;
 }

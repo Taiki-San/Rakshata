@@ -130,12 +130,12 @@ enum
 	return NSMakeRect(0, PREF_BUTTON_BAR_HEIGHT, WIDTH, HEIGHT);
 }
 
-- (NSColor *) titleColor
+- (RakColor *) titleColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }

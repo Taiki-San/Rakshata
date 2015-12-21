@@ -70,14 +70,14 @@
 	return NSMakeRect(width - drawnWidth, 0, drawnWidth, self.bounds.size.height);
 }
 
-- (NSColor *) startColor
+- (RakColor *) startColor
 {
-	return [NSColor blackColor];
+	return [RakColor blackColor];
 }
 
-- (NSColor *) endColor : (NSColor *) startColor
+- (RakColor *) endColor : (RakColor *) startColor
 {
-	return [NSColor clearColor];
+	return [RakColor clearColor];
 }
 
 - (void) updateGradient

@@ -18,7 +18,7 @@ enum
 	NB_STAR = 5
 };
 
-static 	NSImage * starActive, * starIdle;
+static 	RakImage * starActive, * starIdle;
 uint _currentTheme;
 
 @implementation RakStarView
@@ -144,7 +144,7 @@ uint _currentTheme;
 
 #pragma mark - Drawing
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_ACTIVE];
 }

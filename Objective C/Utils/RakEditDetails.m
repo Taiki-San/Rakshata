@@ -60,7 +60,7 @@
 			coreview.backgroundColor = [self backgroundColor];
 			[coreview addSubview:self];
 			
-			queryWindow.backgroundColor = [NSColor clearColor];
+			queryWindow.backgroundColor = [RakColor clearColor];
 			queryWindow.contentView = coreview;
 				
 			[[(RakAppDelegate *) [NSApp delegate] window] beginSheet:queryWindow completionHandler:^(NSModalResponse returnCode) {}];
@@ -70,7 +70,7 @@
 
 #pragma mark - Color
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_EXPORT_BACKGROUND];
 }
@@ -99,7 +99,7 @@
 		for(NSDictionary * dict in array)
 		{
 			byte retinaCode = [[dict objectForKey:@"code"] unsignedCharValue], standardCode = retinaCode - retinaCode % 2;
-			NSImage * baseImage = [dict objectForKey:@"data"];
+			RakImage * baseImage = [dict objectForKey:@"data"];
 			
 			NSSize retinaSize = thumbSizeForID(retinaCode), standardSize = thumbSizeForID(standardCode);
 			

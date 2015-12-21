@@ -298,25 +298,25 @@ enum
 
 #pragma mark - Drawing
 
-- (NSColor *) textColor
+- (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }
 
-- (NSColor *) backgroundColor
+- (RakColor *) backgroundColor
 {
 	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
 
-- (NSColor *) getGradientColor
+- (RakColor *) getGradientColor
 {
 	return [Prefs getSystemColor:COLOR_COREVIEW_BORDER];
 }
 
 - (void) updateGradient
 {
-	const NSColor * activeColor = [self getGradientColor];
-	_gradient = [[NSGradient alloc] initWithColors:@[activeColor, activeColor, [NSColor clearColor]] atLocations:(const CGFloat [3]) {0.0f, INFLECTION_POINT, 1.0f} colorSpace:[NSColorSpace genericRGBColorSpace]];
+	const RakColor * activeColor = [self getGradientColor];
+	_gradient = [[NSGradient alloc] initWithColors:@[activeColor, activeColor, [RakColor clearColor]] atLocations:(const CGFloat [3]) {0.0f, INFLECTION_POINT, 1.0f} colorSpace:[NSColorSpace genericRGBColorSpace]];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

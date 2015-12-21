@@ -228,7 +228,7 @@
 - (CGColorRef) getBackgroundColor
 {
 	if(self.compactMode)
-		return [NSColor clearColor].CGColor;
+		return [RakColor clearColor].CGColor;
 	
 	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND].CGColor;
 }

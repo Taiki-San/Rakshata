@@ -48,11 +48,11 @@ enum
 - (void) updateProject : (PROJECT_DATA) project;
 - (void) updateProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;
 
-- (RakText *) getTextElement : (NSString *) string : (NSColor *) color : (byte) fontCode : (CGFloat) fontSize;
+- (RakText *) getTextElement : (NSString *) string : (RakColor *) color : (byte) fontCode : (CGFloat) fontSize;
 
-- (NSColor *) getTextColor;
-- (NSColor *) getTagTextColor;
-- (NSColor *) backgroundColor;
+- (RakColor *) getTextColor;
+- (RakColor *) getTagTextColor;
+- (RakColor *) backgroundColor;
 - (void) reloadColors;
 
 - (NSSize) defaultWorkingSize;
@@ -82,7 +82,7 @@ enum
 - (void) updateProject : (PROJECT_DATA) project insertionPoint : (NSDictionary *) insertionPoint;
 
 - (CGFloat) getMinimumHeight;
-- (NSColor *) borderColor;
+- (RakColor *) borderColor;
 
 @end
 

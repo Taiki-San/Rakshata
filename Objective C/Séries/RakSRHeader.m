@@ -293,7 +293,7 @@
 
 #pragma mark - Color
 
-- (NSColor *) separatorColor
+- (RakColor *) separatorColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
 }

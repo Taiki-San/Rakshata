@@ -19,8 +19,8 @@
 	RakCTProjectSynopsis * synopsis;
 	
 	//Background thingy
-	NSColor * _backgroundColor;
-	NSColor * _synopsisTitleBackground;
+	RakColor * _backgroundColor;
+	RakColor * _synopsisTitleBackground;
 	CGFloat _synopsisTitleHeight;
 	
 	//Optimization

@@ -28,7 +28,7 @@
 	
 	if(self != nil)
 	{
-		NSImage* image = [[NSWorkspace sharedWorkspace] iconForFile:[[NSBundle mainBundle] bundlePath]];
+		NSImage * image = [[NSWorkspace sharedWorkspace] iconForFile:[[NSBundle mainBundle] bundlePath]];
 		
 		if(image == nil)
 			return nil;
