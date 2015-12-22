@@ -341,7 +341,7 @@ enum
 	if(!_needUpdateMainViews)
 		return;
 	
-	RakAppDelegate * delegate = RakApp;
+	RakAppOSXDelegate * delegate = RakApp;
 	
 	if(animated)
 	{

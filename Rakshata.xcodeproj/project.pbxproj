@@ -78,7 +78,6 @@
 		B625760D1C27723400811C33 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760C1C27723400811C33 /* UIKit.framework */; };
 		B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760E1C27723C00811C33 /* QuartzCore.framework */; };
 		B62576121C27725D00811C33 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62576111C27725D00811C33 /* Foundation.framework */; };
-		B62576151C2773CF00811C33 /* RakWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B62576141C2773CF00811C33 /* RakWrapper.m */; };
 		B625761B1C27883D00811C33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B625761A1C27883D00811C33 /* Assets.xcassets */; };
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
@@ -153,6 +152,7 @@
 		B640F2F21C014064005178E0 /* jumpPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = B640F2EE1C014064005178E0 /* jumpPage.xib */; };
 		B640F2F31C014064005178E0 /* window.xib in Resources */ = {isa = PBXBuildFile; fileRef = B640F2EF1C014064005178E0 /* window.xib */; };
 		B642480B19D57DF000679D78 /* RakGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B642480A19D57DF000679D78 /* RakGradientView.m */; };
+		B645C4741C28A34300CC3EC8 /* RakAppiOSDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B645C4721C28A2E700CC3EC8 /* RakAppiOSDelegate.m */; };
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
@@ -346,6 +346,7 @@
 		B6BE934E1C28199100BCD3E3 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6BE93471C28199100BCD3E3 /* libz.a */; };
 		B6BE93501C286E3700BCD3E3 /* lecteur_sharedStruct.m in Sources */ = {isa = PBXBuildFile; fileRef = B63A5D941BE81C83005E6EBC /* lecteur_sharedStruct.m */; };
 		B6BE93511C286E9B00BCD3E3 /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
+		B6BE93551C289FFF00BCD3E3 /* RakAppOSXDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BE93541C289FFF00BCD3E3 /* RakAppOSXDelegate.m */; };
 		B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */; };
 		B6BF49DC19D1944D00A2AAC9 /* RakCTHImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BF49DB19D1944D00A2AAC9 /* RakCTHImage.m */; };
 		B6C64E59194BB6EB0066A7BD /* RakDragItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C64E58194BB6EB0066A7BD /* RakDragItem.m */; };
@@ -515,9 +516,7 @@
 		B625760E1C27723C00811C33 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		B62576111C27725D00811C33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B62576131C2773CF00811C33 /* RakOSXWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOSXWrapper.h; path = "OS X/RakOSXWrapper.h"; sourceTree = "<group>"; };
-		B62576141C2773CF00811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = "OS X/RakWrapper.m"; sourceTree = "<group>"; };
 		B62576161C27745500811C33 /* RakiOSWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakiOSWrapper.h; path = iOS/RakiOSWrapper.h; sourceTree = SOURCE_ROOT; };
-		B62576171C27745500811C33 /* RakWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakWrapper.m; path = iOS/RakWrapper.m; sourceTree = SOURCE_ROOT; };
 		B625761A1C27883D00811C33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = iOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		B62935D11A7E65EC00DE20E2 /* RakSRSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchList.h; path = "Séries/RakSRSearchList.h"; sourceTree = "<group>"; };
 		B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchList.m; path = "Séries/RakSRSearchList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -603,6 +602,8 @@
 		B640F2EF1C014064005178E0 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = "Objective C/Interface Builder/window.xib"; sourceTree = "<group>"; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
+		B645C4711C28A2E700CC3EC8 /* RakAppiOSDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAppiOSDelegate.h; path = iOS/RakAppiOSDelegate.h; sourceTree = SOURCE_ROOT; };
+		B645C4721C28A2E700CC3EC8 /* RakAppiOSDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAppiOSDelegate.m; path = iOS/RakAppiOSDelegate.m; sourceTree = SOURCE_ROOT; };
 		B64640D61870DBD2005705E7 /* PrefsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PrefsUI.h; path = PrefsUI/PrefsUI.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B64640D71870DBD2005705E7 /* PrefsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = PrefsUI.m; path = PrefsUI/PrefsUI.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B646E7871A52F3D600923C95 /* RakCTDragableTitle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTDragableTitle.h; path = CTSelec/RakCTDragableTitle.h; sourceTree = "<group>"; };
@@ -826,6 +827,8 @@
 		B6BE93471C28199100BCD3E3 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "OS X/Libraries/lib/libz.a"; sourceTree = "<group>"; };
 		B6BE934F1C28629300BCD3E3 /* RakImportExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportExport.h; path = "Import:Export/RakImportExport.h"; sourceTree = "<group>"; };
 		B6BE93521C28706D00BCD3E3 /* RakNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RakNotification.h; sourceTree = "<group>"; };
+		B6BE93531C289FFF00BCD3E3 /* RakAppOSXDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAppOSXDelegate.h; path = "OS X/RakAppOSXDelegate.h"; sourceTree = SOURCE_ROOT; };
+		B6BE93541C289FFF00BCD3E3 /* RakAppOSXDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAppOSXDelegate.m; path = "OS X/RakAppOSXDelegate.m"; sourceTree = SOURCE_ROOT; };
 		B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeaderImage.h; path = CTSelec/RakCTHeaderImage.h; sourceTree = "<group>"; };
 		B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCTHeaderImage.m; path = CTSelec/RakCTHeaderImage.m; sourceTree = "<group>"; };
 		B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHImage.h; path = CTSelec/RakCTHImage.h; sourceTree = "<group>"; };
@@ -1059,7 +1062,6 @@
 				B67C68891C270699005AB992 /* Main.storyboard */,
 				B67C68831C270698005AB992 /* MasterViewController.h */,
 				B67C68841C270698005AB992 /* MasterViewController.m */,
-				B67110DB1C276C6700E0BFD9 /* RakBridgeiOS.m */,
 				B67C68991C270699005AB992 /* Rakshata iOSTests */,
 				B67C68A41C270699005AB992 /* Rakshata iOSUITests */,
 			);
@@ -1230,6 +1232,44 @@
 			path = DerivedData/Rakshata/Build/Products/Debug/Rakshata.app/Contents/Resources/Sprites;
 			sourceTree = SOURCE_ROOT;
 		};
+		B645C46D1C28A27D00CC3EC8 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				B6BE93531C289FFF00BCD3E3 /* RakAppOSXDelegate.h */,
+				B6BE93541C289FFF00BCD3E3 /* RakAppOSXDelegate.m */,
+				B645C46E1C28A28500CC3EC8 /* Wrapper */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		B645C46E1C28A28500CC3EC8 /* Wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */,
+				B62576131C2773CF00811C33 /* RakOSXWrapper.h */,
+			);
+			name = Wrapper;
+			sourceTree = "<group>";
+		};
+		B645C46F1C28A2BF00CC3EC8 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				B645C4701C28A2CB00CC3EC8 /* Wrapper */,
+				B645C4711C28A2E700CC3EC8 /* RakAppiOSDelegate.h */,
+				B645C4721C28A2E700CC3EC8 /* RakAppiOSDelegate.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		B645C4701C28A2CB00CC3EC8 /* Wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				B67110DB1C276C6700E0BFD9 /* RakBridgeiOS.m */,
+				B62576161C27745500811C33 /* RakiOSWrapper.h */,
+			);
+			name = Wrapper;
+			sourceTree = "<group>";
+		};
 		B64B74F5195909030015B16D /* OptimizationProfiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -1362,8 +1402,7 @@
 				B625761A1C27883D00811C33 /* Assets.xcassets */,
 				B62576191C27746400811C33 /* garbage */,
 				B67110E11C276C9200E0BFD9 /* Info.plist */,
-				B62576161C27745500811C33 /* RakiOSWrapper.h */,
-				B62576171C27745500811C33 /* RakWrapper.m */,
+				B645C46F1C28A2BF00CC3EC8 /* Sources */,
 			);
 			name = iOS;
 			path = "Rakshata iOS";
@@ -1392,9 +1431,7 @@
 			children = (
 				B67110DF1C276C8A00E0BFD9 /* info.plist */,
 				B66ED18F1949B6D2002A333F /* Interface Builder */,
-				B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */,
-				B62576131C2773CF00811C33 /* RakOSXWrapper.h */,
-				B62576141C2773CF00811C33 /* RakWrapper.m */,
+				B645C46D1C28A27D00CC3EC8 /* Sources */,
 			);
 			name = "OS X";
 			sourceTree = "<group>";
@@ -2348,6 +2385,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B645C4741C28A34300CC3EC8 /* RakAppiOSDelegate.m in Sources */,
 				B6BE93511C286E9B00BCD3E3 /* RakMDLController.m in Sources */,
 				B6BE93501C286E3700BCD3E3 /* lecteur_sharedStruct.m in Sources */,
 				B62575F21C27711200811C33 /* RakImportDirController.m in Sources */,
@@ -2473,7 +2511,6 @@
 				B6D7EC091B682B90009FCE64 /* RakImportRarController.m in Sources */,
 				B6A1E36518F99CD7001D1F8E /* RakTextCell.m in Sources */,
 				B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */,
-				B62576151C2773CF00811C33 /* RakWrapper.m in Sources */,
 				B6978A7D1B420D34002CBB45 /* RakExportController.m in Sources */,
 				B606EB4E1B6855D300DDBBBD /* check.c in Sources */,
 				B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */,
@@ -2603,6 +2640,7 @@
 				B606EB551B6855D300DDBBBD /* utilitaires.c in Sources */,
 				B606EB5F1B68560600DDBBBD /* tome.c in Sources */,
 				B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */,
+				B6BE93551C289FFF00BCD3E3 /* RakAppOSXDelegate.m in Sources */,
 				B606EB2B1B6854F900DDBBBD /* DBDebug.c in Sources */,
 				B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */,
 				B606EB281B6854F900DDBBBD /* DBCacheIO.c in Sources */,

@@ -16,7 +16,7 @@
 
 - (void) launch
 {
-	if([RakApp class] != [RakAppDelegate class])
+	if(![RakApp isKindOfClass:[RakAppDelegate class]])
 		return;
 	
 	initialAnimation = YES;

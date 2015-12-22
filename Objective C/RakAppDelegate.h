@@ -12,37 +12,23 @@
 
 @class RakAboutWindow;
 
-@interface RakAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, NSUserNotificationCenterDelegate>
+@interface RakAppDelegate : NSObject
 {
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
-	
-	RakAboutWindow * aboutWindow;
-	RakPrefsWindow * prefWindow;
-	
 	BOOL loginPromptOpen;
 	pthread_cond_t loginLock;
 	MUTEX_VAR loginMutex;
 }
 
 @property BOOL initialized;
-@property (weak) IBOutlet RakWindow *window;
 @property BOOL haveDistractionFree;
-@property BOOL hasFocus;
 
-- (RakContentView*) getContentView;
+- (RakView *) earlyInit;
+- (void) mainInit : (RakView *) contentView;
 
 - (pthread_cond_t*) sharedLoginLock;
 - (MUTEX_VAR *) sharedLoginMutex : (BOOL) locked;
 
 - (void) openLoginPrompt;
 - (void) loginPromptClosed;
-
-- (Series *)	serie;
-- (CTSelec *)	CT;
-- (MDL *)		MDL;
-- (Reader *)	reader;
 
 @end

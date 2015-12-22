@@ -10,3 +10,11 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakAppiOSDelegate : RakAppDelegate
+{
+	
+}
+
+@property (readonly) BOOL hasFocus;
+
+@end

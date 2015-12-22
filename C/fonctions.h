@@ -171,7 +171,14 @@ bool isStringLongerOrAsLongThan(const char * input, uint length);
 #define crashTemp(string, length) bzero(string, length)
 #define isHexa(caract) ((caract >= '0' && caract <= '9') || (caract >= 'a' && caract <= 'f') || (caract >= 'A' && caract <= 'F'))
 #define isNbr(caract) isdigit(caract)
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define isJPEG(input) (((rawData *) input)[0] == (rawData) '\xff' && ((rawData *) input)[1] == (rawData) '\xd8')
 #define isPNG(input) (((rawData *) input)[0] == (rawData) '\x89' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'N' && ((rawData *) input)[3] == (rawData) 'G')
+
+#if defined(MIN)
+	#undef MIN
+#endif
+#if defined(MAX)
+	#undef MAX
+#endif
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))

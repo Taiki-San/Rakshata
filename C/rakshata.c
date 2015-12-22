@@ -18,7 +18,7 @@ MUTEX_VAR DBRefreshMutex;
         #undef main
     #endif
 #else
-	int launchApp(int argc, const char *argv[]);
+	int launchApp(int argc, char *argv[]);
 #endif
 
 void cleanup()
@@ -30,7 +30,7 @@ void cleanup()
 	MUTEX_DESTROY(DBRefreshMutex);
 }
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
 	configureSandbox();
 	createCrashFile();

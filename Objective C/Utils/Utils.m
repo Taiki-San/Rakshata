@@ -12,7 +12,7 @@
 
 static NSArray * savedContext;
 
-@implementation NSApplication (contextSave)
+@implementation RakApplication (contextSave)
 
 - (void) setSavedContext:(NSArray *)_savedContext
 {
@@ -146,18 +146,31 @@ static NSArray * savedContext;
 {
 	NSRect bounds = self.bounds;
 	NSSize size = bounds.size;
+	RakImage* image;
 	
+#if TARGET_OS_IPHONE
+	UIGraphicsBeginImageContextWithOptions(size, self.opaque, 0.0);
+	[self.layer renderInContext:UIGraphicsGetCurrentContext()];
+	
+	image = UIGraphicsGetImageFromCurrentImageContext();
+	
+	UIGraphicsEndImageContext();
+
+#else
 	NSBitmapImageRep *representation = [self bitmapImageRepForCachingDisplayInRect:bounds];
 	[representation setSize:size];
 	[self cacheDisplayInRect:bounds toBitmapImageRep:representation];
 	
-	RakImage* image = [[RakImage alloc] initWithSize:size];
+	image = [[RakImage alloc] initWithSize:size];
 	[image addRepresentation:representation];
+#endif
+	
 	return image;
 }
 
 @end
 
+#if !TARGET_OS_IPHONE
 @implementation NSMenuItem (AutoLocalization)
 
 - (void) setAutoLocalizedString : (NSString *) string
@@ -175,6 +188,7 @@ static NSArray * savedContext;
 }
 
 @end
+#endif
 
 NSString * getStringForWchar(const charType * string)
 {
@@ -253,6 +267,12 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 //The retina version pixelSize = 2 x size
 void exportImageToPath(RakImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath)
 {
+	NSData * data;
+#if TARGET_OS_IPHONE
+	
+	data = UIImagePNGRepresentation(image);
+
+#else
 	NSRect pixelInRect = (NSRect) {{0, 0}, pixelSize};
 	NSBitmapImageRep *workingRep = [[NSBitmapImageRep alloc] initWithCGImage:[image CGImageForProposedRect:&(pixelInRect) context:nil hints:nil]];
 
@@ -280,10 +300,11 @@ void exportImageToPath(RakImage * image, NSSize size, NSSize pixelSize,  NSStrin
 		[image drawInRect:(NSRect) {{0, 0}, size} fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
 		[NSGraphicsContext restoreGraphicsState];
 	}
-
+	
 	//Export the image
-	NSData * data = [workingRep representationUsingType:NSPNGFileType properties:nil];
-
+	data = [workingRep representationUsingType:NSPNGFileType properties:nil];
+#endif
+	
 	[data writeToFile:outputPath atomically:YES];
 	if(!checkFileExist([outputPath UTF8String]))
 	{
@@ -315,7 +336,7 @@ void flushBundleCache(NSBundle *bundle)
 }
 
 //Ensure app defaults, out of sandbox only
-
+#if !TARGET_OS_IPHONE
 #import <ApplicationServices/ApplicationServices.h>
 
 void registerDefaultForExtension(NSString * extension)
@@ -338,3 +359,4 @@ void registerDefaultForExtension(NSString * extension)
 	CFRelease(localExtension);
 	CFRelease(currentDefault);
 }
+#endif

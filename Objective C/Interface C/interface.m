@@ -71,7 +71,13 @@ int getBuildID()
 
 void openWebsite(const char * URL)
 {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString: [NSString stringWithUTF8String : URL]]];
+	NSURL * _URL = [NSURL URLWithString: [NSString stringWithUTF8String : URL]];
+
+#if TARGET_OS_IPHONE
+	[RakRealApp openURL:_URL];
+#else
+	[[NSWorkspace sharedWorkspace] openURL:_URL];
+#endif
 }
 
 /*****************************************
@@ -81,69 +87,114 @@ void openWebsite(const char * URL)
  *****************************************/
 
 #define LAUNCH_CRASH_FILE "crashAtLaunch"
+void createCrashFileCallBackWithResponse(BOOL haveResponse, NSInteger response);
 
 void createCrashFile()
 {
 	if(checkFileExist(LAUNCH_CRASH_FILE))
 	{
-		NSAlert * alert = [[NSAlert alloc] init];
+		BOOL partialFuckUp = checkFileExist(CONTEXT_FILE) || checkFileExist(SETTINGS_FILE);
+		NSString * message;
+		NSArray <NSString *> * buttons;
 		
+		if(partialFuckUp)
+		{
+			message = NSLocalizedString(@"CRASH-CONTENT", nil);
+			buttons = @[NSLocalizedString(@"YES", nil), NSLocalizedString(@"CRASH-NUKE", nil), NSLocalizedString(@"NO", nil)];
+		}
+		else
+		{
+			message = NSLocalizedString(@"CRASH-CONTENT-TOTAL", nil);
+			buttons = @[NSLocalizedString(@"OK", nil)];
+		}
+
+#if !TARGET_OS_IPHONE
+		NSAlert * alert = [[NSAlert alloc] init];
 		if(alert != nil)
 		{
 			alert.alertStyle = NSCriticalAlertStyle;
-			alert.messageText = NSLocalizedString(@"CRASH-TITLE", nil);
+			alert.informativeText = NSLocalizedString(@"CRASH-TITLE", nil);
 			
-			if(checkFileExist(CONTEXT_FILE) || checkFileExist(SETTINGS_FILE))
+			for(NSString * button in buttons)
 			{
-				alert.informativeText = NSLocalizedString(@"CRASH-CONTENT", nil);
-				[alert addButtonWithTitle:NSLocalizedString(@"YES", nil)];
-				[alert addButtonWithTitle:NSLocalizedString(@"CRASH-NUKE", nil)];
-				[alert addButtonWithTitle:NSLocalizedString(@"NO", nil)];
-				
-				NSModalResponse response = [alert runModal];
-				
-				//Only remove context file
-				if(response == -NSModalResponseStop && checkFileExist(CONTEXT_FILE))
-				{
-					remove(CONTEXT_FILE".crashed");
-					rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
-				}
-				
-				//Deeper flush, remove context but also settings
-				else if(response == -NSModalResponseAbort)
-				{
-					if(checkFileExist(CONTEXT_FILE))
-					{
-						remove(CONTEXT_FILE".crashed");
-						rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
-					}
-					
-					if(checkFileExist(SETTINGS_FILE))
-					{
-						remove(SETTINGS_FILE".crashed");
-						rename(SETTINGS_FILE, SETTINGS_FILE".crashed");
-					}
-					
-					removeFolder(IMAGE_CACHE_DIR);
-				}
+				[alert addButtonWithTitle:button];
 			}
-			else
-			{
-				alert.informativeText = NSLocalizedString(@"CRASH-CONTENT-TOTAL", nil);
-				[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
-				
-				[alert runModal];
-			}
+			
+			return createCrashFileCallBackWithResponse(YES, [alert runModal]);
 		}
+#else
+		UIAlertController * alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CRASH-TITLE", nil)
+																		message:message
+																 preferredStyle:UIAlertControllerStyleAlert];
+		if(alert != nil)
+		{
+			uint count = [buttons count], _styles[3] = {UIAlertActionStyleDefault, UIAlertActionStyleDestructive, UIAlertActionStyleCancel}, *styles = _styles;
+			const int _conversionTable[3] = {NSModalResponseStop, NSModalResponseAbort, NSModalResponseContinue}, *conversionTable = _conversionTable;
+			
+			[buttons enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
+			{
+				BOOL isLast = idx == count - 1;
+				UIAlertAction * action = [UIAlertAction actionWithTitle:obj
+																style:isLast ? styles[2] : styles[idx]
+															  handler:^(UIAlertAction * _Nonnull _action)
+				{
+					for(uint i = 0; i < 3; ++i)
+					{
+						if(_action.style == styles[i])
+						{
+							createCrashFileCallBackWithResponse(YES, conversionTable[i]);
+							break;
+						}
+					}
+				}];
+				
+				[alert addAction:action];
+			}];
+			
+			return [[RakRealApp.keyWindow rootViewController] presentViewController:alert animated:YES completion:^{}];
+		}
+#endif
 	}
 	
-	FILE * file = fopen(LAUNCH_CRASH_FILE, "w+");
+	createCrashFileCallBackWithResponse(NO, 0);
+}
+
+void createCrashFileCallBackWithResponse(BOOL haveResponse, NSInteger response)
+{
+	//Only remove context file
+	if(response == -NSModalResponseStop && checkFileExist(CONTEXT_FILE))
+	{
+		remove(CONTEXT_FILE".crashed");
+		rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
+	}
 	
+	//Deeper flush, remove context but also settings
+	else if(response == -NSModalResponseAbort)
+	{
+		if(checkFileExist(CONTEXT_FILE))
+		{
+			remove(CONTEXT_FILE".crashed");
+			rename(CONTEXT_FILE, CONTEXT_FILE".crashed");
+		}
+		
+		if(checkFileExist(SETTINGS_FILE))
+		{
+			remove(SETTINGS_FILE".crashed");
+			rename(SETTINGS_FILE, SETTINGS_FILE".crashed");
+		}
+		
+		removeFolder(IMAGE_CACHE_DIR);
+	}
+
+	FILE * file = fopen(LAUNCH_CRASH_FILE, "w+");
+
 	if(file != NULL)
 		fclose(file);
 	
+#if !TARGET_OS_IPHONE
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"68795b31d0a748d990db94ab4744c8c2"];
 	[[BITHockeyManager sharedHockeyManager] startManager];
+#endif
 }
 
 void sendCrashedFilesHome()
@@ -210,8 +261,29 @@ void deleteCrashFile()
 	
 	if(checkFileExist(CONTEXT_FILE".crashed") || checkFileExist(SETTINGS_FILE".crashed"))
 	{
+#if TARGET_OS_IPHONE
+		UIAlertController * alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CRASH-RECOVERED-TITLE", nil)
+																		message:NSLocalizedString(@"CRASH-RECOVERED-CONTENT", nil)
+																 preferredStyle:UIAlertControllerStyleAlert];
+		if(alert != nil)
+		{
+			[alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"YES", nil)
+													   style:UIAlertActionStyleDefault
+													 handler:^(UIAlertAction * _Nonnull action) {
+														 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+															 sendCrashedFilesHome();
+														 });
+													 }]];
+			
+			[alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"NO", nil)
+													  style:UIAlertActionStyleCancel
+													handler:^(UIAlertAction * _Nonnull action) {}
+							  ]];
+			
+			[[RakRealApp.keyWindow rootViewController] presentViewController:alert animated:YES completion:^{}];
+		}
+#else
 		NSAlert * alert = [[NSAlert alloc] init];
-		
 		if(alert != nil)
 		{
 			alert.alertStyle = NSInformationalAlertStyle;
@@ -228,6 +300,7 @@ void deleteCrashFile()
 				});
 			}
 		}
+#endif
 	}
 }
 
@@ -249,7 +322,20 @@ void alertExit(const char * exitReason)
 		return dispatch_sync(dispatch_get_main_queue(), ^{	alertExit(exitReason);	});
 	
 	sendToLog(exitReason);
-
+	
+#if TARGET_OS_IPHONE
+	UIAlertController * alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"MAJOR-FAILURE-TITLE", nil)
+																	message:[NSString localizedStringWithFormat:NSLocalizedString(@"MAJOR-FAILURE-MESSAGE-%s", nil), exitReason]
+															 preferredStyle:UIAlertControllerStyleAlert];
+	if(alert != nil)
+	{
+		[alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+												  style:UIAlertActionStyleCancel
+												handler:^(UIAlertAction * _Nonnull action) {}]];
+		
+		[[RakRealApp.keyWindow rootViewController] presentViewController:alert animated:YES completion:^{}];
+	}
+#else
 	NSAlert * alert = [[NSAlert alloc] init];
 	
 	if(alert != nil)
@@ -261,6 +347,7 @@ void alertExit(const char * exitReason)
 		
 		[alert runModal];
 	}
+#endif
 
 	exit(EXIT_FAILURE);
 }
@@ -445,14 +532,14 @@ void updateRecentSeries()
 
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element)
 {
-	MDL * tabMDL = [RakApp MDL];
+	MDL * tabMDL = RakApp.MDL;
 
 	return tabMDL == nil ? [tabMDL proxyCheckForCollision:data :isTome :element] : false;
 }
 
 void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch)
 {
-	MDL * tabMDL = [RakApp MDL];
+	MDL * tabMDL = RakApp.MDL;
 	
 	if(tabMDL != nil)
 		[tabMDL proxyAddElement:data isTome:isTome element:element partOfBatch:partOfBatch];
@@ -463,6 +550,19 @@ void notifyDownloadOver()
 	if(RakApp.hasFocus)
 		return;
 	
+#if TARGET_OS_IPHONE
+	UILocalNotification * notification = [[UILocalNotification alloc] init];
+	if(notification != nil)
+	{
+		notification.repeatInterval = NSCalendarUnitDay;
+		notification.alertTitle = NSLocalizedString(@"MDL-DLOVER-NOTIF-NAME", nil);
+		notification.alertBody = NSLocalizedString(@"MDL-DLOVER-NOTIF-CONTENT", nil);
+		[notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+		[notification setTimeZone:[NSTimeZone  defaultTimeZone]];
+		
+		[RakRealApp scheduleLocalNotification:notification];
+	}
+#else
 	NSUserNotification *notification = [[NSUserNotification alloc] init];
 	if(notification != nil)
 	{
@@ -471,6 +571,7 @@ void notifyDownloadOver()
 		
 		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 	}
+#endif
 }
 
 /*****************************************
@@ -479,10 +580,41 @@ void notifyDownloadOver()
  **										**
  *****************************************/
 
+#if !TARGET_OS_IPHONE
 #import <SystemConfiguration/SystemConfiguration.h>
+#endif
 
 bool getSystemProxy(char ** _proxyAddress)
 {
+#if TARGET_OS_IPHONE
+	CFDictionaryRef proxy = CFNetworkCopySystemProxySettings();
+	
+	const CFStringRef proxyCFstr =	(const CFStringRef) CFDictionaryGetValue(proxy, (const void*) kCFNetworkProxiesHTTPProxy);
+	const CFNumberRef portCFnum =	(const CFNumberRef) CFDictionaryGetValue(proxy, (const void*) kCFNetworkProxiesHTTPPort);
+
+	const uint bufferLength = 2 * CFStringGetLength(proxyCFstr) + 1;
+	char buffer[bufferLength];
+	SInt32 port;
+	
+	if(!CFStringGetCString(proxyCFstr, buffer, bufferLength, kCFStringEncodingUTF8)
+	   || !CFNumberGetValue(portCFnum, kCFNumberSInt32Type, &port))
+	{
+		CFRelease(proxy);
+		return false;
+	}
+	
+	CFRelease(proxy);
+	
+	uint length = strlen(buffer) + 50;
+	
+	char * output = malloc(length * sizeof(char));
+	if(output == NULL)
+		return false;
+	
+	snprintf(output, length, "http://%s:%d", buffer, port);
+	*_proxyAddress = output;
+	return true;
+#else
 	CFDictionaryRef proxies = SCDynamicStoreCopyProxies(NULL);
 	
 	const void * isActivated;
@@ -522,4 +654,5 @@ bool getSystemProxy(char ** _proxyAddress)
 
 	CFRelease(proxies);
 	return false;
+#endif
 }

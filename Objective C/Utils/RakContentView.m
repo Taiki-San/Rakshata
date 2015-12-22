@@ -100,17 +100,6 @@
 	}
 }
 
-- (void) updateUI
-{
-	self.layer.backgroundColor = [self firstBorderColor].CGColor;
-	[internalRows1 setColor:[self middleBorderColor]];
-	
-	if(self.window.isMainWindow)
-		[internalRows2 setColor:[self lastBorderColor]];
-	
-	[self setNeedsDisplay:YES];
-}
-
 - (RakContentView *) getFirstResponder
 {
 	if(firstResponder == nil)

@@ -14,5 +14,6 @@
 #define RakImage	NSImage
 #define RakColor	NSColor
 
+#define RakApplication	NSApplication
 #define RakRealApp		NSApp
-#define RakApp			((RakAppDelegate *) [RakRealApp delegate])
+#define RakApp			((RakAppOSXDelegate *) [RakRealApp delegate])

@@ -51,10 +51,6 @@ enum
 		return;
 	
 	prefsCache.themeCode = newTheme;
-	
-	RakAppDelegate * core = RakApp;
-	if([core class] == [RakAppDelegate class] && [core.window.contentView class] == [RakContentViewBack class])
-		[(RakContentViewBack*) core.window.contentView updateUI];
 }
 
 + (RakColor*) getSystemColor : (byte) context
@@ -128,19 +124,28 @@ enum
 		}
 		case GET_FONT_STANDARD:
 		{
+#if !TARGET_OS_IPHONE
 			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 				output = @".AppleSystemUIFont";
 			else
 				output = @"Helvetica";
+#else
+			output = @".SFUIText-Regular";
+#endif
 			break;
 		}
 		case GET_FONT_TAGS:
 		case GET_FONT_PLACEHOLDER:
 		{
+#if !TARGET_OS_IPHONE
 			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 				output = @".AppleSystemUIFontItalic";
 			else
 				output = @"Helvetica-Oblique";
+#else
+			output = [[UIFont italicSystemFontOfSize:14] fontName];
+			NSLog(@"%@", output);
+#endif
 			break;
 		}
 		case GET_FONT_RD_BUTTONS:
@@ -148,10 +153,14 @@ enum
 		case GET_FONT_ABOUT:
 		case GET_FONT_PREFS_TITLE:
 		{
+#if !TARGET_OS_IPHONE
 			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 				output = @".AppleSystemUIFontBold";
 			else
 				output = @"Helvetica-Bold";
+#else
+			output = @".SFUIText-Semibold";
+#endif
 			break;
 		}
 	}
@@ -435,7 +444,7 @@ enum
 	}
 }
 
-+ (BOOL) setPref : (uint) requestID : (uint64) value
++ (BOOL) setPref : (uint) requestID : (uint64_t) value
 {
 	BOOL ret_value = NO;
 	
@@ -743,9 +752,11 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		_mainThread = TAB_DEFAULT;
 		_stateTabsReader = STATE_READER_TAB_DEFAULT;
 		_favoriteAutoDL = true;
-		_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
 		_overrideDirection = YES;
 		_suggestFromLastRead = YES;
+#if !TARGET_OS_IPHONE
+		_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
+#endif
 
 		if(data == nil)
 			self.themeCode = 1;
@@ -784,8 +795,8 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(input != recoveryBuffer)
 			free(input);
 		
-		RakAppDelegate * core = RakApp;
-		if([core class] == [RakAppDelegate class])
+		RakAppOSXDelegate * core = RakApp;
+		if([core isKindOfClass:[RakAppDelegate class]])
 			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
 		
 		[self refreshFirstResponder];
@@ -827,12 +838,14 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 				break;
 			}
 			
+#if !TARGET_OS_IPHONE
 			case 3:
 			{
 				if(value >= PREFS_BUTTON_CODE_GENERAL && value <= PREFS_BUTTON_CODE_CUSTOM)
 					_activePrefsPanel = value;
 				break;
 			}
+#endif
 				
 			case 4:
 			{

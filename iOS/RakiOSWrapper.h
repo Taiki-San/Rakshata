@@ -27,13 +27,15 @@
 #define NSPoint		CGPoint
 #define NSZeroPoint	CGPointZero
 #define NSPointSize	CGPointMake
+#define NSPointInRect(a, b) CGRectContainsPoint(b, a)
 
 #define NSOffState		0
 #define NSOnState		1
 #define NSMixedState	2
 
-#define RakRealApp	[UIApplication sharedApplication]
-#define RakApp		[RakRealApp delegate]
+#define RakApplication	UIApplication
+#define RakRealApp	[RakApplication sharedApplication]
+#define RakApp		((RakAppiOSDelegate *) [RakRealApp delegate])
 
 #define RakOutlineList		NSObject
 #define MDL					NSObject
@@ -44,6 +46,14 @@
 #import "RakOutlineListItem.h"
 #import "RakMDLController.h"
 
+@interface PDFPage : NSObject
+{
+	CGPDFPageRef _page;
+}
+
+- (instancetype) initWithPage : (CGPDFPageRef) page;
+
+@end
 
 @interface PDFDocument : NSObject
 {
@@ -54,9 +64,7 @@
 
 - (NSUInteger) pageCount;
 
-@end
-
-@interface PDFPage : NSObject
+- (PDFPage *) pageAtIndex : (NSUInteger) page;
 
 @end
 
@@ -65,3 +73,10 @@
 - (BOOL)isNotEqualTo:(id)object;
 
 @end
+
+enum
+{
+	NSModalResponseStop                 = (-1000), // Also used as the default response for sheets
+	NSModalResponseAbort                = (-1001),
+	NSModalResponseContinue             = (-1002),
+};

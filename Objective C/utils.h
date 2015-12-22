@@ -23,11 +23,7 @@ NSString * getRepoName(REPO_DATA * repo);
 
 void registerDefaultForExtension(NSString * extension);
 
-#if TARGET_OS_IPHONE
-@interface UIApplication (contextSave)
-#else
-@interface NSApplication (contextSave)
-#endif
+@interface RakApplication (contextSave)
 
 @property NSArray * savedContext;
 

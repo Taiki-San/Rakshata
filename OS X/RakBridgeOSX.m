@@ -10,10 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-int launchApp(int argc, const char *argv[])
+int launchApp(int argc, char *argv[])
 {
 	@autoreleasepool
 	{
-		return NSApplicationMain(argc, argv);
+		return NSApplicationMain(argc, (const char **) argv);
 	}
 }

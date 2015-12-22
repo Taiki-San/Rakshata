@@ -68,7 +68,17 @@
 
 		#import "RakAuthController.h"
 		#import "RakContentView.h"
-		#import "RakAppDelegate.h"
+	#else
+		#include "lecteur.h"
+	#endif
+
+
+	#import "RakAppDelegate.h"
+
+	#if TARGET_OS_IPHONE
+		#import "RakAppiOSDelegate.h"
+	#else
+		#import "RakAppOSXDelegate.h"
 	#endif
 
 	#import "Prefs.h"
