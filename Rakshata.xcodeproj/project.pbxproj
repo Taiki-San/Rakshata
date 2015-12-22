@@ -44,6 +44,7 @@
 		B606EB621B68562600DDBBBD /* tagUpdate.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB611B68562600DDBBBD /* tagUpdate.c */; };
 		B606EB651B68564B00DDBBBD /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB631B68564B00DDBBBD /* keys.c */; };
 		B606EB661B68564B00DDBBBD /* securite.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB641B68564B00DDBBBD /* securite.c */; };
+		B6073C441C2978350061070A /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6073C431C2978350061070A /* tagSyncParser.m */; };
 		B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */; };
 		B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
@@ -218,7 +219,6 @@
 		B671111B1C276CE100E0BFD9 /* ProjectParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D033197717A600D7FE6A /* ProjectParser.m */; };
 		B671111C1C276CE100E0BFD9 /* repo.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB591B68560600DDBBBD /* repo.c */; };
 		B671111D1C276CE100E0BFD9 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
-		B671111F1C276CE100E0BFD9 /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6885A281B08E67A00C2D7DD /* tagSyncParser.m */; };
 		B67111201C276CE100E0BFD9 /* tagUpdate.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB611B68562600DDBBBD /* tagUpdate.c */; };
 		B67111211C276CE100E0BFD9 /* tome.c in Sources */ = {isa = PBXBuildFile; fileRef = B606EB5A1B68560600DDBBBD /* tome.c */; };
 		B67111221C276CE100E0BFD9 /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = B67845A119631311007372C7 /* encoding.c */; };
@@ -249,13 +249,10 @@
 		B67C68821C270698005AB992 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68811C270698005AB992 /* AppDelegate.m */; };
 		B67C688B1C270699005AB992 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C68891C270699005AB992 /* Main.storyboard */; };
 		B67C68901C270699005AB992 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B67C688E1C270699005AB992 /* LaunchScreen.storyboard */; };
-		B67C689B1C270699005AB992 /* Rakshata_iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */; };
-		B67C68A61C270699005AB992 /* Rakshata_iOSUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */; };
 		B67E079418E7714B0007EB44 /* RakCTSelectionList.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E079318E7714B0007EB44 /* RakCTSelectionList.m */; };
 		B67E65DF1BFF3CD1008C483D /* RakImportMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E65DE1BFF3CD1008C483D /* RakImportMenu.m */; };
 		B67F92B918F0C2B0002FC657 /* RakPageCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F92B818F0C2B0002FC657 /* RakPageCounter.m */; };
 		B6824AF01AA8AB8D001837D6 /* RakPrefsRepoDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */; };
-		B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6885A281B08E67A00C2D7DD /* tagSyncParser.m */; };
 		B6898ECC1AA5E7A1006A619A /* RakCustomWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B6898ECB1AA5E7A1006A619A /* RakCustomWindow.m */; };
 		B68B5225191AE3050057F35A /* RakScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5224191AE3050057F35A /* RakScroller.m */; };
 		B68B5228191AE31E0057F35A /* RakMDLListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B5227191AE31E0057F35A /* RakMDLListView.m */; };
@@ -481,14 +478,15 @@
 		B606EB611B68562600DDBBBD /* tagUpdate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tagUpdate.c; path = C/DB/tagUpdate.c; sourceTree = "<group>"; };
 		B606EB631B68564B00DDBBBD /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/Security/keys.c; sourceTree = "<group>"; };
 		B606EB641B68564B00DDBBBD /* securite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = securite.c; path = C/Security/securite.c; sourceTree = "<group>"; };
-		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = "Objective C/Utils/JSONParser.h"; sourceTree = "<group>"; };
+		B6073C431C2978350061070A /* tagSyncParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = tagSyncParser.m; path = Common/Utils/tagSyncParser.m; sourceTree = "<group>"; };
+		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = Common/Utils/JSONParser.h; sourceTree = "<group>"; };
 		B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSlideshowButton.h; path = Utils/RakSlideshowButton.h; sourceTree = "<group>"; };
 		B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSlideshowButton.m; path = Utils/RakSlideshowButton.m; sourceTree = "<group>"; };
 		B60AE4BE1B06247400DA44E6 /* RakCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomButton.h; path = Utils/RakCustomButton.h; sourceTree = "<group>"; };
 		B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCustomButton.m; path = Utils/RakCustomButton.m; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; };
-		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = "Objective C/Utils/RepoParser.m"; sourceTree = "<group>"; };
+		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = Common/Utils/RepoParser.m; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
 		B61A790818E389F300D8E0E0 /* RakText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakText.h; path = Utils/RakText.h; sourceTree = "<group>"; };
@@ -596,10 +594,10 @@
 		B640F2E51C0134B0005178E0 /* clearTag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clearTag@2x.png"; path = "Ressources/Sprites/clearTag@2x.png"; sourceTree = SOURCE_ROOT; };
 		B640F2E61C0134B0005178E0 /* discard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = discard.png; path = Ressources/Sprites/discard.png; sourceTree = SOURCE_ROOT; };
 		B640F2E71C0134B0005178E0 /* discard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "discard@2x.png"; path = "Ressources/Sprites/discard@2x.png"; sourceTree = SOURCE_ROOT; };
-		B640F2EC1C014064005178E0 /* auth.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = auth.xib; path = "Objective C/Interface Builder/auth.xib"; sourceTree = "<group>"; };
-		B640F2ED1C014064005178E0 /* dragView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = dragView.xib; path = "Objective C/Interface Builder/dragView.xib"; sourceTree = "<group>"; };
-		B640F2EE1C014064005178E0 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Objective C/Interface Builder/jumpPage.xib"; sourceTree = "<group>"; };
-		B640F2EF1C014064005178E0 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = "Objective C/Interface Builder/window.xib"; sourceTree = "<group>"; };
+		B640F2EC1C014064005178E0 /* auth.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = auth.xib; path = "Interface Builder/auth.xib"; sourceTree = "<group>"; };
+		B640F2ED1C014064005178E0 /* dragView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = dragView.xib; path = "Interface Builder/dragView.xib"; sourceTree = "<group>"; };
+		B640F2EE1C014064005178E0 /* jumpPage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = jumpPage.xib; path = "Interface Builder/jumpPage.xib"; sourceTree = "<group>"; };
+		B640F2EF1C014064005178E0 /* window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = window.xib; path = "Interface Builder/window.xib"; sourceTree = "<group>"; };
 		B642480919D57DF000679D78 /* RakGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakGradientView.h; path = Utils/RakGradientView.h; sourceTree = "<group>"; };
 		B642480A19D57DF000679D78 /* RakGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakGradientView.m; path = Utils/RakGradientView.m; sourceTree = "<group>"; };
 		B645C4711C28A2E700CC3EC8 /* RakAppiOSDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAppiOSDelegate.h; path = iOS/RakAppiOSDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -659,7 +657,7 @@
 		B678675618F5F4A8004AA6B4 /* RakTabContentTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabContentTemplate.m; path = Utils/RakTabContentTemplate.m; sourceTree = "<group>"; };
 		B678866A1A82552800774431 /* RakSRContentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRContentManager.h; path = "Séries/RakSRContentManager.h"; sourceTree = "<group>"; };
 		B678866B1A82552800774431 /* RakSRContentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRContentManager.m; path = "Séries/RakSRContentManager.m"; sourceTree = "<group>"; };
-		B678D033197717A600D7FE6A /* ProjectParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProjectParser.m; path = "Objective C/Utils/ProjectParser.m"; sourceTree = "<group>"; };
+		B678D033197717A600D7FE6A /* ProjectParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProjectParser.m; path = Common/Utils/ProjectParser.m; sourceTree = "<group>"; };
 		B67920F51C18938B00185E60 /* RakProjectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakProjectView.h; path = Utils/RakProjectView.h; sourceTree = "<group>"; };
 		B67920F61C18938B00185E60 /* RakProjectView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakProjectView.m; path = Utils/RakProjectView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B67920F81C1893A100185E60 /* RakMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakMenu.h; path = Utils/RakMenu.h; sourceTree = "<group>"; };
@@ -677,11 +675,7 @@
 		B67C688A1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B67C688F1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Rakshata_iOSTests.m; sourceTree = "<group>"; };
-		B67C689C1C270699005AB992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Rakshata_iOSUITests.m; sourceTree = "<group>"; };
-		B67C68A71C270699005AB992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B67E079118E765C10007EB44 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		B67E079218E7714B0007EB44 /* RakCTSelectionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakCTSelectionList.h; path = CTSelec/RakCTSelectionList.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B67E079318E7714B0007EB44 /* RakCTSelectionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSelectionList.m; path = CTSelec/RakCTSelectionList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -690,7 +684,6 @@
 		B67F92B718F0C2B0002FC657 /* RakPageCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPageCounter.h; path = Reader/RakPageCounter.h; sourceTree = "<group>"; };
 		B67F92B818F0C2B0002FC657 /* RakPageCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPageCounter.m; path = Reader/RakPageCounter.m; sourceTree = "<group>"; };
 		B6824AEF1AA8AB8D001837D6 /* RakPrefsRepoDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoDetails.m; path = "Divers Windows/RakPrefsRepoDetails.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6885A281B08E67A00C2D7DD /* tagSyncParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = tagSyncParser.m; path = "Objective C/Utils/tagSyncParser.m"; sourceTree = "<group>"; };
 		B6898ECA1AA5E7A1006A619A /* RakCustomWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomWindow.h; path = Utils/RakCustomWindow.h; sourceTree = "<group>"; };
 		B6898ECB1AA5E7A1006A619A /* RakCustomWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCustomWindow.m; path = Utils/RakCustomWindow.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B68B5223191AE3050057F35A /* RakScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakScroller.h; path = Utils/RakScroller.h; sourceTree = "<group>"; };
@@ -845,7 +838,7 @@
 		B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchTab.m; path = "Séries/RakSRSearchTab.m"; sourceTree = "<group>"; };
 		B6CC724D18723121003A745B /* RakButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakButton.h; path = Utils/RakButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6CF07CC1868DD58009B16A3 /* rakshata.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = rakshata.pch; path = "Objective C/rakshata.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6CF07CC1868DD58009B16A3 /* rakshata.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = rakshata.pch; path = Common/rakshata.pch; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RakAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakAppDelegate.m; sourceTree = "<group>"; };
 		B6CF07DC1868DD58009B16A3 /* RakshataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -853,7 +846,7 @@
 		B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoAddView.m; path = Utils/RakPrefsRepoAddView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D126FF1AC713F7003FFEC6 /* RakAddRepoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAddRepoController.h; path = Utils/RakAddRepoController.h; sourceTree = "<group>"; };
 		B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAddRepoController.m; path = Utils/RakAddRepoController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = "Objective C/Utils/DotRakSourceParser.m"; sourceTree = "<group>"; };
+		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = Common/Utils/DotRakSourceParser.m; sourceTree = "<group>"; };
 		B6D7EC081B682B90009FCE64 /* RakImportRarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportRarController.m; path = "Import:Export/RakImportRarController.m"; sourceTree = "<group>"; };
 		B6D7EC0C1B682D33009FCE64 /* unrar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unrar.c; path = C/libarchive/unrar.c; sourceTree = "<group>"; };
 		B6D7EC0E1B682DD2009FCE64 /* libarchivewrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libarchivewrapper.h; path = C/libarchive/libarchivewrapper.h; sourceTree = "<group>"; };
@@ -884,8 +877,8 @@
 		B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HockeySDK.framework; path = Framework/HockeySDK.framework; sourceTree = "<group>"; };
 		B6E9D19C190EEF9B007F041C /* RakMDLList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLList.h; path = MDL/RakMDLList.h; sourceTree = "<group>"; };
 		B6E9D19D190EEF9B007F041C /* RakMDLList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakMDLList.m; path = MDL/RakMDLList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Objective C/Interface C/interface.m"; sourceTree = "<group>"; };
-		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Objective C/Interface C/interface.h"; sourceTree = "<group>"; };
+		B6EA520618A4111000A9B16E /* interface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = interface.m; path = "Interface C/interface.m"; sourceTree = "<group>"; };
+		B6EA520818A4161100A9B16E /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = "Interface C/interface.h"; sourceTree = "<group>"; };
 		B6EB260719845E2100D678B3 /* RakAuthController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthController.h; path = Prefs/RakAuthController.h; sourceTree = "<group>"; };
 		B6EB260819845E2100D678B3 /* RakAuthController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAuthController.m; path = Prefs/RakAuthController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EBD80319538B6B00642EB8 /* RakPopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakPopover.h; path = Reader/RakPopover.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1062,8 +1055,6 @@
 				B67C68891C270699005AB992 /* Main.storyboard */,
 				B67C68831C270698005AB992 /* MasterViewController.h */,
 				B67C68841C270698005AB992 /* MasterViewController.m */,
-				B67C68991C270699005AB992 /* Rakshata iOSTests */,
-				B67C68A41C270699005AB992 /* Rakshata iOSUITests */,
 			);
 			name = garbage;
 			sourceTree = "<group>";
@@ -1352,6 +1343,7 @@
 				B640F2EF1C014064005178E0 /* window.xib */,
 			);
 			name = "Interface Builder";
+			path = "OS X";
 			sourceTree = "<group>";
 		};
 		B67449431876114E00F96DB4 /* Includes */ = {
@@ -1408,24 +1400,6 @@
 			path = "Rakshata iOS";
 			sourceTree = "<group>";
 		};
-		B67C68991C270699005AB992 /* Rakshata iOSTests */ = {
-			isa = PBXGroup;
-			children = (
-				B67C689A1C270699005AB992 /* Rakshata_iOSTests.m */,
-				B67C689C1C270699005AB992 /* Info.plist */,
-			);
-			path = "Rakshata iOSTests";
-			sourceTree = SOURCE_ROOT;
-		};
-		B67C68A41C270699005AB992 /* Rakshata iOSUITests */ = {
-			isa = PBXGroup;
-			children = (
-				B67C68A51C270699005AB992 /* Rakshata_iOSUITests.m */,
-				B67C68A71C270699005AB992 /* Info.plist */,
-			);
-			path = "Rakshata iOSUITests";
-			sourceTree = SOURCE_ROOT;
-		};
 		B67C68B11C270921005AB992 /* OS X */ = {
 			isa = PBXGroup;
 			children = (
@@ -1440,7 +1414,7 @@
 			isa = PBXGroup;
 			children = (
 				B606EB601B68562600DDBBBD /* tag.h */,
-				B6885A281B08E67A00C2D7DD /* tagSyncParser.m */,
+				B6073C431C2978350061070A /* tagSyncParser.m */,
 				B606EB611B68562600DDBBBD /* tagUpdate.c */,
 			);
 			name = Tag;
@@ -1768,12 +1742,12 @@
 			isa = PBXGroup;
 			children = (
 				B66B4627189A7129000354D1 /* C Core */,
-				B67C687C1C270698005AB992 /* iOS */,
+				B6CF07C41868DD58009B16A3 /* Common */,
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
+				B67C687C1C270698005AB992 /* iOS */,
 				B67C68B11C270921005AB992 /* OS X */,
-				B6CF07C41868DD58009B16A3 /* Objective-C */,
-				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6CF07BC1868DD58009B16A3 /* Products */,
+				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
 				B6CF07CC1868DD58009B16A3 /* rakshata.pch */,
@@ -1825,7 +1799,7 @@
 			name = "OS X";
 			sourceTree = "<group>";
 		};
-		B6CF07C41868DD58009B16A3 /* Objective-C */ = {
+		B6CF07C41868DD58009B16A3 /* Common */ = {
 			isa = PBXGroup;
 			children = (
 				B6CC724318723044003A745B /* CT */,
@@ -1842,8 +1816,7 @@
 				B6251F711A98CBF0001C4F06 /* Subwindows */,
 				B6CC724918723084003A745B /* Utils */,
 			);
-			name = "Objective-C";
-			path = "Objective C";
+			path = Common;
 			sourceTree = "<group>";
 		};
 		B6CF07C51868DD58009B16A3 /* Supporting Files */ = {
@@ -2033,6 +2006,7 @@
 				B6EA520618A4111000A9B16E /* interface.m */,
 			);
 			name = "Interface with UI";
+			path = Common;
 			sourceTree = "<group>";
 		};
 		B6F6ED1D18A3006F00E3B55B /* MDL */ = {
@@ -2448,7 +2422,6 @@
 				B671111B1C276CE100E0BFD9 /* ProjectParser.m in Sources */,
 				B671111C1C276CE100E0BFD9 /* repo.c in Sources */,
 				B671111D1C276CE100E0BFD9 /* RepoParser.m in Sources */,
-				B671111F1C276CE100E0BFD9 /* tagSyncParser.m in Sources */,
 				B67111201C276CE100E0BFD9 /* tagUpdate.c in Sources */,
 				B67111211C276CE100E0BFD9 /* tome.c in Sources */,
 				B67111221C276CE100E0BFD9 /* encoding.c in Sources */,
@@ -2471,7 +2444,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B67C689B1C270699005AB992 /* Rakshata_iOSTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2479,7 +2451,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B67C68A61C270699005AB992 /* Rakshata_iOSUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2597,7 +2568,6 @@
 				B69D61DE186CA3D0003504F9 /* MDL.m in Sources */,
 				B6AA41881B685692008A7521 /* sha256.c in Sources */,
 				B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */,
-				B6885A291B08E67A00C2D7DD /* tagSyncParser.m in Sources */,
 				B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */,
 				B6E5146518771492006470ED /* RakButton.m in Sources */,
 				B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */,
@@ -2685,6 +2655,7 @@
 				B6993AB61B1A847700FFF894 /* RakPrefsFavoriteListView.m in Sources */,
 				B6012BBB19D41AA000E12BED /* RakCTHContainer.m in Sources */,
 				B6E89389189EF39700ACAF36 /* CTSelec.m in Sources */,
+				B6073C441C2978350061070A /* tagSyncParser.m in Sources */,
 				B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */,
 				B661042A1B5046930079924E /* RakExportStatusController.m in Sources */,
 				B654548D1BE6A2B700A12D36 /* RakSRSearchUtils.m in Sources */,
@@ -2760,7 +2731,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
@@ -2799,7 +2770,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -3027,7 +2998,7 @@
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_FAST_MATH = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_UNROLL_LOOPS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
@@ -3116,7 +3087,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Objective C/rakshata.pch";
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;

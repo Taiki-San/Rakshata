@@ -795,9 +795,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(input != recoveryBuffer)
 			free(input);
 		
-		RakAppOSXDelegate * core = RakApp;
-		if([core isKindOfClass:[RakAppDelegate class]])
-			firstResponder = [(RakContentViewBack *) core.window.contentView getFirstResponder];
+		firstResponder = [(RakContentViewBack *) RakApp.window.contentView getFirstResponder];
 		
 		[self refreshFirstResponder];
 	}
