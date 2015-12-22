@@ -17,8 +17,7 @@
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&mainThread];
 	
 	self.autoresizesSubviews = NO;
-	self.wantsLayer = YES;
-	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.backgroundColor = [self getBackgroundColor];
 	self.layer.cornerRadius = 5.0;
 	
 	[Prefs registerForChange:self forType:KVO_THEME];
@@ -75,12 +74,16 @@
 {
 	[super setFrame:frameRect];
 	
-	[self setFrameInternalViews:_bounds];
+	[self setFrameInternalViews:self.bounds];
 }
 
 - (void) resizeAnimation : (NSRect)frameRect
 {
+#if TARGET_OS_IPHONE
+	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	[super setFrame:frameRect];	}];
+#else
 	[self.animator setFrame:frameRect];
+#endif
 	
 	frameRect.origin = NSZeroPoint;
 	[self resizeAnimationInternalViews:frameRect];

@@ -36,11 +36,12 @@
 {
 	RakColor * backgroundColor;
 	
-	RakBorder* internalRows1, * internalRows2;
-	
 	RakContentView * firstResponder;
 
+#if !TARGET_OS_IPHONE
+	RakBorder* internalRows1, * internalRows2;
 	RakText * titleView;
+#endif
 }
 
 //Used when leaving fullscreen mode

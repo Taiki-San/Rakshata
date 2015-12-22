@@ -12,11 +12,6 @@
 
 @interface RakAppOSXDelegate : RakAppDelegate <NSApplicationDelegate, NSWindowDelegate, NSUserNotificationCenterDelegate>
 {
-	Series * tabSerie;
-	CTSelec * tabCT;
-	Reader * tabReader;
-	MDL * tabMDL;
-	
 	RakAboutWindow * aboutWindow;
 	RakPrefsWindow * prefWindow;
 }
@@ -25,10 +20,5 @@
 @property BOOL hasFocus;
 
 - (RakContentView*) getContentView;
-
-- (Series *)	serie;
-- (CTSelec *)	CT;
-- (MDL *)		MDL;
-- (Reader *)	reader;
 
 @end

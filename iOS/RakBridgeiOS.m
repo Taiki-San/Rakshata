@@ -71,11 +71,36 @@ int launchApp(int argc, char *argv[])
 
 @end
 
-@implementation NSObject(Comparaison)
+@implementation NSObject (Comparaison)
 
 - (BOOL)isNotEqualTo:(id)object
 {
 	return object != nil && ![self isEqual : object];
 }
 
+@end
+
+@implementation RakView (Redirection)
+
+- (void) setNeedsDisplay : (BOOL) value
+{
+	if(value == YES)
+		[self setNeedsDisplay];
+}
+
+@end
+
+@implementation RakTabView
+@end
+
+@implementation Series
+@end
+
+@implementation CTSelec
+@end
+
+@implementation Reader
+@end
+
+@implementation MDL
 @end

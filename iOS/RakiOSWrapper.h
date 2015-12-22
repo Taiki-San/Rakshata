@@ -38,13 +38,30 @@
 #define RakApp		((RakAppiOSDelegate *) [RakRealApp delegate])
 
 #define RakOutlineList		NSObject
-#define MDL					NSObject
 #define RakMDLList			NSObject
 #define RakTabForegroundView NSObject
 #define RakMDLListView		NSObject
 
 #import "RakOutlineListItem.h"
+
+@interface Series : NSObject
+@end
+
+@interface CTSelec : NSObject
+@end
+
+@interface Reader : NSObject
+@end
+
+@interface MDL : NSObject
+
+@property BOOL forcedToShowUp;
+@property BOOL needUpdateMainViews;
+
+@end
+
 #import "RakMDLController.h"
+
 
 @interface PDFPage : NSObject
 {
@@ -71,6 +88,12 @@
 @interface NSObject (Comparaison)
 
 - (BOOL)isNotEqualTo:(id)object;
+
+@end
+
+@interface RakView (Redirection)
+
+- (void) setNeedsDisplay : (BOOL) value;
 
 @end
 

@@ -22,7 +22,11 @@ bool isSandboxed()
 {
 	if(!checkedSandbox)
 	{
+#if TARGET_OS_IPHONE
+		wasSandboxed = true;
+#else
 		wasSandboxed = [[[[NSFileManager alloc] init] currentDirectoryPath] hasSuffix:[NSString stringWithFormat:@"/Library/Containers/%@/Data", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]]];
+#endif
 		checkedSandbox = true;
 	}
 	

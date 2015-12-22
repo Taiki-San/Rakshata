@@ -98,8 +98,10 @@ void registerDefaultForExtension(NSString * extension);
 	@class RakProjectMenu;
 
 	#import "RakAuthForegroundView.h"
+#endif
 	#import "RakTabView.h"
 	#import "RakTabContentTemplate.h"
+#if !TARGET_OS_IPHONE
 	#import "RakDragView.h"
 	#import "RakDragItem.h"
 	#import "RakDragResponder.h"

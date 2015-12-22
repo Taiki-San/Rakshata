@@ -22,23 +22,21 @@ enum
 	REFRESHVIEWS_NO_CHANGE
 } REFRESHVIEWS_CODE;
 
-@interface RakTabView : RakView <NSDraggingDestination>
+@interface RakTabBase : RakView
 {
 	BOOL noDrag;
 	BOOL canDeploy;
 	uint flag;
-	NSTrackingRectTag trackingArea;
 	
 	NSRect _lastFrame;
 
 	//Login request
 	BOOL _waitingLogin;
 	BOOL _needPassword;
-	RakTabForegroundView * foregroundView;
 }
 
 @property uint mainThread;
-@property BOOL waitingLogin;
+@property (readonly) BOOL waitingLogin;
 @property BOOL initWithNoContent;
 
 @property BOOL forceNextFrameUpdate;
@@ -58,6 +56,7 @@ enum
 - (void) fastAnimatedRefreshLevel : (RakView*) superview;
 - (void) resetFrameSize : (BOOL) withAnimation;
 - (void) refreshViewSize;
+- (void) _refreshViewSize;
 - (void) resize : (NSRect) bounds : (BOOL) animated;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 
@@ -66,21 +65,13 @@ enum
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
-- (void) resizeTrackingArea;
-- (void) releaseTrackingArea;
 - (void) setUpViewForAnimation : (uint) mainThread;
 
-- (NSRect) generatedReaderTrackingFrame;
 - (void) refreshDataAfterAnimation;
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;
 
-- (BOOL) isCursorOnMe;
-- (BOOL) isCursorOnRect : (NSRect) frame;
-- (NSPoint) getCursorPosInWindow;
 - (NSRect) getFrameOfNextTab;
-- (BOOL) mouseOutOfWindow;
-- (void) objectWillLooseFocus : (id) object;
 - (void) rejectedMouseEntered;
 - (void) rejectedMouseExited;
 
@@ -96,10 +87,31 @@ enum
 
 - (NSString *) waitingLoginMessage;
 - (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
-- (RakTabForegroundView *) getForgroundView;
 
 - (id) getMDL : (BOOL) requireAvailable;
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
+
+@end
+
+#if !TARGET_OS_IPHONE
+@interface RakTabView : RakTabBase <NSDraggingDestination>
+{
+	NSTrackingRectTag trackingArea;
+	RakTabForegroundView * foregroundView;
+}
+
+- (BOOL) isCursorOnMe;
+- (BOOL) isCursorOnRect : (NSRect) frame;
+- (void) objectWillLooseFocus : (id) object;
+
+- (NSPoint) getCursorPosInWindow;
+- (BOOL) mouseOutOfWindow;
+
+- (void) resizeTrackingArea;
+- (void) releaseTrackingArea;
+- (NSRect) generatedReaderTrackingFrame;
+
+- (RakTabForegroundView *) getForgroundView;
 
 - (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL;
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender;
@@ -108,3 +120,11 @@ enum
 - (BOOL) acceptDrop : (uint) initialTab : (id<NSDraggingInfo>)sender;
 
 @end
+
+#else
+
+@interface RakTabView : RakTabBase
+
+@end
+
+#endif

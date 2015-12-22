@@ -90,4 +90,11 @@
 	}
 }
 
+#pragma mark - Access to tabs
+
+- (Series *)	serie	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabSerie;	}
+- (CTSelec *)	CT		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabCT;		}
+- (MDL *)		MDL		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabMDL;		}
+- (Reader *)	reader	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabReader;	}
+
 @end

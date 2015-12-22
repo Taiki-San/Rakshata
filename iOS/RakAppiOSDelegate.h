@@ -16,5 +16,6 @@
 }
 
 @property (readonly) BOOL hasFocus;
+@property (strong, nonatomic) UIWindow *window;
 
 @end

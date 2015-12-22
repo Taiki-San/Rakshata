@@ -12,6 +12,7 @@
 
 @class RakTabView;
 
+#if !TARGET_OS_IPHONE
 @interface RakTabForegroundView : RakForegroundBackgroundView
 {
 	RakText * head;
@@ -24,6 +25,7 @@
 - (void) resizeAnimation : (NSRect) frameRect;
 
 @end
+#endif
 
 @interface RakTabAnimationResize : NSObject
 

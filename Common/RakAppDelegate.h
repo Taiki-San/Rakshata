@@ -14,6 +14,11 @@
 
 @interface RakAppDelegate : NSObject
 {
+	Series * tabSerie;
+	CTSelec * tabCT;
+	Reader * tabReader;
+	MDL * tabMDL;
+	
 	BOOL loginPromptOpen;
 	pthread_cond_t loginLock;
 	MUTEX_VAR loginMutex;
@@ -30,5 +35,10 @@
 
 - (void) openLoginPrompt;
 - (void) loginPromptClosed;
+
+- (Series *)	serie;
+- (CTSelec *)	CT;
+- (MDL *)		MDL;
+- (Reader *)	reader;
 
 @end

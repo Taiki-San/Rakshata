@@ -17,3 +17,9 @@
 #define RakApplication	NSApplication
 #define RakRealApp		NSApp
 #define RakApp			((RakAppOSXDelegate *) [RakRealApp delegate])
+
+@interface RakView (BackgroundColor)
+
+@property RakColor * backgroundColor;
+
+@end
