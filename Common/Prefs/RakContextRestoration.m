@@ -21,10 +21,16 @@
 	if(output == NULL)
 		return;
 	
+	if(contextPrefs == nil)		contextPrefs = STATE_EMPTY;
+	if(contextSerie == nil)		contextSerie = STATE_EMPTY;
+	if(contextCT == nil)		contextCT = STATE_EMPTY;
+	if(contextMDL == nil)		contextMDL = STATE_EMPTY;
+	if(contextReader == nil)		contextReader = STATE_EMPTY;
+	
 	byte pos = 0;
-	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL , contextReader])
+	for(NSString * element in @[contextPrefs, contextSerie, contextCT, contextMDL, contextReader])
 	{
-		const char * intermediaryBuffer = [(element != nil ? element : STATE_EMPTY) UTF8String];
+		const char * intermediaryBuffer = [element UTF8String];
 		size_t length = strlen(intermediaryBuffer);
 		
 		char * stringOutput = malloc(length * 2 + 1);

@@ -12,6 +12,11 @@
 
 @implementation RakAppiOSDelegate
 
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+	return YES;
+}
+
 - (BOOL) hasFocus
 {
 	return RakRealApp.applicationState != UIApplicationStateBackground;
