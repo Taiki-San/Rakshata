@@ -81,7 +81,7 @@
 	//El Capitan
 	if(self != nil && floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 	{
-		self.layer.backgroundColor = [self getBackground].CGColor;
+		self.backgroundColor = [self getBackground];
 	}
 
 	return self;
@@ -97,8 +97,8 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	if(self.layer.backgroundColor != nil)
-		self.layer.backgroundColor = [self getBackground].CGColor;
+	if(self.backgroundColor != nil)
+		self.backgroundColor = [self getBackground];
 	
 	[self setNeedsDisplay];
 }
@@ -205,8 +205,7 @@
 	}
 	else
 	{
-		self.wantsLayer = YES;
-		self.layer.backgroundColor = [self getBackground].CGColor;
+		self.backgroundColor = [self getBackground];
 		self.layer.cornerRadius = 4;
 		
 		if(!hasRegisteredThemeUpdates)

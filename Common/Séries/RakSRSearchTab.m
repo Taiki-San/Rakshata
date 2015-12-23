@@ -26,10 +26,9 @@
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
 		
-		self.wantsLayer = YES;
+		self.backgroundColor = [self getBackgroundColor];
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
-		self.layer.backgroundColor = [self getBackgroundColor].CGColor;
 		
 		placeholder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
 		if(placeholder != nil)
@@ -244,7 +243,7 @@ enum
 	
 	placeholder.textColor = [self placeholderTextColor];
 	self.layer.borderColor = [self getBorderColor].CGColor;
-	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.backgroundColor = [self getBackgroundColor];
 	
 	[self setNeedsDisplay:YES];
 }

@@ -186,7 +186,7 @@
 		((NSImageView *) self.documentView).wantsLayer = YES;
 
 	if(view.wantsLayer == YES)
-		((NSImageView *) self.documentView).layer.backgroundColor = (needBackground ? [Prefs getSystemColor:COLOR_PDF_BACKGROUND] : [RakColor clearColor]).CGColor;
+		((NSImageView *) self.documentView).backgroundColor = needBackground ? [Prefs getSystemColor:COLOR_PDF_BACKGROUND] : [RakColor clearColor];
 	
 	[CATransaction commit];
 

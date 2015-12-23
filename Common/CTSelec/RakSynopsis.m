@@ -303,9 +303,9 @@ enum
 	_haveBackground = haveBackground;
 	
 	if(_haveBackground)
-		self.layer.backgroundColor = [self backgroundColor].CGColor;
+		self.backgroundColor = [self backgroundColor];
 	else
-		self.layer.backgroundColor = [RakColor clearColor].CGColor;
+		self.backgroundColor = [RakColor clearColor];
 }
 
 - (RakColor *) backgroundColor

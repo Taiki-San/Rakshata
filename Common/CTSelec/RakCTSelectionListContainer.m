@@ -26,8 +26,7 @@
 	
 	if(self != nil)
 	{
-		self.wantsLayer = YES;
-		self.layer.backgroundColor = [self getBackgroundColor];
+		self.backgroundColor = [self getBackgroundColor];
 		self.layer.cornerRadius = isCompact ? 0 : 4.0;
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
@@ -116,7 +115,7 @@
 			[_title setHidden:NO];
 	}
 	
-	self.layer.backgroundColor = [self getBackgroundColor];
+	self.backgroundColor = [self getBackgroundColor];
 }
 
 - (void) setHidden : (BOOL) hidden
@@ -225,12 +224,12 @@
 
 #pragma mark - Color
 
-- (CGColorRef) getBackgroundColor
+- (RakColor *) getBackgroundColor
 {
 	if(self.compactMode)
-		return [RakColor clearColor].CGColor;
+		return [RakColor clearColor];
 	
-	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND].CGColor;
+	return [Prefs getSystemColor : COLOR_COREVIEW_BACKGROUND];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -238,7 +237,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [self getBackgroundColor];
+	self.backgroundColor = [self getBackgroundColor];
 	_placeholder.textColor = [Prefs getSystemColor:COLOR_ACTIVE];
 	
 	[self setNeedsDisplay:YES];

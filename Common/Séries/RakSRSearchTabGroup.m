@@ -30,9 +30,6 @@ enum
 	{
 		_ID = ID;
 		
-		self.wantsLayer = YES;
-		self.layer.cornerRadius = 3;
-		
 		if(_ID != SEARCH_BAR_ID_EXTRA)
 		{
 			[self loadDataForListAndSearch];
@@ -49,7 +46,7 @@ enum
 				[self addSubview:searchBar];
 			
 			[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
-			self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
+			self.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND];
 		}
 		else
 		{
@@ -68,9 +65,8 @@ enum
 			buttonContainer = [[RakView alloc] initWithFrame:NSMakeRect(0, 0, frameRect.size.width, 55)];
 			if(buttonContainer != nil)
 			{
-				buttonContainer.wantsLayer = YES;
+				buttonContainer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND];
 				buttonContainer.layer.cornerRadius = 4;
-				buttonContainer.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
 				
 				freeSwitch = [[RakSwitchButton alloc] init];
 				if(freeSwitch != nil)
@@ -144,9 +140,10 @@ enum
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanupCustomTab) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 			
-			self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA].CGColor;
+			self.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA];
 		}
 		
+		self.layer.cornerRadius = 3;
 		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
@@ -371,7 +368,7 @@ enum
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
-		buttonContainer.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
+		buttonContainer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND];
 
 		if(freeText != nil)
 			freeText.textColor = [self textColor];
@@ -379,10 +376,10 @@ enum
 		if(favsText != nil)
 			favsText.textColor = [self textColor];
 
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA].CGColor;
+		self.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND_EXTRA];
 	}
 	else
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND].CGColor;
+		self.backgroundColor = [Prefs getSystemColor:COLOR_SEARCHBAR_BACKGROUND];
 	
 	[self setNeedsDisplay:YES];
 }

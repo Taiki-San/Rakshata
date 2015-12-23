@@ -14,7 +14,7 @@
 
 - (void) setColor : (RakColor *) color
 {
-	self.layer.backgroundColor	= color.CGColor;
+	self.backgroundColor		= color;
 	self.layer.borderColor		= color.CGColor;
 }
 
@@ -24,12 +24,11 @@
 	
 	if(self != nil)
 	{
-		[self setWantsLayer:YES];
+		self.backgroundColor		= color;
+		self.layer.borderColor		= color.CGColor;
 		self.layer.masksToBounds	= YES;
 		self.layer.borderWidth      = borderWidth;
 		self.layer.cornerRadius		= angleRounds;
-		self.layer.backgroundColor	= color.CGColor;
-		self.layer.borderColor		= color.CGColor;
 	}
 	
 	return self;

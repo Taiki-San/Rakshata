@@ -51,7 +51,7 @@
 {
 	[Prefs registerForChange:self forType:KVO_THEME];
 
-	self.layer.backgroundColor = [self firstBorderColor].CGColor;
+	self.backgroundColor = [self firstBorderColor];
 	NSRect frame = [self internalFrame];
 	
 	frame.size.width -= 2 * WIDTH_BORDER_FAREST;
@@ -281,7 +281,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [self firstBorderColor].CGColor;
+	self.backgroundColor = [self firstBorderColor];
 	[internalRows1 setColor: [self middleBorderColor]];
 	
 	if(self.window.isMainWindow)

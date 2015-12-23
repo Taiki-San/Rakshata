@@ -29,9 +29,8 @@ enum
 		self.editable = YES;
 		self.imageScaling = NSImageScaleProportionallyUpOrDown;
 
-		self.wantsLayer = YES;
+		self.backgroundColor = [Prefs getSystemColor:COLOR_DROP_AREA_BACKGROUND];
 		self.layer.cornerRadius = 5;
-		self.layer.backgroundColor = [Prefs getSystemColor:COLOR_DROP_AREA_BACKGROUND].CGColor;
 
 		content = [[RakText alloc] initWithText:string :[self textColor]];
 		if(content != nil)
@@ -116,7 +115,7 @@ enum
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 
-	self.layer.backgroundColor = [Prefs getSystemColor:COLOR_DROP_AREA_BACKGROUND].CGColor;
+	self.backgroundColor = [Prefs getSystemColor:COLOR_DROP_AREA_BACKGROUND];
 }
 
 - (void) drawRect:(NSRect)dirtyRect

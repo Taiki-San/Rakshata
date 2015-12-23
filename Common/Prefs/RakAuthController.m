@@ -22,8 +22,7 @@
 	initialAnimation = YES;
 	[Prefs registerForChange:self forType:KVO_THEME];
 	
-	self.view.wantsLayer = YES;
-	self.view.layer.backgroundColor = [Prefs getSystemColor:COLOR_TABS_BACKGROUND].CGColor;
+	self.view.backgroundColor = [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 	self.view.layer.cornerRadius = 4;
 	
 	baseHeight = self.view.bounds.size.height;

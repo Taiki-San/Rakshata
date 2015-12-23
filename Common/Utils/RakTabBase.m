@@ -56,7 +56,7 @@
 {
 	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_THEME]])
 	{
-		self.layer.backgroundColor = [self getMainColor].CGColor;
+		self.backgroundColor = [self getMainColor];
 		self.layer.borderColor = [Prefs getSystemColor:COLOR_TABS_BORDER].CGColor;
 		[self setNeedsDisplay:YES];
 	}

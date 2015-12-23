@@ -44,7 +44,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.backgroundColor = [self getBackgroundColor];
 	[self setNeedsDisplay:YES];
 }
 
@@ -141,7 +141,7 @@
 	self.serieViewHidden	= (newMainThread & TAB_SERIES) == 0;
 	self.CTViewHidden		= (newMainThread & TAB_CT) == 0;
 	self.readerViewHidden	= (newMainThread & TAB_READER) == 0;
-	self.layer.backgroundColor = [self getBackgroundColor].CGColor;
+	self.backgroundColor = [self getBackgroundColor];
 	
 	_animatedContextChange = NO;
 }
