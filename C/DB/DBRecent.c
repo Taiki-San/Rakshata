@@ -26,17 +26,17 @@ enum
 
 //DB Setup
 MUTEX_VAR recentMutex;
-bool mutexInitialized = false;
+bool recentMutexInitialized = false;
 
 sqlite3* getPtrRecentDB()
 {
 	sqlite3 * internalDB = NULL;
-	bool initialCheckRequired = mutexInitialized;
+	bool initialCheckRequired = recentMutexInitialized;
 	
-	if(!mutexInitialized)
+	if(!recentMutexInitialized)
 	{
 		MUTEX_CREATE(recentMutex);
-		mutexInitialized = true;
+		recentMutexInitialized = true;
 	}
 	
 	MUTEX_LOCK(recentMutex);
@@ -105,7 +105,7 @@ void closeRecentDB(sqlite3 * database)
 void flushRecentMutex()
 {
 	MUTEX_DESTROY(recentMutex);
-	mutexInitialized = false;
+	recentMutexInitialized = false;
 }
 
 uint checkRecentDBValid(sqlite3 * DB)

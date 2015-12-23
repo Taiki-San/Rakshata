@@ -10,9 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#if !TARGET_OS_IPHONE
+
 @class RakTabView;
 
-#if !TARGET_OS_IPHONE
 @interface RakTabForegroundView : RakForegroundBackgroundView
 {
 	RakText * head;

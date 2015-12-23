@@ -65,7 +65,8 @@
 		return;
 	else
 		loginPromptOpen = YES;
-	
+
+#if !TARGET_OS_IPHONE
 	NSArray * array;
 	
 	[[NSBundle mainBundle] loadNibNamed:@"auth" owner:nil topLevelObjects:&array];
@@ -78,6 +79,7 @@
 			return;
 		}
 	}
+#endif
 }
 
 - (void) loginPromptClosed
@@ -92,9 +94,49 @@
 
 #pragma mark - Access to tabs
 
+- (RakContentView*) getContentView
+{
+	return _contentView;
+}
+
 - (Series *)	serie	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabSerie;	}
 - (CTSelec *)	CT		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabCT;		}
 - (MDL *)		MDL		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabMDL;		}
 - (Reader *)	reader	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabReader;	}
+
+#pragma mark - Flush State
+
+- (void) flushState
+{
+#ifdef FLUSH_PREFS_PROPERLY
+	@autoreleasepool
+	{
+#endif
+		NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
+		
+		saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
+		saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
+		saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
+		saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
+		
+		[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
+										 series:saveSerie
+											 CT:saveCT
+										 reader:saveReader
+											MDL:saveMDL];
+		
+		[[self getContentView] cleanCtx];
+		
+#if !TARGET_OS_IPHONE
+		[(RakAppOSXDelegate *) self window].contentView = nil;
+		[(RakAppOSXDelegate *) self window].imatureFirstResponder = nil;
+		[(RakAppOSXDelegate *) self window].defaultDispatcher = nil;
+#endif
+#ifdef FLUSH_PREFS_PROPERLY
+	}
+	
+	[Prefs deletePrefs];
+#endif
+}
 
 @end

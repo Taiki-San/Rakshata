@@ -76,6 +76,7 @@ RakImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSS
 	{
 		image = [image copy];
 		
+#if !TARGET_OS_IPHONE
 		RakText * text = [[RakText alloc] initWithText:getStringForWchar(project.projectName) :[Prefs getSystemColor:COLOR_ICON_TEXT]];
 		if(text != nil)
 		{
@@ -96,6 +97,7 @@ RakImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSS
 			
 			image.size = oldSize;
 		}
+#endif
 	}
 	
 	return image;
@@ -106,8 +108,16 @@ RakImage * enforceImageSize(RakImage * image, byte code)
 	if(image == nil)
 		return nil;
 
+#if TARGET_OS_IPHONE
+	NSSize size = thumbSizeForID(code);
+	UIGraphicsBeginImageContextWithOptions(size, true, 0.0);
+	[image drawInRect : (CGRect) {CGPointZero, size}];
+	
+	image = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+#else
 	NSSize standard = thumbSizeForID(code), retina = NSMakeSize(standard.width * 2, standard.height * 2);
-
+	
 	for(NSImageRep * representation in image.representations)
 	{
 		NSInteger repBackingScaleRounded = floor(representation.pixelsWide / representation.size.width);
@@ -115,8 +125,8 @@ RakImage * enforceImageSize(RakImage * image, byte code)
 			[representation setSize:retina];
 		else
 			[representation setSize:standard];
-
 	}
+#endif
 
 	return image;
 }
@@ -124,11 +134,14 @@ RakImage * enforceImageSize(RakImage * image, byte code)
 NSSize getThumbSize(RakImage * image)
 {
 	NSSize smallestSize = image.size;
+	
+#if !TARGET_OS_IPHONE
 	for(NSImageRep * rep in [image representations])
 	{
 		if(rep.size.width < smallestSize.width)
 			smallestSize = rep.size;
 	}
+#endif
 
 	return smallestSize;
 }
@@ -140,7 +153,7 @@ RakImage * loadCTHeader(const PROJECT_DATA project)
 
 RakImage * loadCTThumb(const PROJECT_DATA project)
 {
-	RakImage * image = enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil), THUMB_INDEX_CT);
+	RakImage * image = nil;//enforceImageSize(loadProjectImage(project, PROJ_IMG_SUFFIX_CT, nil), THUMB_INDEX_CT);
 	
 	return image != nil ? image : loadImageGrid(project);
 }
@@ -186,11 +199,13 @@ NSSize thumbSizeForID(byte ID)
 		case THUMB_INDEX_DD2X:
 			return NSMakeSize(100, 100);
 
+#if 0
 		case THUMB_INDEX_CT:
 			return NSMakeSize(100, CT_READERMODE_HEIGHT_PROJECT_IMAGE);
 
 		case THUMB_INDEX_CT2X:
 			return NSMakeSize(200, 2 * CT_READERMODE_HEIGHT_PROJECT_IMAGE);
+#endif
 
 		case THUMB_INDEX_HEAD:
 			return NSMakeSize(960, 540);

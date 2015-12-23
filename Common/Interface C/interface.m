@@ -35,6 +35,7 @@ bool isSandboxed()
 
 void configureSandbox()
 {
+#if !TARGET_OS_IPHONE
 	if(isSandboxed())
 		return;
 	
@@ -57,15 +58,20 @@ void configureSandbox()
 	
 	if(![[NSFileManager defaultManager] changeCurrentDirectoryPath:container])
 		NSLog(@"Couldn't change directory to standard sandbox directory!");
+#else
+	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
+#endif
 }
 
 void registerExtensions()
 {
+#if !TARGET_OS_IPHONE
 	if(isSandboxed())
 		return;
 	
 	for(NSString * extension in DEFAULT_ARCHIVE_SUPPORT)
 		registerDefaultForExtension(extension);
+#endif
 }
 
 int getBuildID()
@@ -595,6 +601,12 @@ bool getSystemProxy(char ** _proxyAddress)
 	
 	const CFStringRef proxyCFstr =	(const CFStringRef) CFDictionaryGetValue(proxy, (const void*) kCFNetworkProxiesHTTPProxy);
 	const CFNumberRef portCFnum =	(const CFNumberRef) CFDictionaryGetValue(proxy, (const void*) kCFNetworkProxiesHTTPPort);
+	
+	if(portCFnum == NULL || portCFnum == NULL)
+	{
+		CFRelease(proxy);
+		return false;
+	}
 
 	const uint bufferLength = 2 * CFStringGetLength(proxyCFstr) + 1;
 	char buffer[bufferLength];

@@ -19,6 +19,8 @@
 	Reader * tabReader;
 	MDL * tabMDL;
 	
+	RakContentView * _contentView;
+	
 	BOOL loginPromptOpen;
 	pthread_cond_t loginLock;
 	MUTEX_VAR loginMutex;
@@ -36,9 +38,13 @@
 - (void) openLoginPrompt;
 - (void) loginPromptClosed;
 
+- (RakContentView*) getContentView;
+
 - (Series *)	serie;
 - (CTSelec *)	CT;
 - (MDL *)		MDL;
 - (Reader *)	reader;
+
+- (void) flushState;
 
 @end

@@ -161,11 +161,7 @@ enum KVO_REQUEST {
 
 @interface Prefs : NSObject
 {
-#if !TARGET_OS_IPHONE
 	RakContentView* firstResponder;
-#else
-	id firstResponder;
-#endif
 	
 	// Prefs "sécurisés"
 	NSString * email;

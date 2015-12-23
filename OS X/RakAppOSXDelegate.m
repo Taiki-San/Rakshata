@@ -55,10 +55,13 @@
 
 - (RakContentView*) getContentView
 {
-	for(id view in ((RakView *) self.window.contentView).subviews)
+	if(_contentView != nil)
+		return _contentView;
+	
+	for(id view in ((RakView *) [(id) self window].contentView).subviews)
 	{
 		if([view class] == [RakContentView class])
-			return view;
+			return (_contentView = view);
 	}
 	
 	return nil;
@@ -68,33 +71,7 @@
 
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
-#ifdef FLUSH_PREFS_PROPERLY
-	@autoreleasepool
-	{
-#endif
-		NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
-		
-		saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
-		saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
-		saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
-		saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
-		
-		[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
-										 series:saveSerie
-											 CT:saveCT
-										 reader:saveReader
-											MDL:saveMDL];
-		
-		[[self getContentView] cleanCtx];
-		
-		self.window.contentView = nil;
-		self.window.imatureFirstResponder = nil;
-		self.window.defaultDispatcher = nil;
-#ifdef FLUSH_PREFS_PROPERLY
-	}
-	
-	[Prefs deletePrefs];
-#endif
+	[self flushState];
 }
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

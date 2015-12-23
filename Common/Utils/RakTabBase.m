@@ -180,8 +180,12 @@
 
 - (void) refreshLevelViewsAnimation : (RakView*) superview
 {
+#if TARGET_OS_IPHONE
+	[self.superview endEditing:YES];
+#else
 	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
 		[self.window makeFirstResponder: ((RakWindow *) self.window).defaultDispatcher];
+#endif
 	
 	[RakTabAnimationResize animateTabs : [superview subviews] : NO];
 }
@@ -453,7 +457,7 @@
 
 #pragma mark - Utilities
 
-- (MDL*) getMDL : (BOOL) requireAvailable
+- (MDL *) getMDL : (BOOL) requireAvailable
 {
 	MDL * sharedTabMDL = [self class] == [MDL class] ? (MDL *) self : RakApp.MDL;
 	
@@ -479,7 +483,7 @@
 		return YES;
 	}
 	
-	return !NSEqualRects(_frame, newFrame);
+	return !NSEqualRects(self.frame, newFrame);
 }
 
 @end

@@ -17,6 +17,7 @@
 	if(IOController == nil || [IOController count] == 0)
 		return;
 
+#if !TARGET_OS_IPHONE
 	if([NSThread isMainThread])
 	{
 		RakImportStatusController * UI = [[RakImportStatusController alloc] init];
@@ -35,6 +36,7 @@
 
 		[self importFile:IOController withUI:UI];
 	}
+#endif
 }
 
 + (void) importFile : (NSArray <RakImportBaseController <RakImportIO> * > *) IOController withUI : (RakImportStatusController *) UI

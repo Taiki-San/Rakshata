@@ -17,4 +17,9 @@
 	return RakRealApp.applicationState != UIApplicationStateBackground;
 }
 
+- (void) applicationWillTerminate:(UIApplication *)application
+{
+	[self flushState];
+}
+
 @end

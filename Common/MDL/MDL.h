@@ -34,6 +34,7 @@
 @property BOOL forcedToShowUp;
 @property BOOL needUpdateMainViews;
 @property (nonatomic) BOOL wantCollapse;
+@property (readonly) BOOL isDisplayed;
 
 - (instancetype) init : (RakView*)contentView : (NSString *) state;
 - (BOOL) available;
@@ -42,8 +43,6 @@
 - (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) removingEmailAddress;
-
-- (BOOL) isDisplayed;
 
 - (void) updateDependingViews : (BOOL) animated;
 

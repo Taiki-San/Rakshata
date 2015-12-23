@@ -80,6 +80,29 @@ int launchApp(int argc, char *argv[])
 
 @end
 
+@implementation NSBundle (MacCompatibility)
+
+- (RakImage *)imageForResource:(NSString *)name
+{
+	return nil;
+}
+
+@end
+
+@implementation RakColor (MacCompatibility)
+
++ (RakColor *)colorWithDeviceWhite:(CGFloat)white alpha:(CGFloat)alpha
+{
+	return [RakColor colorWithWhite:white alpha:alpha];
+}
+
++ (RakColor *)colorWithSRGBRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
+{
+	return [RakColor colorWithRed:red green:green blue:blue alpha:alpha];
+}
+
+@end
+
 @implementation RakView (Redirection)
 
 - (void) setNeedsDisplay : (BOOL) value
@@ -94,13 +117,82 @@ int launchApp(int argc, char *argv[])
 @end
 
 @implementation Series
+
+- (void) removeFromSuperview
+{
+	
+}
+
+- (NSString *) byebye
+{
+	return STATE_EMPTY;
+}
+
 @end
 
 @implementation CTSelec
+
+- (void) removeFromSuperview
+{
+	
+}
+
+- (NSString *) byebye
+{
+	return STATE_EMPTY;
+}
+
+- (void) ownFocus
+{
+	
+}
+
 @end
 
 @implementation Reader
+
+- (void) removeFromSuperview
+{
+	
+}
+
+- (NSString *) byebye
+{
+	return STATE_EMPTY;
+}
+
 @end
 
 @implementation MDL
+
+- (void) removeFromSuperview
+{
+	
+}
+
+- (NSString *) byebye
+{
+	return STATE_EMPTY;
+}
+
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch
+{
+	
+}
+
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
+{
+	return NO;
+}
+
+- (NSRect) createFrame
+{
+	return [self lastFrame];
+}
+
+- (NSRect) lastFrame
+{
+	return NSZeroRect;
+}
+
 @end

@@ -19,6 +19,4 @@
 @property (weak) IBOutlet RakWindow *window;
 @property BOOL hasFocus;
 
-- (RakContentView*) getContentView;
-
 @end

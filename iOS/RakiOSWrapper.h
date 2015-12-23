@@ -19,6 +19,7 @@
 #define NSRect		CGRect
 #define NSZeroRect	CGRectZero
 #define NSMakeRect	CGRectMake
+#define NSEqualRects	CGRectEqualToRect
 
 #define NSSize		CGSize
 #define NSZeroSize	CGSizeZero
@@ -45,18 +46,36 @@
 #import "RakOutlineListItem.h"
 
 @interface Series : NSObject
+- (void) removeFromSuperview;
+- (NSString *) byebye;
 @end
 
 @interface CTSelec : NSObject
+
+- (void) removeFromSuperview;
+- (NSString *) byebye;
+- (void) ownFocus;
+
 @end
 
 @interface Reader : NSObject
+- (void) removeFromSuperview;
+- (NSString *) byebye;
 @end
 
 @interface MDL : NSObject
 
 @property BOOL forcedToShowUp;
 @property BOOL needUpdateMainViews;
+@property BOOL isDisplayed;
+
+- (void) removeFromSuperview;
+- (NSString *) byebye;
+- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
+- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
+
+- (NSRect) createFrame;
+- (NSRect) lastFrame;
 
 @end
 
@@ -88,6 +107,19 @@
 @interface NSObject (Comparaison)
 
 - (BOOL)isNotEqualTo:(id)object;
+
+@end
+
+@interface NSBundle (MacCompatibility)
+
+- (RakImage *)imageForResource:(NSString *)name;
+
+@end
+
+@interface RakColor (MacCompatibility)
+
++ (RakColor *) colorWithDeviceWhite:(CGFloat)white alpha:(CGFloat)alpha;
++ (RakColor *) colorWithSRGBRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
 
 @end
 

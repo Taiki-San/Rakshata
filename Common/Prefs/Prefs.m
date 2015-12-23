@@ -795,7 +795,7 @@ char * loadPref(char request[3], unsigned int length, char defaultChar);
 		if(input != recoveryBuffer)
 			free(input);
 		
-		firstResponder = [(RakContentViewBack *) RakApp.window.contentView getFirstResponder];
+		firstResponder = [RakApp getContentView];
 		
 		[self refreshFirstResponder];
 	}

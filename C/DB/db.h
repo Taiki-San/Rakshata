@@ -12,7 +12,7 @@
 
 #define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
 
-int64_t alreadyRefreshed;
+extern int64_t alreadyRefreshed;
 
 //Repo ID are the combinaison of two 32 bits integer, thus, it can not be below 2^32 + 1 so, we're safe
 #define LOCAL_REPO_ID 42

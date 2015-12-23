@@ -470,6 +470,7 @@ bool isDBRepoEmpty()
 	return lengthRootRepo == 0;
 }
 
+int64_t alreadyRefreshed;
 void resetUpdateDBCache()
 {
     alreadyRefreshed = -DB_CACHE_EXPIRENCY;

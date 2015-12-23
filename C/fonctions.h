@@ -174,10 +174,10 @@ bool isStringLongerOrAsLongThan(const char * input, uint length);
 #define isJPEG(input) (((rawData *) input)[0] == (rawData) '\xff' && ((rawData *) input)[1] == (rawData) '\xd8')
 #define isPNG(input) (((rawData *) input)[0] == (rawData) '\x89' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'N' && ((rawData *) input)[3] == (rawData) 'G')
 
-#if defined(MIN)
+#ifdef MIN
 	#undef MIN
 #endif
-#if defined(MAX)
+#ifdef MAX
 	#undef MAX
 #endif
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
