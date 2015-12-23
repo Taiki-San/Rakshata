@@ -436,6 +436,20 @@
 
 #pragma mark - Menu
 
+- (void) menuNeedsUpdate : (NSMenu *) menu
+{
+	if(getMainThread() == TAB_READER)
+	{
+		uint activeTab;
+		[Prefs getPref:PREFS_GET_READER_TABS_STATE :&activeTab];
+		
+		if(!(activeTab & STATE_READER_TAB_SERIE_FOCUS))
+			return;
+	}
+	
+	[super menuNeedsUpdate:menu];
+}
+
 - (void) configureMenu : (NSMenu *) menu forLine : (NSInteger) line column : (NSInteger) column
 {
 	if(line >= _nbData)
