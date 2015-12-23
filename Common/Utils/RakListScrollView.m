@@ -55,7 +55,7 @@
 	}
 	else
 	{
-		[self.animator setFrame:frameRect];
+		[self setFrameAnimated:frameRect];
 		[self updateScrollerState:frameRect];
 	}
 }

@@ -156,7 +156,7 @@
 		newSize.width -= _scrollerWidth;
 
 		if(animated)
-			[placeholder.animator setFrameOrigin:NSCenterSize(newSize, placeholder.bounds.size)];
+			[placeholder setFrameOriginAnimated:NSCenterSize(newSize, placeholder.bounds.size)];
 		else
 			[placeholder setFrameOrigin:NSCenterSize(newSize, placeholder.bounds.size)];
 	}

@@ -120,7 +120,7 @@
 	
 	frame = [self frameByParent : frame : header];
 	
-	[self.animator setFrame:frame];
+	[self setFrameAnimated:frame];
 	
 	NSSize headerSize = [header frameByParent : frame].size;
 	

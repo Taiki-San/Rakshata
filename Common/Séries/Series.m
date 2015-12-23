@@ -138,11 +138,11 @@
 	[coreView focusViewChanged : mainThread];
 	
 	if(mainThread != TAB_SERIES)
-		searchTab.animator.alphaValue = 0;
+		searchTab. alphaAnimated = 0;
 	else
 	{
 		searchTab.hidden = NO;
-		searchTab.animator.alphaValue = 1;
+		searchTab. alphaAnimated = 1;
 	}
 	
 	[super setUpViewForAnimation : mainThread];

@@ -288,8 +288,8 @@ enum
 	
 	if(animated)
 	{
-		[thumbnail.animator setFrameOrigin:		previousOrigin];
-		[projectName.animator setFrameOrigin: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
+		[thumbnail setFrameOriginAnimated:		previousOrigin];
+		[projectName setFrameOriginAnimated: 	(previousOrigin = [self originOfName : _workingArea : previousOrigin])];
 	}
 	else
 	{
@@ -443,7 +443,7 @@ enum
 	if(_reason == SUGGESTION_REASON_AUTHOR)
 	{
 		if(animated)
-			[projectAuthor.animator setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+			[projectAuthor setFrameOriginAnimated:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
 		else
 			[projectAuthor setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
 	}
@@ -451,8 +451,8 @@ enum
 	{
 		if(animated)
 		{
-			[typeProject.animator setFrameOrigin:	(previousOrigin = [self originOfType : _workingArea : previousOrigin])];
-			[tagProject.animator setFrameOrigin:	(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+			[typeProject setFrameOriginAnimated:	(previousOrigin = [self originOfType : _workingArea : previousOrigin])];
+			[tagProject setFrameOriginAnimated:	(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 		}
 		else
 		{

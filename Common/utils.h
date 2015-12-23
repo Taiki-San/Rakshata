@@ -56,6 +56,10 @@ void registerDefaultForExtension(NSString * extension);
 
 @interface RakView (RakUtils)
 
+- (void) setFrameAnimated : (NSRect) frame;
+- (void) setFrameOriginAnimated : (NSPoint) origin;
+- (void) setAlphaAnimated : (CGFloat) alpha;
+
 - (RakView *) findSubviewAtCoordinate : (NSPoint) coordinates;
 - (RakImage *) imageOfView;
 

@@ -207,7 +207,7 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
-	[content.animator setFrame:frame];
+	[content setFrameAnimated:frame];
 	
 	[content setDefaultFrame:frame];
 	[self reloadColumnsWidth:frame.size.width];

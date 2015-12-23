@@ -169,17 +169,17 @@
 {
 	if(serieViewHidden)
 	{
-		[suggestions getContent].animator.alphaValue = 0;
+		[suggestions getContent]. alphaAnimated = 0;
 		if(mainDetailView != nil && mainDetailView.superview != nil)
-			mainDetailView.animator.alphaValue = 0;
+			mainDetailView. alphaAnimated = 0;
 		
 		coreview.hidden = NO;
-		coreview.animator.alphaValue = 1;
+		coreview. alphaAnimated = 1;
 	}
 	else
 	{
 		[suggestions setHidden:NO];
-		[suggestions getContent].animator.alphaValue = 1;
+		[suggestions getContent]. alphaAnimated = 1;
 		coreview.currentContext = TAB_SERIES;
 	}
 	
@@ -190,11 +190,11 @@
 {
 	if(CTViewHidden)
 	{
-		header.animator.alphaValue = 0;
+		header. alphaAnimated = 0;
 	}
 	else
 	{
-		header.hidden = NO;	header.animator.alphaValue = 1;
+		header.hidden = NO;	header. alphaAnimated = 1;
 		coreview.currentContext = TAB_CT;
 	}
 	
@@ -205,13 +205,13 @@
 {
 	if(readerViewHidden)
 	{
-		projectName.animator.alphaValue = 0;
-		projectImage.animator.alphaValue = 0;
+		projectName. alphaAnimated = 0;
+		projectImage. alphaAnimated = 0;
 	}
 	else
 	{
-		projectName.hidden = NO;	projectName.animator.alphaValue = 1;
-		projectImage.hidden = NO;	projectImage.animator.alphaValue = 1;
+		projectName.hidden = NO;	projectName. alphaAnimated = 1;
+		projectImage.hidden = NO;	projectImage. alphaAnimated = 1;
 		
 		coreview.currentContext = TAB_READER;
 	}
@@ -430,7 +430,7 @@ enum
 	[(RakList *) newView resizeAnimation: _bounds];
 	
 	if(oldView == suggestions)		//Completion handler is a bitch :x
-		[oldView getContent].animator.alphaValue = 0;
+		[oldView getContent]. alphaAnimated = 0;
 	
 	[NSAnimationContext endGrouping];
 }

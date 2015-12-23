@@ -66,7 +66,7 @@ enum
 {
 	NSRect newFrame = [self frameFromParent:frameRect];
 	
-	[self.animator setFrame: newFrame];
+	[self setFrameAnimated:newFrame];
 	
 	newFrame.origin = NSZeroPoint;
 	

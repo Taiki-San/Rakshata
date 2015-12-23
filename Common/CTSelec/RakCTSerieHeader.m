@@ -133,12 +133,12 @@ enum
 	
 	_projectHaveFocus = getIn;
 	
-	[placeholder.animator setFrame : [self titleFrame:_bounds : YES]];
-	[title.animator setFrame : [self titleFrame:_bounds : NO]];
-	[rating.animator setFrameOrigin:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
+	[placeholder setFrameAnimated : [self titleFrame:_bounds : YES]];
+	[title setFrameAnimated : [self titleFrame:_bounds : NO]];
+	[rating setFrameOriginAnimated:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
 	
 	if(!getIn)
-		title.animator.alphaValue = 0;
+		title. alphaAnimated = 0;
 	
 	[CATransaction commit];
 	[self unlockFocus];
@@ -209,15 +209,15 @@ enum
 	[NSAnimationContext beginGrouping];
 	
 	if(newTitle != nil)
-		[newTitle.animator setFrame : frame];
+		[newTitle setFrameAnimated : frame];
 	
 	if(newStars != nil)
-		[newStars.animator setFrameOrigin:[self ratingOrigin:_bounds]];
+		[newStars setFrameOriginAnimated:[self ratingOrigin:_bounds]];
 	
 	frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
 	
-	[oldTitle.animator setFrameOrigin:frame.origin];
-	[oldRating.animator setFrameOrigin:NSMakePoint(newStars.frame.origin.x, frame.origin.y)];
+	[oldTitle setFrameOriginAnimated:frame.origin];
+	[oldRating setFrameOriginAnimated:NSMakePoint(newStars.frame.origin.x, frame.origin.y)];
 	
 	[NSAnimationContext endGrouping];
 	
@@ -247,12 +247,12 @@ enum
 	
 	if(!self.isHidden)
 	{
-		[self.animator setFrame:frameRect];
+		[self setFrameAnimated:frameRect];
 		
-		[placeholder.animator setFrame : [self titleFrame:frameRect : YES]];
-		[title.animator setFrame : [self titleFrame:frameRect : NO]];
+		[placeholder setFrameAnimated : [self titleFrame:frameRect : YES]];
+		[title setFrameAnimated : [self titleFrame:frameRect : NO]];
 		
-		[rating.animator setFrameOrigin:[self ratingOrigin:frameRect]];
+		[rating setFrameOriginAnimated:[self ratingOrigin:frameRect]];
 	}
 }
 

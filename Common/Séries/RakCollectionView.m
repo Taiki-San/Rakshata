@@ -69,7 +69,7 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame:[self frameFromParent : frameRect]];
+	[self setFrameAnimated:[self frameFromParent : frameRect]];
 }
 
 - (NSRect) frameFromParent : (NSRect) frame

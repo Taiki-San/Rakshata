@@ -78,7 +78,7 @@
 		background.animationInProgress = YES;
 		
 		if(background != nil)
-			[background.animator setAlphaValue: wasShown ? 0 : 1];
+			[background setAlphaAnimated: wasShown ? 0 : 1];
 		
 		if(_coreView != nil)
 		{
@@ -89,7 +89,7 @@
 			else
 				frame.origin.y = _coreView.superview.frame.size.height / 2 - _coreView.frame.size.height / 2;
 			
-			[_coreView.animator setFrame:frame];
+			[_coreView setFrameAnimated:frame];
 		}
 		
 	} completionHandler:^{

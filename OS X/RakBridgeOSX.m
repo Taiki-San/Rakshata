@@ -18,7 +18,7 @@ int launchApp(int argc, char *argv[])
 	}
 }
 
-@implementation RakView (BackgroundColor)
+@implementation RakView (Bridge)
 
 - (RakColor *) backgroundColor
 {

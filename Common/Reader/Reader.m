@@ -504,7 +504,7 @@
 		[bottomBar setHidden:NO];
 	}
 	
-	[bottomBar.animator setAlphaValue:alpha];
+	[bottomBar setAlphaAnimated:alpha];
 	
 	[NSAnimationContext endGrouping];
 }

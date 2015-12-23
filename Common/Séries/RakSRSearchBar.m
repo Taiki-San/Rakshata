@@ -276,7 +276,7 @@
 
 - (void) resizeAnimation : (NSRect) frame
 {
-	[self.animator setFrame:frame];
+	[self setFrameAnimated:frame];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

@@ -193,8 +193,8 @@ enum
 	email.stringValue = [self emailString];
 	[email sizeToFit];
 	
-	disconnect.animator.alphaValue = 0;
-	[email.animator setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+	disconnect. alphaAnimated = 0;
+	[email setFrameOriginAnimated:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 }
 
 - (void) animationOver : (RakAnimationController *) controller

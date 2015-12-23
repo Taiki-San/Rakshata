@@ -76,7 +76,7 @@
 	frame.origin.x -= 1;
 	frame.size.width += 2;
 	
-	[self.animator setFrame: frame];
+	[self setFrameAnimated: frame];
 	[self updateGradientOrigin : frame.size.width];
 }
 

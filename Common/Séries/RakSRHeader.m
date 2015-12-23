@@ -183,7 +183,7 @@
 	_height = frameRect.size.height;
 	if(animation)
 	{
-		[self.animator setFrame:frameRect];
+		[self setFrameAnimated:frameRect];
 		frameRect.origin = NSZeroPoint;
 		
 		if(_haveFocus)
@@ -341,14 +341,14 @@
 	}
 	else
 	{
-		backButton.animator.alphaValue = !_haveFocus;
-		preferenceButton.animator.alphaValue = mainThread == TAB_READER;
+		backButton. alphaAnimated = !_haveFocus;
+		preferenceButton. alphaAnimated = mainThread == TAB_READER;
 #ifdef SEVERAL_VIEWS
-		displayType.animator.alphaValue = _haveFocus;
+		displayType. alphaAnimated = _haveFocus;
 #endif
-		storeSwitch.animator.alphaValue = _haveFocus;
-		tagRail.animator.alphaValue = _haveFocus;
-		search.animator.alphaValue = _haveFocus;
+		storeSwitch. alphaAnimated = _haveFocus;
+		tagRail. alphaAnimated = _haveFocus;
+		search. alphaAnimated = _haveFocus;
 	}
 }
 

@@ -124,7 +124,7 @@
 	_cachedHeaderHeight = headerHeight;
 	
 	NSRect frame = [self frameFromParent : parentFrame : headerHeight];
-	[self.animator setFrame:frame];
+	[self setFrameAnimated:frame];
 	
 	frame.origin = NSZeroPoint;
 	
@@ -243,28 +243,28 @@
 		for(RakView * view in @[_buttons, isTome ? _volView : _chapterView])
 		{
 			view.hidden = NO;
-			view.animator.alphaValue = 1;
+			view. alphaAnimated = 1;
 		}
 		
 		if(isTome)
-			_chapterView.animator.alphaValue = 0;
+			_chapterView. alphaAnimated = 0;
 		else
-			_volView.animator.alphaValue = 0;
+			_volView. alphaAnimated = 0;
 	}
 	else
 	{
 		if(currentContext == TAB_CT)
 		{
-			_chapterView.hidden = NO;	_chapterView.animator.alphaValue = 1;
-			_volView.hidden = NO;		_volView.animator.alphaValue = 1;
+			_chapterView.hidden = NO;	_chapterView. alphaAnimated = 1;
+			_volView.hidden = NO;		_volView. alphaAnimated = 1;
 		}
 		else
 		{
-			_chapterView.animator.alphaValue = 0;
-			_volView.animator.alphaValue = 0;
+			_chapterView. alphaAnimated = 0;
+			_volView. alphaAnimated = 0;
 		}
 		
-		_buttons.animator.alphaValue = 0;
+		_buttons. alphaAnimated = 0;
 	}
 	
 	if(currentContext != TAB_SERIES)

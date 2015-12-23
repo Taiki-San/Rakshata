@@ -222,7 +222,7 @@ enum
 - (void) updateFrame : (NSRect) newFrame : (BOOL) animated
 {
 	if(animated)
-		[self.animator setFrame:newFrame];
+		[self setFrameAnimated:newFrame];
 	else
 		[super setFrame:newFrame];
 	
@@ -240,11 +240,11 @@ enum
 	
 	if(animated)
 	{
-		[thumb.animator setFrameOrigin:	(oldOrigin = [self thumbOrigin:newFrame])];
-		[infos.animator setFrameOrigin:	(oldOrigin = [self infoOrigin:newFrame :oldOrigin])];
-		[type.animator setFrameOrigin:	(oldOrigin = [self typeOrigin:newFrame :oldOrigin])];
-		[tag.animator setFrameOrigin:	(oldOrigin = [self tagOrigin:newFrame :oldOrigin])];
-		[synopsis.animator setFrame:	[self synopsisFrame:newFrame :oldOrigin]];
+		[thumb setFrameOriginAnimated:	(oldOrigin = [self thumbOrigin:newFrame])];
+		[infos setFrameOriginAnimated:	(oldOrigin = [self infoOrigin:newFrame :oldOrigin])];
+		[type setFrameOriginAnimated:	(oldOrigin = [self typeOrigin:newFrame :oldOrigin])];
+		[tag setFrameOriginAnimated:	(oldOrigin = [self tagOrigin:newFrame :oldOrigin])];
+		[synopsis setFrameAnimated:	[self synopsisFrame:newFrame :oldOrigin]];
 	}
 	else
 	{

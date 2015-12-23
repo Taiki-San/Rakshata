@@ -97,8 +97,8 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : frameRect];
-	[gradient.animator setFrame : frameRect];
+	[self setFrameAnimated : frameRect];
+	[gradient setFrameAnimated : frameRect];
 }
 
 @end

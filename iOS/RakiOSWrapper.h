@@ -81,7 +81,6 @@
 
 #import "RakMDLController.h"
 
-
 @interface PDFPage : NSObject
 {
 	CGPDFPageRef _page;
@@ -125,6 +124,7 @@
 
 @interface RakView (Redirection)
 
+- (void) setFrameOrigin : (NSPoint) origin;
 - (void) setNeedsDisplay : (BOOL) value;
 
 @end

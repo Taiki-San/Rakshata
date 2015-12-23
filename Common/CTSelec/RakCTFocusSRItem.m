@@ -33,7 +33,7 @@ enum
 	NSPoint previousOrigin = [super resizeContent:newSize :animated];
 	
 	if(animated)
-		[stars.animator setFrameOrigin:	(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
+		[stars setFrameOriginAnimated:	(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 	else
 		[stars setFrameOrigin:			(previousOrigin = [self originOfStars : _workingArea : previousOrigin])];
 	

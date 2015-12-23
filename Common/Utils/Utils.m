@@ -119,6 +119,33 @@ static NSArray * savedContext;
 
 @implementation RakView (RakUtils)
 
+- (void) setFrameAnimated : (NSRect) frame
+{
+#if TARGET_OS_IPHONE
+	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	[self setFrame:frame];	}];
+#else
+	[self.animator setFrame : frame];
+#endif
+}
+
+- (void) setFrameOriginAnimated : (NSPoint) origin
+{
+#if TARGET_OS_IPHONE
+	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	[self setFrame: (CGRect) {origin, self.bounds.size}];	}];
+#else
+	[self.animator setFrameOrigin : origin];
+#endif
+}
+
+- (void) setAlphaAnimated : (CGFloat) alpha
+{
+#if TARGET_OS_IPHONE
+	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	self.alpha = alpha;	}];
+#else
+	self.animator.alphaValue = alpha;
+#endif
+}
+
 - (RakView *) findSubviewAtCoordinate : (NSPoint) coordinates
 {
 	NSSize size = self.frame.size;

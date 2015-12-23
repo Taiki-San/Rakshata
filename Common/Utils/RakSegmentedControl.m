@@ -47,7 +47,7 @@ enum
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : [self getButtonFrame:frameRect]];
+	[self setFrameAnimated : [self getButtonFrame:frameRect]];
 }
 
 #pragma mark - Workaround

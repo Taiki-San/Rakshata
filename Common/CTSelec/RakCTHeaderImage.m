@@ -43,7 +43,7 @@
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	frameRect = [self frameByParent:frameRect];
-	[self.animator setFrame :  frameRect];
+	[self setFrameAnimated :  frameRect];
 	
 	frameRect.origin = NSZeroPoint;
 	
@@ -69,7 +69,7 @@
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-		[self.animator setAlphaValue:0.0];
+		[self setAlphaAnimated:0.0];
 		
 	} completionHandler:^{
 		
@@ -78,7 +78,7 @@
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
 			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-			[self.animator setAlphaValue:1.0];
+			[self setAlphaAnimated:1.0];
 			
 		} completionHandler:^{
 			

@@ -128,7 +128,7 @@
 - (void) setAlphaValue : (CGFloat) alphaValue : (BOOL) animated
 {
 	if(animated)
-		scrollView.animator.alphaValue = alphaValue;
+		scrollView. alphaAnimated = alphaValue;
 	else
 		scrollView.alphaValue = alphaValue;
 }

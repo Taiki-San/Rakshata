@@ -57,9 +57,9 @@
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	frameRect.origin = NSZeroPoint;
-	[self.animator setFrame:frameRect];
-	[main.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - main.bounds.size.width / 2, frameRect.size.height / 2 - main.bounds.size.height / 2 - head.bounds.size.height * 0.75)];
-	[head.animator setFrameOrigin:NSMakePoint(frameRect.size.width / 2 - head.bounds.size.width / 2, NSMaxY(main.frame) + head.bounds.size.height / 2)];
+	[self setFrameAnimated:frameRect];
+	[main setFrameOriginAnimated:NSMakePoint(frameRect.size.width / 2 - main.bounds.size.width / 2, frameRect.size.height / 2 - main.bounds.size.height / 2 - head.bounds.size.height * 0.75)];
+	[head setFrameOriginAnimated:NSMakePoint(frameRect.size.width / 2 - head.bounds.size.width / 2, NSMaxY(main.frame) + head.bounds.size.height / 2)];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

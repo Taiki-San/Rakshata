@@ -135,14 +135,14 @@
 			if(serieViewHidden)
 			{
 				scrollview.hidden = NO;
-				scrollview.animator.alphaValue = 1;
+				scrollview. alphaAnimated = 1;
 				headerText.hidden = NO;
-				headerText.animator.alphaValue = 1;
+				headerText. alphaAnimated = 1;
 			}
 			else
 			{
-				scrollview.animator.alphaValue = 0;
-				headerText.animator.alphaValue = 0;
+				scrollview. alphaAnimated = 0;
+				headerText. alphaAnimated = 0;
 			}
 		}
 		else
@@ -160,7 +160,7 @@
 			view.hidden = NO;
 		
 		if(_animatedContextChange)
-			view.animator.alphaValue = !serieViewHidden;
+			view. alphaAnimated = !serieViewHidden;
 		else
 			view.alphaValue = !serieViewHidden;
 	}

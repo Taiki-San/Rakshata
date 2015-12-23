@@ -162,7 +162,7 @@
 	[self updateScrollerAfterResize : _scrollView : oldSize];
 	
 	if(isAnimated)
-		[_scrollView.animator setFrame:container.frame];
+		[_scrollView setFrameAnimated:container.frame];
 	else
 		[_scrollView setFrame:container.frame];
 }

@@ -225,8 +225,8 @@ enum
 	
 	[self updateFrames];
 	
-	mainEaster.animator.alphaValue = 1;
-	easterLink.animator.alphaValue = 1;
+	mainEaster. alphaAnimated = 1;
+	easterLink. alphaAnimated = 1;
 	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{
 		[FOSS updateTrackingAreas];

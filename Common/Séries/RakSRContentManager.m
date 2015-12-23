@@ -335,7 +335,7 @@
 	if(_activeView == SR_CELLTYPE_GRID)
 	{
 		if(animated)
-			[_grid contentView].animator.alphaValue = 0;
+			[_grid contentView]. alphaAnimated = 0;
 		else
 			[_grid contentView].alphaValue = 0;
 	}
@@ -353,7 +353,7 @@
 		[_grid contentView].hidden = NO;
 		
 		if(animated)
-			[_grid contentView].animator.alphaValue = 1;
+			[_grid contentView]. alphaAnimated = 1;
 		else
 			[_grid contentView].alphaValue = 1;
 	}

@@ -86,9 +86,9 @@ enum
 {
 	if(animated)
 	{
-		[self.animator setFrame:newFrame];
-		[collapseButton.animator setFrame:[self collapseFrame:newFrame]];
-		[actionButton.animator setFrame:[self actionFrame:_bounds]];
+		[self setFrameAnimated:newFrame];
+		[collapseButton setFrameAnimated:[self collapseFrame:newFrame]];
+		[actionButton setFrameAnimated:[self actionFrame:_bounds]];
 	}
 	else
 	{

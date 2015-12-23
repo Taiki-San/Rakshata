@@ -246,13 +246,7 @@
 - (void) _resize : (NSRect) frame : (BOOL) animated
 {
 	if(animated)
-	{
-#if TARGET_OS_IPHONE
-		[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	[super setFrame:frame];	}];
-#else
-		[self.animator setFrame : frame];
-#endif
-	}
+		[self setFrameAnimated:frame];
 	else
 		[super setFrame:frame];
 

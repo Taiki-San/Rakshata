@@ -46,7 +46,7 @@ enum
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
 		[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-		[self.animator setAlphaValue:0.0];
+		[self setAlphaAnimated:0.0];
 		
 	} completionHandler:^{
 		
@@ -55,7 +55,7 @@ enum
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
 			[context setDuration:CT_HALF_TRANSITION_ANIMATION];
-			[self.animator setAlphaValue:1.0];
+			[self setAlphaAnimated:1.0];
 			
 		} completionHandler:^{
 			
@@ -200,9 +200,9 @@ enum
 	
 	if(animated)
 	{
-		[_scrollview.animator setFrame: scrollviewRect];
+		[_scrollview setFrameAnimated: scrollviewRect];
 		if(placeholderString)
-			[_placeholder.animator setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
+			[_placeholder setFrameOriginAnimated : [self placeholderOrigin : scrollviewRect]];
 	}
 	else
 	{
@@ -228,7 +228,7 @@ enum
 	
 	//Update main frame
 	if(animated)
-		[self.animator setFrame : mainFrame];
+		[self setFrameAnimated : mainFrame];
 	else
 		[super setFrame : mainFrame];
 	

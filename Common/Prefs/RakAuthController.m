@@ -92,8 +92,8 @@
 	{
 		frame = footerPlaceholder.frame;
 		frame.origin.y = -frame.size.height;
-		[footerPlaceholder.animator setFrame:frame];
-		[footerPlaceholder.animator setAlphaValue:0];
+		[footerPlaceholder setFrameAnimated:frame];
+		[footerPlaceholder setAlphaAnimated:0];
 		initialAnimation = NO;
 	}
 	else if(newAccount && currentMode == AUTH_MODE_LOGIN)
@@ -271,51 +271,51 @@
 	if(appear && !self.offseted)
 	{
 		//Resize main view
-		[self.view.animator setFrame:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, baseHeight +  51)];
+		[self.view setFrameAnimated:NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2 - 51, frame.size.width, baseHeight +  51)];
 		
-		[mailInput.animator setFrameOrigin:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y + 51)];
-		[passInput.animator setFrameOrigin:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y + 51)];
+		[mailInput setFrameOriginAnimated:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y + 51)];
+		[passInput setFrameOriginAnimated:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y + 51)];
 		
-		[container.animator setFrame:NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight + 51)];
+		[container setFrameAnimated:NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight + 51)];
 		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
-		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
+		[privacy setFrameOriginAnimated:NSMakePoint(privacy.frame.origin.x, 74)];
 		
 		[accept setFrameOrigin:NSMakePoint(container.bounds.size.width, accept.frame.origin.y)];
-		[accept.animator setFrameOrigin:NSMakePoint(NSMaxX(terms.frame) + 10, accept.frame.origin.y)];
+		[accept setFrameOriginAnimated:NSMakePoint(NSMaxX(terms.frame) + 10, accept.frame.origin.y)];
 		
 		[terms setFrameOrigin:NSMakePoint(-terms.bounds.size.width, terms.frame.origin.y)];
-		[terms.animator setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)]; 	//32 = border + button width
+		[terms setFrameOriginAnimated:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)]; 	//32 = border + button width
 		
 		[confirm setAlphaValue:0];
-		[confirm.animator setAlphaValue:1];
+		[confirm setAlphaAnimated:1];
 		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
-		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
+		[confirm setFrameOriginAnimated:NSMakePoint(confirm.frame.origin.x, 14)];
 		
 		self.offseted = YES;
 	}
 	else if(!appear && self.offseted)
 	{
-		[self.view.animator setFrame : NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2, frame.size.width, baseHeight)];
+		[self.view setFrameAnimated : NSMakeRect(frame.origin.x, self.view.superview.bounds.size.height / 2 - frame.size.height / 2, frame.size.width, baseHeight)];
 		
-		[mailInput.animator setFrameOrigin:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y - 51)];
-		[passInput.animator setFrameOrigin:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y - 51)];
+		[mailInput setFrameOriginAnimated:NSMakePoint(mailInput.frame.origin.x, mailInput.frame.origin.y - 51)];
+		[passInput setFrameOriginAnimated:NSMakePoint(passInput.frame.origin.x, passInput.frame.origin.y - 51)];
 		
-		[container.animator setFrame : NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight)];
+		[container setFrameAnimated : NSMakeRect(0, 0, container.bounds.size.width, baseContainerHeight)];
 		
 		[privacy setFrameOrigin:NSMakePoint(privacy.frame.origin.x, 74)];
-		[privacy.animator setFrameOrigin:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
+		[privacy setFrameOriginAnimated:NSMakePoint(privacy.frame.origin.x, container.bounds.size.height)];
 		
 		[accept setFrameOrigin:NSMakePoint(NSMaxX(terms.frame) + 10, accept.frame.origin.y)];
-		[accept.animator setFrameOrigin:NSMakePoint(container.bounds.size.width, accept.frame.origin.y)];
+		[accept setFrameOriginAnimated:NSMakePoint(container.bounds.size.width, accept.frame.origin.y)];
 		
 		[terms setFrameOrigin:NSMakePoint(container.bounds.size.width / 2 - (terms.bounds.size.width + 32) / 2, terms.frame.origin.y)];
-		[terms.animator setFrameOrigin:NSMakePoint(-terms.bounds.size.width, terms.frame.origin.y)];
+		[terms setFrameOriginAnimated:NSMakePoint(-terms.bounds.size.width, terms.frame.origin.y)];
 		
 		[confirm setAlphaValue:1];
-		[confirm.animator setAlphaValue:0];
+		[confirm setAlphaAnimated:0];
 		[confirm setFrameOrigin:NSMakePoint(confirm.frame.origin.x, 14)];
-		[confirm.animator setFrameOrigin:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
+		[confirm setFrameOriginAnimated:NSMakePoint(confirm.frame.origin.x, -confirm.frame.size.height)];
 		
 		self.offseted = NO;
 	}
@@ -370,18 +370,18 @@
 	if(appear)
 	{
 		[forgottenPass setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
-		[forgottenPass.animator setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
+		[forgottenPass setFrameOriginAnimated:NSMakePoint(border, forgottenPass.frame.origin.y)];
 		
 		[_login setFrameOrigin:NSMakePoint(frame.size.width, _login.frame.origin.y)];
-		[_login.animator setFrameOrigin:NSMakePoint(frame.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
+		[_login setFrameOriginAnimated:NSMakePoint(frame.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
 	}
 	else
 	{
 		[forgottenPass setFrameOrigin:NSMakePoint(border, forgottenPass.frame.origin.y)];
-		[forgottenPass.animator setFrameOrigin:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
+		[forgottenPass setFrameOriginAnimated:NSMakePoint(-forgottenPass.bounds.size.width, forgottenPass.frame.origin.y)];
 		
 		[_login setFrameOrigin:NSMakePoint(frame.size.width - border - _login.frame.size.width, _login.frame.origin.y)];
-		[_login.animator setFrameOrigin:NSMakePoint(frame.size.width, _login.frame.origin.y)];
+		[_login setFrameOriginAnimated:NSMakePoint(frame.size.width, _login.frame.origin.y)];
 	}
 }
 

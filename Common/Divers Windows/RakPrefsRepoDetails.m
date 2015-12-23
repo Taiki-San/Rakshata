@@ -107,7 +107,7 @@ enum
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 				
 				context.duration = 0.2f;
-				self.animator.alphaValue = 0;
+				self. alphaAnimated = 0;
 				
 			} completionHandler:^{
 				[self _updateContent:isRoot :repo];
@@ -115,7 +115,7 @@ enum
 				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 					
 					context.duration = 0.2f;
-					self.animator.alphaValue = 1;
+					self. alphaAnimated = 1;
 					
 				} completionHandler:^{}];
 			}];
@@ -127,7 +127,7 @@ enum
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 				
 				context.duration = 0.2f;
-				self.animator.alphaValue = 1;
+				self. alphaAnimated = 1;
 				
 			} completionHandler:^{}];
 		}

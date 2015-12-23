@@ -135,7 +135,7 @@ enum
 	}
 		
 	if(animated)
-		[self.scrollView.animator setFrame : newFrame];
+		[self.scrollView setFrameAnimated : newFrame];
 	else
 		[self.scrollView setFrame : newFrame];
 	

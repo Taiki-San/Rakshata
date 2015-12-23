@@ -128,11 +128,11 @@
 {
 	CGFloat oldWidth = self.bounds.size.width;
 	
-	[self.animator setFrame:frameRect];
+	[self setFrameAnimated:frameRect];
 	
 	frameRect = [self getContentFrame : frameRect];
 	
-	[placeholder.animator setFrameOrigin:NSCenteredRect(frameRect, placeholder.bounds)];
+	[placeholder setFrameOriginAnimated:NSCenteredRect(frameRect, placeholder.bounds)];
 	
 	if(oldWidth != frameRect.size.width)
 	{
@@ -279,7 +279,7 @@ enum
 			if(!_collapsed)
 				view.hidden = NO;
 			
-			view.animator.alphaValue = !_collapsed;
+			view. alphaAnimated = !_collapsed;
 		}
 	}
 	
@@ -295,7 +295,7 @@ enum
 	
 	[NSAnimationContext beginGrouping];
 	
-	placeholder.animator.alphaValue = _collapsed;
+	placeholder. alphaAnimated = _collapsed;
 	self.layer.borderColor = [self getBorderColor].CGColor;
 	
 	[[NSAnimationContext currentContext] setCompletionHandler:^{

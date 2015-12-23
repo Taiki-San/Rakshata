@@ -157,8 +157,8 @@ enum
 	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		
-		details.animator.alphaValue = 0;
-		placeholder.animator.alphaValue = 1;
+		details. alphaAnimated = 0;
+		placeholder. alphaAnimated = 1;
 		
 	} completionHandler:^{
 		[self selectionUpdate:isRoot :isRoot ? activeElementInRoot : activeElementInSubRepo];
@@ -214,8 +214,8 @@ enum
 	{
 		if(details.alphaValue)
 		{
-			details.animator.alphaValue = 0;
-			placeholder.animator.alphaValue = 1;
+			details. alphaAnimated = 0;
+			placeholder. alphaAnimated = 1;
 		}
 		
 		if(list.rootMode != isRoot)
@@ -241,7 +241,7 @@ enum
 	}
 	
 	if(placeholder.alphaValue)
-		placeholder.animator.alphaValue = 0;
+		placeholder. alphaAnimated = 0;
 	
 	if(details == nil)
 	{

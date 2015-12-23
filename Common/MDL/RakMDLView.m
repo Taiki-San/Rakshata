@@ -112,7 +112,7 @@ enum
 {
 	[headerText resizeAnimation:newBound];
 	[MDLList resizeAnimation:[self getMainListFrame:newBound]];
-	[dropPlaceHolder.animator setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
+	[dropPlaceHolder setFrameOriginAnimated: [self getPosDropPlaceHolder:newBound.size]];
 	
 	[MDLList checkIfShouldReload];
 }
@@ -168,7 +168,7 @@ enum
 		[NSAnimationContext beginGrouping];
 		
 		[[NSAnimationContext currentContext] setDuration:0.1f];
-		[dropPlaceHolder.animator setAlphaValue:isFocusDrop];
+		[dropPlaceHolder setAlphaAnimated:isFocusDrop];
 		
 		foregroundView = [_controller getForegroundView];
 		if(foregroundView != nil)
@@ -184,7 +184,7 @@ enum
 				[foregroundView setAlphaValue:isFocusDrop];
 				[foregroundView setHidden:NO];
 				
-				[foregroundView.animator setAlphaValue:!isFocusDrop];
+				[foregroundView setAlphaAnimated:!isFocusDrop];
 			}
 		}
 		

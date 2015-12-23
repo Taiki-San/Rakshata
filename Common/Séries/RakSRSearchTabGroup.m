@@ -204,20 +204,20 @@ enum
 
 - (void) resizeAnimation:(NSRect)frameRect
 {
-	[self.animator setFrame:frameRect];
+	[self setFrameAnimated:frameRect];
 	
 	if(_ID == SEARCH_BAR_ID_EXTRA)
 	{
 		NSPoint newOrigin = NSMakePoint(frameRect.size.width / 2 - close.bounds.size.width / 2, frameRect.size.height - 2 - close.bounds.size.height);
-		[close.animator setFrameOrigin:newOrigin];
+		[close setFrameOriginAnimated:newOrigin];
 		
 		NSRect switchFrame = flush.bounds;
 		newOrigin = NSMakePoint(frameRect.size.width / 2 - switchFrame.size.width / 2, newOrigin.y - BORDER_Y_FREE - switchFrame.size.height);
-		[flush.animator setFrameOrigin:newOrigin];
+		[flush setFrameOriginAnimated:newOrigin];
 
 		//Free button
 		newOrigin = NSMakePoint(0, newOrigin.y - BORDER_Y_FREE - buttonContainer.bounds.size.height);
-		[buttonContainer.animator setFrameOrigin:newOrigin];
+		[buttonContainer setFrameOriginAnimated:newOrigin];
 	}
 	else
 	{

@@ -79,11 +79,7 @@
 
 - (void) resizeAnimation : (NSRect)frameRect
 {
-#if TARGET_OS_IPHONE
-	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	[super setFrame:frameRect];	}];
-#else
-	[self.animator setFrame:frameRect];
-#endif
+	[self setFrameAnimated:frameRect];
 	
 	frameRect.origin = NSZeroPoint;
 	[self resizeAnimationInternalViews:frameRect];

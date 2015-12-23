@@ -67,7 +67,7 @@
 	frameRect = [self frameFromParent : frameRect];
 	lastKnownHeight = frameRect.size.height;
 	
-	[self.animator setFrame : frameRect];
+	[self setFrameAnimated : frameRect];
 	frameRect.origin = NSZeroPoint;
 	
 	self.gradientMaxWidth = frameRect.size.height;
@@ -78,8 +78,8 @@
 	projectName.fixedWidth = tableControllerBaseX - nameOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
 	authorName.fixedWidth = tableControllerBaseX - authorOrigin.x - BORDER_BETWEEN_NAME_AND_TABLE;
 	
-	[projectName.animator setFrameOrigin:[self projectNamePos : frameRect.size]];
-	[authorName.animator setFrameOrigin:[self authorNamePos : frameRect.size]];
+	[projectName setFrameOriginAnimated:[self projectNamePos : frameRect.size]];
+	[authorName setFrameOriginAnimated:[self authorNamePos : frameRect.size]];
 	
 	[_tableController resizeAnimation : frameRect];
 }

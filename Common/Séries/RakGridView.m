@@ -168,10 +168,10 @@ enum
 - (void) resizeAnimation : (NSRect) frameRect
 {
 	frameRect = [self frameFromParent:frameRect];
-	[scrollview.animator setFrame : frameRect];
+	[scrollview setFrameAnimated : frameRect];
 
 	if(!backgroundText.isHidden)
-		[backgroundText.animator setFrameOrigin:NSCenterSize(frameRect.size, backgroundText.bounds.size)];
+		[backgroundText setFrameOriginAnimated:NSCenterSize(frameRect.size, backgroundText.bounds.size)];
 }
 
 - (void) updateTrackingArea

@@ -102,7 +102,7 @@
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 			
 			context.duration = 0.1f;
-			old.animator.alphaValue = 0;
+			old. alphaAnimated = 0;
 			
 		} completionHandler:^{
 			
@@ -135,7 +135,7 @@
 				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 					
 					context.duration = 0.1f;
-					new.animator.alphaValue = 1;
+					new. alphaAnimated = 1;
 					
 				} completionHandler:^{
 					old.hidden = YES;

@@ -208,7 +208,7 @@
 - (void) resizeAnimation : (NSRect) parentFrame
 {
 	NSRect frame = [self frameFromParent:parentFrame];
-	[self.animator setFrame : frame];
+	[self setFrameAnimated : frame];
 	frame.origin = NSZeroPoint;
 	
 	[_title resizeAnimation : [self frameForTitle : frame]];
@@ -217,7 +217,7 @@
 	[_content resizeAnimation : frame];
 	
 	if(_placeholderActive)
-		[_placeholder.animator setFrameOrigin : NSCenteredRect(frame, _placeholder.bounds)];
+		[_placeholder setFrameOriginAnimated : NSCenteredRect(frame, _placeholder.bounds)];
 	else
 		[_placeholder setFrameOrigin : NSCenteredRect(frame, _placeholder.bounds)];
 }
@@ -268,14 +268,14 @@
 				[_content setHidden:NO];
 				[_content setAlphaValue:1 :YES];
 				
-				_placeholder.animator.alphaValue = 0;
+				_placeholder. alphaAnimated = 0;
 			}
 			else
 			{
 				[_content setAlphaValue:0 :YES];
 				
 				[_placeholder setHidden:NO];
-				_placeholder.animator.alphaValue = 1;
+				_placeholder. alphaAnimated = 1;
 				
 				[_content flushContext:YES];
 			}

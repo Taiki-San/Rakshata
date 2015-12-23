@@ -249,7 +249,7 @@
 		}
 		
 		if(isAnimated)
-			[icons[pos].animator setFrameOrigin:origin];
+			[icons[pos] setFrameOriginAnimated:origin];
 		else
 			[icons[pos] setFrameOrigin:origin];
 		
@@ -342,7 +342,7 @@
 	if(isAnimated)
 	{
 		popoverFrame.origin.x += frameRect.origin.x - self.frame.origin.x;
-		[self.animator setFrame:frameRect];
+		[self setFrameAnimated:frameRect];
 	}
 	else
 		[super setFrame:frameRect];

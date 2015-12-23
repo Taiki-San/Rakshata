@@ -92,11 +92,11 @@
 	
 	if(animated)
 	{
-		[_title.animator setFrame:titleFrame];
+		[_title setFrameAnimated:titleFrame];
 		
-		[_scrollview.animator setFrame: scrollviewRect];
+		[_scrollview setFrameAnimated: scrollviewRect];
 		if(placeholderString)
-			[_placeholder.animator setFrameOrigin : [self placeholderOrigin : scrollviewRect]];
+			[_placeholder setFrameOriginAnimated : [self placeholderOrigin : scrollviewRect]];
 	}
 	else
 	{

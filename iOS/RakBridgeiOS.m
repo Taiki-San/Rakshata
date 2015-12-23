@@ -105,6 +105,11 @@ int launchApp(int argc, char *argv[])
 
 @implementation RakView (Redirection)
 
+- (void) setFrameOrigin : (NSPoint) origin
+{
+	[self setFrame: (CGRect) {origin, self.bounds.size}];
+}
+
 - (void) setNeedsDisplay : (BOOL) value
 {
 	if(value == YES)

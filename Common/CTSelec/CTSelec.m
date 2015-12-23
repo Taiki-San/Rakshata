@@ -139,22 +139,22 @@
 {
 	if(mainThread != TAB_READER && !backButton.isHidden)
 	{
-		backButton.animator.alphaValue = 0;
+		backButton.alphaAnimated = 0;
 	}
 	else if(mainThread == TAB_READER && backButton.isHidden)
 	{
 		backButton.hidden = NO;
-		backButton.animator.alphaValue = 1;
+		backButton. alphaAnimated = 1;
 	}
 	
 	if(mainThread == TAB_SERIES)
 	{
 		SRHeader.hidden = NO;
-		SRHeader.animator.alphaValue = 1;
+		SRHeader. alphaAnimated = 1;
 	}
 	else
 	{
-		SRHeader.animator.alphaValue = 0;
+		SRHeader. alphaAnimated = 0;
 	}
 	
 	[coreView focusViewChanged : mainThread];
@@ -337,10 +337,10 @@
 			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 				[context setDuration:0.1];
 				
-				[readerTab.animator setFrame:readerFrame];
+				[readerTab setFrameAnimated:readerFrame];
 				
 				if(MDLTab != nil)
-					[MDLTab.animator setFrame:MDLFrame];
+					[MDLTab setFrameAnimated:MDLFrame];
 				
 			} completionHandler:^{
 				

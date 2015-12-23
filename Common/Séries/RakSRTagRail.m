@@ -154,14 +154,14 @@
 		if(newRow || frame.origin.x == 0 || frame.origin.y == 0)
 		{
 			item.alphaValue = 0;
-			item.animator.alphaValue = 1;
+			item. alphaAnimated = 1;
 			
 			if(frame.origin.x != 0)			newRow = YES;
 		}
 		else
 		{
 			item.frame = NSMakeRect(self.bounds.size.width, frame.origin.y, frame.size.width, frame.size.height);
-			item.animator.frame = frame;
+			item.frameAnimated = frame;
 		}
 	}
 	
@@ -241,7 +241,7 @@
 		point = NSMakePoint(_currentX, _currentRow * (TAG_BUTTON_HEIGHT + TAG_RAIL_INTER_RAIL_BORDER));
 		
 		if(animated)
-			[tag.animator setFrameOrigin:point];
+			[tag setFrameOriginAnimated:point];
 		else
 			[tag setFrameOrigin:point];
 		
@@ -280,7 +280,7 @@
 		[tag setAlphaValue:1];
 	}];
 	
-	[tag.animator setAlphaValue:0];
+	[tag setAlphaAnimated:0];
 	
 	[self reorderTags:self.bounds : YES];
 	
@@ -320,7 +320,7 @@
 	_reducedWidth = _baseSearchBar != 0 ? _baseSearchBar - frameRect.origin.x : frameRect.size.width;
 	
 	if(animated)
-		[self.animator setFrame:frameRect];
+		[self setFrameAnimated:frameRect];
 	else
 		[super setFrame:frameRect];
 	

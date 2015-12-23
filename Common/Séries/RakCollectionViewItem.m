@@ -187,8 +187,8 @@ enum	{	BORDER_BOTTOM	= 7	};
 	
 	if(animated)
 	{
-		[projectAuthor.animator setFrameOrigin:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
-		[mainTag.animator setFrameOrigin: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
+		[projectAuthor setFrameOriginAnimated:	(previousOrigin = [self originOfAuthor : _workingArea : previousOrigin])];
+		[mainTag setFrameOriginAnimated: 		(previousOrigin = [self originOfTag : _workingArea : previousOrigin])];
 	}
 	else
 	{

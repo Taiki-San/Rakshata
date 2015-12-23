@@ -420,7 +420,7 @@ enum
 			footer.hidden = NO;
 		}
 		
-		footer.animator.alphaValue = inSeries;
+		footer. alphaAnimated = inSeries;
 	}
 	
 	[super setUpViewForAnimation:mainThread];

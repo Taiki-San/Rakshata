@@ -201,7 +201,7 @@
 
 - (void) resizeAnimation : (NSRect) frameRect
 {
-	[self.animator setFrame : [self getProjectImageSize: frameRect :getThumbSize(self.image)]];
+	[self setFrameAnimated : [self getProjectImageSize: frameRect :getThumbSize(self.image)]];
 }
 
 @end
