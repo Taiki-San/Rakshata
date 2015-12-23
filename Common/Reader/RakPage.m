@@ -1153,13 +1153,18 @@
 {
 	cacheSession++;	//Tell the cache system to stop
 	
-	uint oldCache = _project.cacheDBID;
+	uint oldCache = _project.cacheDBID, posElemInStructure = _posElemInStructure, nbInstalled;
 	
 	deleteProject(_project, _currentElem, self.isTome);
 	
+	nbInstalled = self.isTome ? _project.nbVolumesInstalled : _project.nbChapterInstalled;
+	
+	if(_posElemInStructure == INVALID_VALUE && nbInstalled != 0)
+		_posElemInStructure = posElemInStructure;
+	
 	if(_project.isInitialized && _posElemInStructure != INVALID_VALUE)
 	{
-		if(_posElemInStructure != (self.isTome ? _project.nbVolumesInstalled : _project.nbChapterInstalled))
+		if(_posElemInStructure != nbInstalled)
 		{
 			if(_posElemInStructure > 0)
 			{
@@ -1174,6 +1179,8 @@
 		}
 		else if(_posElemInStructure > 0)
 			return [self prevChapter];
+		else
+			_posElemInStructure = INVALID_VALUE;
 	}
 
 	_data.pageCourante = 0;
