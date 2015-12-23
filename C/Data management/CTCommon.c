@@ -225,11 +225,23 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				}
 
 				uint currentLength = nbElemBase;
-
-				if(!isTome)
-					memcpy(outputData, dataBase, nbElemBase * sizeOfType);
+				if(nbElemBase == 0)		//If there was no base data, we just copy the local stuffs
+				{
+					if(!isTome)
+						memcpy(outputData, dataInject, nbElemToInject * sizeOfType);
+					else
+						copyTomeList(dataInject, nbElemToInject, outputData);
+					
+					currentLength = nbElemToInject;
+					nbElemToInject = 0;
+				}
 				else
-					copyTomeList(dataBase, nbElemBase, outputData);
+				{
+					if(!isTome)
+						memcpy(outputData, dataBase, nbElemToInject * sizeOfType);
+					else
+						copyTomeList(dataBase, nbElemToInject, outputData);
+				}
 
 				//We actually have something to inject, otherwise, we only had one list
 				if(nbElemToInject != 0)

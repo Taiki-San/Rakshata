@@ -24,6 +24,9 @@
 @end
 
 @interface RakImportItem : NSObject
+{
+	BOOL didRegister;
+}
 
 @property NSString * path;
 @property id<RakImportIO> IOController;

@@ -107,6 +107,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	//We insert the new item
 	if(isTome)
 	{
+		if(project.nbVolumesLocal == 0)		project.nbVolumesLocal = 1;
+
 		META_TOME * newField = realloc(cachedProject.tomeLocal, (project.nbVolumesLocal + cachedProject.nbVolumesLocal) * sizeof(META_TOME));
 		if(newField != NULL)
 		{
@@ -119,6 +121,8 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	}
 	else
 	{
+		if(project.nbChapterLocal == 0)		project.nbChapterLocal = 1;
+		
 		uint * newField = realloc(cachedProject.chaptersLocal, (project.nbChapterLocal + cachedProject.nbChapterLocal) * sizeof(uint));
 		if(newField != NULL)
 		{

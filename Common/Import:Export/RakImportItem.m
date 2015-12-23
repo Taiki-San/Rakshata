@@ -277,6 +277,11 @@
 
 - (void) registerProject
 {
+	if(didRegister)
+		return;
+	else
+		didRegister = YES;
+	
 	_projectData.data.project.isInitialized = true;
 	registerImportEntry(_projectData.data, _isTome);
 }
