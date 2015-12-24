@@ -243,7 +243,7 @@
 		for(RakView * view in @[_buttons, isTome ? _volView : _chapterView])
 		{
 			view.hidden = NO;
-			view. alphaAnimated = 1;
+			view.alphaAnimated = 1;
 		}
 		
 		if(isTome)

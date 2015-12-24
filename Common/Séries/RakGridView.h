@@ -52,6 +52,7 @@ enum
 - (instancetype) initWithFrame : (NSRect) frameRect : (RakSRContentManager *) manager;
 
 - (id) animator;
+- (void) setAlphaAnimated : (CGFloat) alpha;
 - (void) setFrame : (NSRect) frameRect;
 - (void) resizeAnimation : (NSRect) frameRect;
 

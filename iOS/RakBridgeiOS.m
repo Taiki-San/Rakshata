@@ -167,37 +167,3 @@ int launchApp(int argc, char *argv[])
 }
 
 @end
-
-@implementation MDL
-
-- (void) removeFromSuperview
-{
-	
-}
-
-- (NSString *) byebye
-{
-	return STATE_EMPTY;
-}
-
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch
-{
-	
-}
-
-- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
-{
-	return NO;
-}
-
-- (NSRect) createFrame
-{
-	return [self lastFrame];
-}
-
-- (NSRect) lastFrame
-{
-	return NSZeroRect;
-}
-
-@end

@@ -87,6 +87,15 @@ enum
 	scrollview.alphaValue = alphaValue;
 }
 
+- (void) setAlphaAnimated : (CGFloat) alpha
+{
+#if TARGET_OS_IPHONE
+	[UIView animateWithDuration:ANIMATION_DURATION_LONG animations:^{	scrollview.alpha = alpha;	}];
+#else
+	scrollview.animator.alphaValue = alpha;
+#endif
+}
+
 - (RakListScrollView *) contentView		{	return scrollview;	}
 
 - (void) setHidden : (BOOL) hidden

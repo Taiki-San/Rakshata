@@ -25,9 +25,6 @@ enum
 	if(self != nil)
 	{
 		flag = TAB_MDL;
-		_needUpdateMainViews = NO;
-		self.forcedToShowUp = NO;
-		_popover = nil;
 		
 		[self initView: contentView : state];
 		canDeploy = NO;
@@ -59,6 +56,7 @@ enum
 	if(controller == nil)
 		return NO;
 	
+#if !TARGET_OS_IPHONE
 	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : _bounds] : state : controller];
 	if(coreView != nil)
 		[self addSubview:coreView];
@@ -70,6 +68,7 @@ enum
 		footer.hidden = self.mainThread != TAB_SERIES;
 		[self addSubview:footer];
 	}
+#endif
 	
 	self.wantCollapse = oldWantCollapse;
 	
@@ -78,12 +77,18 @@ enum
 
 - (BOOL) available
 {
+#if TARGET_OS_IPHONE
+	return [controller getNbElem:YES] != 0;
+#else
 	return coreView != nil && [controller getNbElem:YES] != 0;
+#endif
 }
 
 - (void) wakeUp
 {
+#if !TARGET_OS_IPHONE
 	[coreView wakeUp];
+#endif
 	
 	_needUpdateMainViews = YES;
 	
@@ -105,12 +110,6 @@ enum
 	return [NSString stringWithFormat:@"%d\n%@", _wantCollapse, dataDump];
 }
 
-- (void) dealloc
-{
-	[coreView removeFromSuperview];
-}
-
-- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent { return NO; }
 - (BOOL) acceptsFirstResponder { return NO; }
 
 #pragma mark - Proxy
@@ -171,6 +170,7 @@ enum
 
 - (void) resizingCanceled
 {
+#if !TARGET_OS_IPHONE
 	//The MDL is used as an anchor from time to time
 	if(_popover != nil)
 	{
@@ -186,10 +186,12 @@ enum
 	
 	if(_popover != nil && ![self isDisplayed])
 		[_popover locationUpdated :[self createFrame] :YES];
+#endif
 }
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
+#if !TARGET_OS_IPHONE
 	NSRect bounds = frame;		bounds.origin = NSZeroPoint;
 
 	if(coreView != nil)
@@ -215,6 +217,8 @@ enum
 	if(_popover != nil)
 		[_popover locationUpdated:frame:animated];
 	
+#endif
+	
 	if(_needUpdateMainViews)
 		[self updateDependingViews : NO];
 }
@@ -228,6 +232,7 @@ enum
 	
 	_wantCollapse = wantCollapse;
 	
+#if !TARGET_OS_IPHONE
 	if(!_wantCollapse)
 		[self releaseTrackingArea];
 	else
@@ -244,6 +249,7 @@ enum
 		
 		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];
 	}
+#endif
 }
 
 - (void) rejectedMouseEntered
@@ -280,6 +286,7 @@ enum
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
 }
 
+#if !TARGET_OS_IPHONE
 - (NSRect) createFrameWithSuperView : (RakView*) superview
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superview];
@@ -335,13 +342,14 @@ enum
 	[self setLastFrame:maximumSize];
 	return maximumSize;
 }
+#endif
 
 - (void) updateDependingViews : (BOOL) animated
 {
 	if(!_needUpdateMainViews)
 		return;
 	
-	RakAppOSXDelegate * delegate = RakApp;
+	RakAppDelegate * delegate = RakApp;
 	
 	if(animated)
 	{
@@ -400,6 +408,7 @@ enum
 	return PREFS_GET_MDL_FRAME;
 }
 
+#if !TARGET_OS_IPHONE
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	if(!self.forcedToShowUp)
@@ -425,6 +434,7 @@ enum
 	
 	[super setUpViewForAnimation:mainThread];
 }
+#endif
 
 - (void) refreshDataAfterAnimation
 {
@@ -434,8 +444,10 @@ enum
 		[self updateDependingViews : NO];
 	}
 	
+#if !TARGET_OS_IPHONE
 	if(footer.alphaValue == 0)
 		footer.hidden = YES;
+#endif
 }
 
 #pragma mark - Login request
@@ -452,6 +464,7 @@ enum
 
 #pragma mark - Intertab communication
 
+#if !TARGET_OS_IPHONE
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element
 {
 	[[RakApp CT]		updateContextNotification : data : isTome : INVALID_VALUE];
@@ -462,6 +475,7 @@ enum
 {
 	_popover = popover;
 }
+#endif
 
 #pragma mark - Drag and drop UI effects
 
@@ -491,8 +505,10 @@ enum
 	else
 		return;
 	
+#if !TARGET_OS_IPHONE
 	[coreView hideList: self.forcedToShowUp];
 	[coreView setFocusDrop : self.forcedToShowUp];
+#endif
 	
 	_needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
@@ -500,6 +516,7 @@ enum
 
 #pragma mark - Drop support
 
+#if !TARGET_OS_IPHONE
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	if(!canDL)
@@ -514,5 +531,6 @@ enum
 {
 	return (coreView != nil && [coreView proxyReceiveDrop:data :isTome :element :sender]);
 }
+#endif
 
 @end

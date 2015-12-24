@@ -360,6 +360,7 @@
 		B6C9F12D1B541D2C008DF724 /* RakSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C9F12C1B541D2C008DF724 /* RakSheetView.m */; };
 		B6C9F1301B5420B6008DF724 /* RakImportStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C9F12F1B5420B6008DF724 /* RakImportStatusController.m */; };
 		B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */; };
+		B6CD68EC1C2B459400A84E0B /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
 		B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */; };
 		B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */; };
@@ -688,12 +689,6 @@
 		B67C0F371A9FDD35003A2086 /* RakAboutTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutTools.h; path = "Divers Windows/RakAboutTools.h"; sourceTree = "<group>"; };
 		B67C0F381A9FDD35003A2086 /* RakAboutTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAboutTools.m; path = "Divers Windows/RakAboutTools.m"; sourceTree = "<group>"; };
 		B67C687B1C270698005AB992 /* Rakshata iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rakshata iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B67C68801C270698005AB992 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		B67C68811C270698005AB992 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		B67C68831C270698005AB992 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		B67C68841C270698005AB992 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		B67C68861C270698005AB992 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		B67C68871C270698005AB992 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		B67C688F1C270699005AB992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rakshata iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1029,6 +1024,7 @@
 			children = (
 				B625761A1C27883D00811C33 /* Assets.xcassets */,
 				B67110E11C276C9200E0BFD9 /* Info.plist */,
+				B67C688E1C270699005AB992 /* LaunchScreen.storyboard */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1094,20 +1090,6 @@
 				B625760C1C27723400811C33 /* UIKit.framework */,
 			);
 			name = iOS;
-			sourceTree = "<group>";
-		};
-		B62576191C27746400811C33 /* garbage */ = {
-			isa = PBXGroup;
-			children = (
-				B67C68801C270698005AB992 /* AppDelegate.h */,
-				B67C68811C270698005AB992 /* AppDelegate.m */,
-				B67C68861C270698005AB992 /* DetailViewController.h */,
-				B67C68871C270698005AB992 /* DetailViewController.m */,
-				B67C688E1C270699005AB992 /* LaunchScreen.storyboard */,
-				B67C68831C270698005AB992 /* MasterViewController.h */,
-				B67C68841C270698005AB992 /* MasterViewController.m */,
-			);
-			name = garbage;
 			sourceTree = "<group>";
 		};
 		B62808B119EB00FF0067EE82 /* CT List */ = {
@@ -1451,7 +1433,6 @@
 		B67C687C1C270698005AB992 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				B62576191C27746400811C33 /* garbage */,
 				B645C46F1C28A2BF00CC3EC8 /* Sources */,
 				B6073C461C29B2960061070A /* Supporting Files */,
 			);
@@ -2511,6 +2492,7 @@
 				B671112D1C276CE100E0BFD9 /* interface.m in Sources */,
 				B6FAD86D1C2A19410084692A /* tagSyncParser.m in Sources */,
 				B671112E1C276CE100E0BFD9 /* lecteur_check_newElems.c in Sources */,
+				B6CD68EC1C2B459400A84E0B /* MDL.m in Sources */,
 				B671112F1C276CE100E0BFD9 /* lecteur_loading.c in Sources */,
 				B67111301C276CE100E0BFD9 /* lecteur_tool.c in Sources */,
 				B67111321C276CE100E0BFD9 /* moduleDL2_paid.c in Sources */,
@@ -2834,7 +2816,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -2882,7 +2864,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

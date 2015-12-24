@@ -46,12 +46,13 @@
 #import "RakOutlineListItem.h"
 
 @interface Series : NSObject
+@property BOOL forceNextFrameUpdate;
 - (void) removeFromSuperview;
 - (NSString *) byebye;
 @end
 
 @interface CTSelec : NSObject
-
+@property BOOL forceNextFrameUpdate;
 - (void) removeFromSuperview;
 - (NSString *) byebye;
 - (void) ownFocus;
@@ -62,24 +63,6 @@
 - (void) removeFromSuperview;
 - (NSString *) byebye;
 @end
-
-@interface MDL : NSObject
-
-@property BOOL forcedToShowUp;
-@property BOOL needUpdateMainViews;
-@property BOOL isDisplayed;
-
-- (void) removeFromSuperview;
-- (NSString *) byebye;
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
-- (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
-
-- (NSRect) createFrame;
-- (NSRect) lastFrame;
-
-@end
-
-#import "RakMDLController.h"
 
 @interface PDFPage : NSObject
 {

@@ -160,7 +160,7 @@
 			view.hidden = NO;
 		
 		if(_animatedContextChange)
-			view. alphaAnimated = !serieViewHidden;
+			view.alphaAnimated = !serieViewHidden;
 		else
 			view.alphaValue = !serieViewHidden;
 	}

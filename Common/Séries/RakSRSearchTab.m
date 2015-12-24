@@ -279,7 +279,7 @@ enum
 			if(!_collapsed)
 				view.hidden = NO;
 			
-			view. alphaAnimated = !_collapsed;
+			view.alphaAnimated = !_collapsed;
 		}
 	}
 	

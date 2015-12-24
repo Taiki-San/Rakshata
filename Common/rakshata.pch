@@ -53,9 +53,7 @@
 	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/
-	#if !TARGET_OS_IPHONE
-		#import "MDL.h"
-	#endif
+	#import "MDL.h"
 
 	#import "RakImportExport.h"
 

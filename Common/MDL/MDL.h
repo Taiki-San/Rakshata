@@ -15,20 +15,27 @@
 @class RakMDLList;
 
 #import "RakMDLController.h"
+
+#if !TARGET_OS_IPHONE
 #import "RakMDLListView.h"
 #import "RakMDLList.h"
 #import "RakMDLView.h"
 #import "RakMDLFooter.h"
+#endif
 
 @interface MDL : RakTabView
 {
 	BOOL seriesCollapsedBySetting;
-	
+
+#if !TARGET_OS_IPHONE
 	RakMDLView * coreView;
 	RakMDLFooter * footer;
+#endif
 	RakMDLController * controller;
 	
+#if !TARGET_OS_IPHONE
 	RakReaderControllerUIQuery * _popover;
+#endif
 }
 
 @property BOOL forcedToShowUp;
@@ -46,7 +53,9 @@
 
 - (void) updateDependingViews : (BOOL) animated;
 
+#if !TARGET_OS_IPHONE
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
+#endif
 
 @end
