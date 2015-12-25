@@ -84,7 +84,7 @@ int launchApp(int argc, char *argv[])
 
 - (RakImage *)imageForResource:(NSString *)name
 {
-	return nil;
+	return [UIImage imageNamed:name inBundle:self compatibleWithTraitCollection:nil];
 }
 
 @end

@@ -66,6 +66,8 @@
 
 		#import "RakAuthController.h"
 	#else
+		#import "RakSeriesController.h"
+
 		#include "lecteur.h"
 	#endif
 

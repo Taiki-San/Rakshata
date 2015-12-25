@@ -12,7 +12,7 @@
 
 @interface RakAppiOSDelegate : RakAppDelegate
 {
-	
+	UINavigationController * navigationController;
 }
 
 @property (readonly) BOOL hasFocus;

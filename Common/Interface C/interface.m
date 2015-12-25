@@ -60,6 +60,9 @@ void configureSandbox()
 		NSLog(@"Couldn't change directory to standard sandbox directory!");
 #else
 	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
+	
+//	remove(SETTINGS_FILE);
+//	[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
 #endif
 }
 

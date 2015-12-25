@@ -14,6 +14,14 @@
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	[self awakeFromNib];
+	
+	UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+	navigationController = [storyboard instantiateViewControllerWithIdentifier:@"MainNavigationController"];
+	UIViewController *viewController = navigationController.topViewController;
+	
+	viewController.navigationItem.leftBarButtonItem = viewController.editButtonItem;
+	
 	return YES;
 }
 
@@ -26,5 +34,10 @@
 {
 	[self flushState];
 }
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
+	return YES;
+}
+
 
 @end
