@@ -99,10 +99,15 @@
 	return _contentView;
 }
 
-- (Series *)	serie	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabSerie;	}
-- (CTSelec *)	CT		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabCT;		}
-- (MDL *)		MDL		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabMDL;		}
-- (Reader *)	reader	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return tabReader;	}
+- (Series *)	serie	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return [self _serie];	}
+- (CTSelec *)	CT		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return [self _CT];		}
+- (MDL *)		MDL		{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return [self _MDL];	}
+- (Reader *)	reader	{	if(![NSThread isMainThread]) 	{	while(!self.initialized);	}	 return [self _reader];	}
+
+- (Series *)	_serie	{	 return tabSerie;	}
+- (CTSelec *)	_CT		{	 return tabCT;		}
+- (MDL *)		_MDL	{	 return tabMDL;		}
+- (Reader *)	_reader	{	 return tabReader;	}
 
 #pragma mark - Flush State
 

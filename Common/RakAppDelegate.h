@@ -45,6 +45,12 @@
 - (MDL *)		MDL;
 - (Reader *)	reader;
 
+//Shouldn't be accessed directly
+- (Series *)	_serie;
+- (CTSelec *)	_CT;
+- (MDL *)		_MDL;
+- (Reader *)	_reader;
+
 - (void) flushState;
 
 @end

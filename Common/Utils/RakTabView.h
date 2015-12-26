@@ -51,6 +51,7 @@ enum
 + (void) broadcastUpdateFocus : (uint) newFocus;
 - (void) contextChanged : (NSNotification*) notification;
 - (void) ownFocus;
+- (void) initiateTransition;
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
 - (void) seriesIsOpening : (byte) context;
@@ -126,6 +127,9 @@ enum
 #else
 
 @interface RakTabView : RakTabBase
+{
+	uint tabBarIndex;
+}
 
 @end
 

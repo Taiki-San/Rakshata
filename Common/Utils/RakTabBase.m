@@ -129,13 +129,12 @@
 	if(_initWithNoContent)
 		NSLog(@"Sorry, I can't do that");
 	else if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
-	{
-#if TARGET_OS_IPHONE
-		#warning "Need implementation"
-#else
-		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
-#endif
-	}
+		[self initiateTransition];
+}
+
+- (void) initiateTransition
+{
+	
 }
 
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
