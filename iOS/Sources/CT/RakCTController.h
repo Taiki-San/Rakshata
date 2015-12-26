@@ -13,6 +13,9 @@
 @interface CTSelec : RakTabView
 {
 	IBOutlet UITabBarItem * _tabBarItem;
+	IBOutlet UISegmentedControl * _segmentedControl;
+	
+	IBOutlet UITableView * _tableView;
 }
 
 @end

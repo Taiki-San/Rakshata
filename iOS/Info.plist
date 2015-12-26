@@ -4,6 +4,88 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>source_320x320.png</string>
+				<string>source_64x64.png</string>
+				<string>source_44x58.png</string>
+				<string>source_22x29.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Raksource</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.rakshata.source</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>rak_320x320.png</string>
+				<string>rak_64x64.png</string>
+				<string>rak_44x58.png</string>
+				<string>rak_22x29.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Rak</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.rakshata.rak</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>zip_320x320.png</string>
+				<string>zip_64x64.png</string>
+				<string>zip_44x58.png</string>
+				<string>zip_22x29.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Zip</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.pkware.zip-archive</string>
+				<string>org.gnu.gnu-zip-archive</string>
+				<string>com.rakshata.cbz</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>rar_320x320.png</string>
+				<string>rar_64x64.png</string>
+				<string>rar_44x58.png</string>
+				<string>rar_22x29.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Rar</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.rarlab.rar-archive</string>
+				<string>com.rakshata.cbr</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,7 +101,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>8</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -53,6 +135,96 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.archive</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Rar Comic Archive</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.rakshata.cbr</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>rar_320x320</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>rar_64x64</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>cbr</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.archive</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Zip Comic Archive</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.rakshata.cbz</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>zip_320x320</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>zip_64x64</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>cbz</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Rakshata Content Source</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.rakshata.source</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>source_320x320</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>source_64x64</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>raksource</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.archive</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Rakshata Archive</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.rakshata.rak</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>rak_320x320</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>rak_64x64</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>rak</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

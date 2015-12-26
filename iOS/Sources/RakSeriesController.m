@@ -59,19 +59,15 @@ enum
 	NSLog(@"Trigger search!");
 }
 
-#pragma mark - Segues
+#pragma mark - Table View
 
-- (BOOL) shouldPerformSegueWithIdentifier : (NSString *) identifier sender : (id) sender
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[(uint) [_tableView indexPathForCell:sender].row].index];
+	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[(uint) indexPath.row].index];
 
 	[RakTabView broadcastUpdateContext : self : *project : NO : INVALID_VALUE];
 	[RakApp.CT ownFocus];
-
-	return NO;
 }
-
-#pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
