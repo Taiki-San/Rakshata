@@ -16,6 +16,13 @@
 	IBOutlet UISegmentedControl * _segmentedControl;
 	
 	IBOutlet UITableView * _tableView;
+	
+	PROJECT_DATA _project;
+	
+	BOOL _isTome;
+	uint nbElement;
 }
+
+@property (readonly) BOOL isTome;
 
 @end

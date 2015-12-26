@@ -326,6 +326,7 @@
 		B6A9C49C1C2F023000BDE925 /* rar_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C4981C2F023000BDE925 /* rar_22x29.png */; };
 		B6A9C49D1C2F023000BDE925 /* source_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C4991C2F023000BDE925 /* source_22x29.png */; };
 		B6A9C49E1C2F023000BDE925 /* zip_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C49A1C2F023000BDE925 /* zip_22x29.png */; };
+		B6A9C49F1C2F2C3D00BDE925 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
 		B6AA41841B685692008A7521 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417A1B685692008A7521 /* crc32.c */; };
 		B6AA41851B685692008A7521 /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417C1B685692008A7521 /* pbkdf2.c */; };
 		B6AA41861B685692008A7521 /* Rijndael.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417D1B685692008A7521 /* Rijndael.c */; };
@@ -2409,6 +2410,7 @@
 				B6A9C4751C2EEB9F00BDE925 /* LaunchScreen.storyboard in Resources */,
 				B6A9C48F1C2F017600BDE925 /* rar_44x58.png in Resources */,
 				B6A9C4761C2EEB9F00BDE925 /* Main.storyboard in Resources */,
+				B6A9C49F1C2F2C3D00BDE925 /* Localizable.strings in Resources */,
 				B6A9C49B1C2F023000BDE925 /* rak_22x29.png in Resources */,
 				B6A9C4931C2F017600BDE925 /* source_64x64.png in Resources */,
 				B6A9C4911C2F017600BDE925 /* source_320x320.png in Resources */,
