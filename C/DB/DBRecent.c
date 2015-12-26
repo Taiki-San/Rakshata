@@ -31,7 +31,7 @@ bool recentMutexInitialized = false;
 sqlite3* getPtrRecentDB()
 {
 	sqlite3 * internalDB = NULL;
-	bool initialCheckRequired = recentMutexInitialized;
+	bool initialCheckRequired = !recentMutexInitialized;
 	
 	if(!recentMutexInitialized)
 	{
