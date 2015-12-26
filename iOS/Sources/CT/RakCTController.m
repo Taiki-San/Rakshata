@@ -25,6 +25,9 @@
 {
     [super viewDidLoad];
 	
+	[_segmentedControl setTitle:NSLocalizedString(@"CHAPTERS", nil) forSegmentAtIndex:0];
+	[_segmentedControl setTitle:NSLocalizedString(@"VOLUMES", nil) forSegmentAtIndex:1];
+	
 	[_segmentedControl addTarget:self action:@selector(isTomeToggled) forControlEvents:UIControlEventValueChanged];
 }
 
@@ -90,9 +93,16 @@
 		return;
 	
 	contentID =  ACCESS_CT(_isTome, _project.chaptersFull, _project.volumesFull, contentID);
-	
-//	[RakTabView broadcastUpdateContext : self : _project : isTome : contentID];
-//	[RakApp.CT ownFocus];
+
+	if(checkReadable(_project, _isTome, contentID))
+	{
+		[RakTabView broadcastUpdateContext : self : _project : _isTome : contentID];
+//		[RakApp.reader ownFocus];
+	}
+	else
+	{
+		[RakApp.MDL proxyAddElement:_project isTome:_isTome element:contentID partOfBatch:NO];
+	}
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

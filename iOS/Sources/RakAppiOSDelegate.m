@@ -49,7 +49,7 @@
 	{
 		UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 		if(storyboard != nil)
-			tabSerie = [storyboard instantiateViewControllerWithIdentifier:@"SR"];
+			[storyboard instantiateViewControllerWithIdentifier:@"SR"];
 	}
 	
 	return [super _serie];
@@ -67,10 +67,16 @@
 	{
 		UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 		if(storyboard != nil)
-			tabCT = [storyboard instantiateViewControllerWithIdentifier:@"CT"];
+			[storyboard instantiateViewControllerWithIdentifier:@"CT"];
 	}
 	
 	return [super _CT];
+}
+
+- (void) registerMDL : (MDL *) MDL
+{
+	if(tabMDL == nil)
+		tabMDL = MDL;
 }
 
 - (MDL *) _MDL
@@ -79,10 +85,16 @@
 	{
 		UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 		if(storyboard != nil)
-			tabMDL = [storyboard instantiateViewControllerWithIdentifier:@"MDL"];
+			[storyboard instantiateViewControllerWithIdentifier:@"MDL"];
 	}
 
-	return nil;//[super _MDL];
+	return [super _MDL];
+}
+
+- (void) registerReader : (Reader *) reader
+{
+	if(tabReader == nil)
+		tabReader = reader;
 }
 
 - (Reader *) _reader
@@ -91,7 +103,7 @@
 	{
 		UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 		if(storyboard != nil)
-			tabReader = [storyboard instantiateViewControllerWithIdentifier:@"RD"];
+			[storyboard instantiateViewControllerWithIdentifier:@"RD"];
 	}
 
 	return [super _reader];

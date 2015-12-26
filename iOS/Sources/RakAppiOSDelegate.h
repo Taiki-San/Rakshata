@@ -12,7 +12,7 @@
 
 @interface RakAppiOSDelegate : RakAppDelegate
 {
-	IBOutlet UITabBarController * tabBarController;
+	UITabBarController * tabBarController;
 }
 
 @property (readonly) BOOL hasFocus;
@@ -22,6 +22,8 @@
 
 - (void) registerSeries : (Series *) series;
 - (void) registerCT : (CTSelec *) CT;
+- (void) registerMDL : (MDL *) MDL;
+- (void) registerReader : (Reader *) reader;
 
 - (UITabBarController *) tabBarController;
 
