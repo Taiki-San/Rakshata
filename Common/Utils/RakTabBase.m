@@ -14,7 +14,7 @@
 
 #pragma mark - Core view management
 
-- (void) initView: (RakView *) superview : (NSString *) state
+- (void) configureView
 {
 	[Prefs registerForChange:self forType:KVO_THEME];
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
@@ -128,7 +128,7 @@
 {
 	if(_initWithNoContent)
 		NSLog(@"Sorry, I can't do that");
-	else if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	else
 		[self initiateTransition];
 }
 

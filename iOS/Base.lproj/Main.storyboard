@@ -26,7 +26,7 @@
         <!--Séries-->
         <scene sceneID="hNz-n2-bh7">
             <objects>
-                <viewController id="9pv-A4-QxB" customClass="Series" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SR" id="9pv-A4-QxB" customClass="Series" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
@@ -79,7 +79,7 @@
         <!--Préférences-->
         <scene sceneID="wg7-f3-ORb">
             <objects>
-                <viewController id="8rJ-Kc-sve" customClass="blaViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PRF" id="8rJ-Kc-sve" customClass="blaViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
                         <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
@@ -119,7 +119,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
-                <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="MainTabController" id="49e-Tb-3d3" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="tqf-dm-UAe"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">
@@ -142,7 +142,7 @@
         <!--Téléchargement-->
         <scene sceneID="7NP-Mw-Weq">
             <objects>
-                <viewController id="lQQ-qS-uWc" customClass="blaViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MDL" id="lQQ-qS-uWc" customClass="blaViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="PUZ-BO-wrI"/>
                         <viewControllerLayoutGuide type="bottom" id="dkp-Q5-FFp"/>
@@ -182,7 +182,7 @@
         <!--Nom de la série-->
         <scene sceneID="t9y-AK-lkz">
             <objects>
-                <viewController id="x9i-3p-xUg" customClass="RakCTController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CT" id="x9i-3p-xUg" customClass="CTSelec" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="rAf-2g-FLM"/>
                         <viewControllerLayoutGuide type="bottom" id="iBo-O2-VIG"/>
@@ -214,6 +214,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Nom de la série" image="CT" id="jHO-ly-cmU"/>
+                    <connections>
+                        <outlet property="_tabBarItem" destination="jHO-ly-cmU" id="7rv-l0-48Z"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Ll-il-h9q" sceneMemberID="firstResponder"/>
             </objects>
@@ -222,7 +225,7 @@
         <!--Lecteur-->
         <scene sceneID="90e-HS-bIl">
             <objects>
-                <viewController id="L2p-Bw-J3d" customClass="blaViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RD" id="L2p-Bw-J3d" customClass="blaViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="DVv-9B-gDs"/>
                         <viewControllerLayoutGuide type="bottom" id="yvW-8W-1Gt"/>
@@ -268,6 +271,6 @@
         <image name="SR" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Kdg-7h-rXc"/>
+        <segue reference="2cQ-Os-Iej"/>
     </inferredMetricsTieBreakers>
 </document>

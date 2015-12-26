@@ -118,23 +118,6 @@ int launchApp(int argc, char *argv[])
 
 @end
 
-@implementation RakTabView
-@end
-
-@implementation CTSelec
-
-- (NSString *) byebye
-{
-	return STATE_EMPTY;
-}
-
-- (void) ownFocus
-{
-	
-}
-
-@end
-
 @implementation Reader
 
 - (NSString *) byebye

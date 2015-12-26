@@ -45,6 +45,7 @@ enum
 
 @property BOOL forceNextFrameUpdate;
 
+- (void) configureView;
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;

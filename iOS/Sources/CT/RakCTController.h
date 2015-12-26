@@ -10,6 +10,9 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTController : UIViewController
+@interface CTSelec : RakTabView
+{
+	IBOutlet UITabBarItem * _tabBarItem;
+}
 
 @end

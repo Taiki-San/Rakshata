@@ -12,10 +12,17 @@
 
 @interface RakAppiOSDelegate : RakAppDelegate
 {
-	UINavigationController * navigationController;
+	IBOutlet UITabBarController * tabBarController;
 }
 
 @property (readonly) BOOL hasFocus;
 @property (strong, nonatomic) UIWindow *window;
+
+- (void) registerTabBarController : (UITabBarController *) _tabBarController;
+
+- (void) registerSeries : (Series *) series;
+- (void) registerCT : (CTSelec *) CT;
+
+- (UITabBarController *) tabBarController;
 
 @end

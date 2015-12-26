@@ -31,13 +31,8 @@
 	self.layer.cornerRadius = 7.5;
 	self.layer.backgroundColor = [self getMainColor].CGColor;
 	
-	[Prefs registerForChange:self forType:KVO_THEME];
-	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
-	
+	[self configureView];
 	[self resizeTrackingArea];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextChanged:) name:NOTIFICATION_UPDATE_TAB_CONTENT object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeFocusNotification:) name:NOTIFICATION_UPDATE_TAB_FOCUS object:nil];
 	
 	//Drag'n drop support
 	[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
@@ -70,7 +65,8 @@
 
 - (void) initiateTransition
 {
-	[self refreshLevelViews : self.superview : REFRESHVIEWS_CHANGE_MT];
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+		[self refreshLevelViews : self.superview : REFRESHVIEWS_CHANGE_MT];
 }
 
 #pragma mark - Drawing, and FS support

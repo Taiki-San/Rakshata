@@ -45,14 +45,7 @@
 
 #import "RakOutlineListItem.h"
 
-@interface CTSelec : NSObject
-@property BOOL forceNextFrameUpdate;
-- (NSString *) byebye;
-- (void) ownFocus;
-
-@end
-
-@interface Reader : NSObject
+@interface Reader : UIViewController
 - (NSString *) byebye;
 @end
 

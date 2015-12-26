@@ -17,16 +17,24 @@ enum
 
 @implementation Series
 
-- (void)viewDidLoad
+- (void) awakeFromNib
+{
+	[super awakeFromNib];
+
+	tabBarIndex = 0;
+	[RakApp registerSeries:self];
+}
+
+- (void) viewDidLoad
 {
 	[super viewDidLoad];
 	
+	//Load the project data
 	contentManager = [[RakSRContentManager alloc] init];
-		
+
 	_tableView.rowHeight = 66;
 
-	//Load the project data
-
+	//Setup the tab bar
 	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addTriggered)];
 	self.navigationItem.leftBarButtonItem = button;
 	
@@ -53,16 +61,14 @@ enum
 
 #pragma mark - Segues
 
-- (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
+- (BOOL) shouldPerformSegueWithIdentifier : (NSString *) identifier sender : (id) sender
 {
-	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[(NSUInteger) indexPath.row].index];
+	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[(uint) [_tableView indexPathForCell:sender].row].index];
 
-	
-}
+	[RakTabView broadcastUpdateContext : self : *project : NO : INVALID_VALUE];
+	[RakApp.CT ownFocus];
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-	
+	return NO;
 }
 
 #pragma mark - Table View

@@ -10,15 +10,29 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTController ()
+@implementation CTSelec
 
-@end
+- (void) awakeFromNib
+{
+	[super awakeFromNib];
+	
+	tabBarIndex = 1;
+	[RakApp registerCT:self];
+}
 
-@implementation RakCTController
-
-- (void)viewDidLoad
+- (void) viewDidLoad
 {
     [super viewDidLoad];
+}
+
+#pragma mark - Context notification
+
+- (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
+{
+	if(!project.isInitialized)
+		return;
+
+	_tabBarItem.title = getStringForWchar(project.projectName);
 }
 
 @end
