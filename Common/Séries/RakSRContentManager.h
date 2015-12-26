@@ -36,19 +36,24 @@
 	NSRect previousFrame;
 	byte _activeView;
 
+#if !TARGET_OS_IPHONE
 	RakGridView * _grid;
+#endif
 }
 
 @property (weak) RakView * controlView;
 @property byte activeView;
 
+@property NSMutableArray <RakSRStupidDataStructure *> * sharedReference;
+
+#if !TARGET_OS_IPHONE
 @property (readonly) RakView * getActiveView;
-@property NSMutableArray * sharedReference;
 
 - (void) initViews;
 
 - (void) setFrame : (NSRect) frame;
 - (void) resizeAnimation : (NSRect) frame;
+#endif
 
 - (uint) nbElement;
 - (uint) nbActivatedElement;

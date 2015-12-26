@@ -12,7 +12,7 @@
 
 enum
 {
-	CELL_INTERTEXT_OFFSET = 0
+	CELL_INTERTEXT_OFFSET = 2
 };
 
 @implementation RakSeriesController
@@ -21,16 +21,17 @@ enum
 {
 	[super viewDidLoad];
 	
+	contentManager = [[RakSRContentManager alloc] init];
+		
 	_tableView.rowHeight = 70;
 
 	//Load the project data
-	projects = getCopyCache(RDB_LOADALL | SORT_NAME, &nbProject);
 
-	UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addTriggered)];
-	self.navigationItem.leftBarButtonItem = addButton;
+	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addTriggered)];
+	self.navigationItem.leftBarButtonItem = button;
 	
-	UIBarButtonItem *searchButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchTriggered)];
-	self.navigationItem.rightBarButtonItem = searchButton;
+	button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchTriggered)];
+	self.navigationItem.rightBarButtonItem = button;
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,19 +51,23 @@ enum
 	NSLog(@"Trigger search!");
 }
 
+- (void) selectCell : (id)sender
+{
+	
+}
+
 #pragma mark - Segues
+
+- (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
+{
+	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[(NSUInteger) indexPath.row].index];
+
+	
+}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-	if ([[segue identifier] isEqualToString:@"showDetail"])
-	{
-//	    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-//	    NSDate *object = self.objects[indexPath.row];
-//	    DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-//	    [controller setDetailItem:object];
-//	    controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
-//	    controller.navigationItem.leftItemsSupplementBackButton = YES;
-	}
+	
 }
 
 #pragma mark - Table View
@@ -74,20 +79,24 @@ enum
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return nbProject;
+	return (NSInteger) [contentManager.sharedReference count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-	
 	uint pos = (NSUInteger) indexPath.row;
-	if(pos >= nbProject)
+	if(pos >= [contentManager.sharedReference count])
 		return nil;
+
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SRRandoCell" forIndexPath:indexPath];
+	if(cell == nil)
+		return nil;
+	
+	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[pos].index];
 	
 	CGFloat baseX = 15, height = cell.bounds.size.height;
 
-	UIImage * image = loadDDThumbnail(projects[pos]);
+	UIImage * image = loadDDThumbnail(*project);
 	if(image != nil)
 	{
 		UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(baseX, height / 2 - 22.5, 45, 45)];
@@ -111,31 +120,32 @@ enum
 	{
 		//Configure the name
 		name.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-		name.text = getStringForWchar(projects[pos].projectName);
+		name.text = getStringForWchar(project->projectName);
 		[name sizeToFit];
 		
 		//Configure the author field
-		detail.font = [UIFont systemFontOfSize:[UIFont labelFontSize] - 2];
+		detail.font = [UIFont systemFontOfSize:[UIFont labelFontSize] - 3];
 		detail.textColor = [UIColor colorWithDeviceWhite:0 alpha:0.5];
-		detail.text = getStringForWchar(projects[pos].authorName);
+		detail.text = getStringForWchar(project->authorName);
+		
+		CGFloat offset = CELL_INTERTEXT_OFFSET;
 
 		//Add the source
-		if(!isLocalProject(projects[pos]) && projects[pos].repo != NULL)
+		if(_shouldDisplaySource && !isLocalProject(*project) && project->repo != NULL)
 		{
 			detail.numberOfLines = 2;
-			detail.text = [NSString stringWithFormat:@"%@\n%@", detail.text, getStringForWchar(projects[pos].repo->name)];
+			detail.text = [NSString stringWithFormat:@"%@\n%@", detail.text, getStringForWchar(project->repo->name)];
+			offset = 0;
 		}
 		
 		[detail sizeToFit];
 		
-		CGFloat cumulatedHeight = name.bounds.size.height + CELL_INTERTEXT_OFFSET + detail.bounds.size.height;
-		
-		CGFloat margin = round((height - cumulatedHeight) / 2), baseY = margin;
+		CGFloat nameHeight = name.bounds.size.height + offset, baseY = round((height - (nameHeight + detail.bounds.size.height)) / 2);
 		
 		name.frameOrigin = CGPointMake(baseX, baseY);
 		[cell.contentView addSubview:name];
 		
-		baseY += name.bounds.size.height + CELL_INTERTEXT_OFFSET;
+		baseY += nameHeight;
 		
 		detail.frameOrigin = CGPointMake(baseX, baseY);
 		[cell.contentView addSubview:detail];

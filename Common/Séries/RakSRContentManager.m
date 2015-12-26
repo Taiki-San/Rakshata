@@ -234,6 +234,7 @@
 	return YES;
 }
 
+#if !TARGET_OS_IPHONE
 - (void) initViews
 {
 	previousFrame = _controlView.bounds;
@@ -380,6 +381,8 @@
 		[NSAnimationContext endGrouping];
 	}
 }
+
+#endif
 
 #pragma mark - Manage update
 
@@ -669,8 +672,10 @@
 			}
 		}
 		
+#if !TARGET_OS_IPHONE
 		//We refresh the content frame afterward, as the scrollview tend to bitch a lot :x
 		[self setFrame:previousFrame];
+#endif
 	}
 }
 

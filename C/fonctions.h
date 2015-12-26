@@ -174,11 +174,7 @@ bool isStringLongerOrAsLongThan(const char * input, uint length);
 #define isJPEG(input) (((rawData *) input)[0] == (rawData) '\xff' && ((rawData *) input)[1] == (rawData) '\xd8')
 #define isPNG(input) (((rawData *) input)[0] == (rawData) '\x89' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'N' && ((rawData *) input)[3] == (rawData) 'G')
 
-#ifdef MIN
-	#undef MIN
+#if !TARGET_OS_IPHONE || !defined(__OBJC__)
+	#define MIN(a, b) ((a) < (b) ? (a) : (b))
+	#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
-#ifdef MAX
-	#undef MAX
-#endif
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))

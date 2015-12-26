@@ -26,6 +26,9 @@
 	typedef unsigned char byte;
 #endif
 
+//Define everything we need to define stuffs around
+#include <TargetConditionals.h>
+
 #include "libarchivewrapper.h"
 
 #include "main.h"
@@ -67,6 +70,7 @@
 		#import "RakAuthController.h"
 	#else
 		#import "RakSeriesController.h"
+		#import "RakCTController.h"
 
 		#include "lecteur.h"
 	#endif

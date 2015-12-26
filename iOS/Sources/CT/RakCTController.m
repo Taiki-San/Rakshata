@@ -10,15 +10,15 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakSRContentManager.h"
+@interface RakCTController ()
 
-@interface RakSeriesController : UIViewController
+@end
+
+@implementation RakCTController
+
+- (void)viewDidLoad
 {
-	IBOutlet UITableView * _tableView;
-	
-	RakSRContentManager * contentManager;
+    [super viewDidLoad];
 }
-
-@property BOOL shouldDisplaySource;
 
 @end
