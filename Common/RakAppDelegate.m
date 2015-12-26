@@ -114,10 +114,17 @@
 #endif
 		NSString *saveSerie, *saveCT, *saveReader, *saveMDL;
 		
+#if TARGET_OS_IPHONE
+		saveSerie = [tabSerie byebye];		tabSerie = nil;
+		saveCT =	[tabCT byebye];			tabCT = nil;
+		saveReader =[tabReader byebye];		tabReader = nil;
+		saveMDL =	[tabMDL byebye];		tabMDL = nil;
+#else
 		saveSerie = [tabSerie byebye];		[tabSerie removeFromSuperview];				tabSerie = nil;
 		saveCT =	[tabCT byebye];			[tabCT removeFromSuperview];				tabCT = nil;
 		saveReader =[tabReader byebye];		[tabReader removeFromSuperview];			tabReader = nil;
 		saveMDL =	[tabMDL byebye];		[tabMDL removeFromSuperview];				tabMDL = nil;
+#endif
 		
 		[RakContextRestoration saveContextPrefs:[Prefs dumpPrefs]
 										 series:saveSerie

@@ -51,9 +51,9 @@
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) removingEmailAddress;
 
+#if !TARGET_OS_IPHONE
 - (void) updateDependingViews : (BOOL) animated;
 
-#if !TARGET_OS_IPHONE
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
 #endif

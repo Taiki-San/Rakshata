@@ -121,26 +121,7 @@ int launchApp(int argc, char *argv[])
 @implementation RakTabView
 @end
 
-@implementation Series
-
-- (void) removeFromSuperview
-{
-	
-}
-
-- (NSString *) byebye
-{
-	return STATE_EMPTY;
-}
-
-@end
-
 @implementation CTSelec
-
-- (void) removeFromSuperview
-{
-	
-}
 
 - (NSString *) byebye
 {
@@ -155,11 +136,6 @@ int launchApp(int argc, char *argv[])
 @end
 
 @implementation Reader
-
-- (void) removeFromSuperview
-{
-	
-}
 
 - (NSString *) byebye
 {

@@ -26,11 +26,13 @@ enum
 	{
 		flag = TAB_MDL;
 		
+#if !TARGET_OS_IPHONE
 		[self initView: contentView : state];
-		canDeploy = NO;
-		
 		self.layer.borderColor = [Prefs getSystemColor:COLOR_TABS_BORDER].CGColor;
 		self.layer.borderWidth = 2;
+#endif
+
+		canDeploy = NO;
 		
 		if(![self initContent:state])
 			self = nil;
@@ -87,15 +89,15 @@ enum
 - (void) wakeUp
 {
 #if !TARGET_OS_IPHONE
-	[coreView wakeUp];
-#endif
-	
 	_needUpdateMainViews = YES;
+
+	[coreView wakeUp];
 	
 	if(self.mainThread == TAB_SERIES)
 		RakApp.serie.forceNextFrameUpdate = YES;
 
 	[self updateDependingViews : YES];
+#endif
 }
 
 - (NSString *) byebye
@@ -131,6 +133,8 @@ enum
 }
 
 #pragma mark - View sizing manipulation
+
+#if !TARGET_OS_IPHONE
 
 - (CGFloat) getBottomBorder
 {
@@ -170,7 +174,6 @@ enum
 
 - (void) resizingCanceled
 {
-#if !TARGET_OS_IPHONE
 	//The MDL is used as an anchor from time to time
 	if(_popover != nil)
 	{
@@ -186,12 +189,10 @@ enum
 	
 	if(_popover != nil && ![self isDisplayed])
 		[_popover locationUpdated :[self createFrame] :YES];
-#endif
 }
 
 - (void) resize : (NSRect) frame : (BOOL) animated
 {
-#if !TARGET_OS_IPHONE
 	NSRect bounds = frame;		bounds.origin = NSZeroPoint;
 
 	if(coreView != nil)
@@ -217,8 +218,6 @@ enum
 	if(_popover != nil)
 		[_popover locationUpdated:frame:animated];
 	
-#endif
-	
 	if(_needUpdateMainViews)
 		[self updateDependingViews : NO];
 }
@@ -232,7 +231,6 @@ enum
 	
 	_wantCollapse = wantCollapse;
 	
-#if !TARGET_OS_IPHONE
 	if(!_wantCollapse)
 		[self releaseTrackingArea];
 	else
@@ -249,7 +247,6 @@ enum
 		
 		trackingArea = [self addTrackingRect:frame owner:self userData:nil assumeInside:NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], frame)];
 	}
-#endif
 }
 
 - (void) rejectedMouseEntered
@@ -286,7 +283,6 @@ enum
 	return (state & STATE_READER_TAB_MDL_FOCUS) == 0;
 }
 
-#if !TARGET_OS_IPHONE
 - (NSRect) createFrameWithSuperView : (RakView*) superview
 {
 	NSRect maximumSize = [super createFrameWithSuperView:superview];
@@ -342,7 +338,6 @@ enum
 	[self setLastFrame:maximumSize];
 	return maximumSize;
 }
-#endif
 
 - (void) updateDependingViews : (BOOL) animated
 {
@@ -408,7 +403,6 @@ enum
 	return PREFS_GET_MDL_FRAME;
 }
 
-#if !TARGET_OS_IPHONE
 - (void) mouseEntered:(NSEvent *)theEvent
 {
 	if(!self.forcedToShowUp)
@@ -434,7 +428,6 @@ enum
 	
 	[super setUpViewForAnimation:mainThread];
 }
-#endif
 
 - (void) refreshDataAfterAnimation
 {
@@ -444,11 +437,10 @@ enum
 		[self updateDependingViews : NO];
 	}
 	
-#if !TARGET_OS_IPHONE
 	if(footer.alphaValue == 0)
 		footer.hidden = YES;
-#endif
 }
+#endif
 
 #pragma mark - Login request
 
@@ -475,7 +467,6 @@ enum
 {
 	_popover = popover;
 }
-#endif
 
 #pragma mark - Drag and drop UI effects
 
@@ -505,10 +496,8 @@ enum
 	else
 		return;
 	
-#if !TARGET_OS_IPHONE
 	[coreView hideList: self.forcedToShowUp];
 	[coreView setFocusDrop : self.forcedToShowUp];
-#endif
 	
 	_needUpdateMainViews = YES;
 	[self updateDependingViews : YES];
@@ -516,7 +505,6 @@ enum
 
 #pragma mark - Drop support
 
-#if !TARGET_OS_IPHONE
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	if(!canDL)

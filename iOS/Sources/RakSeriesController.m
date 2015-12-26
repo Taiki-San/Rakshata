@@ -15,7 +15,7 @@ enum
 	CELL_INTERTEXT_OFFSET = 2
 };
 
-@implementation RakSeriesController
+@implementation Series
 
 - (void)viewDidLoad
 {
@@ -23,7 +23,7 @@ enum
 	
 	contentManager = [[RakSRContentManager alloc] init];
 		
-	_tableView.rowHeight = 70;
+	_tableView.rowHeight = 66;
 
 	//Load the project data
 
@@ -34,10 +34,10 @@ enum
 	self.navigationItem.rightBarButtonItem = button;
 }
 
-- (void)didReceiveMemoryWarning
-{
-	[super didReceiveMemoryWarning];
-}
+//- (void) didReceiveMemoryWarning
+//{
+//	[super didReceiveMemoryWarning];
+//}
 
 #pragma mark - Button responder
 
@@ -49,11 +49,6 @@ enum
 - (void) searchTriggered
 {
 	NSLog(@"Trigger search!");
-}
-
-- (void) selectCell : (id)sender
-{
-	
 }
 
 #pragma mark - Segues

@@ -26,7 +26,7 @@
         <!--Séries-->
         <scene sceneID="hNz-n2-bh7">
             <objects>
-                <viewController id="9pv-A4-QxB" customClass="RakSeriesController" sceneMemberID="viewController">
+                <viewController id="9pv-A4-QxB" customClass="Series" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
@@ -68,7 +68,7 @@
                     <tabBarItem key="tabBarItem" title="Séries" image="SR" id="acW-dT-cKf"/>
                     <navigationItem key="navigationItem" id="yfF-fc-Dtn"/>
                     <connections>
-                        <outlet property="_tableView" destination="MoO-HR-5mK" id="qZT-iW-aVo"/>
+                        <outlet property="_tableView" destination="MoO-HR-5mK" id="5TI-fh-Sjs"/>
                         <outlet property="tableView" destination="MoO-HR-5mK" id="RJV-X3-YnV"/>
                     </connections>
                 </viewController>
@@ -114,7 +114,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-282" y="1392"/>
+            <point key="canvasLocation" x="-908" y="702"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
@@ -137,7 +137,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-308" y="-278"/>
+            <point key="canvasLocation" x="-636" y="-390"/>
         </scene>
         <!--Téléchargement-->
         <scene sceneID="7NP-Mw-Weq">
@@ -177,12 +177,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gWS-bP-YIb" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="474" y="844"/>
+            <point key="canvasLocation" x="-104" y="702"/>
         </scene>
         <!--Nom de la série-->
         <scene sceneID="t9y-AK-lkz">
             <objects>
-                <viewController id="x9i-3p-xUg" customClass="blaViewController" sceneMemberID="viewController">
+                <viewController id="x9i-3p-xUg" customClass="RakCTController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="rAf-2g-FLM"/>
                         <viewControllerLayoutGuide type="bottom" id="iBo-O2-VIG"/>
@@ -217,7 +217,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Ll-il-h9q" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="910" y="-690"/>
+            <point key="canvasLocation" x="1174" y="-692"/>
         </scene>
         <!--Lecteur-->
         <scene sceneID="90e-HS-bIl">
@@ -257,7 +257,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bzB-Vr-IcR" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="910" y="16"/>
+            <point key="canvasLocation" x="1174" y="34"/>
         </scene>
     </scenes>
     <resources>

@@ -12,7 +12,7 @@
 
 #import "RakSRContentManager.h"
 
-@interface RakSeriesController : UIViewController
+@interface Series : RakTabView
 {
 	IBOutlet UITableView * _tableView;
 	

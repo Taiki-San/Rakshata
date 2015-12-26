@@ -22,7 +22,11 @@ enum
 	REFRESHVIEWS_NO_CHANGE
 } REFRESHVIEWS_CODE;
 
+#if TARGET_OS_IPHONE
+@interface RakTabBase : UIViewController
+#else
 @interface RakTabBase : RakView
+#endif
 {
 	BOOL noDrag;
 	BOOL canDeploy;
@@ -41,7 +45,6 @@ enum
 
 @property BOOL forceNextFrameUpdate;
 
-- (void) initView: (RakView *)superview : (NSString *) state;
 - (NSString *) byebye;
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
@@ -50,28 +53,49 @@ enum
 - (void) ownFocus;
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element;
 
+- (void) seriesIsOpening : (byte) context;
+- (void) CTIsOpening : (byte) context;
+- (void) readerIsOpening : (byte) context;
+- (void) MDLIsOpening : (byte) context;
+
+- (id) getMDL : (BOOL) requireAvailable;
+
+@end
+
+#if !TARGET_OS_IPHONE
+@interface RakTabView : RakTabBase <NSDraggingDestination>
+{
+	NSTrackingRectTag trackingArea;
+	RakTabForegroundView * foregroundView;
+}
+
+- (void) initView: (RakView *)superview : (NSString *) state;
+- (NSString *) byebye;
+
 - (RakColor*) getMainColor;
 - (void) refreshLevelViews : (RakView*) superview : (byte) context;
 - (void) refreshLevelViewsAnimation : (RakView*) superview;
 - (void) fastAnimatedRefreshLevel : (RakView*) superview;
 - (void) resetFrameSize : (BOOL) withAnimation;
 - (void) refreshViewSize;
-- (void) _refreshViewSize;
 - (void) resize : (NSRect) bounds : (BOOL) animated;
 - (void) animationIsOver : (uint) mainThread : (byte) context;
 
-- (void) seriesIsOpening : (byte) context;
-- (void) CTIsOpening : (byte) context;
-- (void) readerIsOpening : (byte) context;
-- (void) MDLIsOpening : (byte) context;
-
+- (void) resizeTrackingArea;
+- (void) releaseTrackingArea;
 - (void) setUpViewForAnimation : (uint) mainThread;
 
+- (NSRect) generatedReaderTrackingFrame;
 - (void) refreshDataAfterAnimation;
 - (BOOL) isStillCollapsedReaderTab;
 - (BOOL) abortCollapseReaderTab;
 
+- (BOOL) isCursorOnMe;
+- (BOOL) isCursorOnRect : (NSRect) frame;
+- (NSPoint) getCursorPosInWindow;
 - (NSRect) getFrameOfNextTab;
+- (BOOL) mouseOutOfWindow;
+- (void) objectWillLooseFocus : (id) object;
 - (void) rejectedMouseEntered;
 - (void) rejectedMouseExited;
 
@@ -87,31 +111,9 @@ enum
 
 - (NSString *) waitingLoginMessage;
 - (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
-
-- (id) getMDL : (BOOL) requireAvailable;
-- (BOOL) wouldFrameChange : (NSRect) newFrame;
-
-@end
-
-#if !TARGET_OS_IPHONE
-@interface RakTabView : RakTabBase <NSDraggingDestination>
-{
-	NSTrackingRectTag trackingArea;
-	RakTabForegroundView * foregroundView;
-}
-
-- (BOOL) isCursorOnMe;
-- (BOOL) isCursorOnRect : (NSRect) frame;
-- (void) objectWillLooseFocus : (id) object;
-
-- (NSPoint) getCursorPosInWindow;
-- (BOOL) mouseOutOfWindow;
-
-- (void) resizeTrackingArea;
-- (void) releaseTrackingArea;
-- (NSRect) generatedReaderTrackingFrame;
-
 - (RakTabForegroundView *) getForgroundView;
+
+- (BOOL) wouldFrameChange : (NSRect) newFrame;
 
 - (void) dragAndDropStarted:(BOOL)started : (BOOL) canDL;
 - (BOOL) receiveDrop : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (uint) sender;

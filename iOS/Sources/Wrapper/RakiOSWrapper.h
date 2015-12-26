@@ -45,22 +45,14 @@
 
 #import "RakOutlineListItem.h"
 
-@interface Series : NSObject
-@property BOOL forceNextFrameUpdate;
-- (void) removeFromSuperview;
-- (NSString *) byebye;
-@end
-
 @interface CTSelec : NSObject
 @property BOOL forceNextFrameUpdate;
-- (void) removeFromSuperview;
 - (NSString *) byebye;
 - (void) ownFocus;
 
 @end
 
 @interface Reader : NSObject
-- (void) removeFromSuperview;
 - (NSString *) byebye;
 @end
 

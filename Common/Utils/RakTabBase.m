@@ -16,20 +16,6 @@
 
 - (void) initView: (RakView *) superview : (NSString *) state
 {
-	[super setFrame:[self createFrameWithSuperView:superview]];
-	
-	_initWithNoContent = NO;
-	_waitingLogin = NO;
-	canDeploy = YES;
-	
-	[superview addSubview:self];
-	
-	[self setAutoresizesSubviews:NO];
-	[self setNeedsDisplay:YES];
-
-	self.backgroundColor = [self getMainColor];
-	self.layer.cornerRadius = 7.5;
-	
 	[Prefs registerForChange:self forType:KVO_THEME];
 	[Prefs getPref:PREFS_GET_MAIN_THREAD :&_mainThread];
 	
@@ -39,7 +25,6 @@
 
 - (NSString *) byebye
 {
-	[self removeFromSuperview];
 	return [NSString stringWithFormat:STATE_EMPTY];
 }
 
@@ -50,17 +35,6 @@
 }
 
 #pragma mark - Notification code
-
-//Not directly registered because Reader won't use it
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_THEME]])
-	{
-		self.backgroundColor = [self getMainColor];
-		self.layer.borderColor = [Prefs getSystemColor:COLOR_TABS_BORDER].CGColor;
-		[self setNeedsDisplay:YES];
-	}
-}
 
 + (BOOL) broadcastUpdateContext : (id) sender : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
 {
@@ -155,7 +129,13 @@
 	if(_initWithNoContent)
 		NSLog(@"Sorry, I can't do that");
 	else if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	{
+#if TARGET_OS_IPHONE
+		#warning "Need implementation"
+#else
 		[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_MT];
+#endif
+	}
 }
 
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
@@ -169,124 +149,6 @@
 {
 	return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
 }
-
-#pragma mark - General resizing utils
-
-- (void) refreshLevelViews : (RakView*) superview : (byte) context
-{
-	[self refreshLevelViewsAnimation:superview];
-	[self animationIsOver : getMainThread() : context];
-}
-
-- (void) refreshLevelViewsAnimation : (RakView*) superview
-{
-#if TARGET_OS_IPHONE
-	[self.superview endEditing:YES];
-#else
-	if(![self.window.firstResponder isKindOfClass:[NSTextView class]])
-		[self.window makeFirstResponder: ((RakWindow *) self.window).defaultDispatcher];
-#endif
-	
-	[RakTabAnimationResize animateTabs : [superview subviews] : NO];
-}
-
-- (void) fastAnimatedRefreshLevel : (RakView*) superview
-{
-	[RakTabAnimationResize animateTabs : [superview subviews] : YES];
-}
-
-- (void) resetFrameSize : (BOOL) withAnimation
-{
-	self.forceNextFrameUpdate = YES;
-	
-	if(withAnimation)
-		[self resizeAnimation];
-	else
-		[self setFrame:[self createFrame]];
-}
-
-- (void) refreshViewSize
-{
-	_forceNextFrameUpdate = YES;
-	
-	[self setFrame : [self createFrame]];
-	[self _refreshViewSize];
-	
-	[self refreshDataAfterAnimation];
-}
-
-- (void) _refreshViewSize
-{
-	
-}
-
-- (void) setFrame:(NSRect)frameRect
-{
-	if(![self wouldFrameChange:frameRect])
-		return [self resizingCanceled];
-
-	[self _resize:frameRect :NO];
-}
-
-- (void) resizeAnimation
-{
-	NSRect frame = [self createFrame];
-	
-	if(![self wouldFrameChange:frame])
-		return [self resizingCanceled];
-	
-	[self _resize:frame :YES];
-}
-
-- (void) resizingCanceled
-{
-
-}
-
-- (void) _resize : (NSRect) frame : (BOOL) animated
-{
-	if(animated)
-		[self setFrameAnimated:frame];
-	else
-		[super setFrame:frame];
-
-	frame.origin = NSZeroPoint;
-	[self resize:frame :animated];
-}
-
-- (void) resize : (NSRect) bounds : (BOOL) animated
-{
-	
-}
-
-#pragma mark - Look for constraints
-
-#ifdef EXTENSIVE_LOGGING
-
-- (void) addConstraint:(NSLayoutConstraint *)constraint
-{
-	NSLog(@"Fuck you");
-}
-
-- (void) addConstraints:(NSArray *)constraints
-{
-	NSLog(@"Fuck you too, especially you!");
-}
-
-- (NSArray *) constraints
-{
-	NSArray * constraints = [super constraints];
-	
-	if([constraints count])
-	{
-		NSLog(@"Hum, constraints were requested: %@", self);
-		return nil;
-	}
-	
-	return constraints;
-}
-
-#endif
 
 #pragma mark - Tab opening notification
 
@@ -348,76 +210,6 @@
 	_mainThread = mainThread;
 }
 
-#pragma mark - Events
-
-- (NSRect) getFrameOfNextTab
-{
-	return NSZeroRect;
-}
-
-- (void) rejectedMouseEntered
-{
-	
-}
-
-- (void) rejectedMouseExited
-{
-	
-}
-
-#pragma mark - Graphic Utilities
-
-- (BOOL) isFlipped	{	return YES;	}
-- (BOOL) needToConsiderMDL	{	return NO;	}
-
-- (NSRect) createFrame
-{
-	return [self createFrameWithSuperView : self.superview];
-}
-
-- (void) setLastFrame : (NSRect) frame
-{
-	_lastFrame = frame;
-}
-
-- (NSRect) lastFrame
-{
-	return _lastFrame;
-}
-
-- (NSRect) createFrameWithSuperView : (RakView*) superview
-{
-	if(superview == nil)
-		return NSZeroRect;
-	
-	NSRect frame;
-	NSSize sizeSuperView = superview.bounds.size;
-	
-	[Prefs getPref : [self getFrameCode] : &frame : &sizeSuperView];
-	
-	if([self class] != [MDL class])
-	{
-		if([self needToConsiderMDL])
-		{
-			MDL * tabMDL = [self getMDL : YES];
-			if(tabMDL != nil)
-			{
-				frame.origin.y += [tabMDL lastFrame].size.height;
-				frame.size.height -= [tabMDL lastFrame].size.height;
-			}
-		}
-		
-		[self setLastFrame:frame];
-	}
-	
-	return frame;
-}
-
-- (uint) getFrameCode
-{
-	return PREFS_GET_INVALID;
-}
-
 #pragma mark - Wait for login
 
 - (NSString *) waitingLoginMessage
@@ -459,25 +251,6 @@
 		return sharedTabMDL;
 	
 	return nil;
-}
-
-- (BOOL) wouldFrameChange : (NSRect) newFrame
-{
-	if(NSEqualRects(newFrame, NSZeroRect))
-	{
-#ifdef EXTENSIVE_LOGGING
-		NSLog(@"Incorrect size requested by %@", self);
-#endif
-		return NO;
-	}
-	
-	if(self.forceNextFrameUpdate)
-	{
-		self.forceNextFrameUpdate = NO;
-		return YES;
-	}
-	
-	return !NSEqualRects(self.frame, newFrame);
 }
 
 @end
