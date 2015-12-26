@@ -21,6 +21,9 @@ static char passwordGB[2*SHA256_DIGEST_LENGTH] = {0};
 // Cette fonction a pour but de récupérer la clée de chiffrement principale (cf RSP)
 byte getMasterKey(unsigned char *input)
 {
+#if TARGET_OS_IPHONE
+	crashTemp(input, SHA256_DIGEST_LENGTH);
+#else
     if(COMPTE_PRINCIPAL_MAIL == NULL)
     {
 		return GMK_RETVAL_NEED_CREDENTIALS_MAIL;
@@ -139,6 +142,7 @@ byte getMasterKey(unsigned char *input)
 		
 		return createSecurePasswordDB(input);
     }
+#endif
     return GMK_RETVAL_OK;
 }
 

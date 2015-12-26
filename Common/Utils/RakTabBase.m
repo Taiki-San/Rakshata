@@ -126,7 +126,7 @@
 
 - (void) ownFocus
 {
-	if(_initWithNoContent)
+	if(self.initWithNoContent)
 		NSLog(@"Sorry, I can't do that");
 	else
 		[self initiateTransition];

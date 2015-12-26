@@ -18,7 +18,7 @@
 {
 	[super setFrame:[self createFrameWithSuperView:superview]];
 	
-	_initWithNoContent = NO;
+	self.initWithNoContent = NO;
 	_waitingLogin = NO;
 	canDeploy = YES;
 	
@@ -109,7 +109,7 @@
 
 - (void) refreshViewSize
 {
-	_forceNextFrameUpdate = YES;
+	self.forceNextFrameUpdate = YES;
 	
 	[self setFrame:[self createFrame]];
 	[foregroundView setFrame: _bounds];
@@ -239,7 +239,7 @@
 {
 	[self releaseTrackingArea];
 	
-	if(_mainThread == TAB_READER)
+	if(self.mainThread == TAB_READER)
 	{
 		NSRect frame = [self generatedReaderTrackingFrame];
 		
@@ -282,7 +282,7 @@
 
 - (void) setUpViewForAnimation : (uint) mainThread
 {
-	_mainThread = mainThread;
+	self.mainThread = mainThread;
 }
 
 #pragma mark - Events
@@ -291,7 +291,7 @@
 {
 	NSRect frame = _bounds;
 	
-	if(_mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
+	if(self.mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
 	
 	return [self isCursorOnRect:frame];
@@ -341,7 +341,7 @@
 {
 	noDrag = YES;
 	
-	if(_mainThread == flag)
+	if(self.mainThread == flag)
 	{
 		[self objectWillLooseFocus : self.window.firstResponder];
 		[self.window makeFirstResponder:nil];
@@ -378,7 +378,7 @@
 	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(_mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
+			if(self.mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			else
 				[self rejectedMouseExited];

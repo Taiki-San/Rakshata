@@ -378,7 +378,9 @@
 			MDLDownloadOver(true);
 		
 		//Worker should be at work, now, let's wake the UI up
-#ifndef IOS_DIRTY_HACK
+#if TARGET_OS_IPHONE
+		[_tabMDL refresh];
+#else		
 		[_tabMDL wakeUp];
 #endif
 	}

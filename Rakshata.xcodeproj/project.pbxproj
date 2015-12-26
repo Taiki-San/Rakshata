@@ -327,6 +327,7 @@
 		B6A9C49D1C2F023000BDE925 /* source_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C4991C2F023000BDE925 /* source_22x29.png */; };
 		B6A9C49E1C2F023000BDE925 /* zip_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C49A1C2F023000BDE925 /* zip_22x29.png */; };
 		B6A9C49F1C2F2C3D00BDE925 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
+		B6A9C4A11C2F332E00BDE925 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A9C4A01C2F332E00BDE925 /* MDL.m */; };
 		B6AA41841B685692008A7521 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417A1B685692008A7521 /* crc32.c */; };
 		B6AA41851B685692008A7521 /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417C1B685692008A7521 /* pbkdf2.c */; };
 		B6AA41861B685692008A7521 /* Rijndael.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417D1B685692008A7521 /* Rijndael.c */; };
@@ -813,6 +814,7 @@
 		B6A9C4981C2F023000BDE925 /* rar_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rar_22x29.png; sourceTree = "<group>"; };
 		B6A9C4991C2F023000BDE925 /* source_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = source_22x29.png; sourceTree = "<group>"; };
 		B6A9C49A1C2F023000BDE925 /* zip_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zip_22x29.png; sourceTree = "<group>"; };
+		B6A9C4A01C2F332E00BDE925 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; };
 		B6AA417A1B685692008A7521 /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = C/Security/crypto/crc32.c; sourceTree = SOURCE_ROOT; };
 		B6AA417B1B685692008A7521 /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypto.h; path = C/Security/crypto/crypto.h; sourceTree = SOURCE_ROOT; };
 		B6AA417C1B685692008A7521 /* pbkdf2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pbkdf2.c; path = C/Security/crypto/pbkdf2.c; sourceTree = SOURCE_ROOT; };
@@ -1342,16 +1344,17 @@
 		B645C46F1C28A2BF00CC3EC8 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
 				B67DA7D41C2E2F2700FAD87A /* CT */,
+				B6A9C4A21C2F334D00BDE925 /* MDL */,
 				B6797D3F1C2D673F00FF7104 /* RakAppiOSDelegate.h */,
 				B6797D401C2D673F00FF7104 /* RakAppiOSDelegate.m */,
+				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
 				B6797D481C2D677500FF7104 /* Séries */,
 				B645C4701C28A2CB00CC3EC8 /* Wrapper */,
 			);
 			name = Sources;
-			path = ../iOS/Sources;
-			sourceTree = "<group>";
+			path = /Users/Taiki/Mavy/Codebase/iOS/Sources;
+			sourceTree = "<absolute>";
 		};
 		B645C4701C28A2CB00CC3EC8 /* Wrapper */ = {
 			isa = PBXGroup;
@@ -1664,6 +1667,14 @@
 			name = Extensions;
 			path = iOS/Extensions;
 			sourceTree = SOURCE_ROOT;
+		};
+		B6A9C4A21C2F334D00BDE925 /* MDL */ = {
+			isa = PBXGroup;
+			children = (
+				B6A9C4A01C2F332E00BDE925 /* MDL.m */,
+			);
+			name = MDL;
+			sourceTree = "<group>";
 		};
 		B6B3830F188740E7005B5F01 /* Deep Prefs */ = {
 			isa = PBXGroup;
@@ -2357,7 +2368,7 @@
 								enabled = 1;
 							};
 							com.apple.SafariKeychain = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -2663,6 +2674,7 @@
 				B67111341C276CE100E0BFD9 /* moduleDL2.c in Sources */,
 				B67111351C276CE100E0BFD9 /* moduleDLMainWorker.m in Sources */,
 				B67111361C276CE100E0BFD9 /* moduleDLUnzip.c in Sources */,
+				B6A9C4A11C2F332E00BDE925 /* MDL.m in Sources */,
 				B67111371C276CE100E0BFD9 /* moduleDLWorker.c in Sources */,
 				B6FAD86E1C2A19A60084692A /* RakAppDelegate.m in Sources */,
 			);
@@ -2953,7 +2965,6 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_ENTITLEMENTS = "Rakshata iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -3000,7 +3011,6 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_ENTITLEMENTS = "Rakshata iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;

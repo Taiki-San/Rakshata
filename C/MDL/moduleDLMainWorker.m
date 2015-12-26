@@ -10,6 +10,7 @@
  **                                                                                          **
  *********************************************************************************************/
 
+pthread_mutex_t installSharedMemoryReadWrite= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t asynchronousTaskInThreads	= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexLockMainThread			= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condResumeExecution			= PTHREAD_COND_INITIALIZER;
@@ -110,6 +111,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 			}
 			else if(requestID == RID_UPDATE_INSTALL)
 			{
+				MUTEX_LOCK(installSharedMemoryReadWrite);
 				for(dataPos = 0; dataPos < *nbElemTotal && *((*status)[(*IDToPosition)[dataPos]]) != MDL_CODE_INSTALL; dataPos++);
 
 				if(dataPos == *nbElemTotal)
@@ -119,6 +121,7 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 					if(dataPos != *nbElemTotal) //une installation a été trouvée
 						*((*status)[(*IDToPosition)[dataPos]]) = MDL_CODE_INSTALL;
 				}
+				MUTEX_UNLOCK(installSharedMemoryReadWrite);
 			}
 				
 		}
@@ -248,6 +251,8 @@ void MDLCommunicateOC(uint selfCode, void * UIInstance)
 	{
 #ifndef IOS_DIRTY_HACK
 		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
+#else
+		[RakApp.MDL rowUpdate:selfCode];
 #endif
 	}
 }
@@ -256,8 +261,10 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 {
 	if(rowViewResponsible != NULL)
 	{
-#ifndef IOS_DIRTY_HACK
+#if !TARGET_OS_IPHONE
 		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
+#else
+		[RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) rowViewResponsible];
 #endif
 	}
 }

@@ -27,14 +27,15 @@
 {
 	BOOL seriesCollapsedBySetting;
 
+	RakMDLController * controller;
+
 #if !TARGET_OS_IPHONE
 	RakMDLView * coreView;
 	RakMDLFooter * footer;
-#endif
-	RakMDLController * controller;
-	
-#if !TARGET_OS_IPHONE
+
 	RakReaderControllerUIQuery * _popover;
+#else
+	UITableView * _tableView;
 #endif
 }
 
@@ -44,6 +45,7 @@
 @property (readonly) BOOL isDisplayed;
 
 - (instancetype) init : (RakView*)contentView : (NSString *) state;
+- (BOOL) initContent : (NSString *) state;
 - (BOOL) available;
 - (void) wakeUp;
 
@@ -56,6 +58,14 @@
 
 - (void) propagateContextUpdate : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) registerPopoverExistance : (RakReaderControllerUIQuery*) popover;
+#else
+@end
+
+@interface MDL (iOS) <UITableViewDataSource, UITableViewDelegate>
+
+- (void) refresh;
+- (void) rowUpdate : (uint) row;
+- (void) percentageUpdate : (float) percentage atSpeed : (size_t) speed forObject : (NSNumber *) rowNumber;
 #endif
 
 @end

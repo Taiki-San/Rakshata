@@ -30,7 +30,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     PROXY_DATA_LOADED todoListTmp;
     DATA_MOD_DL argument;
     bool isTome = input.todoList->listChapitreOfTome != NULL, DLAborted;
-	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0, nbElement = isTome ? input.todoList->nbElemList : 1;
+	uint posTomeInStruct = ERROR_CHECK, nbElemToInstall = 0, nbElement = isTome ? input.todoList->nbElemList : 1, selfCode = input.selfCode;
 	bool didElemGotDownloaded[nbElement];
 	
     argument.todoList = &todoListTmp;
@@ -51,12 +51,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         free(listDL);
         free(listSizeDL);
         *(input.currentState) = MDL_CODE_INTERNAL_ERROR;
-        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+        MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
         quit_thread(0);
     }
 	
     *(input.currentState) = MDL_CODE_DL;
-	MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+	MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
 	
     for(uint i = 0; i < nbElement; i++)
     {
@@ -164,7 +164,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	DLAborted = (input.todoList->downloadSuspended & DLSTATUS_ABORT) != 0;
 	
 	if(!DLAborted)
+	{
+#if TARGET_OS_IPHONE
+		MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
+#endif
 		MDLDownloadOver(false);
+	}
 	else
 		*(input.currentState) = MDL_CODE_ABORTED;
 	
@@ -176,8 +181,15 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			*(input.currentState) = MDL_CODE_INSTALL;
 		   
 		MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+		
+		MUTEX_LOCK(installSharedMemoryReadWrite);
 		while(*(input.currentState) != MDL_CODE_INSTALL)
-			usleep(250);
+		{
+			MUTEX_UNLOCK(installSharedMemoryReadWrite);
+			usleep(25000);
+			MUTEX_LOCK(installSharedMemoryReadWrite);
+		}
+		MUTEX_UNLOCK(installSharedMemoryReadWrite);
 		
         for(uint i = 0; i < nbElement; i++)
         {

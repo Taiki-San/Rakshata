@@ -170,6 +170,8 @@ typedef struct //argument_to_MDL_handler
 	
 } MDL_HANDLER_ARG;
 
+extern pthread_mutex_t installSharedMemoryReadWrite;
+
 /**Download.c**/
 int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler);
 

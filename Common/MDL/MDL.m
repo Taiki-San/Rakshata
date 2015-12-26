@@ -32,8 +32,6 @@ enum
 		self.layer.borderWidth = 2;
 #endif
 
-		canDeploy = NO;
-		
 		if(![self initContent:state])
 			self = nil;
 	}
@@ -42,6 +40,12 @@ enum
 
 - (BOOL) initContent : (NSString *) state
 {
+#if TARGET_OS_IPHONE
+	flag = TAB_MDL;
+#endif
+	
+	canDeploy = NO;
+
 	//We have to split state in two parts: the first char (0/1, _wantCollapse), and if there is content afterward, \n and the dump of the download list
 	BOOL oldWantCollapse = NO;
 	if([state length] != 0)	//Any content

@@ -158,7 +158,12 @@ void removeFolder(const char *path)
 
 char ** listDir(const char * dirName, uint * nbElements)
 {
-	if(dirName == NULL || nbElements == NULL)
+	if(nbElements == NULL)
+		return NULL;
+	else
+		*nbElements = 0;
+	
+	if(dirName == NULL)
 		return NULL;
 
 	//Open the directory
@@ -211,6 +216,8 @@ char ** listDir(const char * dirName, uint * nbElements)
 
 		char subdirName[dirnameLength + entry->d_namlen + 3];
 		bool isDir = (entry->d_type & DT_DIR) != 0;
+		
+		subdirName[0] = 0;
 
 		//Craft the filename
 		if(isDir && entry->d_name[entry->d_namlen - 1] != '/')
@@ -269,7 +276,6 @@ char ** listDir(const char * dirName, uint * nbElements)
 					{
 						output = tmp;
 						baseLength += nbInBlock;
-						currentLength += nbInBlock;
 					}
 				}
 
