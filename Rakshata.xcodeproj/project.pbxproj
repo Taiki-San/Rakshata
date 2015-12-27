@@ -282,6 +282,8 @@
 		B6978A7D1B420D34002CBB45 /* RakExportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6978A7C1B420D34002CBB45 /* RakExportController.m */; };
 		B697B0FC1A04F64A00E254C3 /* RakDBUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */; };
 		B6993AB61B1A847700FFF894 /* RakPrefsFavoriteListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */; };
+		B69966C91C2FF8D500576396 /* CustomInfiniteIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = B69966C81C2FF8D500576396 /* CustomInfiniteIndicator.m */; };
+		B69966CC1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = B69966CB1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m */; };
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
 		B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */; };
 		B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D46841AA86A1F00B471AC /* RakClickableText.m */; };
@@ -755,6 +757,10 @@
 		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
 		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
 		B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsFavoriteListView.m; path = "Divers Windows/RakPrefsFavoriteListView.m"; sourceTree = "<group>"; };
+		B69966C71C2FF8D500576396 /* CustomInfiniteIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomInfiniteIndicator.h; path = Utils/InfiniteScroll/CustomInfiniteIndicator.h; sourceTree = "<group>"; };
+		B69966C81C2FF8D500576396 /* CustomInfiniteIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomInfiniteIndicator.m; path = Utils/InfiniteScroll/CustomInfiniteIndicator.m; sourceTree = "<group>"; };
+		B69966CA1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+InfiniteScroll.h"; path = "Utils/InfiniteScroll/UIScrollView+InfiniteScroll.h"; sourceTree = "<group>"; };
+		B69966CB1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIScrollView+InfiniteScroll.m"; path = "Utils/InfiniteScroll/UIScrollView+InfiniteScroll.m"; sourceTree = "<group>"; };
 		B69D467A1AA7592700B471AC /* RakPrefsButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsButtons.m; path = "Divers Windows/RakPrefsButtons.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsRepoView.h; path = "Divers Windows/RakPrefsRepoView.h"; sourceTree = "<group>"; };
 		B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoView.m; path = "Divers Windows/RakPrefsRepoView.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1348,8 +1354,8 @@
 				B6A9C4A21C2F334D00BDE925 /* MDL */,
 				B6797D3F1C2D673F00FF7104 /* RakAppiOSDelegate.h */,
 				B6797D401C2D673F00FF7104 /* RakAppiOSDelegate.m */,
-				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
 				B6797D481C2D677500FF7104 /* Séries */,
+				B69966C21C2F7B6900576396 /* Utils */,
 				B645C4701C28A2CB00CC3EC8 /* Wrapper */,
 			);
 			name = Sources;
@@ -1547,6 +1553,26 @@
 				B606EB611B68562600DDBBBD /* tagUpdate.c */,
 			);
 			name = Tag;
+			sourceTree = "<group>";
+		};
+		B69966C21C2F7B6900576396 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
+				B69966C61C2FF8A300576396 /* InfiniteScroll */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		B69966C61C2FF8A300576396 /* InfiniteScroll */ = {
+			isa = PBXGroup;
+			children = (
+				B69966C71C2FF8D500576396 /* CustomInfiniteIndicator.h */,
+				B69966C81C2FF8D500576396 /* CustomInfiniteIndicator.m */,
+				B69966CA1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.h */,
+				B69966CB1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m */,
+			);
+			name = InfiniteScroll;
 			sourceTree = "<group>";
 		};
 		B69D467C1AA7C5C600B471AC /* Preferences */ = {
@@ -2594,6 +2620,7 @@
 				B62575F71C27711200811C33 /* RakImportIOTools.m in Sources */,
 				B62575F81C27711200811C33 /* RakImportRarController.m in Sources */,
 				B62575F91C27711200811C33 /* RakImportZipController.m in Sources */,
+				B69966C91C2FF8D500576396 /* CustomInfiniteIndicator.m in Sources */,
 				B62575FD1C27711200811C33 /* RakImportController.m in Sources */,
 				B6FAD86F1C2A1BE50084692A /* RakDBUpdate.m in Sources */,
 				B62575FE1C27711200811C33 /* RakImportItem.m in Sources */,
@@ -2624,6 +2651,7 @@
 				B6797D471C2D674A00FF7104 /* RakPlaceholderCode.m in Sources */,
 				B67110FE1C276CE100E0BFD9 /* error.c in Sources */,
 				B67110FF1C276CE100E0BFD9 /* keys.c in Sources */,
+				B69966CC1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m in Sources */,
 				B67DA7D71C2E2F6A00FAD87A /* RakCTController.m in Sources */,
 				B6797D411C2D673F00FF7104 /* RakSeriesController.m in Sources */,
 				B67111001C276CE100E0BFD9 /* native.c in Sources */,
