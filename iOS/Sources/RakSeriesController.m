@@ -38,11 +38,17 @@ enum
 	_tableView.rowHeight = 66;
 
 	//Setup the tab bar
-	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"add"] style:UIBarButtonItemStylePlain target:self action:@selector(addTriggered)];
-	self.navigationItem.leftBarButtonItem = button;
-	
-	button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchTriggered)];
-	self.navigationItem.rightBarButtonItem = button;
+	UINavigationItem * navigationItem = [[UINavigationItem alloc] init];
+	if(navigationItem != nil)
+	{
+		UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"add"] style:UIBarButtonItemStylePlain target:self action:@selector(addTriggered)];
+		navigationItem.leftBarButtonItem = button;
+		
+		button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchTriggered)];
+		navigationItem.rightBarButtonItem = button;
+
+		_navigationBar.items = @[navigationItem];
+	}
 }
 
 //- (void) didReceiveMemoryWarning
@@ -63,6 +69,11 @@ enum
 }
 
 #pragma mark - Table View
+
+- (void) viewWillFocus
+{
+	[_tableView deselectRowAtIndexPath:[_tableView indexPathForSelectedRow] animated:NO];
+}
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {

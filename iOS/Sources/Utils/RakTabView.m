@@ -18,6 +18,11 @@
 	[RakApp registerTabBarController:self.tabBarController];
 }
 
+- (void) viewWillFocus
+{
+	
+}
+
 - (void) initiateTransition
 {
 	UITabBarController * tabBarController = [RakApp tabBarController];
@@ -36,26 +41,33 @@
 	// Add the to view to the tab bar view.
 	[fromView.superview addSubview:toView];
 	
-	if(newView.origin.y == 0)
-		newView.origin.y = 20;
-	
 	// Position it off screen.
+	workingFrame.origin.y = 20;
 	workingFrame.origin.x += windowWidth;
 	toView.frame = workingFrame;
+	workingFrame.origin.x -= windowWidth;
 	
 	[UIView animateWithDuration:0.3
 					 animations: ^{
 						 // Animate the views on and off the screen. This will appear to slide.
 						 fromView.frame = CGRectMake(-windowWidth, viewSize.origin.y, windowWidth, viewSize.size.height);
-						 toView.frame = newView;
+						 toView.frame = workingFrame;
 					 }
 	 
 					 completion:^(BOOL finished) {
 						 if (finished)
 						 {
 							 // Remove the old view from the tabbar view.
+							 toView.frame = newView;
 							 [fromView removeFromSuperview];
 							 tabBarController.selectedIndex = tabBarIndex;
+							 
+							 if(!alreadyOpenedOnce)
+							 {
+								 tabBarController.selectedIndex = tabBarIndex == 0 ? tabBarIndex + 1 : tabBarIndex - 1;
+								 tabBarController.selectedIndex = tabBarIndex;
+								 alreadyOpenedOnce = YES;
+							 }
 						 }
 					 }];
 }

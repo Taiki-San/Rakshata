@@ -34,7 +34,10 @@
 - (void) registerTabBarController : (UITabBarController *) _tabBarController
 {
 	if(tabBarController == nil)
+	{
 		tabBarController = _tabBarController;
+		tabBarController.delegate = self;
+	}
 }
 
 - (void) registerSeries : (Series *) series
@@ -109,11 +112,25 @@
 	return [super _reader];
 }
 
-#pragma mark - Access data
+#pragma mark - Tab bar controller
 
 - (UITabBarController *) tabBarController
 {
 	return tabBarController;
+}
+
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
+{
+	//Warn the RakTabView that it's about to be selected
+#if 0
+	if([viewController isKindOfClass:[UINavigationController class]])
+		viewController = [((UINavigationController *) viewController).viewControllers firstObject];
+#endif
+	
+	if([viewController isKindOfClass:[RakTabView class]])
+		[(RakTabView *) viewController viewWillFocus];
+	
+	return YES;
 }
 
 @end

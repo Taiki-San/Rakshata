@@ -15,6 +15,7 @@
 @interface Series : RakTabView <UITableViewDataSource, UITableViewDelegate>
 {
 	IBOutlet UITableView * _tableView;
+	IBOutlet UINavigationBar * _navigationBar;
 	
 	RakSRContentManager * contentManager;
 }

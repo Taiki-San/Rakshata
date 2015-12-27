@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppiOSDelegate : RakAppDelegate
+@interface RakAppiOSDelegate : RakAppDelegate <UITabBarControllerDelegate>
 {
 	UITabBarController * tabBarController;
 }

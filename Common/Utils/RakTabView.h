@@ -130,7 +130,10 @@ enum
 @interface RakTabView : RakTabBase
 {
 	uint tabBarIndex;
+	BOOL alreadyOpenedOnce;
 }
+
+- (void) viewWillFocus;
 
 @end
 
