@@ -42,7 +42,9 @@
 	[fromView.superview addSubview:toView];
 	
 	// Position it off screen.
-	workingFrame.origin.y = 20;
+	if(!alreadyOpenedOnce)
+		workingFrame.origin.y = 20;
+	
 	workingFrame.origin.x += windowWidth;
 	toView.frame = workingFrame;
 	workingFrame.origin.x -= windowWidth;

@@ -19,6 +19,8 @@
 	self.initWithNoContent = YES;
 	tabBarIndex = 1;
 	[RakApp registerCT:self];
+
+	savedState[0] = savedState[1] = YES;
 }
 
 - (void) viewDidLoad
@@ -27,6 +29,8 @@
 	
 	[_segmentedControl setTitle:NSLocalizedString(@"CHAPTERS", nil) forSegmentAtIndex:0];
 	[_segmentedControl setTitle:NSLocalizedString(@"VOLUMES", nil) forSegmentAtIndex:1];
+	
+	if(!savedState[0] || !savedState[1])		[self applyState:savedState];
 	
 	[_segmentedControl addTarget:self action:@selector(isTomeToggled) forControlEvents:UIControlEventValueChanged];
 }
@@ -71,9 +75,7 @@
 - (void) ensureValidSegmentedControlState
 {
 	//If there are both chapters and volumes, that's fine
-	BOOL shouldSegmentedControlBeActive = _project.nbChapter != 0 && _project.nbVolumes;
-	
-	_segmentedControl.enabled = shouldSegmentedControlBeActive;
+	BOOL shouldSegmentedControlBeActive = _project.nbChapter && _project.nbVolumes;
 	
 	if(!shouldSegmentedControlBeActive)
 	{
@@ -82,6 +84,24 @@
 			_isTome = !_isTome;
 			_segmentedControl.selectedSegmentIndex = _isTome;
 		}
+
+		[self applyState: (BOOL [2]) {!_isTome, _isTome}];
+	}
+	else
+		[self applyState: (BOOL [2]) {YES, YES}];
+}
+
+- (void) applyState : (BOOL [2]) state
+{
+	if(_segmentedControl == nil)
+	{
+		savedState[0] = state[0];
+		savedState[1] = state[1];
+	}
+	else
+	{
+		[_segmentedControl setEnabled:state[0] forSegmentAtIndex:0];
+		[_segmentedControl setEnabled:state[1] forSegmentAtIndex:1];
 	}
 }
 

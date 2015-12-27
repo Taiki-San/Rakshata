@@ -14,6 +14,7 @@
 {
 	IBOutlet UITabBarItem * _tabBarItem;
 	IBOutlet UISegmentedControl * _segmentedControl;
+	BOOL savedState[2];
 	
 	IBOutlet UITableView * _tableView;
 	
