@@ -12,7 +12,10 @@
 
 enum
 {
-	CELL_INTERTEXT_OFFSET = 2
+	CELL_INTERTEXT_OFFSET = 2,
+	CELL_BULLET_OFFSET = 8,
+	CELL_BULLET_WIDTH = 12,
+	CELL_IMAGE_OFFSET = 15
 };
 
 @implementation Series
@@ -35,7 +38,7 @@ enum
 	_tableView.rowHeight = 66;
 
 	//Setup the tab bar
-	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addTriggered)];
+	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"add"] style:UIBarButtonItemStylePlain target:self action:@selector(addTriggered)];
 	self.navigationItem.leftBarButtonItem = button;
 	
 	button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchTriggered)];
@@ -88,10 +91,25 @@ enum
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SRRandoCell" forIndexPath:indexPath];
 	if(cell == nil)
 		return nil;
+	else
+		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	
 	PROJECT_DATA * project = [contentManager getDataAtIndex:contentManager.sharedReference[pos].index];
 	
-	CGFloat baseX = 15, height = cell.bounds.size.height;
+	CGFloat baseX = 2 * CELL_BULLET_OFFSET + CELL_BULLET_WIDTH, height = cell.bounds.size.height;
+	if(haveUnread(*project))
+	{
+		UIImage * image = [UIImage imageNamed:@"unread"];
+		if(image != nil)
+		{
+			UIImageView * imageView = [[UIImageView alloc] initWithImage:image];
+			if(imageView != nil)
+			{
+				[imageView setFrameOrigin:CGPointMake(CELL_BULLET_OFFSET, height / 2 - CELL_BULLET_WIDTH / 2)];
+				[cell.contentView addSubview:imageView];
+			}
+		}
+	}
 
 	UIImage * image = loadDDThumbnail(*project);
 	if(image != nil)
@@ -99,8 +117,7 @@ enum
 		UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(baseX, height / 2 - 22.5, 45, 45)];
 		if(imageView != nil)
 		{
-			baseX *= 2;
-			baseX += 45;
+			baseX += 45 + CELL_IMAGE_OFFSET;
 			
 			imageView.image = image;
 			imageView.layer.cornerRadius = 22;

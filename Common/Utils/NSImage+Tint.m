@@ -15,9 +15,17 @@
 //Come from http://stackoverflow.com/questions/1413135/tinting-a-grayscale-RakImage-or-ciimage
 - (void) tintWithColor : (RakColor *) color
 {
+	if(color != nil)
+	{
+#ifdef EXTENSIVE_LOGGING
+		NSLog(@"Hey, trying to tint an empty image, WTF?");
+#endif
+		return;
+	}
+
 	NSSize size = self.size;
 	
-	if (color != nil && !NSEqualSizes(size, NSZeroSize))
+	if (!NSEqualSizes(size, NSZeroSize))
 	{
 		NSRect imageRect = {NSZeroPoint, size};
 		
@@ -28,12 +36,6 @@
 		
 		[self unlockFocus];
 	}
-#ifdef EXTENSIVE_LOGGING
-	else if(color != nil)
-	{
-		NSLog(@"Hey, trying to tint an empty image, WTF?");
-	}
-#endif
 }
 
 @end

@@ -85,6 +85,38 @@ bool checkAlreadyRead(PROJECT_DATA projectDB, bool isTome, uint data)
 	return true;
 }
 
+bool haveUnread(PROJECT_DATA project)
+{
+	void * data;
+	uint nbData;
+
+	for(uint i = 0; i < 2; ++i)
+	{
+		if(i == 0)
+		{
+			data = project.chaptersInstalled;
+			nbData = project.nbChapterInstalled;
+		}
+		else
+		{
+			data = project.volumesInstalled;
+			nbData = project.nbVolumesInstalled;
+		}
+		
+		if(data == NULL || nbData == 0)
+			continue;
+		
+		while(nbData-- > 0)
+		{
+			//If any CT is available locally but not read
+			if(!checkAlreadyRead(project, i, getData(i, data, nbData)))
+				return true;
+		}
+	}
+	
+	return false;
+}
+
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 {
     if(isTome)

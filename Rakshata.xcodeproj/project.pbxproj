@@ -284,6 +284,12 @@
 		B6993AB61B1A847700FFF894 /* RakPrefsFavoriteListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */; };
 		B69966C91C2FF8D500576396 /* CustomInfiniteIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = B69966C81C2FF8D500576396 /* CustomInfiniteIndicator.m */; };
 		B69966CC1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = B69966CB1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m */; };
+		B69966D51C300E8B00576396 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966CF1C300E8B00576396 /* add.png */; };
+		B69966D61C300E8B00576396 /* add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966D01C300E8B00576396 /* add@2x.png */; };
+		B69966D71C300E8B00576396 /* add@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966D11C300E8B00576396 /* add@3x.png */; };
+		B69966DE1C30224100576396 /* unread.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966DB1C30224100576396 /* unread.png */; };
+		B69966DF1C30224100576396 /* unread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966DC1C30224100576396 /* unread@2x.png */; };
+		B69966E01C30224100576396 /* unread@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B69966DD1C30224100576396 /* unread@3x.png */; };
 		B69D467B1AA7592700B471AC /* RakPrefsButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467A1AA7592700B471AC /* RakPrefsButtons.m */; };
 		B69D46801AA7C5F300B471AC /* RakPrefsRepoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */; };
 		B69D46851AA86A1F00B471AC /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D46841AA86A1F00B471AC /* RakClickableText.m */; };
@@ -761,6 +767,12 @@
 		B69966C81C2FF8D500576396 /* CustomInfiniteIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomInfiniteIndicator.m; path = Utils/InfiniteScroll/CustomInfiniteIndicator.m; sourceTree = "<group>"; };
 		B69966CA1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+InfiniteScroll.h"; path = "Utils/InfiniteScroll/UIScrollView+InfiniteScroll.h"; sourceTree = "<group>"; };
 		B69966CB1C2FF8DD00576396 /* UIScrollView+InfiniteScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIScrollView+InfiniteScroll.m"; path = "Utils/InfiniteScroll/UIScrollView+InfiniteScroll.m"; sourceTree = "<group>"; };
+		B69966CF1C300E8B00576396 /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add.png; sourceTree = "<group>"; };
+		B69966D01C300E8B00576396 /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@2x.png"; sourceTree = "<group>"; };
+		B69966D11C300E8B00576396 /* add@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@3x.png"; sourceTree = "<group>"; };
+		B69966DB1C30224100576396 /* unread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread.png; sourceTree = "<group>"; };
+		B69966DC1C30224100576396 /* unread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread@2x.png"; sourceTree = "<group>"; };
+		B69966DD1C30224100576396 /* unread@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread@3x.png"; sourceTree = "<group>"; };
 		B69D467A1AA7592700B471AC /* RakPrefsButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsButtons.m; path = "Divers Windows/RakPrefsButtons.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B69D467E1AA7C5F300B471AC /* RakPrefsRepoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsRepoView.h; path = "Divers Windows/RakPrefsRepoView.h"; sourceTree = "<group>"; };
 		B69D467F1AA7C5F300B471AC /* RakPrefsRepoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsRepoView.m; path = "Divers Windows/RakPrefsRepoView.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1510,6 +1522,7 @@
 		B67C687C1C270698005AB992 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B69966CE1C300E8B00576396 /* Ressources */,
 				B645C46F1C28A2BF00CC3EC8 /* Sources */,
 				B6073C461C29B2960061070A /* Supporting Files */,
 			);
@@ -1574,6 +1587,20 @@
 			);
 			name = InfiniteScroll;
 			sourceTree = "<group>";
+		};
+		B69966CE1C300E8B00576396 /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				B69966CF1C300E8B00576396 /* add.png */,
+				B69966D01C300E8B00576396 /* add@2x.png */,
+				B69966D11C300E8B00576396 /* add@3x.png */,
+				B69966DB1C30224100576396 /* unread.png */,
+				B69966DC1C30224100576396 /* unread@2x.png */,
+				B69966DD1C30224100576396 /* unread@3x.png */,
+			);
+			name = Ressources;
+			path = iOS/Ressources;
+			sourceTree = SOURCE_ROOT;
 		};
 		B69D467C1AA7C5C600B471AC /* Preferences */ = {
 			isa = PBXGroup;
@@ -2446,10 +2473,14 @@
 				B6A9C4941C2F017600BDE925 /* zip_320x320.png in Resources */,
 				B6A9C4751C2EEB9F00BDE925 /* LaunchScreen.storyboard in Resources */,
 				B6A9C48F1C2F017600BDE925 /* rar_44x58.png in Resources */,
+				B69966D61C300E8B00576396 /* add@2x.png in Resources */,
 				B6A9C4761C2EEB9F00BDE925 /* Main.storyboard in Resources */,
 				B6A9C49F1C2F2C3D00BDE925 /* Localizable.strings in Resources */,
 				B6A9C49B1C2F023000BDE925 /* rak_22x29.png in Resources */,
 				B6A9C4931C2F017600BDE925 /* source_64x64.png in Resources */,
+				B69966D51C300E8B00576396 /* add.png in Resources */,
+				B69966E01C30224100576396 /* unread@3x.png in Resources */,
+				B69966DF1C30224100576396 /* unread@2x.png in Resources */,
 				B6A9C4911C2F017600BDE925 /* source_320x320.png in Resources */,
 				B6797D491C2D789500FF7104 /* defaultDragImage.png in Resources */,
 				B6797D4A1C2D789500FF7104 /* defaultDragImage@2x.png in Resources */,
@@ -2462,7 +2493,9 @@
 				B6A9C4921C2F017600BDE925 /* source_44x58.png in Resources */,
 				B667E2921C2ACAEB001E504E /* theme 2 in Resources */,
 				B667E28F1C2ACAE5001E504E /* backupTags.db in Resources */,
+				B69966D71C300E8B00576396 /* add@3x.png in Resources */,
 				B667E2901C2ACAE5001E504E /* settings in Resources */,
+				B69966DE1C30224100576396 /* unread.png in Resources */,
 				B6A9C4961C2F017600BDE925 /* zip_64x64.png in Resources */,
 				B6A9C49D1C2F023000BDE925 /* source_22x29.png in Resources */,
 				B6A9C48E1C2F017600BDE925 /* rar_320x320.png in Resources */,
@@ -2989,12 +3022,15 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMBINE_HIDPI_IMAGES = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3020,7 +3056,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
-				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3035,12 +3070,15 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMBINE_HIDPI_IMAGES = NO;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3068,7 +3106,6 @@
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
 				LLVM_LTO = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";

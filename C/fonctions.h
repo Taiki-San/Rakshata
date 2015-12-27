@@ -34,6 +34,7 @@ void generateCTUsable(PROJECT_DATA_PARSED * project);
 bool checkSoonToBeReadable(PROJECT_DATA project, bool isTome, uint data);
 bool checkReadable(PROJECT_DATA projectDB, bool isTome, uint data);
 bool checkAlreadyRead(PROJECT_DATA projectDB, bool isTome, uint data);
+bool haveUnread(PROJECT_DATA project);
 void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection);
 bool consolidateCTLocale(PROJECT_DATA_PARSED * project, bool isTome);
 void * buildInstalledList(void * fullData, uint nbFull, uint * installed, uint nbInstalled, bool isTome);

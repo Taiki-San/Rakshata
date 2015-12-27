@@ -93,35 +93,40 @@
 
 - (void) refresh
 {
+	if(![NSThread isMainThread])
+		return [self performSelectorOnMainThread:@selector(refresh) withObject:nil waitUntilDone:YES];
+	
 	[_tableView reloadData];
 }
 
 - (void) rowUpdate : (uint) row
 {
+	if(![NSThread isMainThread])
+		return dispatch_sync(dispatch_get_main_queue(), ^{	[self rowUpdate:row];	});
+	
 	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
 	
 	if(cell != nil)
 	{
-		dispatch_sync(dispatch_get_main_queue(), ^{
-			cell.textLabel.text = [self labelTextForData:*[controller getData : row : YES]];
-			[cell setNeedsDisplay];
-		});
+		cell.textLabel.text = [self labelTextForData:*[controller getData : row : YES]];
+		[cell setNeedsDisplay];
 	}
 	
 }
 
 - (void) percentageUpdate : (float) percentage atSpeed : (size_t) speed forObject : (NSNumber *) rowNumber
 {
+	if(![NSThread isMainThread])
+		return dispatch_sync(dispatch_get_main_queue(), ^{	[self percentageUpdate:percentage atSpeed:speed forObject:rowNumber];	});
+
 	NSUInteger row = [rowNumber unsignedIntegerValue];
 	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
 	
 	if(cell != nil)
 	{
-		dispatch_async(dispatch_get_main_queue(), ^{
-			cell.textLabel.text = [NSString stringWithFormat:@"%@ - %.2f%% - %@", [self labelTextForData:*[controller getData : row : YES]], percentage,
-								   [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(int64_t) speed countStyle:NSByteCountFormatterCountStyleBinary]]];
-			[cell setNeedsDisplay];
-		});
+		cell.textLabel.text = [NSString stringWithFormat:@"%@ - %.2f%% - %@", [self labelTextForData:*[controller getData : row : YES]], percentage,
+							   [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(int64_t) speed countStyle:NSByteCountFormatterCountStyleBinary]]];
+		[cell setNeedsDisplay];
 	}
 }
 
