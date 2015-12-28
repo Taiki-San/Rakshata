@@ -12,21 +12,26 @@
 
 #include "lecteur.h"
 #import "RakPageScrollView.h"
+
+#if !TARGET_OS_IPHONE
 #import "RakPageController.h"
+
+@class RakReaderBottomBar;
+#endif
 
 #define READER_MAGNIFICATION_MIN 0.25
 #define READER_MAGNIFICATION_MAX 3.0
-
-@class RakReaderBottomBar;
 
 @interface Reader : RakTabView
 {
 	BOOL initialized;
 	
+#if !TARGET_OS_IPHONE
 	uint gonnaReduceTabs;
 	RakView * container;
 	RakReaderBottomBar * bottomBar;
 	RakReaderControllerUIQuery * newStuffsQuery;
+#endif
 	
 	BOOL queryHidden;
 	uint * _queryArrayData;
@@ -35,9 +40,14 @@
 	//Page management
 	BOOL saveMagnification, overrideDirection;
 	CGFloat lastKnownMagnification;
+
 	RakPageScrollView * _scrollView;
 	
+#if !TARGET_OS_IPHONE
 	RakPageController * mainScroller;
+#else
+	NSArray * listPages;
+#endif
 	RakImage * loadingPlaceholder;
 	RakImage * loadingFailedPlaceholder;
 	
@@ -85,39 +95,50 @@
 
 - (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;
+
+#if !TARGET_OS_IPHONE
 - (void) willLeaveReader;
 - (void) willOpenReader;
 
 - (void) collapseAllTabs : (BOOL) forced;
 - (void) hideBothTab;
 - (void) unhideBothTab;
+#endif
 
 - (void) switchDistractionFree;
+#if !TARGET_OS_IPHONE
 - (void) shouldLeaveDistractionFreeMode;
 - (void) startFadeTimer : (NSPoint) cursorPosition;
 - (void) abortFadeTimer;
 - (void) cursorShouldFadeAway;
 - (void) fadeBottomBar : (CGFloat) alpha;
+#endif
 
 - (PROJECT_DATA) activeProject;
 - (uint) currentElem;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;
+
+#if !TARGET_OS_IPHONE
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 - (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (uint) position;
+#endif
 
 @end
 
+#if !TARGET_OS_IPHONE
 #import "RakReaderSuggestions.h"
 #import "RakReaderControllerUIQuery.h"
 #import "RakPageCounter.h"
 #import "RakFavsInfo.h"
 #import "RakDeleteConfirm.h"
 #import "RakReaderBottomBar.h"
-#import "RakPage.h"
 
 BOOL preventWindowCaptureForWindow(NSWindow *window);
+#endif
+
+#import "RakPage.h"
 
 enum
 {

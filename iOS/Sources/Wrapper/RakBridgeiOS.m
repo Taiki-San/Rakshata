@@ -117,12 +117,3 @@ int launchApp(int argc, char *argv[])
 }
 
 @end
-
-@implementation Reader
-
-- (NSString *) byebye
-{
-	return STATE_EMPTY;
-}
-
-@end

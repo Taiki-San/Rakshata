@@ -72,8 +72,7 @@
 	#else
 		#import "RakSeriesController.h"
 		#import "RakCTController.h"
-
-		#include "lecteur.h"
+		#import "RakReaderController.h"
 	#endif
 
 	#import "RakContentView.h"

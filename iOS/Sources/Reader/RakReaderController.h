@@ -10,25 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface CTSelec : RakTabView
-{
-	IBOutlet UITabBarItem * _tabBarItem;
-	IBOutlet UISegmentedControl * _segmentedControl;
-	BOOL savedState[2];
-	
-	IBOutlet UITableView * _tableView;
-	
-	PROJECT_DATA _project;
-	
-	BOOL _isTome;
-	uint nbElement;
-}
+#import "Reader.h"
 
-@property (readonly) BOOL isTome;
-
-- (PROJECT_DATA) activeProject;
-
-- (void) updateProject : (uint) cacheDBID : (BOOL)isTome : (uint) element;
-- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element;
+@interface RakReaderController : Reader
 
 @end

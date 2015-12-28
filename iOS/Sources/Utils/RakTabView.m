@@ -18,6 +18,15 @@
 	[RakApp registerTabBarController:self.tabBarController];
 }
 
+- (void) setInitWithNoContent:(BOOL)initWithNoContent
+{
+	[super setInitWithNoContent:initWithNoContent];
+	[self.tabBarItem setEnabled:!initWithNoContent];
+
+}
+
+#pragma mark - Transition
+
 - (void) viewWillFocus
 {
 	
@@ -72,6 +81,18 @@
 							 }
 						 }
 					 }];
+}
+
+#pragma mark - Compatibility layer
+
+- (CGRect) frame
+{
+	return self.view.frame;
+}
+
+- (CGRect) bounds
+{
+	return self.view.bounds;
 }
 
 @end

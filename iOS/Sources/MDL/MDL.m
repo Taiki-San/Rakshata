@@ -38,8 +38,12 @@
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if(_tableView == nil)		_tableView = tableView;
+	
+	uint nbRows = [controller getNbElem:YES];
+	
+	if(self.initWithNoContent && nbRows != 0)		self.initWithNoContent = NO;
 
-	return [controller getNbElem : YES];
+	return nbRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

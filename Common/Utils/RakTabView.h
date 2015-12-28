@@ -42,8 +42,8 @@ enum
 @property uint mainThread;
 @property (readonly) BOOL waitingLogin;
 @property BOOL initWithNoContent;
-
 @property BOOL forceNextFrameUpdate;
+@property NSRect lastFrame;
 
 - (void) configureView;
 - (NSString *) byebye;
@@ -61,6 +61,9 @@ enum
 - (void) MDLIsOpening : (byte) context;
 
 - (id) getMDL : (BOOL) requireAvailable;
+
+- (NSString *) waitingLoginMessage;
+- (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
 
 @end
 
@@ -105,14 +108,10 @@ enum
 - (void) resizingCanceled;
 - (NSRect) createFrame;
 - (BOOL) needToConsiderMDL;
-- (void) setLastFrame : (NSRect) frame;
-- (NSRect) lastFrame;
 - (NSRect) createFrameWithSuperView : (RakView*) superview;
 
 - (uint) getFrameCode;
 
-- (NSString *) waitingLoginMessage;
-- (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;
 - (RakTabForegroundView *) getForgroundView;
 
 - (BOOL) wouldFrameChange : (NSRect) newFrame;
@@ -134,6 +133,9 @@ enum
 }
 
 - (void) viewWillFocus;
+
+- (CGRect) frame;
+- (CGRect) bounds;
 
 @end
 

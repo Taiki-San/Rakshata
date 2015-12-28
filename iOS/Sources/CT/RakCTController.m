@@ -17,6 +17,7 @@
 	[super awakeFromNib];
 
 	self.initWithNoContent = YES;
+
 	tabBarIndex = 1;
 	[RakApp registerCT:self];
 
@@ -44,11 +45,7 @@
 	else if(self.initWithNoContent)
 		self.initWithNoContent = NO;
 	
-	_project = project;
-	_tabBarItem.title = getStringForWchar(project.projectName);
-	
-	[self ensureValidSegmentedControlState];
-	[self _isTomeToggledWithAnimation:NO];
+	[self _updateProject:getCopyOfProjectData(project) :isTome :element];
 }
 
 #pragma mark - Context management
@@ -68,6 +65,33 @@
 {
 	nbElement = ACCESS_DATA(self.isTome, _project.nbChapter, _project.nbVolumes);
 	[_tableView reloadData];
+}
+
+- (PROJECT_DATA) activeProject
+{
+	return _project;
+}
+
+#pragma mark - Cross tab communication
+
+- (void) updateProject : (uint) cacheDBID : (BOOL)isTome : (uint) element
+{
+	[self _updateProject:getProjectByID(cacheDBID) :isTome :element];
+}
+
+- (void) _updateProject : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
+{
+	_project = project;
+	releaseCTData(_project);
+	_tabBarItem.title = getStringForWchar(project.projectName);
+	
+	[self ensureValidSegmentedControlState];
+	[self _isTomeToggledWithAnimation:NO];
+}
+
+- (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element
+{
+	
 }
 
 #pragma mark - Table View

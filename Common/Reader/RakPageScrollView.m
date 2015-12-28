@@ -10,11 +10,13 @@
  **                                                                                         **
  ********************************************************************************************/
 
+#if !TARGET_OS_IPHONE
 @interface RakClipView : NSClipView
 
 - (void) centerDocument;
 
 @end
+#endif
 
 @implementation RakPageScrollView
 
@@ -24,6 +26,7 @@
 	
 	if(self != nil)
 	{
+#if !TARGET_OS_IPHONE
 		self.contentView = [[RakClipView alloc] init];
 		self.borderType =		NSNoBorder;
 		self.scrollerStyle =	NSScrollerStyleOverlay;
@@ -31,6 +34,11 @@
 		self.allowsMagnification = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMagnify) name:NSScrollViewDidEndLiveMagnifyNotification object:self];
+#else
+		self.delegate = self;
+		self.minimumZoomScale = READER_MAGNIFICATION_MIN;
+		self.maximumZoomScale = READER_MAGNIFICATION_MAX;
+#endif
 	}
 	
 	return self;
@@ -38,7 +46,9 @@
 
 - (void) dealloc
 {
+#if !TARGET_OS_IPHONE
 	self.documentView = nil;
+#endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	if(_isPDF)
@@ -48,17 +58,31 @@
 	}
 }
 
+#if !TARGET_OS_IPHONE
 - (void) didMagnify
 {
 	[(RakClipView *) self.contentView centerDocument];
 }
+#else
+
+- (CGFloat) magnification
+{
+	return self.zoomScale;
+}
+
+- (void) setMagnification : (CGFloat) magnification
+{
+	self.zoomScale = magnification;
+}
+
+#endif
 
 #pragma mark - Size and position manipulation
 
 - (void) scrollToTopOfDocument : (BOOL) animated
 {
 	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
-	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
+	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
 		sliderStart.y = documentViewSize.height - scrollviewSize.height;
@@ -80,7 +104,7 @@
 - (void) scrollToBeginningOfDocument
 {
 	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
-	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = _bounds.size;
+	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
 		sliderStart.y = documentViewSize.height - scrollviewSize.height;
@@ -99,18 +123,30 @@
 - (void) scrollToPoint : (NSPoint) origin
 {
 	cachedBounds = origin;
+#if TARGET_OS_IPHONE
+	[self setContentOffset:origin];
+#else
 	[self.contentView scrollToPoint:origin];
+#endif
 }
 
 - (void) scrollWithAnimationToPoint : (NSPoint) origin
 {
 	cachedBounds = origin;
+#if TARGET_OS_IPHONE
+	[self setContentOffset:origin animated:YES];
+#else
 	[self.contentView.animator setBoundsOrigin: origin];
+#endif
 }
 
 - (NSRect) documentViewFrame
 {
+#if TARGET_OS_IPHONE
+	NSRect frame = self.contentFrame;
+#else
 	NSRect frame = [self.documentView frame];
+#endif
 	
 	frame.size.height *= self.magnification;
 	frame.size.width *= self.magnification;
@@ -118,8 +154,18 @@
 	return frame;
 }
 
+- (NSPoint) scrollerPosition
+{
+#if TARGET_OS_IPHONE
+	return self.contentOffset;
+#else
+	return self.contentView.bounds.origin;
+#endif
+}
+
 #pragma mark - Mouse events
 
+#if !TARGET_OS_IPHONE
 - (void) mouseDown:(NSEvent *)theEvent
 {
 	[self.nextResponder mouseDown:theEvent];
@@ -134,19 +180,26 @@
 {
 	[self.nextResponder mouseDragged:theEvent];
 }
+#endif
 
 #pragma mark - Properties
 
 - (void) setPageTooHigh : (BOOL) pageTooHigh
 {
-	self.hasVerticalScroller = _pageTooHigh = pageTooHigh;
+	_pageTooHigh = pageTooHigh;
+#if !TARGET_OS_IPHONE
+	self.hasVerticalScroller = _pageTooHigh;
 	self.verticalScroller.alphaValue =	0;
+#endif
 }
 
 - (void) setPageTooLarge : (BOOL) pageTooLarge
 {
-	self.hasHorizontalScroller = _pageTooLarge = pageTooLarge;
+	_pageTooLarge = pageTooLarge;
+#if !TARGET_OS_IPHONE
+	self.hasHorizontalScroller = _pageTooLarge;
 	self.horizontalScroller.alphaValue = 0;
+#endif
 }
 
 - (void) setIsPDF:(BOOL)isPDF
@@ -173,6 +226,7 @@
 
 - (void) refreshBackgroundState
 {
+#if !TARGET_OS_IPHONE
 	NSImageView * view = self.documentView;
 	BOOL needBackground = NO;
 	
@@ -189,7 +243,7 @@
 		((NSImageView *) self.documentView).backgroundColor = needBackground ? [Prefs getSystemColor:COLOR_PDF_BACKGROUND] : [RakColor clearColor];
 	
 	[CATransaction commit];
-
+#endif
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -203,11 +257,12 @@
 
 @end
 
+#if !TARGET_OS_IPHONE
 @implementation RakClipView
 
 - (void) centerDocument
 {
-	NSRect docRect = [self.documentView frame], clipRect = _bounds;
+	NSRect docRect = [self.documentView frame], clipRect = self.bounds;
 
 	if(docRect.size.width < clipRect.size.width)
 		clipRect.origin.x = (docRect.size.width - clipRect.size.width) / 2.0;
@@ -220,7 +275,7 @@
 
 - (NSPoint) constrainScrollPoint : (NSPoint) proposedNewOrigin
 {
-	NSRect docRect = [[self documentView] frame], clipRect = _bounds;
+	NSRect docRect = [[self documentView] frame], clipRect = self.bounds;
 	const CGFloat maxX = docRect.size.width - clipRect.size.width, maxY = docRect.size.height - clipRect.size.height;
 	
 	clipRect.origin = proposedNewOrigin;
@@ -316,5 +371,9 @@
 		[self setNeedsDisplay];
 	}
 }
+
+#else
+@implementation RakImageView
+#endif
 
 @end

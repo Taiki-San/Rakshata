@@ -28,6 +28,7 @@
 #define NSPoint		CGPoint
 #define NSZeroPoint	CGPointZero
 #define NSPointSize	CGPointMake
+#define NSMakePoint	CGPointMake
 #define NSPointInRect(a, b) CGRectContainsPoint(b, a)
 
 #define NSOffState		0
@@ -44,10 +45,6 @@
 #define RakMDLListView		NSObject
 
 #import "RakOutlineListItem.h"
-
-@interface Reader : UIViewController
-- (NSString *) byebye;
-@end
 
 @interface PDFPage : NSObject
 {

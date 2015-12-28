@@ -128,7 +128,10 @@
 #endif
 	
 	if([viewController isKindOfClass:[RakTabView class]])
+	{
 		[(RakTabView *) viewController viewWillFocus];
+		return !((RakTabView *) viewController).initWithNoContent;
+	}
 	
 	return YES;
 }

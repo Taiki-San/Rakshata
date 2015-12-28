@@ -20,7 +20,6 @@
 	if(self != nil)
 	{
 		flag = TAB_READER;
-		gonnaReduceTabs = 0;
 		
 		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
 		[Prefs registerForChange:self forType:KVO_DIROVERRIDE];
@@ -30,10 +29,13 @@
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
 		[Prefs getPref:PREFS_GET_DIROVERRIDE :&overrideDirection];
 		
+		pthread_mutex_init(&cacheMutex, NULL);
+
+#if !TARGET_OS_IPHONE
+		gonnaReduceTabs = 0;
+
 		[self initView : contentView : state];
 		self.layer.cornerRadius = 0;
-		
-		pthread_mutex_init(&cacheMutex, NULL);
 		
 		container = [[RakView alloc] initWithFrame:self.bounds];
 		[self addSubview:container];
@@ -46,6 +48,7 @@
 			[gifRep setProperty:NSImageCurrentFrameDuration withValue:@(0.1f)];
 		}
 		loadingFailedPlaceholder = [RakImage imageNamed:@"failed_loading"];
+#endif
 		
 		[self initReaderMainView : state];
 	}
@@ -161,6 +164,7 @@
 	else
 		[self changeProject : project : elemToRead : isTome : startPage];
 	
+#if !TARGET_OS_IPHONE
 	if(bottomBar == nil)
 	{
 		bottomBar = [[RakReaderBottomBar alloc] init: self.mainThread == TAB_READER: self];
@@ -175,6 +179,7 @@
 	
 	if(shouldNotifyBottomBarInitialized)
 		[self updatePage:_data.pageCourante : _data.nbPage];
+#endif
 }
 
 - (void) resetReader
@@ -188,7 +193,9 @@
 		releaseCTData(_project);
 		_project.isInitialized = NO;
 		
+#if !TARGET_OS_IPHONE
 		[self updatePage:0 :0];
+#endif
 	}
 }
 
@@ -211,13 +218,18 @@
 {
 	[RakDBUpdate unRegister : self];
 	
+#if !TARGET_OS_IPHONE
 	[bottomBar removeFromSuperview];
+#endif
 	
 	[self deallocInternal];
 	
+#if !TARGET_OS_IPHONE
 	[container removeFromSuperview];
+#endif
 }
 
+#if !TARGET_OS_IPHONE
 - (uint) getFrameCode
 {
 	return PREFS_GET_TAB_READER_FRAME;
@@ -314,6 +326,7 @@
 	
 	[super setUpViewForAnimation:mainThread];
 }
+#endif
 
 - (RakColor*) getMainColor
 {
@@ -327,6 +340,7 @@
 	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
 }
 
+#if !TARGET_OS_IPHONE
 - (void) mouseExited : (NSEvent *) theEvent
 {
 	[self abortFadeTimer];
@@ -370,9 +384,16 @@
 			[subViewView setHidden:NO];
 	}
 }
+#endif
 
 #pragma mark - Distraction Free mode
 
+#if TARGET_OS_IPHONE
+- (void) switchDistractionFree
+{
+	
+}
+#else
 - (void) switchDistractionFree
 {
 	bottomBarHidden = NO;	//We reset it
@@ -508,6 +529,7 @@
 	
 	[NSAnimationContext endGrouping];
 }
+#endif
 
 #pragma mark - Proxy work
 
@@ -549,14 +571,19 @@
 - (void) switchFavs
 {
 	setFavorite(&_project);
+#if !TARGET_OS_IPHONE
 	[bottomBar favsUpdated:_project.favoris];
+#endif
 }
 
 - (void) triggerFullscreen
 {
+#if !TARGET_OS_IPHONE
 	[self.window toggleFullScreen:self];
+#endif
 }
 
+#if !TARGET_OS_IPHONE
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
 {
 	[bottomBar updatePage:newCurrentPage :newPageMax];
@@ -586,6 +613,7 @@
 		[RakApp.window setCTTitle:project :string];
 	}
 }
+#endif
 
 #pragma mark - Waiting login
 
@@ -606,6 +634,7 @@
 	return NO;
 }
 
+#if !TARGET_OS_IPHONE
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	if(sender == TAB_CT || sender == TAB_MDL)
@@ -613,5 +642,6 @@
 	
 	return [super dropOperationForSender:sender:canDL];
 }
+#endif
 
 @end
