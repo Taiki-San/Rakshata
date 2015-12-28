@@ -18,8 +18,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ftt-tt-8Au">
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ftt-tt-8Au">
                                 <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <color key="barTintColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                                 <items>
                                     <navigationItem id="div-46-tsT">
                                         <nil key="title"/>
@@ -45,7 +46,7 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="MoO-HR-5mK" firstAttribute="top" secondItem="ftt-tt-8Au" secondAttribute="bottom" id="5eq-Yg-vLM"/>
                             <constraint firstItem="ftt-tt-8Au" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="8kH-xc-Gwp"/>
@@ -164,8 +165,9 @@
                                     <outlet property="delegate" destination="lQQ-qS-uWc" id="IFa-KH-Qdt"/>
                                 </connections>
                             </tableView>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Qk-fh-ngd">
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Qk-fh-ngd">
                                 <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <color key="barTintColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                                 <items>
                                     <navigationItem id="Viy-ro-4sy">
                                         <nil key="title"/>
@@ -173,7 +175,7 @@
                                 </items>
                             </navigationBar>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="Rvl-bo-amK" secondAttribute="trailing" constant="-20" id="M4R-I8-M2m"/>
                             <constraint firstItem="dkp-Q5-FFp" firstAttribute="top" secondItem="Rvl-bo-amK" secondAttribute="bottom" id="PjU-gB-Dv3"/>
@@ -220,8 +222,9 @@
                                     <outlet property="delegate" destination="x9i-3p-xUg" id="0yr-Hp-HCJ"/>
                                 </connections>
                             </tableView>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SR0-jb-tdW">
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SR0-jb-tdW">
                                 <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <color key="barTintColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                                 <items>
                                     <navigationItem id="idX-LD-eYX">
                                         <nil key="title"/>
@@ -237,7 +240,7 @@
                                 </items>
                             </navigationBar>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="gIe-xa-wQ3" secondAttribute="trailing" constant="-20" id="CgC-a3-3xt"/>
                             <constraint firstItem="gIe-xa-wQ3" firstAttribute="leading" secondItem="6pg-28-9NJ" secondAttribute="leadingMargin" constant="-20" id="PE3-u8-rE2"/>
@@ -268,7 +271,7 @@
         <!--Lecteur-->
         <scene sceneID="90e-HS-bIl">
             <objects>
-                <viewController storyboardIdentifier="RD" id="L2p-Bw-J3d" customClass="Reader" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RD" id="L2p-Bw-J3d" customClass="RakReaderController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="DVv-9B-gDs"/>
                         <viewControllerLayoutGuide type="bottom" id="yvW-8W-1Gt"/>
@@ -291,7 +294,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="7Tg-WI-604" firstAttribute="top" secondItem="BIK-tI-byl" secondAttribute="bottom" constant="8" symbolic="YES" id="2Eb-FZ-Y4b"/>
                             <constraint firstAttribute="centerY" secondItem="BIK-tI-byl" secondAttribute="centerY" id="6gO-zf-vYf"/>
