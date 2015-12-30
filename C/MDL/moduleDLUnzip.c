@@ -138,10 +138,10 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 					free(filename[i]);
 					filename[i] = NULL;
 
-					do
+					while(++i < nbFichiers - 2)
 					{
 						memcpy(&(pass[i]), &(pass[i + 1]), sizeof(pass[0]));
-					} while(++i < nbFichiers - 1);
+					}
 
 					nbFichierValide--;
 

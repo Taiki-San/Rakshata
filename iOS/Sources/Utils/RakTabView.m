@@ -22,7 +22,6 @@
 {
 	[super setInitWithNoContent:initWithNoContent];
 	[self.tabBarItem setEnabled:!initWithNoContent];
-
 }
 
 #pragma mark - Transition

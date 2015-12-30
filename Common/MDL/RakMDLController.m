@@ -60,12 +60,9 @@
 		
 		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &nbElem, &quit, (__bridge void *)(self)))
 		{
-			IDToPosition = malloc(nbElem * sizeof(uint));
 			if(IDToPosition != NULL)
 			{
-				for(discardedCount = 0; discardedCount < nbElem; discardedCount++)
-					IDToPosition[discardedCount] = discardedCount;
-				
+				discardedCount = nbElem;
 				[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 			}
 			else

@@ -70,6 +70,17 @@ bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DAT
 		
 		(*status)[i] = NULL;
 	}
+	
+	if(*nbElemTotal != 0)
+	{
+		*IDToPosition = malloc(*nbElemTotal * sizeof(uint));
+		if(*IDToPosition != NULL)
+		{
+			i = 0;
+			for(uint length = *nbElemTotal; i < length; i++)
+				(*IDToPosition)[i] = i;
+		}
+	}
 
 	return startWorker(coreWorker, todoList, status, IDToPosition, nbElemTotal, quit, mainTab, false);
 }

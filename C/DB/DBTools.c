@@ -518,6 +518,13 @@ PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)
 			copyTomeList(data.volumesInstalled, data.nbVolumesInstalled, newData.volumesInstalled);
 	}
 	
+	if(data.tags != NULL)
+	{
+		newData.tags = malloc(data.nbTags * sizeof(TAG));
+		if(newData.tags != NULL)
+			memcpy(newData.tags, data.tags, data.nbTags * sizeof(TAG));
+	}
+	
 	return newData;
 }
 

@@ -129,7 +129,7 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nbProjectTo
     if(*nbProjectTotal)
     {
 		uint posLine, projectID, posPtr = 0, chapitreTmp, posCatalogue = 0;
-		char ligne[2*LONGUEUR_COURT + 20], type[2];
+		char ligne[2*LONGUEUR_COURT + 20], type[3] = {0};
 
 		//Create the new structure, initialized at NULL
         DATA_LOADED **newBufferTodo = calloc(*nbProjectTotal, sizeof(DATA_LOADED*));
