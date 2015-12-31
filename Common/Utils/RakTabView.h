@@ -60,6 +60,8 @@ enum
 - (void) readerIsOpening : (byte) context;
 - (void) MDLIsOpening : (byte) context;
 
+- (void) setUpViewForAnimation : (uint) mainThread;
+
 - (id) getMDL : (BOOL) requireAvailable;
 
 - (NSString *) waitingLoginMessage;
@@ -88,7 +90,6 @@ enum
 
 - (void) resizeTrackingArea;
 - (void) releaseTrackingArea;
-- (void) setUpViewForAnimation : (uint) mainThread;
 
 - (NSRect) generatedReaderTrackingFrame;
 - (void) refreshDataAfterAnimation;

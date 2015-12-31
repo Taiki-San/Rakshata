@@ -47,6 +47,7 @@
 		loadingFailedPlaceholder = [RakImage imageNamed:@"failed_loading"];
 		
 		[self initReaderMainView : state];
+		[self refreshViewSize];
 	}
 	return self;
 }

@@ -32,7 +32,9 @@ enum
 		self.layer.borderWidth = 2;
 #endif
 
-		if(![self initContent:state])
+		if([self initContent:state])
+			[self refreshViewSize];
+		else
 			self = nil;
 	}
 	return self;

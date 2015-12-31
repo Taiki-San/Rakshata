@@ -60,7 +60,7 @@
 		
 		if(startMDL(stateChar, cache, &coreWorker, &todoList, &status, &IDToPosition, &nbElem, &quit, (__bridge void *)(self)))
 		{
-			if(IDToPosition != NULL)
+			if(!nbElem || IDToPosition != NULL)
 			{
 				discardedCount = nbElem;
 				[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];

@@ -16,13 +16,9 @@
 
 - (void) initView: (RakView *)superview : (NSString *) state
 {
-	[super setFrame:[self createFrameWithSuperView:superview]];
-	
 	self.initWithNoContent = NO;
 	_waitingLogin = NO;
 	canDeploy = YES;
-	
-	[superview addSubview:self];
 	
 	[self setAutoresizesSubviews:NO];
 	[self setNeedsDisplay:YES];
@@ -33,6 +29,8 @@
 	
 	[self configureView];
 	[self resizeTrackingArea];
+	
+	[superview addSubview:self];
 	
 	//Drag'n drop support
 	[self registerForDraggedTypes:[NSArray arrayWithObjects:PROJECT_PASTEBOARD_TYPE, nil]];
@@ -278,11 +276,6 @@
 		[self removeTrackingRect:trackingArea];
 		trackingArea = 0;
 	}
-}
-
-- (void) setUpViewForAnimation : (uint) mainThread
-{
-	self.mainThread = mainThread;
 }
 
 #pragma mark - Events

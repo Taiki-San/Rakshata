@@ -25,6 +25,7 @@
 		self.layer.borderWidth = 2;
 		
 		[self initContent : state];
+		[self refreshViewSize];
 	}
 	return self;
 }

@@ -37,6 +37,7 @@
 		//Update a couple of prefs
 		[output sizeToFit];
 		[output setBordered:NO];
+		[output setWantsLayer:NO];
 		
 		//Set action
 		if(target != nil)

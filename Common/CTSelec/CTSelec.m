@@ -49,6 +49,8 @@
 			backButton = nil;
 			self = nil;
 		}
+		
+		[self refreshViewSize];
 	}
 	return self;
 }

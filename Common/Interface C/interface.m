@@ -126,7 +126,8 @@ void createCrashFile()
 		if(alert != nil)
 		{
 			alert.alertStyle = NSCriticalAlertStyle;
-			alert.informativeText = NSLocalizedString(@"CRASH-TITLE", nil);
+			alert.messageText = NSLocalizedString(@"CRASH-TITLE", nil);
+			alert.informativeText = message;
 			
 			for(NSString * button in buttons)
 			{

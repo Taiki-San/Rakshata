@@ -309,6 +309,7 @@
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="192" y="186" width="1175" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
+            <value key="minSize" type="size" width="930" height="400"/>
             <view key="contentView" autoresizesSubviews="NO" wantsLayer="YES" id="372" customClass="RakContentViewBack">
                 <rect key="frame" x="0.0" y="0.0" width="1175" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -316,7 +317,7 @@
             <connections>
                 <outlet property="initialFirstResponder" destination="372" id="pUA-Hb-oGz"/>
             </connections>
-            <point key="canvasLocation" x="503.5" y="181.5"/>
+            <point key="canvasLocation" x="494.5" y="389"/>
         </window>
         <customObject id="494" customClass="RakAppOSXDelegate">
             <connections>

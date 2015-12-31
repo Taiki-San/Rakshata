@@ -20,7 +20,7 @@
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
 	
-	if(![super initPage:dataRequest :elemRequest :isTomeRequest :startPage]);
+	if(![super initPage:dataRequest :elemRequest :isTomeRequest :startPage])
 		return NO;
 	
 	if(mainScroller == nil)

@@ -87,6 +87,8 @@
 
 - (BOOL) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
 {
+	[super startReading:project :elemToRead :isTome :startPage];
+	
 	BOOL shouldNotifyBottomBarInitialized = [super startReading:project :elemToRead :isTome :startPage];
 	
 	indexToApply = [NSIndexPath indexPathForItem:0 inSection:_posElemInStructure];
