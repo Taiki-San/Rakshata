@@ -214,6 +214,11 @@
 	return output;
 }
 
+- (NSString *) getContextToGTFO
+{
+	return [NSString stringWithFormat:@"%llu\n%d\n%d", getRepoID(_project.repo), _project.projectID, _project.locale];
+}
+
 - (void) dealloc
 {
 	[RakDBUpdate unRegister : self];
@@ -298,7 +303,7 @@
 		bottomBar.readerMode = YES;
 	
 	if(_posElemInStructure != INVALID_VALUE)
-		[self updateTitleBar :_project :_isTome :_posElemInStructure];
+		[self updateTitleBar :_project :self.isTome :_posElemInStructure];
 	
 	if(queryHidden)
 	{
@@ -619,7 +624,7 @@
 
 - (NSString*) waitingLoginMessage
 {
-	return [NSString stringWithFormat:NSLocalizedString(_isTome ? @"AUTH-REQUIRED-READER-VOL-OF-%@" : @"AUTH-REQUIRED-READER-CHAP-OF-%@", nil), getStringForWchar(_project.projectName)];
+	return [NSString stringWithFormat:NSLocalizedString(self.isTome ? @"AUTH-REQUIRED-READER-VOL-OF-%@" : @"AUTH-REQUIRED-READER-CHAP-OF-%@", nil), getStringForWchar(_project.projectName)];
 }
 
 #pragma mark - Drop support

@@ -60,6 +60,7 @@
 	#import "MDL.h"
 
 	#import "RakImportExport.h"
+	#import "RakReaderCore.h"
 
 	#if !TARGET_OS_IPHONE
 		#import "RakMenu.h"

@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakReaderController()
+@interface Reader()
 {
 	BOOL isFullscreen;
 	uint nbCT;
@@ -30,7 +30,7 @@
 @implementation RakUITableViewCell
 @end
 
-@implementation RakReaderController
+@implementation Reader
 
 - (void) awakeFromNib
 {
@@ -154,18 +154,9 @@
 	UIImageView * imageView = [mainCache objectForKey:cacheString];
 	if(imageView == nil)
 	{
-		RakPageScrollView * scrollview = [self getScrollView : page : &data];
-		if(scrollview == nil)
+		imageView = [self getImage:page :&data :NULL];
+		if(imageView == nil)
 			return nil;
-		
-		for(UIImageView * view in scrollview.subviews)
-		{
-			if([view class] == [RakImageView class])
-			{
-				imageView = view;
-				break;
-			}
-		}
 		
 		[mainCache setObject:imageView forKey:cacheString];
 	}

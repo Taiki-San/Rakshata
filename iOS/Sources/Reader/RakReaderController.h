@@ -10,9 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "Reader.h"
-
-@interface RakReaderController : Reader
+@interface Reader : RakReaderCore
 {
 	IBOutlet UITableView * _tableView;
 	IBOutlet UINavigationBar * _navigationBar;

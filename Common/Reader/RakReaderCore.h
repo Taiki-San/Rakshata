@@ -10,57 +10,22 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#if TARGET_OS_IPHONE
-@interface RakPageScrollView : UIScrollView <UIScrollViewDelegate>
-#else
-@interface RakPageScrollView : NSScrollView
-#endif
+#include "lecteur.h"
+#import "RakPageScrollView.h"
+
+#define READER_MAGNIFICATION_MIN	0.25
+#define READER_MAGNIFICATION_MAX	3.0
+#define READER_PAGE_TOP_BORDER		50
+
+@interface RakReaderCore : RakTabView
 {
-	NSPoint cachedBounds;
+	BOOL initialized;
+	
+	PROJECT_DATA _project;
 }
 
-#if TARGET_OS_IPHONE
-@property CGFloat magnification;
-#endif
+@property BOOL isTome;
 
-@property NSRect scrollViewFrame;
-@property NSRect contentFrame;
-@property (nonatomic) BOOL pageTooLarge;
-@property (nonatomic) BOOL pageTooHigh;
-@property uint page;
-@property (nonatomic) BOOL isPDF;
-
-- (void) scrollToTopOfDocument : (BOOL) animated;
-- (void) scrollToBottomOfDocument : (BOOL) animated;
-
-- (void) scrollToBeginningOfDocument;
-- (void) scrollToEndOfDocument;
-
-- (NSRect) documentViewFrame;
-- (NSPoint) scrollerPosition;
-
-- (void) scrollToPoint : (NSPoint) origin;
-- (void) scrollWithAnimationToPoint : (NSPoint) origin;
-
-@end
-
-#if !TARGET_OS_IPHONE
-@interface RakImageView : NSImageView
-{
-	NSBitmapImageRep *data;
-	NSTimer *animationTimer;
-
-	int currentFrame;
-	int frameCount;
-}
-
-- (void) startAnimation;
-- (void) stopAnimation;
-
-#else
-@interface RakImageView : UIImageView
-#endif
-
-@property uint page;
+- (RakImageView *) getImage : (uint) page : (DATA_LECTURE*) data : (BOOL *) isPDF;
 
 @end

@@ -38,11 +38,6 @@
 	return YES;
 }
 
-- (NSString *) getContextToGTFO
-{
-	return [NSString stringWithFormat:@"%llu\n%d\n%d", getRepoID(_project.repo), _project.projectID, _project.locale];
-}
-
 - (STATE_DUMP) exportContext
 {
 	STATE_DUMP state;
@@ -720,48 +715,6 @@
 	return YES;
 }
 
-- (NSData *) getPage : (uint) posData : (DATA_LECTURE*) data
-{
-	IMG_DATA * dataPage = loadSecurePage(data->path[data->pathNumber[posData]], data->nomPages[posData], data->chapitreTomeCPT[data->pathNumber[posData]], data->pageCouranteDuChapitre[posData]);
-	
-	if(dataPage == IMGLOAD_INCORRECT_DECRYPTION)
-		return nil;
-	
-	else if(dataPage == IMGLOAD_NEED_CREDENTIALS_MAIL || dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
-	{
-		//Incorrect account :X
-		if(COMPTE_PRINCIPAL_MAIL != NULL && (!_needPassword || getPassFromCache(NULL)))
-			return nil;
-		
-		if(dataPage == IMGLOAD_NEED_CREDENTIALS_PASS)
-			_needPassword = YES;
-		
-		MUTEX_VAR * lock = [RakApp sharedLoginMutex : YES];
-		
-		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(YES) waitUntilDone:NO];
-		
-		while(COMPTE_PRINCIPAL_MAIL == NULL || (_needPassword && !getPassFromCache(NULL)))
-		{
-			pthread_cond_wait([RakApp sharedLoginLock], lock);
-		}
-		
-		pthread_mutex_unlock(lock);
-		
-		[self performSelectorOnMainThread:@selector(setWaitingLoginWrapper:) withObject:@(NO) waitUntilDone:NO];
-		
-		return [self getPage : posData : data];
-	}
-	else if(dataPage == IMGLOAD_NODATA)
-		return nil;
-	
-	NSData *output = [NSData dataWithBytes:dataPage->data length:dataPage->length];
-	
-	free(dataPage->data);
-	free(dataPage);
-	
-	return output;
-}
-
 - (BOOL) changePage : (byte) switchType
 {
 	return [self changePage:switchType :NO];
@@ -1116,43 +1069,6 @@
 	});
 }
 
-- (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
-{
-	if(_data.path == NULL || page >= data->nbPage)
-		return nil;
-	
-	NSData * imageData;
-	BOOL isPDF = haveSuffixCaseInsensitive(data->nomPages[page], ".pdf");
-	//PDF
-	if(isPDF)
-		imageData = [self getPDF:page :data];
-	else
-		imageData = [self getPage : page : data];
-	
-	if(imageData == nil || imageData.length == 0)
-		return nil;
-	
-	RakImage * image = [[RakImage alloc] initWithData : imageData];
-	
-#ifdef EXTENSIVE_LOGGING
-	if(image == nil)
-		[imageData writeToFile:@"lol.png" atomically:NO];
-#endif
-	
-	if(image == nil)
-		return nil;
-
-	image.cacheMode = NSImageCacheNever;
-	
-	RakPageScrollView * output = [[RakPageScrollView alloc] init];
-	
-	[self addPageToView:image :output];
-	output.page = page;
-	output.isPDF = isPDF;
-	
-	return output;
-}
-
 - (void) deleteElement
 {
 	cacheSession++;	//Tell the cache system to stop
@@ -1198,38 +1114,6 @@
 		[RakApp.CT ownFocus];
 	else
 		[RakApp.serie ownFocus];
-}
-
-- (void) addPageToView : (RakImage *) page : (RakPageScrollView *) scrollView
-{
-	if(page == nil || scrollView == nil)
-		return;
-	
-	NSImageRep *rep = [[page representations] objectAtIndex: 0];
-	page.size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
-
-	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
-	
-	//We create the view that si going to be displayed
-	RakImageView * pageView = [[RakImageView alloc] initWithFrame: scrollView.contentFrame];
-
-	pageView.imageFrameStyle = NSImageFrameNone;
-	pageView.allowsCutCopyPaste = NO;
-	
-	pageView.image = page;
-
-	scrollView.documentView = pageView;
-
-	[CATransaction begin];
-	[CATransaction setDisableActions:YES];
-	
-	[self initialPositionning : scrollView];
-	scrollView.magnification = 1;
-	
-	[scrollView setFrame : container.bounds];
-	[scrollView scrollToBeginningOfDocument];
-	
-	[CATransaction commit];
 }
 
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
@@ -1291,45 +1175,6 @@
 		
 		[NSAnimationContext endGrouping];
 	}
-}
-
-#pragma mark - PDF loading
-
-- (NSData *) getPDF : (uint) posData : (DATA_LECTURE *) data
-{
-	NSString * pageName = [NSString stringWithUTF8String:data->nomPages[posData]];
-	
-	NSArray * array;
-	NSMutableDictionary * dict = data->PDFArrayForNames;
-	if(dict == nil || (array = [dict objectForKey:pageName]))
-	{
-		//Enable us to support encrypted PDF cheapily
-		NSData * pdfData = [self getPage:posData :data];
-		if(pdfData == nil)
-			return nil;
-		
-		PDFDocument * PDF = [[PDFDocument alloc] initWithData:pdfData];
-		if(PDF == nil)
-			return nil;
-		
-		array = [PDF getPages];
-		if(array == nil || [array count] == 0)
-			return nil;
-		
-		if(dict == nil)
-		{
-			dict = [NSMutableDictionary new];
-			AntiARCRetain(dict);
-			data->PDFArrayForNames = dict;
-		}
-		
-		[dict setObject:array forKey:pageName];
-	}
-	
-	if(data->nameID[posData] >= [array count])
-		return nil;
-	
-	return [[array objectAtIndex:data->nameID[posData]] dataRepresentation];
 }
 
 #pragma mark - Cache generation
@@ -1633,6 +1478,51 @@
 	return retValue;
 }
 
+- (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data
+{
+	BOOL isPDF;
+	RakImageView * image = [self getImage:page :data :&isPDF];
+	if(image == nil)
+		return nil;
+	
+	image.image.cacheMode = NSImageCacheNever;
+	
+	RakPageScrollView * output = [[RakPageScrollView alloc] init];
+	
+	[self addPageToView:image :output];
+	output.page = page;
+	output.isPDF = isPDF;
+	
+	return output;
+}
+
+- (void) addPageToView : (RakImageView *) page : (RakPageScrollView *) scrollView
+{
+	if(page == nil || scrollView == nil)
+		return;
+	
+	NSImageRep *rep = [[page.image representations] objectAtIndex: 0];
+	NSSize size = page.image.size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
+	
+	page.frame = scrollView.contentFrame = NSMakeRect(0, 0, size.width, size.height + READER_PAGE_BORDERS_HIGH);
+	
+	page.imageFrameStyle = NSImageFrameNone;
+	page.allowsCutCopyPaste = NO;
+	
+	scrollView.documentView = page;
+	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+	
+	[self initialPositionning : scrollView];
+	scrollView.magnification = 1;
+	
+	[scrollView setFrame : container.bounds];
+	[scrollView scrollToBeginningOfDocument];
+	
+	[CATransaction commit];
+}
+
 #pragma mark - NSPageController interface
 
 - (void) updatePCState : (uint) page : (uint) currentCacheSession : (RakView *) view
@@ -1844,8 +1734,6 @@
 	mainScroller.flipped = flipped;
 	mainScroller.transitionStyle = flipped ? NSPageControllerTransitionStyleStackHistory : NSPageControllerTransitionStyleStackBook;
 }
-
-#endif
 
 #pragma mark - Checks if new elements to download
 

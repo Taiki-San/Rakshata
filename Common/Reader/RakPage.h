@@ -17,20 +17,13 @@
 
 @end
 
-#if TARGET_OS_IPHONE
-@interface Reader (PageManagement)
-#else
 @interface Reader (PageManagement) <NSPageControllerDelegate>
-#endif
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
-- (NSString *) getContextToGTFO;
 - (STATE_DUMP) exportContext;
 
 - (void) initialPositionning : (RakPageScrollView *) scrollView;
-#if !TARGET_OS_IPHONE
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated;
-#endif
 
 - (void) failure;
 
@@ -57,19 +50,15 @@
 - (void) deleteElement;
 
 - (RakPageScrollView *) getScrollView : (uint) page : (DATA_LECTURE*) data;
-- (void) addPageToView : (RakImage *) page : (RakPageScrollView *) scrollView;
+- (void) addPageToView : (RakImageView *) page : (RakPageScrollView *) scrollView;
 - (void) buildCache : (NSNumber *) session;
 - (void) updatePCState : (uint) page : (uint) currentCacheSession : (RakView *) view;
 
-#if !TARGET_OS_IPHONE
 - (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize;
 - (void) updateProjectReadingOrder;
-#endif
 
-#if !TARGET_OS_IPHONE
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
-#endif
 
 - (void) flushCache;
 - (void) deallocInternal;

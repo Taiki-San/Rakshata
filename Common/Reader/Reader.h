@@ -10,25 +10,17 @@
  **                                                                                         **
  ********************************************************************************************/
 
-#include "lecteur.h"
-#import "RakPageScrollView.h"
-
 #if !TARGET_OS_IPHONE
 #import "RakPageController.h"
 
 @class RakReaderBottomBar;
 #endif
 
-#define READER_MAGNIFICATION_MIN 0.25
-#define READER_MAGNIFICATION_MAX 3.0
-
-@interface Reader : RakTabView
+@interface Reader : RakReaderCore
 {
-	BOOL initialized;
-	
-#if !TARGET_OS_IPHONE
 	uint gonnaReduceTabs;
 	RakView * container;
+#if !TARGET_OS_IPHONE
 	RakReaderBottomBar * bottomBar;
 	RakReaderControllerUIQuery * newStuffsQuery;
 #endif
@@ -45,8 +37,6 @@
 	
 #if !TARGET_OS_IPHONE
 	RakPageController * mainScroller;
-#else
-	NSArray * listPages;
 #endif
 	RakImage * loadingPlaceholder;
 	RakImage * loadingFailedPlaceholder;
@@ -70,7 +60,6 @@
 	NSPoint _scrollerPosToCommit;
 	BOOL _endingTransition;
 	
-	PROJECT_DATA _project;
 	BOOL dataLoaded;
 	DATA_LECTURE _data;
 	
@@ -85,7 +74,6 @@
 }
 
 @property BOOL distractionFree;
-@property BOOL isTome;
 @property BOOL preventRecursion;
 
 - (instancetype) init : (RakView*)contentView : (NSString *) state;
@@ -134,11 +122,11 @@
 #import "RakFavsInfo.h"
 #import "RakDeleteConfirm.h"
 #import "RakReaderBottomBar.h"
+#import "RakPage.h"
 
 BOOL preventWindowCaptureForWindow(NSWindow *window);
 #endif
 
-#import "RakPage.h"
 
 enum
 {
@@ -149,7 +137,6 @@ enum
 	RD_CONTROLBAR_POSY = 20,
 	
 	READER_BORDURE_VERT_PAGE = 10,
-	READER_PAGE_TOP_BORDER = 50,
 	READER_PAGE_BOTTOM_BORDER = (RD_CONTROLBAR_HEIGHT + RD_CONTROLBAR_POSY + 10),
 	READER_PAGE_BORDERS_HIGH = (READER_PAGE_TOP_BORDER + READER_PAGE_BOTTOM_BORDER),
 };
