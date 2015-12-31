@@ -12,6 +12,8 @@
 
 @interface Reader()
 {
+	NSIndexPath * indexToApply;
+	
 	BOOL isFullscreen;
 	uint nbCT;
 	NSMutableDictionary * metadataArray;
@@ -62,6 +64,15 @@
 	[self updateTableViewFrame];
 }
 
+- (void) viewWillFocus
+{
+	if(indexToApply != nil)
+	{
+		[_tableView scrollToRowAtIndexPath:indexToApply atScrollPosition:UITableViewScrollPositionTop animated:YES];
+		indexToApply = nil;
+	}
+}
+
 - (void) flushCache
 {
 	[metadataArray enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, NSData *  _Nonnull obj, BOOL * _Nonnull stop)
@@ -70,6 +81,23 @@
 		[obj getBytes:&data length:sizeof(DATA_LECTURE)];
 		releaseDataReader(&data);
 	}];
+}
+
+#pragma mark - Context update
+
+- (BOOL) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
+{
+	BOOL shouldNotifyBottomBarInitialized = [super startReading:project :elemToRead :isTome :startPage];
+	
+	indexToApply = [NSIndexPath indexPathForItem:0 inSection:_posElemInStructure];
+	
+	return shouldNotifyBottomBarInitialized;
+}
+
+- (void) changeProject:(PROJECT_DATA)projectRequest :(uint)elemRequest :(BOOL)isTomeRequest :(uint)startPage
+{
+	[super changeProject:projectRequest :elemRequest :isTomeRequest :startPage];
+	[_tableView reloadData];
 }
 
 #pragma mark - Table view
@@ -82,6 +110,16 @@
 		return nbCT;
 	
 	return (NSInteger) (nbCT += ACCESS_DATA(self.isTome, _project.nbChapterInstalled, _project.nbVolumesInstalled));
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+	//Lowercase the first later
+	NSString * string = [self tableView:tableView titleForHeaderInSection:section];
+	
+	string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[string substringToIndex:1].lowercaseString];
+	
+	return [NSString localizedStringWithFormat:NSLocalizedString(@"READER-END-OF-%@", nil), string];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section

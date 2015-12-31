@@ -49,8 +49,10 @@
 		alreadyOpenedOnce = YES;
 	}
 	
-	UIView * fromView = tabBarController.selectedViewController.view;
-	UIView * toView = tabBarController.viewControllers[tabBarIndex].view;
+	RakTabView * toController = tabBarController.viewControllers[tabBarIndex];
+	UIView * fromView = tabBarController.selectedViewController.view, * toView = toController.view;
+	
+	[toController viewWillFocus];
 	
 	// Get the size of the view area.
 	CGRect viewSize = fromView.frame, newView = toView.frame, workingFrame = newView;

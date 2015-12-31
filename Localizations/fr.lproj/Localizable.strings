@@ -140,6 +140,8 @@
 "READER-SUGG-TITLE" = "Que souhaitez vous lire ensuite?";
 "READER-DISCARD-FOREVER" = "Ne plus demander";
 
+"READER-END-OF-%@" = "Fin du %1$@";
+
 //Prefs
 "PREFS-TITLE-GENERAL" = "Général";
 "PREFS-TITLE-REPO" = "Sources";
