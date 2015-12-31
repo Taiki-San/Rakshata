@@ -1102,8 +1102,8 @@
 				B625761A1C27883D00811C33 /* Assets.xcassets */,
 				B6A9C47E1C2F017600BDE925 /* Extensions */,
 				B67110E11C276C9200E0BFD9 /* Info.plist */,
-				B6A9C4711C2EEB9E00BDE925 /* LaunchScreen.storyboard */,
 				B6A9C4731C2EEB9F00BDE925 /* Main.storyboard */,
+				B6A9C4711C2EEB9E00BDE925 /* LaunchScreen.storyboard */,
 				B6797D391C2D645C00FF7104 /* settings.debug */,
 			);
 			name = "Supporting Files";

@@ -38,6 +38,17 @@
 	if(tabBarController.selectedIndex == tabBarIndex)
 		return;
 	
+	if(!alreadyOpenedOnce)
+	{
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
+		NSUInteger oldSelectedIndex = tabBarController.selectedIndex;
+		tabBarController.selectedIndex = tabBarIndex;
+		tabBarController.selectedIndex = oldSelectedIndex;
+		[CATransaction commit];
+		alreadyOpenedOnce = YES;
+	}
+	
 	UIView * fromView = tabBarController.selectedViewController.view;
 	UIView * toView = tabBarController.viewControllers[tabBarIndex].view;
 	
@@ -71,13 +82,6 @@
 							 toView.frame = newView;
 							 [fromView removeFromSuperview];
 							 tabBarController.selectedIndex = tabBarIndex;
-							 
-							 if(!alreadyOpenedOnce)
-							 {
-								 tabBarController.selectedIndex = tabBarIndex == 0 ? tabBarIndex + 1 : tabBarIndex - 1;
-								 tabBarController.selectedIndex = tabBarIndex;
-								 alreadyOpenedOnce = YES;
-							 }
 						 }
 					 }];
 }

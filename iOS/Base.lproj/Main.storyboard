@@ -110,7 +110,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-908" y="702"/>
+            <point key="canvasLocation" x="-1312" y="194"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
@@ -133,7 +133,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-636" y="-390"/>
+            <point key="canvasLocation" x="-428" y="-750"/>
         </scene>
         <!--Téléchargement-->
         <scene sceneID="7NP-Mw-Weq">
@@ -190,7 +190,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gWS-bP-YIb" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-104" y="702"/>
+            <point key="canvasLocation" x="-428" y="194"/>
         </scene>
         <!--Nom de la série-->
         <scene sceneID="t9y-AK-lkz">
@@ -280,33 +280,64 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Second View" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="BIK-tI-byl">
-                                <rect key="frame" x="195" y="279" width="209.5" height="41.5"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loaded by SecondViewController" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Tg-WI-604">
-                                <rect key="frame" x="192" y="329" width="215.5" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="68" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="mST-91-jrT">
+                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ReaderRow" id="8IO-ny-NAd" customClass="RakUITableViewCell">
+                                        <rect key="frame" x="0.0" y="49.5" width="600" height="68"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8IO-ny-NAd" id="eJj-An-esZ">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="68"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="L2p-Bw-J3d" id="xIl-CH-DgI"/>
+                                    <outlet property="delegate" destination="L2p-Bw-J3d" id="DDl-5W-ihA"/>
+                                </connections>
+                            </tableView>
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pur-Dn-n2c">
+                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <color key="barTintColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <navigationItem id="vz1-Z5-ech">
+                                        <nil key="title"/>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="0.95999999999999996" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="7Tg-WI-604" firstAttribute="top" secondItem="BIK-tI-byl" secondAttribute="bottom" constant="8" symbolic="YES" id="2Eb-FZ-Y4b"/>
-                            <constraint firstAttribute="centerY" secondItem="BIK-tI-byl" secondAttribute="centerY" id="6gO-zf-vYf"/>
-                            <constraint firstAttribute="centerX" secondItem="BIK-tI-byl" secondAttribute="centerX" id="KRi-yp-ADg"/>
-                            <constraint firstItem="7Tg-WI-604" firstAttribute="centerX" secondItem="BIK-tI-byl" secondAttribute="centerX" id="wWr-Xp-Pv5"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="mST-91-jrT" secondAttribute="trailing" constant="-20" id="3uX-D7-T7Y"/>
+                            <constraint firstItem="yvW-8W-1Gt" firstAttribute="top" secondItem="mST-91-jrT" secondAttribute="bottom" id="9oH-WQ-nXp"/>
+                            <constraint firstItem="mST-91-jrT" firstAttribute="top" secondItem="Pur-Dn-n2c" secondAttribute="bottom" id="UO9-Di-h1l"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Pur-Dn-n2c" secondAttribute="trailing" constant="-20" id="WTE-cT-1vv"/>
+                            <constraint firstItem="Pur-Dn-n2c" firstAttribute="leading" secondItem="9RU-5J-QTD" secondAttribute="leadingMargin" constant="-20" id="WzF-Cp-a2d"/>
+                            <constraint firstItem="mST-91-jrT" firstAttribute="top" secondItem="Pur-Dn-n2c" secondAttribute="bottom" id="Y6G-iw-krK"/>
+                            <constraint firstItem="mST-91-jrT" firstAttribute="leading" secondItem="9RU-5J-QTD" secondAttribute="leadingMargin" constant="-20" id="aq0-FL-srh"/>
+                            <constraint firstItem="Pur-Dn-n2c" firstAttribute="top" secondItem="DVv-9B-gDs" secondAttribute="bottom" id="ehN-51-Cyj"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="TOe-Zn-Y7X" appends="YES" id="Kd6-ur-H0x"/>
+                        </connections>
                     </view>
                     <tabBarItem key="tabBarItem" title="Lecteur" image="Lecteur" id="gRz-1H-FaR"/>
+                    <connections>
+                        <outlet property="_navigationBar" destination="Pur-Dn-n2c" id="BBA-3Q-cmP"/>
+                        <outlet property="_tableView" destination="mST-91-jrT" id="AuV-XR-rcC"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bzB-Vr-IcR" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="TOe-Zn-Y7X">
+                    <connections>
+                        <action selector="tapDetected:" destination="L2p-Bw-J3d" id="f4d-Yb-e6I"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1174" y="34"/>
+            <point key="canvasLocation" x="452" y="194"/>
         </scene>
     </scenes>
     <resources>

@@ -13,5 +13,11 @@
 #import "Reader.h"
 
 @interface RakReaderController : Reader
+{
+	IBOutlet UITableView * _tableView;
+	IBOutlet UINavigationBar * _navigationBar;
+}
+
+- (IBAction)tapDetected : (id) sender;
 
 @end

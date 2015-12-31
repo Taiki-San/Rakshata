@@ -1295,9 +1295,7 @@
 	[self initialPositionning : scrollView];
 	scrollView.magnification = 1;
 	
-#if TARGET_OS_IPHONE
-	[scrollView setFrame:self.frame];
-#else
+#if !TARGET_OS_IPHONE
 	[scrollView setFrame : container.bounds];
 #endif
 	[scrollView scrollToBeginningOfDocument];
@@ -1416,7 +1414,7 @@
 #if !TARGET_OS_IPHONE
 	if(mainScroller == nil || _data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
 #else
-	if(_data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
+//	if(_data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
 #endif
 	{
 		_cacheBeingBuilt = NO;

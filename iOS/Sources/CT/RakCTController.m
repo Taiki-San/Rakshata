@@ -81,8 +81,8 @@
 
 - (void) _updateProject : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
 {
-	_project = project;
 	releaseCTData(_project);
+	_project = project;
 	_tabBarItem.title = getStringForWchar(project.projectName);
 	
 	[self ensureValidSegmentedControlState];
@@ -133,15 +133,15 @@
 {
 	uint contentID = indexPath.row;
 	
-	if(contentID >= ACCESS_DATA(_isTome, _project.nbChapter, _project.nbVolumes))
+	if(contentID >= nbElement)
 		return;
 	
-	contentID =  ACCESS_CT(_isTome, _project.chaptersFull, _project.volumesFull, contentID);
+	contentID =  ACCESS_CT(_isTome, _project.chaptersFull, _project.volumesFull, nbElement - 1 - contentID);
 
 	if(checkReadable(_project, _isTome, contentID))
 	{
 		[RakTabView broadcastUpdateContext : self : _project : _isTome : contentID];
-//		[RakApp.reader ownFocus];
+		[RakApp.reader ownFocus];
 	}
 	else
 	{
@@ -164,6 +164,9 @@
 	uint pos = (NSUInteger) indexPath.row;
 	if(pos >= nbElement)
 		return nil;
+	
+	//We reverse order
+	pos = nbElement - 1 - pos;
 	
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CTRandoCell" forIndexPath:indexPath];
 	if(cell == nil)
