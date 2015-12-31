@@ -25,7 +25,6 @@
 
 	addRecentEntry(dataRequest, false);
 	
-#if !TARGET_OS_IPHONE
 	if(mainScroller == nil)
 	{
 		mainScroller = [[RakPageController alloc] init];
@@ -33,7 +32,6 @@
 		mainScroller.delegate = self;
 		[self updateProjectReadingOrder];
 	}
-#endif
 	
 	[self updateEvnt];
 	
@@ -112,7 +110,6 @@
 	scrollView.scrollViewFrame = scrollViewFrame;
 }
 
-#if !TARGET_OS_IPHONE
 - (void) setFrameInternal : (NSRect) frameRect : (BOOL) isAnimated
 {
 	if(self.mainThread != TAB_READER)
@@ -169,13 +166,11 @@
 	else
 		[_scrollView setFrame:container.frame];
 }
-#endif
 
 /*Event handling*/
 
 #pragma mark    -   Events
 
-#if !TARGET_OS_IPHONE
 - (void) mouseUp:(NSEvent *)theEvent
 {
 	BOOL fail = NO;
@@ -418,7 +413,6 @@
 		}
 	}
 }
-#endif
 
 /*Error management*/
 
@@ -474,10 +468,8 @@
 			_project = project;
 			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
 			
-#if !TARGET_OS_IPHONE
 			[self updateProjectReadingOrder];
 			[bottomBar favsUpdated:_project.favoris];
-#endif
 		}
 		else if(!checkProjectStillExist(_project.cacheDBID))
 		{
@@ -496,9 +488,7 @@
 	else if([object class] == [Prefs class] && [keyPath isEqualToString:[Prefs getKeyPathForCode:KVO_DIROVERRIDE]])
 	{
 		[Prefs getPref:PREFS_GET_DIROVERRIDE:&overrideDirection];
-#if !TARGET_OS_IPHONE
 		[self updateProjectReadingOrder];
-#endif
 	}
 	
 	else
@@ -574,24 +564,15 @@
 	{
 		if(!contextExist)
 		{
-#if TARGET_OS_IPHONE
-			[CATransaction begin];
-			[CATransaction setAnimationDuration:0.3];
-#else
 			[NSAnimationContext beginGrouping];
 			[[NSAnimationContext currentContext] setDuration:0.3];
-#endif
 		}
 		
 		[_scrollView scrollWithAnimationToPoint:point];
 		
 		if(!contextExist)
 		{
-#if TARGET_OS_IPHONE
-			[CATransaction commit];
-#else
 			[NSAnimationContext endGrouping];
-#endif
 		}
 	}
 	else
@@ -635,24 +616,15 @@
 	{
 		if(!contextExist)
 		{
-#if TARGET_OS_IPHONE
-			[CATransaction begin];
-			[CATransaction setAnimationDuration:0.3];
-#else
 			[NSAnimationContext beginGrouping];
 			[[NSAnimationContext currentContext] setDuration:0.3];
-#endif
 		}
 		
 		[_scrollView scrollWithAnimationToPoint:point];
 		
 		if(!contextExist)
 		{
-#if TARGET_OS_IPHONE
-			[CATransaction commit];
-#else
 			[NSAnimationContext endGrouping];
-#endif
 		}
 	}
 	else
@@ -715,7 +687,6 @@
 		return NO;
 	}
 	
-#if !TARGET_OS_IPHONE
 	if(_project.haveDRM && !preventWindowCaptureForWindow(self.window))
 	{
 		[self failure];
@@ -723,7 +694,6 @@
 	}
 	
 	[self updateTitleBar:_project :isTomeRequest :_posElemInStructure];
-#endif
 	
 	if(reader_isLastElem(_project, self.isTome, _currentElem))
 	{
@@ -738,9 +708,7 @@
 		return NO;
 	}
 	
-#if !TARGET_OS_IPHONE
 	[self updateProjectReadingOrder];
-#endif
 	
 	if(startPage == INVALID_VALUE || _data.nbPage == 0)
 		_data.pageCourante = 0;
@@ -819,9 +787,6 @@
 	}
 	
 	//We have to change the page ourselves
-#if TARGET_OS_IPHONE
-#warning "to implement?"
-#else
 	if(switchType != READER_ETAT_DEFAULT && mainScroller.patchedSelectedIndex != _data.pageCourante + 1)
 	{
 		MUTEX_LOCK(cacheMutex);
@@ -874,7 +839,6 @@
 		
 		[self optimizeCache : nil];
 	}
-#endif
 	
 	return YES;
 }
@@ -913,13 +877,11 @@
 		//Trying to go to the next page from the last available page
 		if(goToNext && byChangingPage)
 		{
-#if !TARGET_OS_IPHONE
 			NSInteger count = (NSInteger) [mainScroller.arrangedObjects count];
 			if(count > 3 && mainScroller.patchedSelectedIndex == count - 1)
 			{
 				mainScroller.patchedSelectedIndex = count - 2;
 			}
-#endif
 			
 #ifdef LEAVE_DISTRACTION_FREE_AT_END
 			if(self.distractionFree)
@@ -941,9 +903,7 @@
 	cacheSession++;
 	_posElemInStructure = newPosIntoStruct;
 	
-#if !TARGET_OS_IPHONE
 	[self updateTitleBar:_project :self.isTome :_posElemInStructure];
-#endif
 	[self updateCTTab : NO];
 	
 	if((goToNext && nextDataLoaded && _nextData.IDDisplayed == _currentElem) || (!goToNext && previousDataLoaded && _previousData.IDDisplayed == _currentElem))
@@ -989,7 +949,6 @@
 			previousDataLoaded = NO;
 		}
 		
-#if !TARGET_OS_IPHONE
 		id currentPageView = mainScroller.arrangedObjects[currentPage];
 		
 		[self updateContext : YES];
@@ -1006,7 +965,6 @@
 			_scrollView = currentPageView;
 			MUTEX_UNLOCK(cacheMutex);
 		}
-#endif
 	}
 	else
 	{
@@ -1123,32 +1081,19 @@
 - (void) updateEvnt
 {
 	//We rebuild the cache from scratch
-#if !TARGET_OS_IPHONE
 	NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-#else
-	NSMutableArray * array = listPages.mutableCopy;
-#endif
 	
 	[array removeAllObjects];
 	
 	[array addObject:@(-1)];	//Placeholder for last page of previous chapter
 	
 	for(uint i = 0; i < _data.nbPage; i++)
-#if !TARGET_OS_IPHONE
 		[array addObject:@([mainScroller getPatchedPosForIndex:i])];
-#else
-		[array addObject:@(i)];
-#endif
 	
 	[array addObject:@(-2)];	//Placeholder for first page of next chapter
 	
 	_scrollView = nil;
 
-#if TARGET_OS_IPHONE
-	MUTEX_LOCK(cacheMutex);
-	listPages = [NSArray arrayWithArray:array];
-	MUTEX_UNLOCK(cacheMutex);
-#else
 	if(mainScroller != nil)
 	{
 		MUTEX_LOCK(cacheMutex);
@@ -1164,7 +1109,6 @@
 
 		MUTEX_UNLOCK(cacheMutex);
 	}
-#endif
 	
 	uint cacheCode = ++cacheSession;
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1198,9 +1142,7 @@
 	if(image == nil)
 		return nil;
 
-#if !TARGET_OS_IPHONE
 	image.cacheMode = NSImageCacheNever;
-#endif
 	
 	RakPageScrollView * output = [[RakPageScrollView alloc] init];
 	
@@ -1250,9 +1192,7 @@
 	self.initWithNoContent = YES;
 	[self failure : 0];
 	
-#if !TARGET_OS_IPHONE
 	mainScroller.patchedSelectedIndex = 1;
-#endif
 
 	if([RakApp.CT activeProject].cacheDBID != oldCache)
 		[RakApp.CT ownFocus];
@@ -1265,29 +1205,20 @@
 	if(page == nil || scrollView == nil)
 		return;
 	
-#if !TARGET_OS_IPHONE
 	NSImageRep *rep = [[page representations] objectAtIndex: 0];
 	page.size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
-#endif
 
 	scrollView.contentFrame = NSMakeRect(0, 0, page.size.width, page.size.height + READER_PAGE_BORDERS_HIGH);
 	
 	//We create the view that si going to be displayed
 	RakImageView * pageView = [[RakImageView alloc] initWithFrame: scrollView.contentFrame];
 
-//		pageView.imageAlignment = NSImageAlignCenter
-#if !TARGET_OS_IPHONE
 	pageView.imageFrameStyle = NSImageFrameNone;
 	pageView.allowsCutCopyPaste = NO;
-#endif
 	
 	pageView.image = page;
 
-#if !TARGET_OS_IPHONE
 	scrollView.documentView = pageView;
-#else
-	[scrollView addSubview:pageView];
-#endif
 
 	[CATransaction begin];
 	[CATransaction setDisableActions:YES];
@@ -1295,9 +1226,7 @@
 	[self initialPositionning : scrollView];
 	scrollView.magnification = 1;
 	
-#if !TARGET_OS_IPHONE
 	[scrollView setFrame : container.bounds];
-#endif
 	[scrollView scrollToBeginningOfDocument];
 	
 	[CATransaction commit];
@@ -1316,7 +1245,6 @@
 	[scrollView scrollToPoint:sliderStart];
 }
 
-#if !TARGET_OS_IPHONE
 - (void) jumpPressed : (BOOL) withShift
 {
 	NSSize size = self.bounds.size;
@@ -1364,7 +1292,6 @@
 		[NSAnimationContext endGrouping];
 	}
 }
-#endif
 
 #pragma mark - PDF loading
 
@@ -1411,11 +1338,7 @@
 {
 	_cacheBeingBuilt = YES;
 	
-#if !TARGET_OS_IPHONE
 	if(mainScroller == nil || _data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
-#else
-//	if(_data.pageCourante >= _data.nbPage)	//Données hors de nos bornes
-#endif
 	{
 		_cacheBeingBuilt = NO;
 		return;
@@ -1443,11 +1366,7 @@
 	while(session == cacheSession)	//While the active chapter is still the same
 	{
 		MUTEX_LOCK(cacheMutex);
-#if TARGET_OS_IPHONE
-		*data = listPages;
-#else
 		*data = mainScroller.arrangedObjects;
-#endif
 		MUTEX_UNLOCK(cacheMutex);
 		
 		//Page courante
@@ -1589,11 +1508,7 @@
 	if(index >= [data count])
 		return NO;
 	
-#if TARGET_OS_IPHONE
-	Class class = [listPages[index] class];
-#else
 	Class class = [data[[mainScroller getPatchedPosForIndex:index]] class];
-#endif
 	
 	return class == [RakPageScrollView class] || class == [RakImageView class];
 }
@@ -1611,22 +1526,14 @@
 
 		if(data == nil)
 		{
-#if TARGET_OS_IPHONE
-			internalData = listPages.mutableCopy;
-#else
 			internalData = mainScroller.arrangedObjects.mutableCopy;
-#endif
 		}
 		else
 			internalData = data;
 		
 		for(uint pos = 0, relativePos, max = [internalData count]; pos < max; pos++)
 		{
-#if TARGET_OS_IPHONE
-			relativePos = pos;
-#else
 			relativePos = [mainScroller getPatchedPosForIndex:pos];
-#endif
 			object = [internalData objectAtIndex:relativePos];
 			
 			if([object class] == [RakPageScrollView class])
@@ -1646,20 +1553,10 @@
 		}
 		
 		if(invalidFound)
-		{
-#if TARGET_OS_IPHONE
-			listPages = [NSArray arrayWithArray:internalData];
-#else
 			mainScroller.arrangedObjects = internalData;
-#endif
-			
-			MUTEX_UNLOCK(cacheMutex);
-		}
-		else
-		{
-			MUTEX_UNLOCK(cacheMutex);
-		}
-		
+
+		MUTEX_UNLOCK(cacheMutex);
+
 		[CATransaction begin];
 		[CATransaction setDisableActions:YES];
 	}
@@ -1742,7 +1639,6 @@
 {
 	MUTEX_LOCK(cacheMutex);
 	
-#if !TARGET_OS_IPHONE
 	NSMutableArray * data = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
 	
 	if(page < [data count] && currentCacheSession == cacheSession)
@@ -1750,20 +1646,10 @@
 		[data replaceObjectAtIndex:[mainScroller getPatchedPosForIndex:page] withObject:view];
 		mainScroller.arrangedObjects = data;
 	}
-#else
-	NSMutableArray * data = listPages.mutableCopy;
-	if(page < [data count] && currentCacheSession == cacheSession)
-	{
-		[data replaceObjectAtIndex:page withObject:view];
-		listPages = [NSArray arrayWithArray:data];
-	}
-	
-#endif
 	
 	MUTEX_UNLOCK(cacheMutex);
 }
 
-#if !TARGET_OS_IPHONE
 - (NSString *)pageController:(NSPageController *)pageController identifierForObject : (RakPageScrollView*) object
 {
 	return @"dashie is best pony";
@@ -2022,9 +1908,7 @@
 	
 	if(self.mainThread == TAB_READER)
 	{
-#if !TARGET_OS_IPHONE
 		newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
-#endif
 	}
 	else
 	{
@@ -2061,9 +1945,7 @@
 	if(![self shouldDisplaySuggestions])
 		return;
 	
-#if !TARGET_OS_IPHONE
 	[bottomBar displaySuggestionsForProject:_project withOldDFState:oldDFState];
-#endif
 }
 
 #pragma mark - Quit
@@ -2076,31 +1958,21 @@
 	if(_project.isInitialized)
 		insertCurrentState(_project, [self exportContext]);
 	
-#if !TARGET_OS_IPHONE
 	if(mainScroller != nil)
-#endif
 	{
 		MUTEX_LOCK(cacheMutex);
 		
 		_flushingCache = YES;
 
-#if !TARGET_OS_IPHONE
 		NSMutableArray * array = [NSMutableArray arrayWithArray:mainScroller.arrangedObjects];
-#else
-		NSMutableArray * array = listPages.mutableCopy;
-#endif
 		
 		[array removeAllObjects];
 		[array insertObject:@(0) atIndex:0];
 		
 		_scrollView = nil;
 		
-#if !TARGET_OS_IPHONE
 		mainScroller.patchedSelectedIndex = 0;
 		mainScroller.arrangedObjects = array;
-#else
-		listPages = [NSArray arrayWithArray:array];
-#endif
 		
 		_flushingCache = NO;
 		
@@ -2113,7 +1985,6 @@
 	[self flushCache];
 	releaseDataReader(&_data);
 	
-#if !TARGET_OS_IPHONE
 	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
 	
 	for(RakView * view in array)	//In theory, it's NSPageView background, so RakGifImageView, inside a superview
@@ -2127,7 +1998,6 @@
 		
 		[view removeFromSuperview];
 	}
-#endif
 }
 
 @end

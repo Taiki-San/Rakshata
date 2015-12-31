@@ -167,7 +167,6 @@
 		B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */ = {isa = PBXBuildFile; fileRef = B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */; };
 		B661042A1B5046930079924E /* RakExportStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66104291B5046930079924E /* RakExportStatusController.m */; };
 		B6633F7B1C30359A006B9BD5 /* RakReaderController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6633F7A1C30359A006B9BD5 /* RakReaderController.m */; };
-		B6633F7D1C31A8E5006B9BD5 /* RakPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E45D7118D5F290007E1D5C /* RakPage.m */; };
 		B6633F7E1C31AC3B006B9BD5 /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
 		B6633F7F1C31C9D6006B9BD5 /* Reader.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61D4186CA2F2003504F9 /* Reader.m */; };
 		B66392251BD65A00003FD758 /* sorting.c in Sources */ = {isa = PBXBuildFile; fileRef = B66392241BD65A00003FD758 /* sorting.c */; };
@@ -2742,7 +2741,6 @@
 				B67111211C276CE100E0BFD9 /* tome.c in Sources */,
 				B67111221C276CE100E0BFD9 /* encoding.c in Sources */,
 				B671112D1C276CE100E0BFD9 /* interface.m in Sources */,
-				B6633F7D1C31A8E5006B9BD5 /* RakPage.m in Sources */,
 				B6FAD86D1C2A19410084692A /* tagSyncParser.m in Sources */,
 				B671112E1C276CE100E0BFD9 /* lecteur_check_newElems.c in Sources */,
 				B6CD68EC1C2B459400A84E0B /* MDL.m in Sources */,
