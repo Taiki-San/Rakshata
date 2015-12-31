@@ -41,6 +41,7 @@
 - (void) postProcessStateRestoration : (STATE_DUMP) savedState;
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (void) DBUpdated : (NSNotification*) notification;
 - (void) postProcessingDBUpdated;

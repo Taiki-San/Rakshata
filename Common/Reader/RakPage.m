@@ -20,10 +20,8 @@
 	_alreadyRefreshed = NO;
 	_dontGiveACrapAboutCTPosUpdate = NO;
 	
-	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
+	if(![super initPage:dataRequest :elemRequest :isTomeRequest :startPage]);
 		return NO;
-
-	addRecentEntry(dataRequest, false);
 	
 	if(mainScroller == nil)
 	{
@@ -652,18 +650,13 @@
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
-	_project = getCopyOfProjectData(dataRequest);
-	_currentElem = elemRequest;
-	self.isTome = isTomeRequest;
-	
-	_cacheBeingBuilt = NO;
-	
-	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
-	if(_posElemInStructure == INVALID_VALUE)
+	if(![super initialLoading : dataRequest : elemRequest : isTomeRequest : startPage])
 	{
 		[self failure];
 		return NO;
 	}
+	
+	_cacheBeingBuilt = NO;
 	
 	if(_project.haveDRM && !preventWindowCaptureForWindow(self.window))
 	{

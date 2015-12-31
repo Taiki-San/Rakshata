@@ -109,8 +109,24 @@
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
 {
+	if(![self initialLoading:dataRequest :elemRequest :isTomeRequest : startPage])
+		return NO;
+	
 	addRecentEntry(dataRequest, false);
-	return NO;
+	return YES;
+}
+
+- (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+{
+	_project = getCopyOfProjectData(dataRequest);
+	_currentElem = elemRequest;
+	self.isTome = isTomeRequest;
+	
+	_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+	if(_posElemInStructure == INVALID_VALUE)
+		return NO;
+	
+	return YES;
 }
 
 - (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
@@ -174,7 +190,7 @@
 	
 	RakImageView * imageView = [[RakImageView alloc] initWithFrame: (NSRect) {NSZeroPoint, image.size}];
 
-	if(imageView == nil)
+	if(imageView != nil)
 	{
 		imageView.image = image;
 
@@ -281,7 +297,7 @@
 	if(element != INVALID_VALUE)
 	{
 		[self preProcessingUpdateContext : project : isTome];
-		[self startReading : project : element : isTome : UINT_MAX];
+		[self startReading : project : element : isTome : INVALID_VALUE];
 		[self ownFocus];
 	}
 }

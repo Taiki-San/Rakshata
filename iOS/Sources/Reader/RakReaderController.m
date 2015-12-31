@@ -221,9 +221,8 @@
 	
 	[coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 		[self fullScreenAnimation];
-	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 		[_tableView reloadData];
-	}];
+	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {}];
 	
 	[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
