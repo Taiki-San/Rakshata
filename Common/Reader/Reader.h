@@ -41,7 +41,6 @@
 	RakImage * loadingPlaceholder;
 	RakImage * loadingFailedPlaceholder;
 	
-	MUTEX_VAR cacheMutex;
 	uint cacheSession, workingCacheSession;
 	byte previousMove;
 	
@@ -62,10 +61,7 @@
 	
 	BOOL dataLoaded;
 	DATA_LECTURE _data;
-	
-	uint _currentElem;
-	uint _posElemInStructure;
-	
+		
 	//Cache data
 	BOOL previousDataLoaded;
 	DATA_LECTURE _previousData;
@@ -79,39 +75,27 @@
 - (instancetype) init : (RakView*)contentView : (NSString *) state;
 - (void) initReaderMainView : (NSString *) state;
 
-- (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint;
-
-- (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage;
 - (void) resetReader;
 
-#if !TARGET_OS_IPHONE
 - (void) willLeaveReader;
 - (void) willOpenReader;
 
 - (void) collapseAllTabs : (BOOL) forced;
 - (void) hideBothTab;
 - (void) unhideBothTab;
-#endif
 
 - (void) switchDistractionFree;
-#if !TARGET_OS_IPHONE
 - (void) shouldLeaveDistractionFreeMode;
 - (void) startFadeTimer : (NSPoint) cursorPosition;
 - (void) abortFadeTimer;
 - (void) cursorShouldFadeAway;
 - (void) fadeBottomBar : (CGFloat) alpha;
-#endif
-
-- (PROJECT_DATA) activeProject;
-- (uint) currentElem;
 
 - (void) switchFavs;
 - (void) triggerFullscreen;
 
-#if !TARGET_OS_IPHONE
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax;
 - (void) updateTitleBar : (PROJECT_DATA) project : (BOOL) isTome : (uint) position;
-#endif
 
 @end
 

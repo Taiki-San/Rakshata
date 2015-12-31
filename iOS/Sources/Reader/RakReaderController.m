@@ -62,6 +62,16 @@
 	[self updateTableViewFrame];
 }
 
+- (void) flushCache
+{
+	[metadataArray enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, NSData *  _Nonnull obj, BOOL * _Nonnull stop)
+	{
+		DATA_LECTURE data;
+		[obj getBytes:&data length:sizeof(DATA_LECTURE)];
+		releaseDataReader(&data);
+	}];
+}
+
 #pragma mark - Table view
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -211,11 +221,11 @@
 	
 	[coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 		[self fullScreenAnimation];
-	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {}];
+	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+		[_tableView reloadData];
+	}];
 	
 	[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-	
-	[_tableView reloadData];
 }
 
 #pragma mark - Toggle fullscreen

@@ -271,7 +271,7 @@
         <!--Lecteur-->
         <scene sceneID="90e-HS-bIl">
             <objects>
-                <viewController storyboardIdentifier="RD" id="L2p-Bw-J3d" customClass="RakReaderController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RD" id="L2p-Bw-J3d" customClass="Reader" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="DVv-9B-gDs"/>
                         <viewControllerLayoutGuide type="bottom" id="yvW-8W-1Gt"/>

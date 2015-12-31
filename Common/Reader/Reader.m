@@ -23,15 +23,12 @@
 		
 		[Prefs registerForChange:self forType:KVO_MAGNIFICATION];
 		[Prefs registerForChange:self forType:KVO_DIROVERRIDE];
-		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeReading:) name:NOTIFICATION_RESUME_READING object:nil];
 		
 		[Prefs getPref:PREFS_GET_SAVE_MAGNIFICATION:&saveMagnification];
 		[Prefs getPref:PREFS_GET_DIROVERRIDE :&overrideDirection];
 		
-		pthread_mutex_init(&cacheMutex, NULL);
-
-#if !TARGET_OS_IPHONE
+		[self sharedInit];
+		
 		gonnaReduceTabs = 0;
 
 		[self initView : contentView : state];
@@ -48,7 +45,6 @@
 			[gifRep setProperty:NSImageCurrentFrameDuration withValue:@(0.1f)];
 		}
 		loadingFailedPlaceholder = [RakImage imageNamed:@"failed_loading"];
-#endif
 		
 		[self initReaderMainView : state];
 	}
@@ -90,81 +86,10 @@
 	[self readerIsOpening : REFRESHVIEWS_CHANGE_MT];
 }
 
-- (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint
+- (BOOL) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
 {
-	STATE_DUMP savedState;
- 
-	if(insertionPoint != nil && [insertionPoint isKindOfClass:[NSDictionary class]] && [[insertionPoint objectForKey:@"isTome"] isKindOfClass:[NSNumber class]])
-	{
-		savedState = _recoverStateForProject(project, true, [[insertionPoint objectForKey:@"isTome"] boolValue]);
-		
-		NSNumber * ID = [insertionPoint objectForKey:@"ID"];
-		if(ID != nil && [ID isKindOfClass:[NSNumber class]])
-		{
-			uint insertionPointID = [ID unsignedIntValue];
-			
-			if(!savedState.isInitialized || savedState.CTID != insertionPointID)
-			{
-				bool oldIsTome = savedState.isTome;
-				
-				savedState = getEmptyRecoverState();
-				savedState.isInitialized = true;
-				savedState.isTome = oldIsTome;
-				savedState.CTID = insertionPointID;
-				savedState.zoom = 1.0;
-				savedState.scrollerX = CGFLOAT_MAX;
-			}
-		}
-	}
-	else
-		savedState = recoverStateForProject(project);
+	BOOL shouldNotifyBottomBarInitialized = [super startReading:project :elemToRead :isTome :startPage];
 	
-	if(savedState.isInitialized)
-	{
-		if(RakApp.CT.initWithNoContent)
-			[RakApp.CT updateProject :project.cacheDBID :savedState.isTome :savedState.CTID];
-		
-		if(saveMagnification)
-		{
-			if(savedState.zoom > READER_MAGNIFICATION_MAX)
-				lastKnownMagnification = READER_MAGNIFICATION_MAX;
-			else if (savedState.zoom < READER_MAGNIFICATION_MIN)
-				lastKnownMagnification = READER_MAGNIFICATION_MIN;
-			else
-				lastKnownMagnification = savedState.zoom;
-		}
-		else
-			lastKnownMagnification = 1.0;
-		
-		[self startReading: project: savedState.CTID: savedState.isTome : savedState.page];
-		
-		if(savedState.scrollerX != CGFLOAT_MAX && savedState.scrollerY != CGFLOAT_MAX)
-			[self setSliderPos:NSMakePoint(savedState.scrollerX, savedState.scrollerY)];
-	}
-}
-
-- (void) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
-{
-	BOOL shouldNotifyBottomBarInitialized = NO;
-	
-	initialized = YES;
-	
-	if(self.initWithNoContent)
-	{
-		self.initWithNoContent = NO;
-		
-		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
-		{
-			self.initWithNoContent = YES;
-			return;
-		}
-		
-		shouldNotifyBottomBarInitialized = YES;
-	}
-	else
-		[self changeProject : project : elemToRead : isTome : startPage];
-	
-#if !TARGET_OS_IPHONE
 	if(bottomBar == nil)
 	{
 		bottomBar = [[RakReaderBottomBar alloc] init: self.mainThread == TAB_READER: self];
@@ -179,7 +104,32 @@
 	
 	if(shouldNotifyBottomBarInitialized)
 		[self updatePage:_data.pageCourante : _data.nbPage];
-#endif
+	
+	return shouldNotifyBottomBarInitialized;
+}
+
+- (void) preProcessStateRestoration : (STATE_DUMP) savedState project : (PROJECT_DATA) project
+{
+	if(RakApp.CT.initWithNoContent)
+		[RakApp.CT updateProject :project.cacheDBID :savedState.isTome :savedState.CTID];
+	
+	if(saveMagnification)
+	{
+		if(savedState.zoom > READER_MAGNIFICATION_MAX)
+			lastKnownMagnification = READER_MAGNIFICATION_MAX;
+		else if (savedState.zoom < READER_MAGNIFICATION_MIN)
+			lastKnownMagnification = READER_MAGNIFICATION_MIN;
+		else
+			lastKnownMagnification = savedState.zoom;
+	}
+	else
+		lastKnownMagnification = 1.0;
+}
+
+- (void) postProcessStateRestoration : (STATE_DUMP) savedState
+{
+	if(savedState.scrollerX != CGFLOAT_MAX && savedState.scrollerY != CGFLOAT_MAX)
+		[self setSliderPos:NSMakePoint(savedState.scrollerX, savedState.scrollerY)];
 }
 
 - (void) resetReader
@@ -221,20 +171,12 @@
 
 - (void) dealloc
 {
-	[RakDBUpdate unRegister : self];
+	[self deallocProcessing];
 	
-#if !TARGET_OS_IPHONE
 	[bottomBar removeFromSuperview];
-#endif
-	
-	[self deallocInternal];
-	
-#if !TARGET_OS_IPHONE
 	[container removeFromSuperview];
-#endif
 }
 
-#if !TARGET_OS_IPHONE
 - (uint) getFrameCode
 {
 	return PREFS_GET_TAB_READER_FRAME;
@@ -331,7 +273,6 @@
 	
 	[super setUpViewForAnimation:mainThread];
 }
-#endif
 
 - (RakColor*) getMainColor
 {
@@ -345,7 +286,6 @@
 	return ((state == STATE_READER_TAB_ALL_COLLAPSED) || (state == STATE_READER_TAB_DISTRACTION_FREE)) == 0;
 }
 
-#if !TARGET_OS_IPHONE
 - (void) mouseExited : (NSEvent *) theEvent
 {
 	[self abortFadeTimer];
@@ -389,16 +329,9 @@
 			[subViewView setHidden:NO];
 	}
 }
-#endif
 
 #pragma mark - Distraction Free mode
 
-#if TARGET_OS_IPHONE
-- (void) switchDistractionFree
-{
-	
-}
-#else
 - (void) switchDistractionFree
 {
 	bottomBarHidden = NO;	//We reset it
@@ -534,61 +467,25 @@
 	
 	[NSAnimationContext endGrouping];
 }
-#endif
 
 #pragma mark - Proxy work
 
-- (PROJECT_DATA) activeProject
+- (void) preProcessingUpdateContext : (PROJECT_DATA) project : (BOOL) isTome
 {
-	return _project;
-}
-
-- (uint) currentElem
-{
-	return _currentElem;
-}
-
-- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(uint)element
-{
-	if(element != INVALID_VALUE)
-	{
-		lastKnownMagnification = saveMagnification && project.isInitialized ? getSavedZoomForProject(project, isTome) : 1.0f;
-		
-		[self startReading : project : element : isTome : UINT_MAX];
-		[self ownFocus];
-	}
-}
-
-- (void) resumeReading : (NSNotification *) notification
-{
-	uint cacheDBID = [notification.object unsignedIntValue];
-	
-	PROJECT_DATA project = getProjectByID(cacheDBID);
-	if(!project.isInitialized)
-		return;
-	
-	[self restoreProject:project withInsertionPoint:notification.userInfo];
-	[self ownFocus];
-
-	releaseCTData(project);
+	lastKnownMagnification = saveMagnification && project.isInitialized ? getSavedZoomForProject(project, isTome) : 1.0f;
 }
 
 - (void) switchFavs
 {
 	setFavorite(&_project);
-#if !TARGET_OS_IPHONE
 	[bottomBar favsUpdated:_project.favoris];
-#endif
 }
 
 - (void) triggerFullscreen
 {
-#if !TARGET_OS_IPHONE
 	[self.window toggleFullScreen:self];
-#endif
 }
 
-#if !TARGET_OS_IPHONE
 - (void) updatePage : (uint) newCurrentPage : (uint) newPageMax
 {
 	[bottomBar updatePage:newCurrentPage :newPageMax];
@@ -618,7 +515,6 @@
 		[RakApp.window setCTTitle:project :string];
 	}
 }
-#endif
 
 #pragma mark - Waiting login
 
@@ -639,7 +535,6 @@
 	return NO;
 }
 
-#if !TARGET_OS_IPHONE
 - (NSDragOperation) dropOperationForSender : (uint) sender : (BOOL) canDL
 {
 	if(sender == TAB_CT || sender == TAB_MDL)
@@ -647,6 +542,5 @@
 	
 	return [super dropOperationForSender:sender:canDL];
 }
-#endif
 
 @end

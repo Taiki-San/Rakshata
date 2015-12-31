@@ -12,6 +12,139 @@
 
 @implementation RakReaderCore
 
+- (void) sharedInit
+{
+	[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeReading:) name:NOTIFICATION_RESUME_READING object:nil];
+
+	pthread_mutex_init(&cacheMutex, NULL);
+}
+
+- (void) deallocProcessing
+{
+	[RakDBUpdate unRegister : self];
+	[self flushCache];
+	MUTEX_DESTROY(cacheMutex);
+}
+
+- (void) flushCache
+{
+	
+}
+
+#pragma mark - Context update
+
+- (void) restoreProject : (PROJECT_DATA) project withInsertionPoint : (NSDictionary *) insertionPoint
+{
+	STATE_DUMP savedState;
+ 
+	if(insertionPoint != nil && [insertionPoint isKindOfClass:[NSDictionary class]] && [[insertionPoint objectForKey:@"isTome"] isKindOfClass:[NSNumber class]])
+	{
+		savedState = _recoverStateForProject(project, true, [[insertionPoint objectForKey:@"isTome"] boolValue]);
+		
+		NSNumber * ID = [insertionPoint objectForKey:@"ID"];
+		if(ID != nil && [ID isKindOfClass:[NSNumber class]])
+		{
+			uint insertionPointID = [ID unsignedIntValue];
+			
+			if(!savedState.isInitialized || savedState.CTID != insertionPointID)
+			{
+				bool oldIsTome = savedState.isTome;
+				
+				savedState = getEmptyRecoverState();
+				savedState.isInitialized = true;
+				savedState.isTome = oldIsTome;
+				savedState.CTID = insertionPointID;
+				savedState.zoom = 1.0;
+				savedState.scrollerX = CGFLOAT_MAX;
+			}
+		}
+	}
+	else
+		savedState = recoverStateForProject(project);
+	
+	if(savedState.isInitialized)
+	{
+		[self preProcessStateRestoration:savedState project:project];
+		
+		[self startReading: project: savedState.CTID: savedState.isTome : savedState.page];
+
+		[self postProcessStateRestoration:savedState];
+	}
+}
+
+- (BOOL) startReading : (PROJECT_DATA) project : (uint) elemToRead : (BOOL) isTome : (uint) startPage
+{
+	BOOL shouldNotifyBottomBarInitialized = NO;
+	
+	initialized = YES;
+	
+	if(self.initWithNoContent)
+	{
+		self.initWithNoContent = NO;
+		
+		if(![self initPage: project: elemToRead: isTome : startPage])	//Failed at initializing, most probably because of unreadable data
+		{
+			self.initWithNoContent = YES;
+			return shouldNotifyBottomBarInitialized;
+		}
+		
+		shouldNotifyBottomBarInitialized = YES;
+	}
+	else
+		[self changeProject : project : elemToRead : isTome : startPage];
+
+	return shouldNotifyBottomBarInitialized;
+}
+
+- (void) preProcessStateRestoration : (STATE_DUMP) savedState project : (PROJECT_DATA) project
+{
+	
+}
+
+- (void) postProcessStateRestoration : (STATE_DUMP) savedState
+{
+	
+}
+
+- (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+{
+	addRecentEntry(dataRequest, false);
+	return NO;
+}
+
+- (void) changeProject : (PROJECT_DATA) projectRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
+{
+	
+}
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
+	{
+		PROJECT_DATA project = getProjectByID(_project.cacheDBID);
+		if(project.isInitialized)
+		{
+			releaseCTData(_project);
+			_project = project;
+			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
+			
+			[self postProcessingDBUpdated];
+		}
+		else if(!checkProjectStillExist(_project.cacheDBID))
+		{
+			releaseCTData(_project);
+			_project = getEmptyProject();
+			self.initWithNoContent = YES;
+		}
+	}
+}
+
+- (void) postProcessingDBUpdated
+{
+	
+}
+
 #pragma mark - Page loading
 
 - (RakImageView *) getImage : (uint) page : (DATA_LECTURE*) data : (BOOL *) isPDF
@@ -129,6 +262,47 @@
 		return nil;
 	
 	return [[array objectAtIndex:data->nameID[posData]] dataRepresentation];
+}
+
+#pragma mark - Notification work
+
+- (PROJECT_DATA) activeProject
+{
+	return _project;
+}
+
+- (uint) currentElem
+{
+	return _currentElem;
+}
+
+- (void) updateContextNotification:(PROJECT_DATA)project :(BOOL)isTome :(uint)element
+{
+	if(element != INVALID_VALUE)
+	{
+		[self preProcessingUpdateContext : project : isTome];
+		[self startReading : project : element : isTome : UINT_MAX];
+		[self ownFocus];
+	}
+}
+
+- (void) preProcessingUpdateContext : (PROJECT_DATA) project : (BOOL) isTome
+{
+
+}
+
+- (void) resumeReading : (NSNotification *) notification
+{
+	uint cacheDBID = [notification.object unsignedIntValue];
+	
+	PROJECT_DATA project = getProjectByID(cacheDBID);
+	if(!project.isInitialized)
+		return;
+	
+	[self restoreProject:project withInsertionPoint:notification.userInfo];
+	[self ownFocus];
+	
+	releaseCTData(project);
 }
 
 @end

@@ -27,8 +27,6 @@
 
 - (void) failure;
 
-- (void) DBUpdated : (NSNotification*) notification;
-
 - (void) nextPage;
 - (void) prevPage;
 - (void) nextChapter;
@@ -59,8 +57,5 @@
 
 - (void) checkIfNewElements;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
-
-- (void) flushCache;
-- (void) deallocInternal;
 
 @end

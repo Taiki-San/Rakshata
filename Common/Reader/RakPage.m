@@ -452,27 +452,10 @@
 
 #pragma mark - DB update
 
-- (void) DBUpdated : (NSNotification*) notification
+- (void) postProcessingDBUpdated
 {
-	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
-	{
-		PROJECT_DATA project = getProjectByID(_project.cacheDBID);
-		if(project.isInitialized)
-		{
-			releaseCTData(_project);
-			_project = project;
-			_posElemInStructure = reader_getPosIntoContentIndex(_project, _currentElem, self.isTome);
-			
-			[self updateProjectReadingOrder];
-			[bottomBar favsUpdated:_project.favoris];
-		}
-		else if(!checkProjectStillExist(_project.cacheDBID))
-		{
-			releaseCTData(_project);
-			_project = getEmptyProject();
-			self.initWithNoContent = YES;
-		}
-	}
+	[self updateProjectReadingOrder];
+	[bottomBar favsUpdated:_project.favoris];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -1868,10 +1851,9 @@
 	}
 }
 
-- (void) deallocInternal
+- (void) deallocProcessing
 {
-	[self flushCache];
-	releaseDataReader(&_data);
+	[super deallocProcessing];
 	
 	NSArray * array = [NSArray arrayWithArray:container.subviews], *subArray;
 	
