@@ -12,7 +12,7 @@
  Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
  Major modifications by Taiki
- Copyright (C) 2011-2015 Taiki ( http://www.taiki.us/ )
+ Copyright (C) 2011-2016 Taiki ( http://www.taiki.us/ )
 
  */
 

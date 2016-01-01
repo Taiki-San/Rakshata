@@ -245,7 +245,7 @@
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
-"COPYRIGHT" = "© 2011-2015 Taiki. All rights reserved";
+"COPYRIGHT" = "© 2011-2016 Taiki. All rights reserved";
 
 //Crash Alert
 "CRASH-TITLE" = "Problems at startup";

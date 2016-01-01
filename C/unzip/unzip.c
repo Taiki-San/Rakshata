@@ -61,7 +61,7 @@
 
  Copyright (C) 1998 - 2010 Gilles Vollant, Even Rouault, Mathias Svensson
  
- Copyright (C) 2011 - 2015 Taiki https://www.taiki.us/
+ Copyright (C) 2011 - 2016 Taiki https://www.taiki.us/
 
 
  */
