@@ -126,7 +126,7 @@
 #if TARGET_OS_IPHONE
 	[self setContentOffset:origin];
 #else
-	[self.contentView scrollToPoint:origin];
+	[self.contentView setBoundsOrigin:origin];
 #endif
 }
 

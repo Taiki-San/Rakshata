@@ -581,7 +581,10 @@
 		if(point.y == basePos)
 			return NO;
 		else if(point.y > basePos - move)
-			point.y = basePos;
+		{
+			[_scrollView scrollToTopOfDocument:animated];
+			return YES;
+		}
 		else
 			point.y += move;
 	}
@@ -1482,6 +1485,7 @@
 	
 	page.frame = scrollView.contentFrame = NSMakeRect(0, 0, size.width, size.height + READER_PAGE_BORDERS_HIGH);
 	
+	page.imageAlignment = NSImageAlignCenter;
 	page.imageFrameStyle = NSImageFrameNone;
 	page.allowsCutCopyPaste = NO;
 	
