@@ -12,7 +12,7 @@
 
 @interface Reader()
 {
-	NSIndexPath * indexToApply, * lastInsertedToCache;
+	NSIndexPath * indexToApply, * lastItemRequested;
 	
 	BOOL isFullscreen;
 	uint nbCT;
@@ -194,6 +194,10 @@
 		[self startBuildingCache];
 	}
 	
+	if(lastItemRequested != nil)
+		goingUp = lastItemRequested.section < indexPath.section || lastItemRequested.row < indexPath.row;
+	lastItemRequested = [indexPath copy];
+	
 	//We have to scale the scrollview to this size;
 	CGSize size = imageView.bounds.size;
 	CGFloat cellWidth = containerSize.width, ratio = size.width / cellWidth;
@@ -269,8 +273,9 @@
 - (void) didReceiveMemoryWarning
 {
 	//Purge the cache
-	@autoreleasepool {
-		[mainCache removeAllObjects];
+	@autoreleasepool
+	{
+		[self purgeCache:YES];
 	}
 }
 
@@ -287,80 +292,150 @@
 {
 	uint session = cacheSession;
 
+	BOOL didHitEndOfCache = NO;
 	_cacheBeingBuilt = YES;
-	while(session == cacheSession)
+	while(session == cacheSession && !didHitEndOfCache)
 	{
-		if(lastInsertedToCache == nil)
-			lastInsertedToCache = [[_tableView indexPathsForVisibleRows] firstObject];
+		if(lastItemRequested == nil)
+			lastItemRequested = [[_tableView indexPathsForVisibleRows] firstObject];
+		
+		//currentIndexPath != lastItemRequested => we changed the page
+		NSIndexPath * currentIndexPath = lastItemRequested;
 
-		NSIndexPath * indexPath = nil;
-		uint currentSection, currentPage;
-		do
+		int offset;
+		BOOL loadedAnything = NO, inCache;
+		for(uint i = 0; i < 10 && currentIndexPath == lastItemRequested; i++)
 		{
-			if(lastInsertedToCache.section != indexPath.section)
+			//Offset = i / 2
+			offset = i >> 1;
+
+			//We move in the opposite direction if i is odd
+			if(goingUp ^ (i & 1))
+				offset *= -1;
+			
+			if([self loadToCacheForIndex:[self indexPath:currentIndexPath withOffset:offset] inCache:&inCache] != nil)
+				loadedAnything |= !inCache;
+			
+			if(session != cacheSession)
+				break;
+		}
+		
+		if(loadedAnything || session != cacheSession || currentIndexPath != lastItemRequested)
+			continue;
+		
+		[self purgeCache:NO];
+		if(![self haveSpace])
+		{
+			didHitEndOfCache = YES;
+		}
+		else if(currentIndexPath == lastItemRequested)
+		{
+			char direction = goingUp ? -1 : 1;
+			offset = direction;
+			do
 			{
-#ifdef EXTENSIVE_LOGGING
-				NSLog(@"Invalidated the starting point");
-#endif
-				currentSection = lastInsertedToCache.section;
-				currentPage = lastInsertedToCache.row;
-				indexPath = lastInsertedToCache;
-			}
-		} while(session == cacheSession && [self loadToCacheForCT:currentSection andPage:++currentPage inCache:NULL] != nil);
-//		char delta = goingUp ? -1 : 1;
-//		
-//		for(uint i = 0, currentSection = lastInsertedToCache.section, currentPage = lastInsertedToCache.row; i < 10; i++)
-//		{
-//			/*if(*/[self loadToCacheForCT:currentSection andPage:currentPage + delta inCache:NULL];// == nil)
-//		}
-		break;
+				NSIndexPath * workingIndexPath = [self indexPath:currentIndexPath withOffset:offset];
+				//Hit the end of what we had to cache for now
+				if(workingIndexPath == nil)
+				{
+					didHitEndOfCache = YES;
+					break;
+				}
+				
+				[self loadToCacheForIndex:workingIndexPath inCache:NULL];
+				offset += direction;
+			} while([self haveSpace] && currentIndexPath == lastItemRequested);
+		}
 	}
 	_cacheBeingBuilt = NO;
 }
 
 - (BOOL) haveSpace
 {
-#warning "Need implementation"
-	return YES;//[mainCache count] < 30;
+	return [mainCache count] < 30;
 }
 
-- (void) optimizeStorage
+- (void) purgeCache : (BOOL) fully
 {
-#warning "Need implementation"
+	if(fully)
+	{
+		@autoreleasepool {
+			[mainCache removeAllObjects];
+		}
+		return;
+	}
+
+	char direction = goingUp ? -1 : 1;
+	NSIndexPath * baseIndexPage = lastItemRequested;
+	if(baseIndexPage == nil)
+		return [self purgeCache:YES];
+
+	uint rangeToCheck = 25;
+	NSIndexPath * movingIndex = nil;
+	//-5 -> -4 -> -3 -> -2 -> -1
+	for(byte i = 5; i != 0; i--)
+	{
+		movingIndex = [self indexPath:baseIndexPage withOffset:-i * direction];
+		if(movingIndex != nil)
+		{
+			rangeToCheck += i;
+			break;
+		}
+	}
+	
+	if(movingIndex == nil)
+		movingIndex = baseIndexPage;
+	
+	NSMutableArray * validRange = [NSMutableArray array];
+	for(uint i = 0, section = INVALID_VALUE, CTID; i <= rangeToCheck; i++)
+	{
+		if(section != movingIndex.section)
+		{
+			section = movingIndex.section;
+			CTID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[section], _project.volumesInstalled[section].ID);
+		}
+		
+		[validRange addObject:[self cacheStringForPage:movingIndex.row inID:CTID]];
+		movingIndex = [self indexPath:movingIndex withOffset:direction];
+	}
+	
+	NSMutableArray * allKeys = mainCache.allKeys.mutableCopy;
+	[allKeys removeObjectsInArray:validRange];
+	
+	@autoreleasepool
+	{
+		[allKeys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+			
+			UIImageView * view = [mainCache objectForKey:obj];
+			if(view != nil)
+				[view removeFromSuperview];
+
+			[mainCache removeObjectForKey:obj];
+		}];
+	}
+}
+
+- (UIImageView *) loadToCacheForIndex : (NSIndexPath *) indexPath inCache : (BOOL *) inCache
+{
+	if(indexPath == nil)
+		return nil;
+	
+	return [self loadToCacheForCT:indexPath.section andPage:indexPath.row inCache:inCache];
 }
 
 - (UIImageView *) loadToCacheForCT : (uint) CT andPage : (uint) page inCache : (BOOL *) inCache
 {
-	if(CT >= nbCT)
+	DATA_LECTURE data;
+	NSData * metadata = [self getMetadataForSection:CT];
+	if(metadata == nil)
 		return nil;
 	
-	DATA_LECTURE data;
-	uint currentID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[CT], _project.volumesInstalled[CT].ID);
-	NSNumber * sectionID = @(currentID);
-	NSData * metadata = [metadataArray objectForKey:sectionID];
-	if(metadata == nil)
-	{
-		if(!readerConfigFileLoader(_project, self.isTome, currentID, &data))
-		{
-			NSLog(@"Couldn't load the CT data");
-			return nil;
-		}
-		
-		metadata = [NSData dataWithBytes:&data length:sizeof(DATA_LECTURE)];
-		if(metadata == nil)
-			return nil;
-		
-		[metadataArray setObject:metadata forKey:sectionID];
-	}
-	else
-	{
-		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
-	}
+	[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
 	
 	if(page >= data.nbPage)
 		return nil;
 	
-	NSString * cacheString = [NSString stringWithFormat:@"%d-%d", currentID, page];
+	NSString * cacheString = [self cacheStringForPage:page inID:ACCESS_DATA(self.isTome, _project.chaptersInstalled[CT], _project.volumesInstalled[CT].ID)];
 	UIImageView * imageView = [mainCache objectForKey:cacheString];
 	if(imageView == nil)
 	{
@@ -382,14 +457,6 @@
 		if(inCache != nil)
 			*inCache = NO;
 		
-		if([NSThread isMainThread])
-		{
-			lastInsertedToCache = [NSIndexPath indexPathForRow:page inSection:CT];
-
-			if(lastInsertedToCache != nil)
-				goingUp = lastInsertedToCache.section < CT || lastInsertedToCache.row < page;
-		}
-		
 		[mainCache setObject:imageView forKey:cacheString];
 	}
 	else if(inCache != nil)
@@ -403,9 +470,105 @@
 	if(_cacheBeingBuilt)
 		return;
 	
-	[self optimizeStorage];
 	if([self haveSpace])
 		[self startBuildingCache];
+}
+
+#pragma mark - Index path utils
+
+- (NSIndexPath *) indexPath :(NSIndexPath *) indexPath withOffset : (int) _offset
+{
+	BOOL goingBack = _offset < 0;
+	uint offset = (uint) (goingBack ? -_offset : _offset), section = indexPath.section;
+	DATA_LECTURE data;
+	
+	if(goingBack)
+	{
+		//Going back, but still in the section
+		if(indexPath.row >= offset)
+			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:section];
+		
+		//We move back from section to section all the way back to zero
+		offset -= indexPath.row;
+		while(section-- != 0)
+		{
+			NSData * metadata = [self getMetadataForSection:section];
+			if(metadata == nil)
+				return nil;
+			
+			[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
+			
+			if(data.nbPage >= offset)
+			{
+				data.nbPage -= offset;
+				return [NSIndexPath indexPathForRow:data.nbPage inSection:section];
+			}
+			
+			offset -= data.nbPage;
+		}
+	}
+	else
+	{
+		NSData * metadata = [self getMetadataForSection:section];
+		if(metadata == nil)
+			return nil;
+		
+		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
+
+		//Moving forward, but still in the section
+		if(indexPath.row + offset < data.nbPage)
+			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:indexPath.section];
+		
+		offset -= (data.nbPage - indexPath.row);
+		while(++section < nbCT)
+		{
+			metadata = [self getMetadataForSection:section];
+			if(metadata == nil)
+				return nil;
+			
+			[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
+			
+			if(data.nbPage >= offset)
+			{
+				data.nbPage -= offset;
+				return [NSIndexPath indexPathForRow:data.nbPage inSection:section];
+			}
+			
+			offset -= data.nbPage;
+		}
+	}
+	
+	return nil;
+}
+
+- (NSData *) getMetadataForSection : (NSInteger) section
+{
+	if(section >= nbCT)
+		return nil;
+	
+	uint currentID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[section], _project.volumesInstalled[section].ID);
+	NSNumber * sectionID = @(currentID);
+	NSData * metadata = [metadataArray objectForKey:sectionID];
+	if(metadata == nil)
+	{
+		DATA_LECTURE data;
+		if(!readerConfigFileLoader(_project, self.isTome, currentID, &data))
+		{
+			NSLog(@"Couldn't load the CT data");
+			return nil;
+		}
+		
+		metadata = [NSData dataWithBytes:&data length:sizeof(DATA_LECTURE)];
+		if(metadata != nil)
+			[metadataArray setObject:metadata forKey:sectionID];
+	}
+	
+	return metadata;
+}
+
+- (NSString *) cacheStringForPage : (uint) page inID : (uint) ID
+{
+	return [NSString stringWithFormat:@"%d-%d", ID, page];
 }
 
 #pragma mark - Toggle fullscreen
