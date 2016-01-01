@@ -54,6 +54,8 @@
 {
 	[super viewDidLoad];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshViewsIfActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+	
 	headerHeight = _navigationBar.bounds.size.height + 20;
 	footerHeight = [RakApp tabBarController].tabBar.bounds.size.height;
 
@@ -71,6 +73,19 @@
 	{
 		[_tableView scrollToRowAtIndexPath:indexToApply atScrollPosition:UITableViewScrollPositionTop animated:YES];
 		indexToApply = nil;
+	}
+}
+
+- (void) refreshViewsIfActive
+{
+	if([RakApp tabBarController].selectedViewController == self)
+	{
+		if(isFullscreen)
+		{
+			[UIView animateWithDuration:0.01 animations:^{
+				[self fullScreenAnimation];
+			}];
+		}
 	}
 }
 
@@ -441,7 +456,7 @@
 	_navigationBar.frame = navigationFrame;
 }
 
-- (BOOL)prefersStatusBarHidden
+- (BOOL) prefersStatusBarHidden
 {
 	return isFullscreen;
 }
