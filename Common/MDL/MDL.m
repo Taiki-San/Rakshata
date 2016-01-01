@@ -32,10 +32,12 @@ enum
 		self.layer.borderWidth = 2;
 #endif
 
-		if([self initContent:state])
-			[self refreshViewSize];
-		else
+		if(![self initContent:state])
 			self = nil;
+#if !TARGET_OS_IPHONE
+		else
+			[self refreshViewSize];
+#endif
 	}
 	return self;
 }
