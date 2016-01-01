@@ -41,7 +41,7 @@
 	RakImage * loadingPlaceholder;
 	RakImage * loadingFailedPlaceholder;
 	
-	uint cacheSession, workingCacheSession;
+	uint workingCacheSession;
 	byte previousMove;
 	
 	BOOL bottomBarHidden, oldDFState;
@@ -54,7 +54,6 @@
 	BOOL _dontGiveACrapAboutCTPosUpdate;
 	BOOL _flushingCache;
 	
-	BOOL _cacheBeingBuilt;
 	BOOL _haveScrollerPosToCommit;
 	NSPoint _scrollerPosToCommit;
 	BOOL _endingTransition;

@@ -12,12 +12,13 @@
 
 @interface Reader()
 {
-	NSIndexPath * indexToApply;
+	NSIndexPath * indexToApply, * lastInsertedToCache;
 	
 	BOOL isFullscreen;
 	uint nbCT;
 	NSMutableDictionary * metadataArray;
 	NSMutableDictionary * mainCache;
+	BOOL goingUp;
 	
 	CGFloat _cachedHeight, headerHeight, footerHeight;
 	CGSize containerSize;
@@ -168,47 +169,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	uint CT = (NSUInteger) indexPath.section;
-	
-	if(CT >= nbCT)
-		return nil;
-
-	DATA_LECTURE data;
-	uint currentID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[CT], _project.volumesInstalled[CT].ID);
-	NSNumber * sectionID = @(currentID);
-	NSData * metadata = [metadataArray objectForKey:sectionID];
-	if(metadata == nil)
-	{
-		if(!readerConfigFileLoader(_project, self.isTome, currentID, &data))
-		{
-			NSLog(@"Couldn't load the chapter data");
-			return nil;
-		}
-		
-		metadata = [NSData dataWithBytes:&data length:sizeof(DATA_LECTURE)];
-		if(metadata == nil)
-			return nil;
-		
-		[metadataArray setObject:metadata forKey:sectionID];
-	}
-	else
-	{
-		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
-	}
-	
-	uint page = (NSUInteger) indexPath.row;
-	if(page >= data.nbPage)
-		return nil;
-	
-	NSString * cacheString = [NSString stringWithFormat:@"%d-%d", currentID, page];
-	UIImageView * imageView = [mainCache objectForKey:cacheString];
+	BOOL didHitCache;
+	UIImageView * imageView = [self loadToCacheForCT:indexPath.section andPage:indexPath.row inCache:&didHitCache];
 	if(imageView == nil)
+		return nil;
+	
+	if(!didHitCache && !_cacheBeingBuilt)
 	{
-		imageView = [self getImage:page :&data :NULL];
-		if(imageView == nil)
-			return nil;
-		
-		[mainCache setObject:imageView forKey:cacheString];
+		[self startBuildingCache];
 	}
 	
 	//We have to scale the scrollview to this size;
@@ -230,10 +198,17 @@
 
 	cell.frame = frame;
 	cell.contentView.frame = frame;
-	[[[cell.contentView subviews] lastObject] removeFromSuperview];
-	[cell.contentView addSubview:imageView];
 	
-	frame = cell.frame;
+	NSArray * subviews = [cell.contentView.subviews copy];
+	for(UIView * view in subviews)
+		[view removeFromSuperview];
+	
+	[cell.contentView addSubview:imageView];
+
+	//Hack there because the cell would occasionaly only present a white area, instead of the image :(
+	//Various -setNeedDisplay couldn't fix the issue, but if you know better, great, ensure that hitting cache display the picture
+	cell.selected = YES;
+	cell.selected = NO;
 	
 	return cell;
 }
@@ -259,12 +234,163 @@
 {
 	containerSize = size;
 	
+	NSArray <NSIndexPath *> * indexes = _tableView.indexPathsForVisibleRows;
+	
+	NSIndexPath * path = [indexes count] == 0 ? nil : indexes[indexes.count / 2];
+	
 	[coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 		[self fullScreenAnimation];
 		[_tableView reloadData];
-	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {}];
+	} completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+		if(path != nil)
+			[_tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:NO];
+	}];
 	
 	[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+#pragma mark - Caching
+
+- (void) didReceiveMemoryWarning
+{
+	//Purge the cache
+	@autoreleasepool {
+		[mainCache removeAllObjects];
+	}
+}
+
+- (void) startBuildingCache
+{
+	uint localCacheSession = ++cacheSession;
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		if(localCacheSession == cacheSession)
+			[self buildCache];
+	});
+}
+
+- (void) buildCache
+{
+	uint session = cacheSession;
+
+	_cacheBeingBuilt = YES;
+	while(session == cacheSession)
+	{
+		if(lastInsertedToCache == nil)
+			lastInsertedToCache = [[_tableView indexPathsForVisibleRows] firstObject];
+
+		NSIndexPath * indexPath = nil;
+		uint currentSection, currentPage;
+		do
+		{
+			if(lastInsertedToCache.section != indexPath.section)
+			{
+#ifdef EXTENSIVE_LOGGING
+				NSLog(@"Invalidated the starting point");
+#endif
+				currentSection = lastInsertedToCache.section;
+				currentPage = lastInsertedToCache.row;
+				indexPath = lastInsertedToCache;
+			}
+		} while(session == cacheSession && [self loadToCacheForCT:currentSection andPage:++currentPage inCache:NULL] != nil);
+//		char delta = goingUp ? -1 : 1;
+//		
+//		for(uint i = 0, currentSection = lastInsertedToCache.section, currentPage = lastInsertedToCache.row; i < 10; i++)
+//		{
+//			/*if(*/[self loadToCacheForCT:currentSection andPage:currentPage + delta inCache:NULL];// == nil)
+//		}
+		break;
+	}
+	_cacheBeingBuilt = NO;
+}
+
+- (BOOL) haveSpace
+{
+#warning "Need implementation"
+	return YES;//[mainCache count] < 30;
+}
+
+- (void) optimizeStorage
+{
+#warning "Need implementation"
+}
+
+- (UIImageView *) loadToCacheForCT : (uint) CT andPage : (uint) page inCache : (BOOL *) inCache
+{
+	if(CT >= nbCT)
+		return nil;
+	
+	DATA_LECTURE data;
+	uint currentID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[CT], _project.volumesInstalled[CT].ID);
+	NSNumber * sectionID = @(currentID);
+	NSData * metadata = [metadataArray objectForKey:sectionID];
+	if(metadata == nil)
+	{
+		if(!readerConfigFileLoader(_project, self.isTome, currentID, &data))
+		{
+			NSLog(@"Couldn't load the CT data");
+			return nil;
+		}
+		
+		metadata = [NSData dataWithBytes:&data length:sizeof(DATA_LECTURE)];
+		if(metadata == nil)
+			return nil;
+		
+		[metadataArray setObject:metadata forKey:sectionID];
+	}
+	else
+	{
+		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
+	}
+	
+	if(page >= data.nbPage)
+		return nil;
+	
+	NSString * cacheString = [NSString stringWithFormat:@"%d-%d", currentID, page];
+	UIImageView * imageView = [mainCache objectForKey:cacheString];
+	if(imageView == nil)
+	{
+#ifdef EXTENSIVE_LOGGING
+		if([NSThread isMainThread])
+		{
+			NSLog(@"Main thread missed the cache!");
+		}
+		else
+		{
+			NSLog(@"Cache building in the background");
+		}
+#endif
+
+		imageView = [self getImage:page :&data :NULL];
+		if(imageView == nil)
+			return nil;
+		
+		if(inCache != nil)
+			*inCache = NO;
+		
+		if([NSThread isMainThread])
+		{
+			lastInsertedToCache = [NSIndexPath indexPathForRow:page inSection:CT];
+
+			if(lastInsertedToCache != nil)
+				goingUp = lastInsertedToCache.section < CT || lastInsertedToCache.row < page;
+		}
+		
+		[mainCache setObject:imageView forKey:cacheString];
+	}
+	else if(inCache != nil)
+		*inCache = YES;
+	
+	return imageView;
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	if(_cacheBeingBuilt)
+		return;
+	
+	[self optimizeStorage];
+	if([self haveSpace])
+		[self startBuildingCache];
 }
 
 #pragma mark - Toggle fullscreen

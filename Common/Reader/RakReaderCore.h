@@ -26,6 +26,10 @@
 	PROJECT_DATA _project;
 	uint _currentElem;
 	uint _posElemInStructure;
+
+	atomic_uint cacheSession;
+	atomic_bool _cacheBeingBuilt;
+
 }
 
 @property BOOL isTome;
