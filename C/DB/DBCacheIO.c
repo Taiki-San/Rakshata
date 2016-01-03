@@ -49,9 +49,9 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID
 	sqlite3_bind_int64(internalRequest, 1, (int64_t) repoID);
 	sqlite3_bind_int(internalRequest, 2, (int32_t) data.project.projectID);
 	sqlite3_bind_int(internalRequest, 3, isInstalled);
-	sqlite3_bind_text(internalRequest, 4, utf8Project, lengthP, SQLITE_STATIC);
-	sqlite3_bind_text(internalRequest, 5, utf8Descriptions, lengthD, SQLITE_STATIC);
-	sqlite3_bind_text(internalRequest, 6, utf8Author, lengthA, SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 4, utf8Project, (int32_t) lengthP, SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 5, utf8Descriptions, (int32_t) lengthD, SQLITE_STATIC);
+	sqlite3_bind_text(internalRequest, 6, utf8Author, (int32_t) lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(internalRequest, 7, data.project.status);
 	sqlite3_bind_int(internalRequest, 8, (int32_t) data.project.category);
 	sqlite3_bind_int(internalRequest, 9, data.project.rightToLeft);
@@ -59,14 +59,14 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID
 	sqlite3_bind_int(internalRequest, 11, (int32_t) data.project.mainTag);
 	sqlite3_bind_int64(internalRequest, 12, (int64_t) data.project.tags);
 	sqlite3_bind_int(internalRequest, 13, (int32_t) data.project.nbTags);
-	sqlite3_bind_int(internalRequest, 14, data.project.nbChapter);
+	sqlite3_bind_int(internalRequest, 14, (int32_t) data.project.nbChapter);
 	sqlite3_bind_int64(internalRequest, 15, (int64_t) data.project.chaptersFull);
 	sqlite3_bind_int(internalRequest, 16, (int32_t) data.nbChapterRemote);
 	sqlite3_bind_int64(internalRequest, 17, (int64_t) data.chaptersRemote);
 	sqlite3_bind_int(internalRequest, 18, (int32_t) data.nbChapterLocal);
 	sqlite3_bind_int64(internalRequest, 19, (int64_t) data.chaptersLocal);
 	sqlite3_bind_int64(internalRequest, 20, (int64_t) data.project.chaptersPrix);
-	sqlite3_bind_int(internalRequest, 21, data.project.nbVolumes);
+	sqlite3_bind_int(internalRequest, 21, (int32_t) data.project.nbVolumes);
 	sqlite3_bind_int(internalRequest, 22, data.project.haveDRM);
 	sqlite3_bind_int64(internalRequest, 23, (int64_t) data.project.volumesFull);
 	sqlite3_bind_int(internalRequest, 24, (int32_t) data.nbVolumesRemote);
@@ -190,9 +190,9 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	//On pratique le remplacement effectif
 	request = createRequest(cache, "UPDATE "MAIN_CACHE" SET "DBNAMETOID(RDB_projectName)" = ?1, "DBNAMETOID(RDB_description)" = ?2, "DBNAMETOID(RDB_authors)" = ?3, "DBNAMETOID(RDB_status)" = ?4, "DBNAMETOID(RDB_category)" = ?5, "DBNAMETOID(RDB_asianOrder)" = ?6, "DBNAMETOID(RDB_isPaid)" = ?7, "DBNAMETOID(RDB_mainTagID)" = ?8, "DBNAMETOID(RDB_tagData)" = ?9, "DBNAMETOID(RDB_nbTagData)" = ?27, "DBNAMETOID(RDB_nbChapter)" = ?10, "DBNAMETOID(RDB_chapitres)" = ?11, "DBNAMETOID(RDB_chapitreRemoteLength)" = ?12, "DBNAMETOID(RDB_chapitreRemote)" = ?13, "DBNAMETOID(RDB_chapitreLocalLength)" = ?14, "DBNAMETOID(RDB_chapitreLocal)" = ?15, "DBNAMETOID(RDB_chapitresPrice)" = ?16, "DBNAMETOID(RDB_nbVolumes)" = ?17, "DBNAMETOID(RDB_DRM)" = ?18, "DBNAMETOID(RDB_tomes)" = ?19, "DBNAMETOID(RDB_tomeRemoteLength)" = ?20, "DBNAMETOID(RDB_tomeRemote)" = ?21, "DBNAMETOID(RDB_tomeLocalLength)" = ?22, "DBNAMETOID(RDB_tomeLocal)" = ?23, "DBNAMETOID(RDB_favoris)" = ?24, "DBNAMETOID(RDB_isLocal)" = ?25 WHERE "DBNAMETOID(RDB_ID)" = ?26");
 	
-	sqlite3_bind_text(request, 1, utf8Project, lengthP, SQLITE_STATIC);
-	sqlite3_bind_text(request, 2, utf8Descriptions, lengthD, SQLITE_STATIC);
-	sqlite3_bind_text(request, 3, utf8Author, lengthA, SQLITE_STATIC);
+	sqlite3_bind_text(request, 1, utf8Project, (int32_t) lengthP, SQLITE_STATIC);
+	sqlite3_bind_text(request, 2, utf8Descriptions, (int32_t) lengthD, SQLITE_STATIC);
+	sqlite3_bind_text(request, 3, utf8Author, (int32_t) lengthA, SQLITE_STATIC);
 	sqlite3_bind_int(request, 4, data.project.status);
 	sqlite3_bind_int(request, 5, (int32_t) data.project.category);
 	sqlite3_bind_int(request, 6, data.project.rightToLeft);
@@ -200,7 +200,7 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 	sqlite3_bind_int(request, 8, (int32_t) data.project.mainTag);
 	sqlite3_bind_int64(request, 9, (int64_t) duplicateTag(data.project.tags, data.project.nbTags));
 	sqlite3_bind_int(request, 27, (int32_t) data.project.nbTags);
-	sqlite3_bind_int(request, 10, data.project.nbChapter);
+	sqlite3_bind_int(request, 10, (int32_t) data.project.nbChapter);
 	sqlite3_bind_int(request, 12, (int32_t) data.nbChapterRemote);
 	sqlite3_bind_int(request, 14, (int32_t) data.nbChapterLocal);
 

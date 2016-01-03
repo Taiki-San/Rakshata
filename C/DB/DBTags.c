@@ -127,7 +127,7 @@ void tagUpdateCachedEntryWithRequest(sqlite3_stmt * request, TAG_VERBOSE * newDa
 
 		//We submit the data to the request, then run and clean it
 		sqlite3_bind_int(request, 1, (int32_t) newData[i].ID);
-		sqlite3_bind_text(request, 2, utf8, length, SQLITE_STATIC);
+		sqlite3_bind_text(request, 2, utf8, (int32_t) length, SQLITE_STATIC);
 		
 		sqlite3_step(request);
 		sqlite3_reset(request);
@@ -148,7 +148,7 @@ void catUpdateCachedEntryWithRequest(sqlite3_stmt * request, CATEGORY_VERBOSE * 
 		//We submit the data to the request, then run and clean it
 		sqlite3_bind_int(request, 1, (int32_t) newData[i].ID);
 		sqlite3_bind_int(request, 2, (int32_t) newData[i].rootID);
-		sqlite3_bind_text(request, 3, utf8, length, SQLITE_STATIC);
+		sqlite3_bind_text(request, 3, utf8, (int32_t) length, SQLITE_STATIC);
 		
 		sqlite3_step(request);
 		sqlite3_reset(request);

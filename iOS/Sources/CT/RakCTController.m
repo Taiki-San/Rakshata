@@ -131,9 +131,9 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-	uint contentID = indexPath.row;
+	NSInteger contentID = indexPath.row;
 	
-	if(contentID >= nbElement)
+	if(contentID < 0 || contentID >= nbElement)
 		return;
 	
 	contentID =  ACCESS_CT(_isTome, _project.chaptersFull, _project.volumesFull, nbElement - 1 - contentID);
@@ -156,7 +156,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return nbElement;
+	return (NSInteger) nbElement;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

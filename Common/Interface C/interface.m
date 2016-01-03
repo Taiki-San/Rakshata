@@ -142,7 +142,8 @@ void createCrashFile()
 																 preferredStyle:UIAlertControllerStyleAlert];
 		if(alert != nil)
 		{
-			uint count = [buttons count], _styles[3] = {UIAlertActionStyleDefault, UIAlertActionStyleDestructive, UIAlertActionStyleCancel}, *styles = _styles;
+			uint count = [buttons count];
+			UIAlertActionStyle _styles[3] = {UIAlertActionStyleDefault, UIAlertActionStyleDestructive, UIAlertActionStyleCancel}, *styles = _styles;
 			const int _conversionTable[3] = {NSModalResponseStop, NSModalResponseAbort, NSModalResponseContinue}, *conversionTable = _conversionTable;
 			
 			[buttons enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
@@ -612,11 +613,11 @@ bool getSystemProxy(char ** _proxyAddress)
 		return false;
 	}
 
-	const uint bufferLength = 2 * CFStringGetLength(proxyCFstr) + 1;
+	const uint bufferLength = 2 * (uint) CFStringGetLength(proxyCFstr) + 1;
 	char buffer[bufferLength];
 	SInt32 port;
 	
-	if(!CFStringGetCString(proxyCFstr, buffer, bufferLength, kCFStringEncodingUTF8)
+	if(!CFStringGetCString(proxyCFstr, buffer, (long) bufferLength, kCFStringEncodingUTF8)
 	   || !CFNumberGetValue(portCFnum, kCFNumberSInt32Type, &port))
 	{
 		CFRelease(proxy);
@@ -631,7 +632,7 @@ bool getSystemProxy(char ** _proxyAddress)
 	if(output == NULL)
 		return false;
 	
-	snprintf(output, length, "http://%s:%d", buffer, port);
+	snprintf(output, length, "http://%s:%d", buffer, (uint) port);
 	*_proxyAddress = output;
 	return true;
 #else

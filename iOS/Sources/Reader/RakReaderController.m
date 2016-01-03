@@ -55,6 +55,7 @@
 	[super viewDidLoad];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshViewsIfActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
 	
 	headerHeight = _navigationBar.bounds.size.height + 20;
 	footerHeight = [RakApp tabBarController].tabBar.bounds.size.height;
@@ -118,6 +119,12 @@
 	[_tableView reloadData];
 }
 
+- (void) didTransition
+{
+	lastItemRequested = nil;	//Force the cache to check the image actually being displayed
+	goingUp = NO;
+}
+
 #pragma mark - Table view
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -125,7 +132,7 @@
 	nbCT = 0;
 
 	if(!initialized)
-		return nbCT;
+		return (NSInteger) nbCT;
 	
 	return (NSInteger) (nbCT += ACCESS_DATA(self.isTome, _project.nbChapterInstalled, _project.nbVolumesInstalled));
 }
@@ -142,7 +149,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	if(section >= nbCT)
+	if((uint) section >= nbCT)
 		return nil;
 
 	if(self.isTome)
@@ -153,7 +160,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if(section >= nbCT)
+	if((uint) section >= nbCT)
 		return 0;
 
 	DATA_LECTURE data;
@@ -387,11 +394,11 @@
 		movingIndex = baseIndexPage;
 	
 	NSMutableArray * validRange = [NSMutableArray array];
-	for(uint i = 0, section = INVALID_VALUE, CTID; i <= rangeToCheck; i++)
+	for(uint i = 0, section = INVALID_VALUE, CTID; i < rangeToCheck; i++)
 	{
-		if(section != movingIndex.section)
+		if(section != (uint) movingIndex.section)
 		{
-			section = movingIndex.section;
+			section = (uint) movingIndex.section;
 			CTID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[section], _project.volumesInstalled[section].ID);
 		}
 		
@@ -413,6 +420,8 @@
 			[mainCache removeObjectForKey:obj];
 		}];
 	}
+	
+	return allKeys.count != 0;
 }
 
 - (UIImageView *) loadToCacheForIndex : (NSIndexPath *) indexPath inCache : (BOOL *) inCache
@@ -474,12 +483,19 @@
 		[self startBuildingCache];
 }
 
+//We suspend the caching work
+- (void) appWillResignActive
+{
+	if(_cacheBeingBuilt)
+		cacheSession++;
+}
+
 #pragma mark - Index path utils
 
 - (NSIndexPath *) indexPath :(NSIndexPath *) indexPath withOffset : (int) _offset
 {
 	BOOL goingBack = _offset < 0;
-	uint offset = (uint) (goingBack ? -_offset : _offset), section = indexPath.section;
+	uint offset = (uint) (goingBack ? -_offset : _offset), section = (uint) indexPath.section;
 	DATA_LECTURE data;
 	
 	if(goingBack)
@@ -489,7 +505,7 @@
 			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:section];
 		
 		//We move back from section to section all the way back to zero
-		offset -= indexPath.row;
+		offset -= (uint) indexPath.row;
 		while(section-- != 0)
 		{
 			NSData * metadata = [self getMetadataForSection:section];
@@ -501,7 +517,7 @@
 			if(data.nbPage >= offset)
 			{
 				data.nbPage -= offset;
-				return [NSIndexPath indexPathForRow:data.nbPage inSection:section];
+				return [NSIndexPath indexPathForRow:(int) data.nbPage inSection: (int) section];
 			}
 			
 			offset -= data.nbPage;
@@ -541,7 +557,7 @@
 	return nil;
 }
 
-- (NSData *) getMetadataForSection : (NSInteger) section
+- (NSData *) getMetadataForSection : (uint) section
 {
 	if(section >= nbCT)
 		return nil;

@@ -571,12 +571,12 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 		else if(!strncmp(entry->d_name, CHAPTER_PREFIX, lengthChapterPrefix) && strlen(entry->d_name) > lengthChapterPrefix)
 		{
 			if(isNbr(entry->d_name[lengthChapterPrefix]))
-				retValue = checkChapterReadable(project, atol(&(entry->d_name[lengthChapterPrefix])) * 10);
+				retValue = checkChapterReadable(project, (uint) atol(&(entry->d_name[lengthChapterPrefix])) * 10);
 		}
 		else if(!strncmp(entry->d_name, VOLUME_PREFIX, lengthVolPrefix) && strlen(entry->d_name) > lengthVolPrefix)
 		{
 			if(isNbr(entry->d_name[lengthVolPrefix]))
-				retValue = checkTomeReadable(project, atol(&(entry->d_name[lengthVolPrefix])));
+				retValue = checkTomeReadable(project, (uint) atol(&(entry->d_name[lengthVolPrefix])));
 		}
 	}
 	

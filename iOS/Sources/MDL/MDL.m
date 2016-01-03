@@ -43,7 +43,7 @@
 	
 	if(self.initWithNoContent && nbRows != 0)		self.initWithNoContent = NO;
 
-	return nbRows;
+	return (NSInteger) nbRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

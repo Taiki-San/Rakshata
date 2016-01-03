@@ -131,7 +131,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 	NSString * expectedString = [NSString stringWithFormat:@"%lf ~ %d ~ %@", [expirency doubleValue], [repoType charValue], repoURL];
 	
 	//Get the raw bytes for the signature
-	size_t sigLength = [signature lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedSigLength;
+	NSUInteger sigLength = [signature lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedSigLength;
 	if(sigLength == 0)
 		return false;
 	
@@ -140,7 +140,7 @@ bool validateTrust(NSDictionary * input, NSNumber * repoType, NSString * repoURL
 		return false;
 	
 	//Get the raw
-	size_t expectedLength = [expectedString lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedExpectedLength;
+	NSUInteger expectedLength = [expectedString lengthOfBytesUsingEncoding:NSUTF8StringEncoding], usedExpectedLength;
 	
 	if(expectedLength == 0)
 		return false;

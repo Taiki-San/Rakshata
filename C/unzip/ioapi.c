@@ -57,8 +57,8 @@ uint64_t call_ztell64 (const zlib_filefunc64_32_def* pfilefunc,voidpf filestream
 		return (*(pfilefunc->zfile_func64.ztell64_file)) (pfilefunc->zfile_func64.opaque,filestream);
 	else
 	{
-		long tell_uLong = (*(pfilefunc->ztell32_file))(pfilefunc->zfile_func64.opaque,filestream);
-		if((tell_uLong) == UINT32_MAX)
+		uint tell_uLong = (uint) (*(pfilefunc->ztell32_file))(pfilefunc->zfile_func64.opaque,filestream);
+		if(tell_uLong == UINT32_MAX)
 			return (uint64_t)-1;
 		else
 			return (uint64_t) tell_uLong;

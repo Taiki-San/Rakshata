@@ -254,7 +254,7 @@ uint _getFromSearch(void * _table, byte type, void * data)
 			char utf8[4 * length + 1];
 			length = wchar_to_utf8((charType *) data, length, utf8, 4 * length + 1, 0);
 			
-			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
+			sqlite3_bind_text(request, 1, utf8, (int32_t) length, SQLITE_TRANSIENT);
 			break;
 		}
 			
@@ -329,7 +329,7 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 			char utf8[4 * length + 1];
 			length = wchar_to_utf8(project.authorName, length, utf8, 4 * length + 1, 0);
 			
-			sqlite3_bind_text(request, 1, utf8, length, SQLITE_TRANSIENT);
+			sqlite3_bind_text(request, 1, utf8, (int32_t) length, SQLITE_TRANSIENT);
 			break;
 		}
 			
