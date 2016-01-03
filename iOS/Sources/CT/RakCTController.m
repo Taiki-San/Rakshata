@@ -159,7 +159,7 @@
 	return (NSInteger) nbElement;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (RakCTRowCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	uint pos = (NSUInteger) indexPath.row;
 	if(pos >= nbElement)
@@ -168,11 +168,11 @@
 	//We reverse order
 	pos = nbElement - 1 - pos;
 	
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CTRandoCell" forIndexPath:indexPath];
+	RakCTRowCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CTRandoCell" forIndexPath:indexPath];
 	if(cell == nil)
 		return nil;
 	
-	cell.textLabel.text = _isTome ? getStringForVolumeFull(_project.volumesFull[pos]) : getStringForChapter(_project.chaptersFull[pos]);
+	[cell updateData:_project withSelection:pos isTome:_isTome];
 	
 	return cell;
 }

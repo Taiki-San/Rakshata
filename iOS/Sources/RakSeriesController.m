@@ -10,14 +10,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-enum
-{
-	CELL_INTERTEXT_OFFSET = 2,
-	CELL_BULLET_OFFSET = 8,
-	CELL_BULLET_WIDTH = 12,
-	CELL_IMAGE_OFFSET = 15
-};
-
 @implementation Series
 
 - (void) awakeFromNib
@@ -50,11 +42,6 @@ enum
 		_navigationBar.items = @[navigationItem];
 	}
 }
-
-//- (void) didReceiveMemoryWarning
-//{
-//	[super didReceiveMemoryWarning];
-//}
 
 #pragma mark - Button responder
 
@@ -128,7 +115,7 @@ enum
 		UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(baseX, height / 2 - 22.5, 45, 45)];
 		if(imageView != nil)
 		{
-			baseX += 45 + CELL_IMAGE_OFFSET;
+			baseX += CELL_BULLET_FULL_WIDTH + CELL_IMAGE_OFFSET;
 			
 			imageView.image = image;
 			imageView.layer.cornerRadius = 22;

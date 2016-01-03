@@ -10,25 +10,10 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakSRContentManager.h"
+@interface RakCTRowCell : UITableViewCell
 
-enum
-{
-	CELL_INTERTEXT_OFFSET = 2,
-	CELL_BULLET_OFFSET = 8,
-	CELL_BULLET_WIDTH = 12,
-	CELL_IMAGE_OFFSET = 15,
-	CELL_BULLET_FULL_WIDTH = 45
-};
+@property BOOL isReadable;
 
-@interface Series : RakTabView <UITableViewDataSource, UITableViewDelegate>
-{
-	IBOutlet UITableView * _tableView;
-	IBOutlet UINavigationBar * _navigationBar;
-	
-	RakSRContentManager * contentManager;
-}
-
-@property BOOL shouldDisplaySource;
+- (void) updateData : (PROJECT_DATA) project withSelection : (uint) _selection isTome : (BOOL) _isTome;
 
 @end

@@ -10,6 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#import "RakCTRowCell.h"
+
 @interface CTSelec : RakTabView
 {
 	IBOutlet UITabBarItem * _tabBarItem;
