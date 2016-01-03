@@ -309,27 +309,32 @@
 		//currentIndexPath != lastItemRequested => we changed the page
 		NSIndexPath * currentIndexPath = lastItemRequested;
 
+		//We first load the next and previous five pages
 		int offset;
 		BOOL loadedAnything = NO, inCache;
 		for(uint i = 0; i < 10 && currentIndexPath == lastItemRequested && session != cacheSession; i++)
 		{
 			//Offset = i / 2
-			offset = i >> 1;
+			offset = 1 + (i >> 1);
 
 			//We move in the opposite direction if i is odd
 			if(goingUp ^ ((i & 1) != 0))
 				offset *= -1;
-			
+
+			//loadToCacheForIndex is fairly cheap when hitting the cache, so not a big deal to hit it too often
 			if([self loadToCacheForIndex:[self indexPath:currentIndexPath withOffset:offset] inCache:&inCache] != nil)
 				loadedAnything |= !inCache;
 		}
-		
+
+		//If we need to loop back
 		if(loadedAnything || session != cacheSession || currentIndexPath != lastItemRequested)
 			continue;
 		
-		if([self purgeCache:NO])	//If we removed stuffs, we have a quick look we don't have to add something from the main loop
+		//If we removed stuffs, we have a quick look we don't have to add something from the main loop
+		if([self purgeCache:NO])
 			continue;
 		
+		//Well, we're good! (main exit point)
 		if(![self haveSpace])
 		{
 			didHitEndOfCache = YES;
