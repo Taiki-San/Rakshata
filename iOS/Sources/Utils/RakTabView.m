@@ -31,6 +31,11 @@
 	
 }
 
+- (void) didTransition
+{
+	
+}
+
 - (void) initiateTransition
 {
 	UITabBarController * tabBarController = [RakApp tabBarController];
@@ -84,6 +89,7 @@
 							 toView.frame = newView;
 							 [fromView removeFromSuperview];
 							 tabBarController.selectedIndex = tabBarIndex;
+							 [self didTransition];
 						 }
 					 }];
 }

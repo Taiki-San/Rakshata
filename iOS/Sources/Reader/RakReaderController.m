@@ -108,7 +108,7 @@
 	
 	BOOL shouldNotifyBottomBarInitialized = [super startReading:project :elemToRead :isTome :startPage];
 	
-	indexToApply = [NSIndexPath indexPathForItem:0 inSection:_posElemInStructure];
+	indexToApply = [NSIndexPath indexPathForItem:0 inSection:(NSInteger) _posElemInStructure];
 	
 	return shouldNotifyBottomBarInitialized;
 }
@@ -186,23 +186,22 @@
 		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
 	}
 	
-	return data.nbPage;
+	return (NSInteger) data.nbPage;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	BOOL didHitCache;
-	UIImageView * imageView = [self loadToCacheForCT:indexPath.section andPage:indexPath.row inCache:&didHitCache];
+	UIImageView * imageView = [self loadToCacheForCT:(NSInteger) indexPath.section andPage:(NSInteger) indexPath.row inCache:NULL];
 	if(imageView == nil)
 		return nil;
 	
-	if(!didHitCache && !_cacheBeingBuilt)
+	if(!_cacheBeingBuilt)
 	{
 		[self startBuildingCache];
 	}
 	
 	if(lastItemRequested != nil)
-		goingUp = lastItemRequested.section < indexPath.section || lastItemRequested.row < indexPath.row;
+		goingUp = lastItemRequested.section > indexPath.section || lastItemRequested.row > indexPath.row;
 	lastItemRequested = [indexPath copy];
 	
 	//We have to scale the scrollview to this size;
@@ -279,6 +278,7 @@
 
 - (void) didReceiveMemoryWarning
 {
+	NSLog(@"Received memory warning!");
 	//Purge the cache
 	@autoreleasepool
 	{
@@ -311,35 +311,36 @@
 
 		int offset;
 		BOOL loadedAnything = NO, inCache;
-		for(uint i = 0; i < 10 && currentIndexPath == lastItemRequested; i++)
+		for(uint i = 0; i < 10 && currentIndexPath == lastItemRequested && session != cacheSession; i++)
 		{
 			//Offset = i / 2
 			offset = i >> 1;
 
 			//We move in the opposite direction if i is odd
-			if(goingUp ^ (i & 1))
+			if(goingUp ^ ((i & 1) != 0))
 				offset *= -1;
 			
 			if([self loadToCacheForIndex:[self indexPath:currentIndexPath withOffset:offset] inCache:&inCache] != nil)
 				loadedAnything |= !inCache;
-			
-			if(session != cacheSession)
-				break;
 		}
 		
 		if(loadedAnything || session != cacheSession || currentIndexPath != lastItemRequested)
 			continue;
 		
-		[self purgeCache:NO];
+		if([self purgeCache:NO])	//If we removed stuffs, we have a quick look we don't have to add something from the main loop
+			continue;
+		
 		if(![self haveSpace])
 		{
 			didHitEndOfCache = YES;
 		}
 		else if(currentIndexPath == lastItemRequested)
 		{
+			uint count = 0;
 			char direction = goingUp ? -1 : 1;
 			offset = direction;
-			do
+			
+			for(; count < 20 && [self haveSpace] && currentIndexPath == lastItemRequested; count++)
 			{
 				NSIndexPath * workingIndexPath = [self indexPath:currentIndexPath withOffset:offset];
 				//Hit the end of what we had to cache for now
@@ -351,7 +352,10 @@
 				
 				[self loadToCacheForIndex:workingIndexPath inCache:NULL];
 				offset += direction;
-			} while([self haveSpace] && currentIndexPath == lastItemRequested);
+			}
+			
+			if(count == 20)
+				didHitEndOfCache = YES;
 		}
 	}
 	_cacheBeingBuilt = NO;
@@ -359,17 +363,20 @@
 
 - (BOOL) haveSpace
 {
-	return [mainCache count] < 30;
+	return [mainCache count] < 40;
 }
 
-- (void) purgeCache : (BOOL) fully
+- (BOOL) purgeCache : (BOOL) fully
 {
+	if(mainCache.count == 0)
+		return NO;
+	
 	if(fully)
 	{
 		@autoreleasepool {
 			[mainCache removeAllObjects];
 		}
-		return;
+		return YES;
 	}
 
 	char direction = goingUp ? -1 : 1;
@@ -377,16 +384,16 @@
 	if(baseIndexPage == nil)
 		return [self purgeCache:YES];
 
-	uint rangeToCheck = 25;
-	NSIndexPath * movingIndex = nil;
-	//-5 -> -4 -> -3 -> -2 -> -1
-	for(byte i = 5; i != 0; i--)
+	uint rangeToCheck = 20 + 1;
+	NSIndexPath * movingIndex = nil, *currentMovingIndex = baseIndexPage;
+	//We want to accept as many images in the other direction
+	for(byte i = 0; i < 20 && currentMovingIndex != nil; i++)
 	{
-		movingIndex = [self indexPath:baseIndexPage withOffset:-i * direction];
-		if(movingIndex != nil)
+		currentMovingIndex = [self indexPath:currentMovingIndex withOffset:-direction];
+		if(currentMovingIndex != nil)
 		{
-			rangeToCheck += i;
-			break;
+			movingIndex = currentMovingIndex;
+			rangeToCheck++;
 		}
 	}
 	
@@ -402,7 +409,7 @@
 			CTID = ACCESS_DATA(self.isTome, _project.chaptersInstalled[section], _project.volumesInstalled[section].ID);
 		}
 		
-		[validRange addObject:[self cacheStringForPage:movingIndex.row inID:CTID]];
+		[validRange addObject:[self cacheStringForPage:(uint) movingIndex.row inID:CTID]];
 		movingIndex = [self indexPath:movingIndex withOffset:direction];
 	}
 	
@@ -414,7 +421,7 @@
 		[allKeys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
 			
 			UIImageView * view = [mainCache objectForKey:obj];
-			if(view != nil)
+			if(view != nil && view.superview != nil)
 				[view removeFromSuperview];
 
 			[mainCache removeObjectForKey:obj];
@@ -429,7 +436,7 @@
 	if(indexPath == nil)
 		return nil;
 	
-	return [self loadToCacheForCT:indexPath.section andPage:indexPath.row inCache:inCache];
+	return [self loadToCacheForCT:(uint) indexPath.section andPage:indexPath.row inCache:inCache];
 }
 
 - (UIImageView *) loadToCacheForCT : (uint) CT andPage : (uint) page inCache : (BOOL *) inCache
@@ -449,14 +456,7 @@
 	if(imageView == nil)
 	{
 #ifdef EXTENSIVE_LOGGING
-		if([NSThread isMainThread])
-		{
-			NSLog(@"Main thread missed the cache!");
-		}
-		else
-		{
-			NSLog(@"Cache building in the background");
-		}
+		NSLog(@"Loading %d (from %d) from %@", page, CT, [NSThread isMainThread] ? @"main thread" : @"caching mechanism");
 #endif
 
 		imageView = [self getImage:page :&data :NULL];
@@ -501,8 +501,8 @@
 	if(goingBack)
 	{
 		//Going back, but still in the section
-		if(indexPath.row >= offset)
-			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:section];
+		if((uint) indexPath.row >= offset)
+			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:(int) section];
 		
 		//We move back from section to section all the way back to zero
 		offset -= (uint) indexPath.row;
@@ -532,10 +532,10 @@
 		[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
 
 		//Moving forward, but still in the section
-		if(indexPath.row + offset < data.nbPage)
+		if((uint) indexPath.row + offset < data.nbPage)
 			return [NSIndexPath indexPathForRow:indexPath.row + _offset inSection:indexPath.section];
 		
-		offset -= (data.nbPage - indexPath.row);
+		offset -= (data.nbPage - (uint) indexPath.row);
 		while(++section < nbCT)
 		{
 			metadata = [self getMetadataForSection:section];
@@ -545,10 +545,7 @@
 			[metadata getBytes:&data length:sizeof(DATA_LECTURE)];
 			
 			if(data.nbPage >= offset)
-			{
-				data.nbPage -= offset;
-				return [NSIndexPath indexPathForRow:data.nbPage inSection:section];
-			}
+				return [NSIndexPath indexPathForRow:(NSInteger) offset inSection:(NSInteger) section];
 			
 			offset -= data.nbPage;
 		}

@@ -102,6 +102,8 @@ void registerDefaultForExtension(NSString * extension);
 	@class RakProjectMenu;
 
 	#import "RakAuthForegroundView.h"
+#else
+	#import "UIImage+Performance.h"
 #endif
 	#import "RakTabView.h"
 	#import "RakTabContentTemplate.h"

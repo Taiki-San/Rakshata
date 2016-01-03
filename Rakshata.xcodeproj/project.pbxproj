@@ -51,6 +51,7 @@
 		B60AE4BD1B061F3600DA44E6 /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */; };
 		B60AE4C01B06247400DA44E6 /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */; };
 		B60DE2861A0D72F4003EA058 /* RakListScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B60DE2851A0D72F4003EA058 /* RakListScrollView.m */; };
+		B61063C01C38963200746B1B /* UIImage+Performance.m in Sources */ = {isa = PBXBuildFile; fileRef = B61063BE1C3891B000746B1B /* UIImage+Performance.m */; };
 		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
@@ -542,6 +543,8 @@
 		B60AE4BF1B06247400DA44E6 /* RakCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakCustomButton.m; path = Utils/RakCustomButton.m; sourceTree = "<group>"; };
 		B60DE2841A0D72F4003EA058 /* RakListScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakListScrollView.h; path = Utils/RakListScrollView.h; sourceTree = "<group>"; };
 		B60DE2851A0D72F4003EA058 /* RakListScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakListScrollView.m; path = Utils/RakListScrollView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B61063BD1C3891B000746B1B /* UIImage+Performance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Performance.h"; path = "Utils/UIImage+Performance.h"; sourceTree = "<group>"; };
+		B61063BE1C3891B000746B1B /* UIImage+Performance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Performance.m"; path = "Utils/UIImage+Performance.m"; sourceTree = "<group>"; };
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = Common/Utils/RepoParser.m; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
@@ -1592,6 +1595,8 @@
 		B69966C21C2F7B6900576396 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B61063BD1C3891B000746B1B /* UIImage+Performance.h */,
+				B61063BE1C3891B000746B1B /* UIImage+Performance.m */,
 				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
 			);
 			name = Utils;
@@ -2748,6 +2753,7 @@
 				B67111361C276CE100E0BFD9 /* moduleDLUnzip.c in Sources */,
 				B6A9C4A11C2F332E00BDE925 /* MDL.m in Sources */,
 				B67111371C276CE100E0BFD9 /* moduleDLWorker.c in Sources */,
+				B61063C01C38963200746B1B /* UIImage+Performance.m in Sources */,
 				B6FAD86E1C2A19A60084692A /* RakAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

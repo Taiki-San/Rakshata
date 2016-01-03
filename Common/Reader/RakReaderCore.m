@@ -179,7 +179,13 @@
 	if(imageData == nil || imageData.length == 0)
 		return nil;
 	
-	RakImage * image = [[RakImage alloc] initWithData : imageData];
+	RakImage * image;
+#if TARGET_OS_IPHONE
+	if(![NSThread isMainThread])
+		image = [UIImage imageByRenderingData:imageData];
+	else	//Okay, no time, just return the data ASAP
+#endif
+		image = [[RakImage alloc] initWithData : imageData];
 	
 #ifdef EXTENSIVE_LOGGING
 	if(image == nil)
