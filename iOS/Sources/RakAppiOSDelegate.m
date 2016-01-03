@@ -76,7 +76,7 @@
 	return [super _CT];
 }
 
-- (void) registerMDL : (MDL *) MDL
+- (void) registerMDL : (RakMDLCoreController *) MDL
 {
 	if(tabMDL == nil)
 		tabMDL = MDL;

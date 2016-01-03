@@ -252,7 +252,7 @@ void MDLCommunicateOC(uint selfCode, void * UIInstance)
 #ifndef IOS_DIRTY_HACK
 		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
 #else
-		[RakApp.MDL rowUpdate:selfCode];
+		[(RakMDLCoreController *) RakApp.MDL rowUpdate:selfCode];
 #endif
 	}
 }
@@ -264,7 +264,7 @@ void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
 #if !TARGET_OS_IPHONE
 		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
 #else
-		[RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) rowViewResponsible];
+		[(RakMDLCoreController *) RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) rowViewResponsible];
 #endif
 	}
 }

@@ -70,6 +70,7 @@
 
 		#import "RakAuthController.h"
 	#else
+		#import "RakMDLCoreController.h"
 		#import "RakSeriesController.h"
 		#import "RakCTController.h"
 		#import "RakReaderController.h"

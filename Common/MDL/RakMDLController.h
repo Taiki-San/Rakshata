@@ -44,6 +44,7 @@
 - (NSString *) serializeData;
 
 - (uint) getNbElem : (BOOL) considerDiscarded;
+- (uint) getNbElemToProcess;
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
 
 - (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;

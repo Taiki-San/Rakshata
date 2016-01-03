@@ -105,6 +105,8 @@ enum
 		RakApp.serie.forceNextFrameUpdate = YES;
 
 	[self updateDependingViews : YES];
+#else
+	self.initWithNoContent = ![self available];
 #endif
 }
 

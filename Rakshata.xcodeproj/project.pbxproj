@@ -338,7 +338,6 @@
 		B6A9C49D1C2F023000BDE925 /* source_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C4991C2F023000BDE925 /* source_22x29.png */; };
 		B6A9C49E1C2F023000BDE925 /* zip_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A9C49A1C2F023000BDE925 /* zip_22x29.png */; };
 		B6A9C49F1C2F2C3D00BDE925 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
-		B6A9C4A11C2F332E00BDE925 /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A9C4A01C2F332E00BDE925 /* MDL.m */; };
 		B6AA41841B685692008A7521 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417A1B685692008A7521 /* crc32.c */; };
 		B6AA41851B685692008A7521 /* pbkdf2.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417C1B685692008A7521 /* pbkdf2.c */; };
 		B6AA41861B685692008A7521 /* Rijndael.c in Sources */ = {isa = PBXBuildFile; fileRef = B6AA417D1B685692008A7521 /* Rijndael.c */; };
@@ -434,6 +433,8 @@
 		B6EE0265188B4F57001F8363 /* RakPrefsTabDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */; };
 		B6EE0268188B4FEA001F8363 /* RakPrefsMDLDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */; };
 		B6EF52D51BCE971400EEEE6A /* RakImportBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */; };
+		B6F127AB1C396F37002B48AD /* RakMDLCoreController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F127AA1C396F37002B48AD /* RakMDLCoreController.m */; };
+		B6F127AE1C39718B002B48AD /* RakMDLRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F127AD1C39718B002B48AD /* RakMDLRowView.m */; };
 		B6F131341B372E4100042F8C /* RakImportController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F131331B372E4100042F8C /* RakImportController.m */; };
 		B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */; };
 		B6F6ED0B18A3001400E3B55B /* rakshata.c in Sources */ = {isa = PBXBuildFile; fileRef = B6F6ECD118A3001400E3B55B /* rakshata.c */; };
@@ -837,7 +838,6 @@
 		B6A9C4981C2F023000BDE925 /* rar_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rar_22x29.png; sourceTree = "<group>"; };
 		B6A9C4991C2F023000BDE925 /* source_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = source_22x29.png; sourceTree = "<group>"; };
 		B6A9C49A1C2F023000BDE925 /* zip_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zip_22x29.png; sourceTree = "<group>"; };
-		B6A9C4A01C2F332E00BDE925 /* MDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MDL.m; path = MDL/MDL.m; sourceTree = "<group>"; };
 		B6AA417A1B685692008A7521 /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = C/Security/crypto/crc32.c; sourceTree = SOURCE_ROOT; };
 		B6AA417B1B685692008A7521 /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypto.h; path = C/Security/crypto/crypto.h; sourceTree = SOURCE_ROOT; };
 		B6AA417C1B685692008A7521 /* pbkdf2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pbkdf2.c; path = C/Security/crypto/pbkdf2.c; sourceTree = SOURCE_ROOT; };
@@ -986,6 +986,10 @@
 		B6EE0264188B4F57001F8363 /* RakPrefsTabDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsTabDeepData.m; path = Prefs/tools/RakPrefsTabDeepData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6EE0267188B4FEA001F8363 /* RakPrefsMDLDeepData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsMDLDeepData.m; path = Prefs/tools/RakPrefsMDLDeepData.m; sourceTree = "<group>"; };
 		B6EF52D41BCE971400EEEE6A /* RakImportBaseController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportBaseController.m; path = "Import:Export/RakImportBaseController.m"; sourceTree = "<group>"; };
+		B6F127A91C396F37002B48AD /* RakMDLCoreController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLCoreController.h; path = MDL/RakMDLCoreController.h; sourceTree = "<group>"; };
+		B6F127AA1C396F37002B48AD /* RakMDLCoreController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLCoreController.m; path = MDL/RakMDLCoreController.m; sourceTree = "<group>"; };
+		B6F127AC1C39718B002B48AD /* RakMDLRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakMDLRowView.h; path = MDL/RakMDLRowView.h; sourceTree = "<group>"; };
+		B6F127AD1C39718B002B48AD /* RakMDLRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakMDLRowView.m; path = MDL/RakMDLRowView.m; sourceTree = "<group>"; };
 		B6F131321B372E4100042F8C /* RakImportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakImportController.h; path = "Import:Export/RakImportController.h"; sourceTree = "<group>"; };
 		B6F131331B372E4100042F8C /* RakImportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportController.m; path = "Import:Export/RakImportController.m"; sourceTree = "<group>"; };
 		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
@@ -1738,7 +1742,10 @@
 		B6A9C4A21C2F334D00BDE925 /* MDL */ = {
 			isa = PBXGroup;
 			children = (
-				B6A9C4A01C2F332E00BDE925 /* MDL.m */,
+				B6F127A91C396F37002B48AD /* RakMDLCoreController.h */,
+				B6F127AA1C396F37002B48AD /* RakMDLCoreController.m */,
+				B6F127AC1C39718B002B48AD /* RakMDLRowView.h */,
+				B6F127AD1C39718B002B48AD /* RakMDLRowView.m */,
 			);
 			name = MDL;
 			sourceTree = "<group>";
@@ -2751,7 +2758,8 @@
 				B67111341C276CE100E0BFD9 /* moduleDL2.c in Sources */,
 				B67111351C276CE100E0BFD9 /* moduleDLMainWorker.m in Sources */,
 				B67111361C276CE100E0BFD9 /* moduleDLUnzip.c in Sources */,
-				B6A9C4A11C2F332E00BDE925 /* MDL.m in Sources */,
+				B6F127AB1C396F37002B48AD /* RakMDLCoreController.m in Sources */,
+				B6F127AE1C39718B002B48AD /* RakMDLRowView.m in Sources */,
 				B67111371C276CE100E0BFD9 /* moduleDLWorker.c in Sources */,
 				B61063C01C38963200746B1B /* UIImage+Performance.m in Sources */,
 				B6FAD86E1C2A19A60084692A /* RakAppDelegate.m in Sources */,

@@ -138,7 +138,7 @@
         <!--Téléchargement-->
         <scene sceneID="7NP-Mw-Weq">
             <objects>
-                <viewController storyboardIdentifier="MDL" id="lQQ-qS-uWc" customClass="MDL" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MDL" id="lQQ-qS-uWc" customClass="RakMDLCoreController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="PUZ-BO-wrI"/>
                         <viewControllerLayoutGuide type="bottom" id="dkp-Q5-FFp"/>
@@ -151,7 +151,7 @@
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MDLRandoCell" rowHeight="50" id="ejI-La-7i0">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MDLRandoCell" rowHeight="50" id="ejI-La-7i0" customClass="RakMDLRowView">
                                         <rect key="frame" x="0.0" y="28" width="600" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ejI-La-7i0" id="0Jd-vP-2R1">
@@ -186,7 +186,11 @@
                             <constraint firstItem="8Qk-fh-ngd" firstAttribute="leading" secondItem="ArE-uG-NGK" secondAttribute="leadingMargin" constant="-20" id="vEg-6b-N5y"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Téléchargement" image="MDL" badgeValue="3" id="zzI-DS-vdh"/>
+                    <tabBarItem key="tabBarItem" title="Téléchargement" image="MDL" id="zzI-DS-vdh"/>
+                    <connections>
+                        <outlet property="_tabBarItem" destination="zzI-DS-vdh" id="A5p-r6-ro4"/>
+                        <outlet property="_tableView" destination="Rvl-bo-amK" id="G2c-sQ-N36"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gWS-bP-YIb" sceneMemberID="firstResponder"/>
             </objects>

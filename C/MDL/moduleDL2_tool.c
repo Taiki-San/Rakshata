@@ -546,3 +546,8 @@ bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, 
 	
 	return false;
 }
+
+bool MDLStatusIsProcessing(int8_t status)
+{
+	return status != MDL_CODE_INSTALL_OVER && status != MDL_CODE_ABORTED && status > MDL_CODE_FIRST_ERROR;
+}

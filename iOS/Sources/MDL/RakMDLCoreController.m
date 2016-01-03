@@ -10,7 +10,7 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@implementation MDL (iOS)
+@implementation RakMDLCoreController
 
 - (void) awakeFromNib
 {
@@ -42,7 +42,7 @@
 	uint nbRows = [controller getNbElem:YES];
 	
 	if(self.initWithNoContent && nbRows != 0)		self.initWithNoContent = NO;
-
+	
 	return (NSInteger) nbRows;
 }
 
@@ -53,11 +53,11 @@
 	DATA_LOADED ** todoList = [controller getData : pos : YES];
 	if(todoList == NULL || *todoList == NULL)
 		return nil;
-
+	
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MDLRandoCell" forIndexPath:indexPath];
 	if(cell == nil)
 		return nil;
-
+	
 	(*todoList)->rowViewResponsible = (__bridge void *)(@(pos));
 	cell.textLabel.text = [self labelTextForData:*todoList];
 	
@@ -93,6 +93,21 @@
 	}
 }
 
+#pragma mark - Content update handler
+
+- (void) wakeUp
+{
+	[super wakeUp];
+	[self shouldRefreshCounter];
+}
+
+- (void) shouldRefreshCounter
+{
+	uint nbData = [controller getNbElemToProcess];
+
+	_tabBarItem.badgeValue = nbData == 0 ? nil : [NSString stringWithFormat:@"%d", nbData];
+}
+
 #pragma mark - Responder
 
 - (void) refresh
@@ -116,13 +131,14 @@
 		[cell setNeedsDisplay];
 	}
 	
+	[self shouldRefreshCounter];
 }
 
 - (void) percentageUpdate : (float) percentage atSpeed : (size_t) speed forObject : (NSNumber *) rowNumber
 {
 	if(![NSThread isMainThread])
 		return dispatch_sync(dispatch_get_main_queue(), ^{	[self percentageUpdate:percentage atSpeed:speed forObject:rowNumber];	});
-
+	
 	NSUInteger row = [rowNumber unsignedIntegerValue];
 	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
 	

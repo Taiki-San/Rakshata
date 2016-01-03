@@ -10,21 +10,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppiOSDelegate : RakAppDelegate <UITabBarControllerDelegate>
+#import "RakMDLRowView.h"
+
+@interface RakMDLCoreController : MDL <UITableViewDataSource, UITableViewDelegate>
 {
-	UITabBarController * tabBarController;
+	IBOutlet UITabBarItem * _tabBarItem;
+	IBOutlet UITableView * _tableView;
 }
 
-@property (readonly) BOOL hasFocus;
-@property (strong, nonatomic) UIWindow *window;
-
-- (void) registerTabBarController : (UITabBarController *) _tabBarController;
-
-- (void) registerSeries : (Series *) series;
-- (void) registerCT : (CTSelec *) CT;
-- (void) registerMDL : (RakMDLCoreController *) MDL;
-- (void) registerReader : (Reader *) reader;
-
-- (UITabBarController *) tabBarController;
+- (void) refresh;
+- (void) rowUpdate : (uint) row;
+- (void) percentageUpdate : (float) percentage atSpeed : (size_t) speed forObject : (NSNumber *) rowNumber;
 
 @end

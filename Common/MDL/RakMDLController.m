@@ -280,6 +280,19 @@
 	return considerDiscarded ? discardedCount : nbElem;
 }
 
+- (uint) getNbElemToProcess
+{
+	uint nbValue = [self getNbElem:YES];
+	
+	for(uint i = 0, length = nbValue; i < length; ++i)
+	{
+		if(!MDLStatusIsProcessing([self statusOfID : i : YES]))
+			nbValue--;
+	}
+	
+	return nbValue;
+}
+
 - (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded
 {
 	if(row >= (considerDiscarded ? discardedCount : nbElem))
@@ -375,10 +388,9 @@
 			MDLDownloadOver(true);
 		
 		//Worker should be at work, now, let's wake the UI up
-#if TARGET_OS_IPHONE
-		[_tabMDL refresh];
-#else		
 		[_tabMDL wakeUp];
+#if !TARGET_OS_IPHONE
+		[_tabMDL refresh];
 #endif
 	}
 }

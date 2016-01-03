@@ -201,6 +201,7 @@ void MDLUpdateIcons(uint selfCode, void * UIInstance);
 void MDLCommunicateOC(uint selfCode, void * UIInstance);
 void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
+bool MDLStatusIsProcessing(int8_t status);
 bool dataRequireLoginWithNotif(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController);
 bool dataRequireLogin(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, bool noEmail);
 void watcherForLoginRequest(MDL_MWORKER_ARG * arg);

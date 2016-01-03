@@ -203,7 +203,7 @@ char * MDLParseFile(DATA_LOADED **todoList, int8_t **status, uint* IDToPosition,
         {
 			currentPosition = IDToPosition[i];
 			
-            if(todoList[currentPosition] == NULL || *status[currentPosition] == MDL_CODE_INSTALL_OVER || *status[currentPosition] == MDL_CODE_ABORTED || *status[currentPosition] <= MDL_CODE_FIRST_ERROR)
+            if(todoList[currentPosition] == NULL || !MDLStatusIsProcessing(*status[currentPosition]))
                 continue;
             else if(todoList[currentPosition]->listChapitreOfTome != NULL)
             {
