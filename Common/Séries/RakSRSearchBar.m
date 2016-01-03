@@ -100,7 +100,8 @@
 		self.focusRingType = NSFocusRingTypeNone;
 		self.textColor = [self getTextColor];
 		
-		self.backgroundColor = [RakSRSearchBar getBackgroundColor];
+		self.wantsLayer = YES;
+		self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 		self.layer.cornerRadius = 4;
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
@@ -286,7 +287,7 @@
 	
 	[self initCell];
 	
-	self.backgroundColor = [RakSRSearchBar getBackgroundColor];
+	self.layer.backgroundColor = [RakSRSearchBar getBackgroundColor].CGColor;
 	self.layer.borderColor = [self getBorderColor].CGColor;
 	
 	[self.cell setTextColor:[self getTextColor]];
