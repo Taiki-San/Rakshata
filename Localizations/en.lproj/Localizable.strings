@@ -107,7 +107,7 @@
 "PROJ-DETAILS-PAID-NO-DRM" = "Paid - No DRM";
 "PROJ-DETAILS-PAID-DRM" = "Paid - DRM";
 
-"PROJ-STORE" = "Store";
+"PROJ-STORE" = "Installed only";
 
 "PROJ-SEARCH-MAIN" = "Search and filters";
 "PROJ-SEARCH-AUTHOR" = "Author";

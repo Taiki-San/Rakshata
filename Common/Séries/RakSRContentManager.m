@@ -64,20 +64,19 @@
 	if(!includeCacheRefresh && project == NULL)
 		includeCacheRefresh = YES;
 	
+	*_project = NULL;
+	*_cacheList = NULL;
+	*_orderedToSorted = NULL;
+	*_filteredToOrdered = NULL;
+	*_nbElemFull = *_nbElemActivated = 0;
+	
 	//We get the full list
 	if(includeCacheRefresh)
 	{
 		*_project = getCopyCache(SORT_NAME, _nbElemFull);
 		if(*_project == NULL || *_nbElemFull == 0)
 		{
-			if(!isDBProjectEmpty())
-				return NO;
-
-			*_project = NULL;
-			*_cacheList = NULL;
-			*_orderedToSorted = NULL;
-			*_nbElemFull = *_nbElemActivated = 0;
-			return YES;
+			return isDBProjectEmpty();
 		}
 	}
 	else
