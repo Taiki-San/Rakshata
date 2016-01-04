@@ -21,15 +21,15 @@
 	
 	if(self != nil)
 	{
-		if(![self initData:&project :&cacheList :&filteredToOrdered :&orderedToSorted :&nbElemFull :&nbElemActivated : YES])
-			return nil;
-		
 		//Okay, we have all our data, we can register for updates
 		[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restrictionsUpdated:) name:NOTIFICATION_SEARCH_UPDATED object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(installedOnlyTriggered:) name:NOTIFICATION_INSTALLED_ONLY_STAB object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(freeOnlyTriggered:) name:NOTIFICATION_FREE_ONLY object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favsOnlyTriggered:) name:NOTIFICATION_FAVS_ONLY object:nil];
+
+		if(![self initData:&project :&cacheList :&filteredToOrdered :&orderedToSorted :&nbElemFull :&nbElemActivated : YES])
+			return nil;
 		
 		_sharedReference = [NSMutableArray array];
 		
