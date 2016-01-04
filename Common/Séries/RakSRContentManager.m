@@ -64,11 +64,10 @@
 	if(!includeCacheRefresh && project == NULL)
 		includeCacheRefresh = YES;
 	
-	*_project = NULL;
 	*_cacheList = NULL;
 	*_orderedToSorted = NULL;
 	*_filteredToOrdered = NULL;
-	*_nbElemFull = *_nbElemActivated = 0;
+	*_nbElemActivated = 0;
 	
 	//We get the full list
 	if(includeCacheRefresh)

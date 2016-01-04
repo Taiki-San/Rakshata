@@ -389,9 +389,6 @@
 		
 		//Worker should be at work, now, let's wake the UI up
 		[_tabMDL wakeUp];
-#if !TARGET_OS_IPHONE
-		[_tabMDL refresh];
-#endif
 	}
 }
 

@@ -191,7 +191,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UIImageView * imageView = [self loadToCacheForCT:(NSInteger) indexPath.section andPage:(NSInteger) indexPath.row inCache:NULL];
+	UIImageView * imageView = [self loadToCacheForCT:(uint) indexPath.section andPage:(uint) indexPath.row inCache:NULL];
 	if(imageView == nil)
 		return nil;
 	
@@ -441,7 +441,7 @@
 	if(indexPath == nil)
 		return nil;
 	
-	return [self loadToCacheForCT:(uint) indexPath.section andPage:indexPath.row inCache:inCache];
+	return [self loadToCacheForCT:(uint) indexPath.section andPage:(uint) indexPath.row inCache:inCache];
 }
 
 - (UIImageView *) loadToCacheForCT : (uint) CT andPage : (uint) page inCache : (BOOL *) inCache

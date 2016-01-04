@@ -258,7 +258,7 @@ bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID)
 		sqlite3_bind_int64(request, 16, 0x0);
 	
 	
-	sqlite3_bind_int(request, 17, data.project.nbVolumes);
+	sqlite3_bind_int(request, 17, (int32_t) data.project.nbVolumes);
 	sqlite3_bind_int(request, 18, data.project.haveDRM);
 	sqlite3_bind_int(request, 20, (int32_t) data.nbVolumesRemote);
 	sqlite3_bind_int(request, 22, (int32_t) data.nbVolumesLocal);

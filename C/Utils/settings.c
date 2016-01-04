@@ -218,7 +218,7 @@ inline uint locateEndString(const char* input, const char *stringToFind)
 {
 	const char * posInString = strstr(input, stringToFind);
 	
-	return posInString == NULL ? 0 : (posInString - input + (long) strlen(stringToFind));
+	return posInString == NULL ? 0 : ((size_t) (posInString - input) + strlen(stringToFind));
 }
 
 /*****************************************************

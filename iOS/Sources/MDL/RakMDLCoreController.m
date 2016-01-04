@@ -99,6 +99,7 @@
 {
 	[super wakeUp];
 	[self shouldRefreshCounter];
+	[self refresh];
 }
 
 - (void) shouldRefreshCounter
