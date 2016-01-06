@@ -369,7 +369,7 @@
 	}
 	else
 	{
-		[RakApp.MDL proxyAddElement:data isTome:isTome element:ID partOfBatch:NO];
+		[RakApp.MDL proxyAddElement:data.cacheDBID isTome:isTome element:ID partOfBatch:NO];
 	}
 	
 	self.dontNotify = NO;

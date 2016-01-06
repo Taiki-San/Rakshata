@@ -164,6 +164,7 @@
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
 		B64C926819571DDF000D60CC /* RakSegmentedButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */; };
 		B64D1561191058A200B6E47F /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
+		B64DA2AB1C3BB7240053D4A6 /* RakDownloadStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = B64DA2AA1C3BB7240053D4A6 /* RakDownloadStatus.m */; };
 		B6531BE41C2EE8A3001F45FA /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6531BE31C2EE8A3001F45FA /* RakTabView.m */; };
 		B654548D1BE6A2B700A12D36 /* RakSRSearchUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B654548C1BE6A2B700A12D36 /* RakSRSearchUtils.m */; };
 		B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65BC54419071BE4006DA59F /* RakSerieListItem.m */; };
@@ -681,6 +682,8 @@
 		B64C926719571DDF000D60CC /* RakSegmentedButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSegmentedButtonCell.m; path = Utils/RakSegmentedButtonCell.m; sourceTree = "<group>"; };
 		B64D155F191058A200B6E47F /* RakMDLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakMDLController.h; path = MDL/RakMDLController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B64D1560191058A200B6E47F /* RakMDLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakMDLController.m; path = MDL/RakMDLController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B64DA2A91C3BB7240053D4A6 /* RakDownloadStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDownloadStatus.h; path = Utils/RakDownloadStatus.h; sourceTree = "<group>"; };
+		B64DA2AA1C3BB7240053D4A6 /* RakDownloadStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDownloadStatus.m; path = Utils/RakDownloadStatus.m; sourceTree = "<group>"; };
 		B6531BE31C2EE8A3001F45FA /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = iOS/Sources/Utils/RakTabView.m; sourceTree = SOURCE_ROOT; };
 		B654548C1BE6A2B700A12D36 /* RakSRSearchUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSRSearchUtils.m; path = "Séries/RakSRSearchUtils.m"; sourceTree = "<group>"; };
 		B65BC54319071BE4006DA59F /* RakSerieListItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieListItem.h; path = "Séries/RakSerieListItem.h"; sourceTree = "<group>"; };
@@ -1433,6 +1436,15 @@
 			path = OptimizationProfiles;
 			sourceTree = "<group>";
 		};
+		B64DA2AC1C3BB7380053D4A6 /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				B64DA2A91C3BB7240053D4A6 /* RakDownloadStatus.h */,
+				B64DA2AA1C3BB7240053D4A6 /* RakDownloadStatus.m */,
+			);
+			name = Button;
+			sourceTree = "<group>";
+		};
 		B65D6CCE1B11424E00DAC30C /* Favorite */ = {
 			isa = PBXGroup;
 			children = (
@@ -1622,6 +1634,7 @@
 		B69966C21C2F7B6900576396 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B64DA2AC1C3BB7380053D4A6 /* Button */,
 				B61063BD1C3891B000746B1B /* UIImage+Performance.h */,
 				B61063BE1C3891B000746B1B /* UIImage+Performance.m */,
 				B6531BE31C2EE8A3001F45FA /* RakTabView.m */,
@@ -2722,6 +2735,7 @@
 				B62576001C27711200811C33 /* RakPrefsDeepData.m in Sources */,
 				B62576011C27711200811C33 /* RakPrefsMDLDeepData.m in Sources */,
 				B62576031C27711200811C33 /* RakPrefsTabDeepData.m in Sources */,
+				B64DA2AB1C3BB7240053D4A6 /* RakDownloadStatus.m in Sources */,
 				B6797D421C2D673F00FF7104 /* RakAppiOSDelegate.m in Sources */,
 				B62576041C27711200811C33 /* RakPrefsTabSize.m in Sources */,
 				B62576081C27711200811C33 /* Prefs.m in Sources */,

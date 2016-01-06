@@ -852,7 +852,7 @@
 				output = getStringForVolumeFull(element);
 
 			else if(_installedTable == NULL || !_installedTable[rowIndex])
-				output = priceString(element.price);
+				output = getStringForPrice(element.price);
 
 			else
 				output = @"";
@@ -874,7 +874,7 @@
 		}
 		else if(chapterPrice != NULL && rowIndex < _nbChapterPrice && (_installedTable == NULL || !_installedTable[rowIndex]))
 		{
-			output = [NSString stringWithFormat:@"%@%c", priceString(chapterPrice[rowIndex]) , column == _nbCoupleColumn-1 ? '\0' : '	'];
+			output = [NSString stringWithFormat:@"%@%c", getStringForPrice(chapterPrice[rowIndex]) , column == _nbCoupleColumn-1 ? '\0' : '	'];
 		}
 		else
 			output = @"";
@@ -1112,7 +1112,7 @@
 		{
 			RakText * priceView = [[RakText alloc] init];
 			priceView.textColor = [Prefs getSystemColor:COLOR_CLICKABLE_TEXT];
-			priceView.stringValue = priceString(price);
+			priceView.stringValue = getStringForPrice(price);
 			[priceView sizeToFit];
 			
 			[_draggedView addPrice:priceView];

@@ -19,6 +19,7 @@ NSString * getStringForChapter(uint chapID);
 NSString * getStringForVolume(int volID);
 NSString * getStringForVolumeFull(META_TOME tome);
 NSNumber * getNumberForString(NSString * string);
+NSString * getStringForPrice(uint price);
 NSString * getRepoName(REPO_DATA * repo);
 
 void registerDefaultForExtension(NSString * extension);
@@ -104,6 +105,7 @@ void registerDefaultForExtension(NSString * extension);
 	#import "RakAuthForegroundView.h"
 #else
 	#import "UIImage+Performance.h"
+	#import "RakDownloadStatus.h"
 #endif
 	#import "RakTabView.h"
 	#import "RakTabContentTemplate.h"

@@ -62,7 +62,10 @@ void configureSandbox()
 	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
 	
 //	remove(SETTINGS_FILE);
-//	[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
+#ifdef DEV_VERSION
+	if(!checkFileExist(SETTINGS_FILE))
+		[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
+#endif
 #endif
 }
 
@@ -549,15 +552,23 @@ bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element)
 {
 	MDL * tabMDL = RakApp.MDL;
 
-	return tabMDL == nil ? [tabMDL proxyCheckForCollision:data :isTome :element] : false;
+	return tabMDL == nil ? false : [tabMDL proxyCheckForCollision:data :isTome :element];
 }
 
 void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch)
 {
+	if(!data.isInitialized)
+		return;
+	
+	addElementWithIDToMDL(data.cacheDBID, isTome, element, partOfBatch);
+}
+
+void addElementWithIDToMDL(uint cacheDBID, bool isTome, uint element, bool partOfBatch)
+{
 	MDL * tabMDL = RakApp.MDL;
 	
 	if(tabMDL != nil)
-		[tabMDL proxyAddElement:data isTome:isTome element:element partOfBatch:partOfBatch];
+		[tabMDL proxyAddElement:cacheDBID isTome:isTome element:element partOfBatch:partOfBatch];
 }
 
 void notifyDownloadOver()

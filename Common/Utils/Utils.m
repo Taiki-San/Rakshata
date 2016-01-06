@@ -275,6 +275,28 @@ NSNumber * getNumberForString(NSString * string)
 	return [formatter numberFromString:string];
 }
 
+NSString * getStringForPrice(uint price)
+{
+	if(price == INVALID_VALUE)
+		return nil;
+	
+	if(price != 0)
+	{
+		NSNumberFormatter * formater = [[NSNumberFormatter alloc] init];
+		
+		if(formater != nil)
+		{
+			formater.numberStyle = NSNumberFormatterCurrencyStyle;
+			formater.usesSignificantDigits = YES;
+			formater.minimumSignificantDigits = 2;
+			
+			return [formater stringFromNumber:@(price / 100.0f)];
+		}
+	}
+	
+	return NSLocalizedString(@"FREE", nil);
+}
+
 NSString * getRepoName(REPO_DATA * repo)
 {
 	if(isLocalRepo(repo))

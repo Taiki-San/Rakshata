@@ -309,7 +309,7 @@ enum
 		
 		uint nbElemInjected = 1, nbElemStart = [controller getNbElem:YES], nbElemEnd;
 		if(element != INVALID_VALUE)
-			[controller addElement:project :isTome :element:NO];
+			[controller addElement:project.cacheDBID :isTome :element:NO];
 		else
 			nbElemInjected = [controller addBatch:project :isTome :YES];
 		

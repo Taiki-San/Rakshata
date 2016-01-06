@@ -129,6 +129,13 @@
 	}
 }
 
+- (BOOL) tableView : (UITableView *) tableView shouldHighlightRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+	RakCTRowCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+	
+	return cell == nil ? NO : [cell canSelect];
+}
+
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
 	uint contentID = (uint) indexPath.row;
@@ -145,7 +152,7 @@
 	}
 	else
 	{
-		[RakApp.MDL proxyAddElement:_project isTome:_isTome element:contentID partOfBatch:NO];
+		[RakApp.MDL proxyAddElement:_project.cacheDBID isTome:_isTome element:contentID partOfBatch:NO];
 	}
 }
 

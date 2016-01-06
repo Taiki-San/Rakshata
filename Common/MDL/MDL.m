@@ -126,10 +126,10 @@ enum
 
 #pragma mark - Proxy
 
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch
+- (void) proxyAddElement : (uint) cacheDBID  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch
 {
 	if(controller != nil)
-		[controller addElement:data :isTome :newElem :partOfBatch];
+		[controller addElement:cacheDBID :isTome :newElem :partOfBatch];
 }
 
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element

@@ -26,6 +26,9 @@
 		
 		//We have to make reference to entries of cache. In order to keep it updatable, we have to allocate memory for each entry
 		PROJECT_DATA * _cache = getCopyCache(RDB_LOADALL | SORT_ID | RDB_REMOTE_ONLY, &sizeCache);
+		if(_cache == NULL || sizeCache == 0)
+			return nil;
+		
 		PROJECT_DATA ** futureCache = calloc(sizeCache, sizeof(PROJECT_DATA *));
 		if(futureCache == NULL)
 		{
@@ -319,18 +322,18 @@
 
 #pragma mark - Tools
 
-- (void) addElement : (PROJECT_DATA) data : (BOOL) isTome : (uint) element : (BOOL) partOfBatch
+- (void) addElement : (uint) cacheDBID : (BOOL) isTome : (uint) element : (BOOL) partOfBatch
 {
-	if(!data.isInitialized || element == INVALID_VALUE)
+	if(cacheDBID == INVALID_VALUE || element == INVALID_VALUE)
 		return;
 	
 	uint pos;
-	for (pos = 0; pos < sizeCache && cache[pos]->cacheDBID != data.cacheDBID; pos++);
+	for (pos = 0; pos < sizeCache && cache[pos]->cacheDBID != cacheDBID; pos++);
 	
-	if(pos == sizeCache || cache[pos]->cacheDBID != data.cacheDBID)
+	if(pos == sizeCache || cache[pos]->cacheDBID != cacheDBID)
 		return;
 	
-	if(!nbElem || !MDLisThereCollision(data, isTome, element, *todoList, status, nbElem))
+	if(!nbElem || !MDLisThereCollision(*cache[pos], isTome, element, *todoList, status, nbElem))
 	{
 		DATA_LOADED * newElement = MDLCreateElement(cache[pos], isTome, element);
 		
@@ -423,7 +426,7 @@
 		{
 			if(previousElem != INVALID_VALUE)
 			{
-				[self addElement:data :isTome :previousElem :YES];
+				[self addElement:data.cacheDBID :isTome :previousElem :YES];
 				countInjected++;
 			}
 			
@@ -436,7 +439,7 @@
 	{
 		if(previousElem != INVALID_VALUE)
 		{
-			[self addElement:data :isTome :previousElem :YES];
+			[self addElement:data.cacheDBID :isTome :previousElem :YES];
 			countInjected++;
 		}
 		
@@ -445,7 +448,7 @@
 	
 	if(previousElem != INVALID_VALUE)
 	{
-		[self addElement:data :isTome :previousElem :!launchAtTheEnd];
+		[self addElement:data.cacheDBID :isTome :previousElem :!launchAtTheEnd];
 		countInjected++;
 	}
 	

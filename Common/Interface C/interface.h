@@ -109,6 +109,7 @@ void updateRecentSeries();
 
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element);
 void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch);
+void addElementWithIDToMDL(uint cacheDBID, bool isTome, uint element, bool partOfBatch);
 void notifyDownloadOver();
 
 /*****************************************

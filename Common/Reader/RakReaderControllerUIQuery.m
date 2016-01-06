@@ -163,10 +163,10 @@
 {
 	for (uint pos = 0, handledArray = _sizeArray - 1; pos < handledArray; pos++)
 	{
-		[(MDL*) _anchor proxyAddElement:_project isTome:_isTome element:_arraySelection[pos] partOfBatch:YES];
+		[(MDL*) _anchor proxyAddElement:_project.cacheDBID isTome:_isTome element:_arraySelection[pos] partOfBatch:YES];
 	}
 	
-	[(MDL*) _anchor proxyAddElement:_project isTome:_isTome element:_arraySelection[_sizeArray - 1] partOfBatch:NO];
+	[(MDL*) _anchor proxyAddElement:_project.cacheDBID isTome:_isTome element:_arraySelection[_sizeArray - 1] partOfBatch:NO];
 }
 
 @end

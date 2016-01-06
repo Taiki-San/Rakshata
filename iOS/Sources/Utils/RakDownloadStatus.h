@@ -10,11 +10,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakCTRowCell : UITableViewCell
+@interface RakDownloadStatus : UIButton
 
-@property BOOL isReadable;
-
-- (BOOL) canSelect;
-- (void) updateData : (PROJECT_DATA) project withSelection : (uint) _selection isTome : (BOOL) _isTome;
+- (void) setPercentage : (double) _percentage;
 
 @end

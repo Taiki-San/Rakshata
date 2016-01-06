@@ -47,7 +47,7 @@
 - (BOOL) available;
 - (void) wakeUp;
 
-- (void) proxyAddElement : (PROJECT_DATA) data  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
+- (void) proxyAddElement : (uint) cacheDBID  isTome : (BOOL) isTome element : (uint) newElem  partOfBatch : (BOOL) partOfBatch;
 - (BOOL) proxyCheckForCollision : (PROJECT_DATA) data : (BOOL) isTome : (uint) element;
 - (void) removingEmailAddress;
 

@@ -538,8 +538,11 @@ bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, 
 		{
 			if(wildcard || (list[i]->identifier == element && (isTome || list[i]->listChapitreOfTome == NULL)))
 			{
-				if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT)  || checkReadable(projectToTest, isTome, element))
+				if((*(status[i]) != MDL_CODE_INSTALL_OVER && *(status[i]) >= MDL_CODE_DEFAULT) || checkReadable(projectToTest, isTome, element))
 					return true;
+				
+				if(!wildcard)
+					return false;
 			}
 		}
 	}
