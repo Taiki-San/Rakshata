@@ -20,6 +20,7 @@ static CURLSH* cacheDNS;
 extern atomic_bool quit;
 
 static void downloadChapterCore(DL_DATA *data);
+static bool shouldNotifyPercentageUpdate(PROXY_DATA_LOADED * metadata);
 static int handleDownloadMetadata(DL_DATA* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
 static size_t writeDataChapter(void *ptr, size_t size, size_t nmemb, DL_DATA *downloadData);
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* input);
@@ -57,7 +58,7 @@ void releaseDNSCache()
 
 #pragma mark - Chapter download
 
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler)
+int downloadChapter(TMP_DL *output, PROXY_DATA_LOADED * metadata, uint currentPos, uint nbElem)
 {
 	THREAD_TYPE threadData;
 	DL_DATA downloadData;
@@ -67,9 +68,11 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 	downloadData.bytesDownloaded = downloadData.totalExpectedSize = downloadData.errorCode = 0;
 	downloadData.outputContainer = output;
-	downloadData.curlHandler = curlHandler;
-	downloadData.aborted = abortTransmiter;
+	downloadData.curlHandler = metadata->curlHandler;
+	downloadData.aborted = metadata->downloadSuspended;
 	downloadData.retryAttempt = 0;
+	
+	METADATA_LOADED * DLMetadata = metadata->metadata;
 
 	threadData = createNewThreadRetValue(downloadChapterCore, &downloadData);
 
@@ -82,7 +85,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 
 	while(isThreadStillRunning(threadData) && !quit)
 	{
-		if(rowViewResponsible != NULL && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
+		if(shouldNotifyPercentageUpdate(metadata) && (*(downloadData.aborted) & DLSTATUS_SUSPENDED) == 0)
 		{
 			if(prevDLBytes != downloadData.bytesDownloaded)
 			{
@@ -111,7 +114,7 @@ int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewRes
 				if(!DLMetadata->initialized)
 					DLMetadata->initialized = true;
 
-				updatePercentage(*rowViewResponsible, percentage, downloadSpeed);
+				updatePercentage(metadata, percentage, downloadSpeed);
 
 				usleep(50000);	//100 ms
 			}
@@ -202,6 +205,19 @@ static void downloadChapterCore(DL_DATA *data)
 }
 
 #pragma mark - Chapter download utilities
+
+static bool shouldNotifyPercentageUpdate(PROXY_DATA_LOADED * metadata)
+{
+	if(metadata->rowViewResponsible != NULL)
+		return true;
+	
+#if TARGET_OS_IPHONE
+	if(getActiveProjectForTab(TAB_CT) == metadata->datas->cacheDBID)
+		return true;
+#endif
+	
+	return false;
+}
 
 static int handleDownloadMetadata(DL_DATA* ptr, double totalToDownload, double nowDownloaded, double totalToUpload, double nowUploaded)
 {

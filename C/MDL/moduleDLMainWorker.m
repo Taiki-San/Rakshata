@@ -172,7 +172,7 @@ void MDLStartHandler(uint posElement, uint nbElemTotal, DATA_LOADED ** todoList,
 		
         *((*status)[posElement]) = MDL_CODE_DL; //Permet à la boucle de mainDL de ce poursuivre tranquillement
 
-		MDLUpdateIcons(posElement, todoList[posElement]->rowViewResponsible);
+		MDLUpdateIcons(posElement, todoList[posElement]);
 		
 		argument->todoList = todoList[posElement];
         argument->currentState = (*status)[posElement];
@@ -232,24 +232,26 @@ void MDLInstallOver(PROJECT_DATA project)
 	[RakDBUpdate postNotificationProjectUpdate:project];
 }
 
-void MDLUpdateIcons(uint selfCode, void * UIInstance)
+void MDLUpdateIcons(uint selfCode, DATA_LOADED * metadata)
 {
-	MDLCommunicateOC(selfCode, UIInstance);
+	MDLCommunicateOC(selfCode, metadata);
 }
 
-void MDLCommunicateOC(uint selfCode, void * UIInstance)
+void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata)
 {
 	//If we have to recover UIInstance
-	if(UIInstance == NULL && mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
+	if(metadata == NULL && mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
 		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
-		if(todoList != NULL && *todoList != NULL && (*todoList)->rowViewResponsible != NULL)
-			UIInstance = (*todoList)->rowViewResponsible;
+		if(todoList != NULL && *todoList != NULL)
+			metadata = *todoList;
+		else
+			return;
 	}
 	
-	if(UIInstance != nil)
+	if(metadata->rowViewResponsible != nil)
 	{
-#ifndef IOS_DIRTY_HACK
+#if !TARGET_OS_IPHONE
 		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
 #else
 		[(RakMDLCoreController *) RakApp.MDL rowUpdate:selfCode];
@@ -257,14 +259,17 @@ void MDLCommunicateOC(uint selfCode, void * UIInstance)
 	}
 }
 
-void updatePercentage(void * rowViewResponsible, float percentage, size_t speed)
+void updatePercentage(PROXY_DATA_LOADED * metadata, float percentage, size_t speed)
 {
-	if(rowViewResponsible != NULL)
+	if(metadata == NULL)
+		return;
+	
+	if(metadata->rowViewResponsible != NULL)
 	{
 #if !TARGET_OS_IPHONE
 		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
 #else
-		[(RakMDLCoreController *) RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) rowViewResponsible];
+		[(RakMDLCoreController *) RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) *metadata->rowViewResponsible];
 #endif
 	}
 }

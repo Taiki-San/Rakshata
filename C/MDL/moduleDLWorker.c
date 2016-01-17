@@ -21,7 +21,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
     if(input.todoList == NULL || input.todoList->datas == NULL)
     {
         *(input.currentState) = MDL_CODE_INTERNAL_ERROR;
-        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+        MDLUpdateIcons(input.selfCode, input.todoList);
         quit_thread(0);
     }
 	
@@ -290,7 +290,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
             dataDL.buf = calloc(1, sizeof(DATA_DL_OBFS));
 			
 			//La structure est supposée contenir un double pointeur mais ici un triple
-            ret_value = downloadChapter(&dataDL, input->todoList->downloadSuspended, input->todoList->rowViewResponsible, input->todoList->metadata, currentPos, nbElem, input->todoList->curlHandler);
+            ret_value = downloadChapter(&dataDL, input->todoList, currentPos, nbElem);
             free(dataDL.URL);
 			
 			if(ret_value != CODE_RETOUR_OK)

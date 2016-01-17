@@ -96,6 +96,17 @@ void openWebsite(const char * URL)
 #endif
 }
 
+uint getActiveProjectForTab(uint32_t tabID)
+{
+	if(tabID == TAB_CT && RakApp.CT != nil)
+		return [RakApp.CT activeProject].cacheDBID;
+	
+	if(tabID == TAB_READER && RakApp.reader != nil)
+		return RakApp.reader.activeProject.cacheDBID;
+	
+	return INVALID_VALUE;
+}
+
 /*****************************************
  **										**
  **				   ERROR				**

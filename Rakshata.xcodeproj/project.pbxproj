@@ -2477,7 +2477,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Rak;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
 					B67C687A1C270698005AB992 = {

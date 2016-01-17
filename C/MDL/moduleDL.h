@@ -173,7 +173,7 @@ typedef struct //argument_to_MDL_handler
 extern pthread_mutex_t installSharedMemoryReadWrite;
 
 /**Download.c**/
-int downloadChapter(TMP_DL *output, uint8_t *abortTransmiter, void ** rowViewResponsible, METADATA_LOADED * DLMetadata, uint currentPos, uint nbElem, CURL ** curlHandler);
+int downloadChapter(TMP_DL *output, PROXY_DATA_LOADED * metadata, uint currentPos, uint nbElem);
 
 /**ModuleDL2.c**/
 bool startMDL(char * state, PROJECT_DATA ** cache, THREAD_TYPE * coreWorker, DATA_LOADED **** todoList, int8_t *** status, uint ** IDToPosition, uint * nbElemTotal, bool * quit, void * mainTab);
@@ -197,9 +197,9 @@ bool MDLDownloadOver(bool reanimateOnly);
 bool MDLStartNextInstallation();
 void MDLQuit();
 void MDLInstallOver(PROJECT_DATA project);
-void MDLUpdateIcons(uint selfCode, void * UIInstance);
-void MDLCommunicateOC(uint selfCode, void * UIInstance);
-void updatePercentage(void * rowViewResponsible, float percentage, size_t speed);
+void MDLUpdateIcons(uint selfCode, DATA_LOADED * metadata);
+void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata);
+void updatePercentage(PROXY_DATA_LOADED * metadata, float percentage, size_t speed);
 bool MDLisThereCollision(PROJECT_DATA projectToTest, bool isTome, uint element, DATA_LOADED ** list, int8_t ** status, uint nbElem);
 bool MDLStatusIsProcessing(int8_t status);
 bool dataRequireLoginWithNotif(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController);

@@ -35,6 +35,7 @@ void configureSandbox();
 void registerExtensions();
 int getBuildID();
 void openWebsite(const char * URL);
+uint getActiveProjectForTab(uint32_t tabID);
 
 /*****************************************
  **										**
