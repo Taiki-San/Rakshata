@@ -65,6 +65,8 @@
 	_tableView.rowHeight = UITableViewAutomaticDimension;
 	_tableView.estimatedRowHeight = 600;
 	
+	 [[UILabel appearanceWhenContainedInInstancesOfClasses:@[[UITableViewHeaderFooterView class]]] setTextAlignment:NSTextAlignmentCenter];
+	
 	[self updateTableViewFrame];
 }
 
