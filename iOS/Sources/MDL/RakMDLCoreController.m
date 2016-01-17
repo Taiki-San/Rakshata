@@ -12,20 +12,20 @@
 
 @implementation RakMDLCoreController
 
-- (void) awakeFromNib
+- (instancetype) initWithCoder:(NSCoder *)aDecoder
 {
-	[super awakeFromNib];
+	self = [super initWithCoder:aDecoder];
 	
-	self.initWithNoContent = YES;
-	tabBarIndex = 2;
-	[RakApp registerMDL:self];
+	if(self != nil)
+	{
+		self.initWithNoContent = YES;
+		tabBarIndex = 2;
+		[RakApp registerMDL:self];
+		
+		[self initContent : RakRealApp.savedContext[3]];
+	}
 	
-	[self initContent : RakRealApp.savedContext[3]];
-}
-
-- (void) viewDidLoad
-{
-	[super viewDidLoad];
+	return self;
 }
 
 #pragma mark - Tableview
@@ -124,11 +124,14 @@
 	if(![NSThread isMainThread])
 		return dispatch_sync(dispatch_get_main_queue(), ^{	[self rowUpdate:row];	});
 	
-	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
+	DATA_LOADED ** data = [controller getData : row : YES];
+	if(data == NULL)
+		return;
 	
+	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
 	if(cell != nil)
 	{
-		cell.textLabel.text = [self labelTextForData:*[controller getData : row : YES]];
+		cell.textLabel.text = [self labelTextForData:*data];
 		[cell setNeedsDisplay];
 	}
 	
@@ -141,11 +144,15 @@
 		return dispatch_sync(dispatch_get_main_queue(), ^{	[self percentageUpdate:percentage atSpeed:speed forObject:rowNumber];	});
 	
 	NSUInteger row = [rowNumber unsignedIntegerValue];
+	DATA_LOADED ** data = [controller getData : row : YES];
+	if(data == NULL)
+		return;
+	
 	UITableViewCell * cell = [_tableView cellForRowAtIndexPath : [NSIndexPath indexPathForRow:(NSInteger) row inSection:0]];
 	
 	if(cell != nil)
 	{
-		cell.textLabel.text = [NSString stringWithFormat:@"%@ - %.2f%% - %@", [self labelTextForData:*[controller getData : row : YES]], percentage,
+		cell.textLabel.text = [NSString stringWithFormat:@"%@ - %.2f%% - %@", [self labelTextForData:*data], percentage,
 							   [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(int64_t) speed countStyle:NSByteCountFormatterCountStyleBinary]]];
 		[cell setNeedsDisplay];
 	}

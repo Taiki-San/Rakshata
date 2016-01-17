@@ -31,6 +31,17 @@
 
 @implementation RakCTRowCell
 
+- (void) awakeFromNib
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(percentageUpdateNotification:) name:NOTIFICATION_MDL_PERCENTAGE_UPDATE object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(MDLStatusChangedNotification:) name:NOTIFICATION_MDL_STATUS_UPDATE object:nil];
+}
+
+- (void) dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void) setSelected : (BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
@@ -81,6 +92,11 @@
 		price = project.chaptersPrix == NULL ? 0 : project.chaptersPrix[posInList];
 	}
 	
+	[self processDataUpdateForProject:project withName:string withPriceString:(price != 0 ? getStringForPrice(price) : nil)];
+}
+
+- (void) processDataUpdateForProject : (PROJECT_DATA) project withName : (NSString *) selectionName withPriceString : (NSString *) _priceString
+{
 	_isReadable = checkReadable(project, isTome, selection);
 	
 	//Slight overhead, but we reset all the view to hidden = YES
@@ -89,6 +105,7 @@
 	if(unread != nil)			unread.hidden = YES;
 	if(buyButton != nil)		buyButton.hidden = YES;
 	if(justDL != nil)			justDL.hidden = YES;
+	priceString = _priceString;
 	
 	//Unread bullet
 	if(_isReadable && !checkAlreadyRead(project, isTome, selection))
@@ -106,14 +123,14 @@
 	//Main text
 	if(mainText != nil)
 	{
-		mainText.text = string;
+		mainText.text = selectionName;
 		[mainText sizeToFit];
 	}
 	else
 	{
 		mainText = [[UILabel alloc] init];
 		
-		mainText.text = string;
+		mainText.text = selectionName;
 		[mainText sizeToFit];
 		
 		[self.contentView addSubview:mainText];
@@ -142,10 +159,8 @@
 
 		}
 		//Then, if the item could be bought
-		else if(price != 0)
+		else if(_priceString != nil)
 		{
-			priceString = getStringForPrice(price);
-
 			if(buyButton == nil)
 			{
 				buyButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -303,11 +318,39 @@
 
 #pragma mark - Notification
 
+- (void) MDLStatusChangedNotification : (NSNotification *) notification
+{
+	if ([notification.object isEqualToString:[NSString stringWithFormat:@"%d-%d-%d", cacheID, isTome, selection]])
+	{
+		if(![NSThread isMainThread])
+		{
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self MDLStatusChangedNotification:notification];
+			});
+		}
+		else
+		{
+			PROJECT_DATA project = getProjectByID(cacheID);
+			[self processDataUpdateForProject:project withName:mainText.text withPriceString:priceString];
+			releaseCTData(project);
+		}
+	}
+}
+
 - (void) percentageUpdateNotification : (NSNotification *) notification
 {
 	if ([notification.object isEqualToString:[NSString stringWithFormat:@"%d-%d-%d", cacheID, isTome, selection]])
 	{
-		[DLStatus setPercentage:[[notification.userInfo objectForKey:@"percentage"] doubleValue]];
+		if(![NSThread isMainThread])
+		{
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self percentageUpdateNotification:notification];
+			});
+		}
+		else
+		{
+			[DLStatus setPercentage:[[notification.userInfo objectForKey:@"percentage"] doubleValue]];
+		}
 	}
 }
 

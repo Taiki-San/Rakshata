@@ -257,6 +257,14 @@ void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata)
 		[(RakMDLCoreController *) RakApp.MDL rowUpdate:selfCode];
 #endif
 	}
+	
+#if TARGET_OS_IPHONE
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_MDL_STATUS_UPDATE
+														object:[NSString stringWithFormat:@"%d-%d-%d", metadata->datas->cacheDBID,
+																metadata->listChapitreOfTome != NULL,
+																metadata->identifier]
+													  userInfo:nil];
+#endif
 }
 
 void updatePercentage(PROXY_DATA_LOADED * metadata, float percentage, size_t speed)
@@ -272,6 +280,14 @@ void updatePercentage(PROXY_DATA_LOADED * metadata, float percentage, size_t spe
 		[(RakMDLCoreController *) RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) *metadata->rowViewResponsible];
 #endif
 	}
+	
+#if TARGET_OS_IPHONE
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_MDL_PERCENTAGE_UPDATE
+														object:[NSString stringWithFormat:@"%d-%d-%d", metadata->datas->cacheDBID,
+																metadata->listChapitreOfTome != NULL,
+																metadata->chapitre]
+													  userInfo:@{@"percentage" : @(percentage), @"speed" : @(speed)}];
+#endif
 }
 
 bool dataRequireLoginWithNotif(DATA_LOADED ** data, int8_t ** status, uint * IDToPosition, uint length, void* mainTabController)

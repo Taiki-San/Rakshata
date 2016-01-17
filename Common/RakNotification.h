@@ -58,3 +58,8 @@
 
 //CTSelection
 #define CT_CLIC_NOTIFICATION					@"RakCTSelectedManually"
+
+//RakMDLCore
+#define NOTIFICATION_MDL_PERCENTAGE_UPDATE		@"YouCanFightLikeAKrogan~"
+#define NOTIFICATION_MDL_STATUS_UPDATE			@"RunLikeALeopard~"
+

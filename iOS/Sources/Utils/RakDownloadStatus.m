@@ -38,6 +38,7 @@
 - (void) setPercentage : (double) _percentage
 {
 	percentage = _percentage;
+	[self setNeedsDisplay];
 }
 
 #pragma mark - Drawing
@@ -46,12 +47,12 @@
 {
 	CGContextRef ctx = UIGraphicsGetCurrentContext();
 	const CGSize size = self.frame.size;
-	const CGFloat x = size.width / 2 - 2, radius = x, y = size.height / 2 - 2;
+	const CGFloat x = size.width / 2, radius = x - 2, y = size.height / 2;
 	
 	// Progress Arc:
 	CGContextBeginPath(ctx);
-	CGContextAddArc(ctx, x, y, radius, M_PI_2, M_PI_2 - (2 * M_PI * percentage / 100), 1);
-	CGContextSetLineWidth(ctx, 4);
+	CGContextAddArc(ctx, x, y, radius, -M_PI_2, -M_PI_2 + 2 * M_PI * percentage / 100, 0);
+	CGContextSetLineWidth(ctx, 3);
 	CGContextSetStrokeColorWithColor(ctx, borderColor.CGColor);
 	CGContextStrokePath(ctx);
 }
