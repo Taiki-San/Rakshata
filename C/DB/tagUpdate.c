@@ -35,19 +35,18 @@ void checkIfRefreshTag()
 	CATEGORY_VERBOSE * catDB = NULL;
 	uint tagLength, catLength, newDBVersion;
 	
-	//The parser rejected the file
-	if(!loadRemoteTagState(bufferDL, &tagDB, &tagLength, &catDB, &catLength, &newDBVersion))
+	//The parser accepted the file
+	if(loadRemoteTagState(bufferDL, &tagDB, &tagLength, &catDB, &catLength, &newDBVersion))
 	{
-		free(bufferDL);
-		return;
+		//Okay, we got the data, we have to insert into our dynamic DB and update the static one
+		tagUpdateCachedEntry(tagDB, tagLength);
+		catUpdateCachedEntry(catDB, catLength);
+		
+		dumpTagCat(tagDB, tagLength, catDB, catLength);
+		updateTagDBVersion(newDBVersion);
+		
+		notifyFullUpdate();
 	}
 	
-	//Okay, we got the data, we have to insert into our dynamic DB and update the static one
-	tagUpdateCachedEntry(tagDB, tagLength);
-	catUpdateCachedEntry(catDB, catLength);
-	
-	dumpTagCat(tagDB, tagLength, catDB, catLength);
-	updateTagDBVersion(newDBVersion);
-	
-	notifyFullUpdate();
+	free(bufferDL);
 }
