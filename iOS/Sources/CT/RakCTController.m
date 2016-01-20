@@ -15,6 +15,7 @@
 - (void) awakeFromNib
 {
 	[super awakeFromNib];
+	[RakDBUpdate registerForUpdate:self :@selector(DBUpdated:)];
 
 	self.initWithNoContent = YES;
 
@@ -37,6 +38,28 @@
 }
 
 #pragma mark - Context notification
+
+- (void) DBUpdated : (NSNotification*) notification
+{
+	if([RakDBUpdate analyseNeedUpdateProject:notification.userInfo :_project])
+	{
+		PROJECT_DATA project = getProjectByID(_project.cacheDBID);
+		if(project.isInitialized)
+		{
+			releaseCTData(_project);
+			_project = project;
+		}
+		else if(!checkProjectStillExist(_project.cacheDBID))
+		{
+			releaseCTData(_project);
+			_project = getEmptyProject();
+			self.initWithNoContent = YES;
+			
+			if(getMainThread() == TAB_CT)
+				[RakApp.serie ownFocus];
+		}
+	}
+}
 
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element
 {

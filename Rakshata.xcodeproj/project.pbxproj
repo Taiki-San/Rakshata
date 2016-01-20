@@ -1594,6 +1594,7 @@
 		B67C68B11C270921005AB992 /* OS X */ = {
 			isa = PBXGroup;
 			children = (
+				B6CF07BC1868DD58009B16A3 /* Products */,
 				B66ED18F1949B6D2002A333F /* Interface Builder */,
 				B645C46D1C28A27D00CC3EC8 /* Sources */,
 				B6073C451C29B28C0061070A /* Supporting Files */,
@@ -2036,7 +2037,6 @@
 				B67C687C1C270698005AB992 /* iOS */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
 				B67C68B11C270921005AB992 /* OS X */,
-				B6CF07BC1868DD58009B16A3 /* Products */,
 				B6A9C4771C2EFA5B00BDE925 /* Rakshata iOS.entitlements */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,

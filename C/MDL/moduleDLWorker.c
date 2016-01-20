@@ -51,12 +51,12 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
         free(listDL);
         free(listSizeDL);
         *(input.currentState) = MDL_CODE_INTERNAL_ERROR;
-        MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
+        MDLUpdateIcons(selfCode, input.todoList);
         quit_thread(0);
     }
 	
     *(input.currentState) = MDL_CODE_DL;
-	MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
+	MDLUpdateIcons(selfCode, input.todoList);
 	
     for(uint i = 0; i < nbElement; i++)
     {
@@ -166,7 +166,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	if(!DLAborted)
 	{
 #if TARGET_OS_IPHONE
-		MDLUpdateIcons(selfCode, input.todoList->rowViewResponsible);
+		MDLUpdateIcons(selfCode, input.todoList);
 #endif
 		MDLDownloadOver(false);
 	}
@@ -180,7 +180,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 		if(!MDLStartNextInstallation())	//Si le controlleur central s'est arrêté, dans le cas où on est les derniers
 			*(input.currentState) = MDL_CODE_INSTALL;
 		   
-		MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+		MDLUpdateIcons(input.selfCode, input.todoList);
 		
 		MUTEX_LOCK(installSharedMemoryReadWrite);
 		while(*(input.currentState) != MDL_CODE_INSTALL)
@@ -236,7 +236,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 	MDLStartNextInstallation();
 	
     if(!quit && !DLAborted)
-        MDLUpdateIcons(input.selfCode, input.todoList->rowViewResponsible);
+        MDLUpdateIcons(input.selfCode, input.todoList);
 	
     free(listSizeDL);
     free(listDL);

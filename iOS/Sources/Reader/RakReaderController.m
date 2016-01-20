@@ -38,6 +38,7 @@
 - (void) awakeFromNib
 {
 	[super awakeFromNib];
+	[self sharedInit];
 	
 	self.initWithNoContent = YES;
 	self.hidesBottomBarWhenPushed = YES;

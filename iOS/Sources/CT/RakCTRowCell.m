@@ -24,7 +24,7 @@
 	UIColor * buttonBlue;
 	
 	NSString * priceString;
-	BOOL tapRegistered;
+	BOOL tapRegistered, MDLUpdateNotified;
 }
 
 @end
@@ -44,9 +44,8 @@
 
 - (void) setSelected : (BOOL)selected animated:(BOOL)animated
 {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
+	if(_isReadable)
+		[super setSelected:selected animated:animated];
 }
 
 - (void) setFrame:(CGRect)frame
@@ -98,6 +97,8 @@
 - (void) processDataUpdateForProject : (PROJECT_DATA) project withName : (NSString *) selectionName withPriceString : (NSString *) _priceString
 {
 	_isReadable = checkReadable(project, isTome, selection);
+	
+	BOOL DLStatusWasHidden = DLStatus.isHidden;
 	
 	//Slight overhead, but we reset all the view to hidden = YES
 	if(DLStatus != nil)			DLStatus.hidden = YES;
@@ -154,7 +155,11 @@
 			else
 			{
 				DLStatus.hidden = NO;
-				[DLStatus setPercentage:0.0];
+				
+				if(!MDLUpdateNotified || DLStatusWasHidden)
+					[DLStatus setPercentage:0.0];
+				else
+					[DLStatus setPercentage:100.0];
 			}
 
 		}
@@ -331,7 +336,11 @@
 		else
 		{
 			PROJECT_DATA project = getProjectByID(cacheID);
+			
+			MDLUpdateNotified = YES;
 			[self processDataUpdateForProject:project withName:mainText.text withPriceString:priceString];
+			MDLUpdateNotified = NO;
+			
 			releaseCTData(project);
 		}
 	}

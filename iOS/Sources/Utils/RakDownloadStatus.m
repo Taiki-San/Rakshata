@@ -69,7 +69,7 @@
 {
 	if([object class] == [Prefs class])
 	{
-		borderColor = [Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS];
+		borderColor = [[Prefs getSystemColor:COLOR_PROGRESSLINE_PROGRESS] colorWithAlphaComponent:1];
 		[self setNeedsDisplay];
 	}
 }
