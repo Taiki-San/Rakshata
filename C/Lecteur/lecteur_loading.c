@@ -6,7 +6,11 @@
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
  **                                                                                         **
- **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
+ **			This Source Code Form is subject to the terms of the Mozilla Public				**
+ **			License, v. 2.0. If a copy of the MPL was not distributed with this				**
+ **			file, You can obtain one at http://mozilla.org/MPL/2.0/.						**
+ **                                                                                         **
+ **                     			© Taiki 2011-2016                                       **
  **                                                                                         **
  *********************************************************************************************/
 #include "lecteur.h"

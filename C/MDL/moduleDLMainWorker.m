@@ -5,9 +5,13 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \__ \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
- **		Source code and assets are property of Taiki, distribution is stricly forbidden		**
- **                                                                                          **
+ **                                                                                         **
+ **			This Source Code Form is subject to the terms of the Mozilla Public				**
+ **			License, v. 2.0. If a copy of the MPL was not distributed with this				**
+ **			file, You can obtain one at http://mozilla.org/MPL/2.0/.						**
+ **                                                                                         **
+ **                     			© Taiki 2011-2016                                       **
+ **                                                                                         **
  *********************************************************************************************/
 
 pthread_mutex_t installSharedMemoryReadWrite= PTHREAD_MUTEX_INITIALIZER;
@@ -252,7 +256,7 @@ void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata)
 	if(metadata->rowViewResponsible != nil)
 	{
 #if !TARGET_OS_IPHONE
-		[(__bridge RakMDLListView *) UIInstance performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
+		[(__bridge RakMDLListView *) metadata->rowViewResponsible performSelectorOnMainThread:@selector(updateContext) withObject:nil waitUntilDone:NO];
 #else
 		[(RakMDLCoreController *) RakApp.MDL rowUpdate:selfCode];
 #endif
@@ -275,7 +279,7 @@ void updatePercentage(PROXY_DATA_LOADED * metadata, float percentage, size_t spe
 	if(metadata->rowViewResponsible != NULL)
 	{
 #if !TARGET_OS_IPHONE
-		[(__bridge RakMDLListView*) rowViewResponsible updatePercentage:percentage :speed];
+		[(__bridge RakMDLListView *) *metadata->rowViewResponsible updatePercentage:percentage :speed];
 #else
 		[(RakMDLCoreController *) RakApp.MDL percentageUpdate : percentage atSpeed : speed forObject : (__bridge NSNumber *) *metadata->rowViewResponsible];
 #endif
