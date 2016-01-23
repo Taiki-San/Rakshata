@@ -510,21 +510,20 @@
 		B602DA881BA56E3D00F247B4 /* NSImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+Tint.h"; path = "Common/Utils/NSImage+Tint.h"; sourceTree = "<group>"; };
 		B602DA891BA56E3D00F247B4 /* NSImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Tint.m"; path = "Common/Utils/NSImage+Tint.m"; sourceTree = "<group>"; };
 		B604067D1BFB2FCB00BE7E24 /* RakProjectMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakProjectMenu.m; path = Utils/RakProjectMenu.m; sourceTree = "<group>"; };
-		B606EB171B6854EB00DDBBBD /* db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = db.h; path = C/DB/db.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		B606EB181B6854F900DDBBBD /* dbCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = dbCache.h; path = C/DB/dbCache.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		B606EB191B6854F900DDBBBD /* DBCacheInit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheInit.c; path = C/DB/DBCacheInit.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1A1B6854F900DDBBBD /* DBCacheInstalled.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheInstalled.c; path = C/DB/DBCacheInstalled.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1B1B6854F900DDBBBD /* DBCacheIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheIO.c; path = C/DB/DBCacheIO.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1C1B6854F900DDBBBD /* DBCacheQuery.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheQuery.c; path = C/DB/DBCacheQuery.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1D1B6854F900DDBBBD /* DBCacheRepo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheRepo.c; path = C/DB/DBCacheRepo.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1E1B6854F900DDBBBD /* DBDebug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBDebug.c; path = C/DB/DBDebug.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB1F1B6854F900DDBBBD /* DBLocal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBLocal.c; path = C/DB/DBLocal.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB201B6854F900DDBBBD /* dbProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = dbProperties.h; path = C/DB/dbProperties.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		B606EB211B6854F900DDBBBD /* DBRecent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBRecent.c; path = C/DB/DBRecent.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB221B6854F900DDBBBD /* DBRefresh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBRefresh.c; path = C/DB/DBRefresh.c; sourceTree = "<group>"; };
-		B606EB231B6854F900DDBBBD /* DBSearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBSearch.c; path = C/DB/DBSearch.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB241B6854F900DDBBBD /* DBTags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBTags.c; path = C/DB/DBTags.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		B606EB251B6854F900DDBBBD /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/DB/DBTools.c; sourceTree = "<group>"; };
+		B606EB181B6854F900DDBBBD /* dbCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = dbCache.h; path = C/Database/DBCache/dbCache.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B606EB191B6854F900DDBBBD /* DBCacheInit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheInit.c; path = C/Database/DBCache/DBCacheInit.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1A1B6854F900DDBBBD /* DBCacheInstalled.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheInstalled.c; path = C/Database/DBCache/DBCacheInstalled.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1B1B6854F900DDBBBD /* DBCacheIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheIO.c; path = C/Database/DBCache/DBCacheIO.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1C1B6854F900DDBBBD /* DBCacheQuery.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheQuery.c; path = C/Database/DBCache/DBCacheQuery.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1D1B6854F900DDBBBD /* DBCacheRepo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBCacheRepo.c; path = C/Database/DBCache/DBCacheRepo.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1E1B6854F900DDBBBD /* DBDebug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBDebug.c; path = C/Database/DBCache/DBDebug.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB1F1B6854F900DDBBBD /* DBLocal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBLocal.c; path = C/Database/DBCache/DBLocal.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB201B6854F900DDBBBD /* dbProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = dbProperties.h; path = C/Database/DBCache/dbProperties.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B606EB211B6854F900DDBBBD /* DBRecent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBRecent.c; path = C/Database/DBCache/DBRecent.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB221B6854F900DDBBBD /* DBRefresh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBRefresh.c; path = C/Database/DBCache/DBRefresh.c; sourceTree = "<group>"; };
+		B606EB231B6854F900DDBBBD /* DBSearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBSearch.c; path = C/Database/DBCache/DBSearch.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB241B6854F900DDBBBD /* DBTags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBTags.c; path = C/Database/DBCache/DBTags.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B606EB251B6854F900DDBBBD /* DBTools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DBTools.c; path = C/Database/DBCache/DBTools.c; sourceTree = "<group>"; };
 		B606EB3F1B68556900DDBBBD /* lecteur_check_newElems.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_check_newElems.c; path = C/Lecteur/lecteur_check_newElems.c; sourceTree = "<group>"; };
 		B606EB401B68556900DDBBBD /* lecteur_loading.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_loading.c; path = C/Lecteur/lecteur_loading.c; sourceTree = "<group>"; };
 		B606EB411B68556900DDBBBD /* lecteur_tool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lecteur_tool.c; path = C/Lecteur/lecteur_tool.c; sourceTree = "<group>"; };
@@ -537,18 +536,17 @@
 		B606EB4B1B6855D300DDBBBD /* settings.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = settings.c; path = C/Utils/settings.c; sourceTree = "<group>"; };
 		B606EB4C1B6855D300DDBBBD /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread.c; path = C/Utils/thread.c; sourceTree = "<group>"; };
 		B606EB4D1B6855D300DDBBBD /* utilitaires.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utilitaires.c; path = C/Utils/utilitaires.c; sourceTree = "<group>"; };
-		B606EB561B68560600DDBBBD /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = "C/Data management/chapitre.c"; sourceTree = "<group>"; };
-		B606EB571B68560600DDBBBD /* CTCommon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CTCommon.c; path = "C/Data management/CTCommon.c"; sourceTree = "<group>"; };
-		B606EB581B68560600DDBBBD /* favoris.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = favoris.c; path = "C/Data management/favoris.c"; sourceTree = "<group>"; };
-		B606EB591B68560600DDBBBD /* repo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = repo.c; path = "C/Data management/repo.c"; sourceTree = "<group>"; };
-		B606EB5A1B68560600DDBBBD /* tome.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tome.c; path = "C/Data management/tome.c"; sourceTree = "<group>"; };
-		B606EB601B68562600DDBBBD /* tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tag.h; path = C/DB/tag.h; sourceTree = "<group>"; };
-		B606EB611B68562600DDBBBD /* tagUpdate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tagUpdate.c; path = C/DB/tagUpdate.c; sourceTree = "<group>"; };
+		B606EB561B68560600DDBBBD /* chapitre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chapitre.c; path = C/Database/chapitre.c; sourceTree = "<group>"; };
+		B606EB571B68560600DDBBBD /* CTCommon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = CTCommon.c; path = C/Database/CTCommon.c; sourceTree = "<group>"; };
+		B606EB581B68560600DDBBBD /* favoris.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = favoris.c; path = C/Database/favoris.c; sourceTree = "<group>"; };
+		B606EB591B68560600DDBBBD /* repo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = repo.c; path = C/Database/repo.c; sourceTree = "<group>"; };
+		B606EB5A1B68560600DDBBBD /* tome.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tome.c; path = C/Database/tome.c; sourceTree = "<group>"; };
+		B606EB601B68562600DDBBBD /* tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tag.h; path = C/Database/DBCache/tag.h; sourceTree = "<group>"; };
+		B606EB611B68562600DDBBBD /* tagUpdate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tagUpdate.c; path = C/Database/DBCache/tagUpdate.c; sourceTree = "<group>"; };
 		B606EB631B68564B00DDBBBD /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/Security/keys.c; sourceTree = "<group>"; };
 		B606EB641B68564B00DDBBBD /* securite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = securite.c; path = C/Security/securite.c; sourceTree = "<group>"; };
 		B6073C431C2978350061070A /* tagSyncParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = tagSyncParser.m; path = Common/Utils/tagSyncParser.m; sourceTree = "<group>"; };
 		B6073C4A1C29C2C40061070A /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = "OS X/RakTabView/RakTabView.m"; sourceTree = "<group>"; };
-		B609F8CD19C4C640005CDDD9 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = Common/Utils/JSONParser.h; sourceTree = "<group>"; };
 		B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSlideshowButton.h; path = Utils/RakSlideshowButton.h; sourceTree = "<group>"; };
 		B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSlideshowButton.m; path = Utils/RakSlideshowButton.m; sourceTree = "<group>"; };
 		B60AE4BE1B06247400DA44E6 /* RakCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomButton.h; path = Utils/RakCustomButton.h; sourceTree = "<group>"; };
@@ -578,7 +576,7 @@
 		B62266A61A55D5B3000A5138 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B623390818DBB7F800FC188A /* RakContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakContentView.h; path = Utils/RakContentView.h; sourceTree = "<group>"; };
 		B623390918DBB7F800FC188A /* RakContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakContentView.m; path = Utils/RakContentView.m; sourceTree = "<group>"; };
-		B6245AD019F698A60015F11B /* configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = configuration.h; path = C/configuration.h; sourceTree = "<group>"; };
+		B6245AD019F698A60015F11B /* configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = configuration.h; path = C/Headers/configuration.h; sourceTree = "<group>"; };
 		B6251F721A98CC92001C4F06 /* RakAboutWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAboutWindow.h; path = "Divers Windows/RakAboutWindow.h"; sourceTree = "<group>"; };
 		B6251F731A98CC92001C4F06 /* RakAboutWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAboutWindow.m; path = "Divers Windows/RakAboutWindow.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B625760C1C27723400811C33 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -785,6 +783,8 @@
 		B6978A7C1B420D34002CBB45 /* RakExportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakExportController.m; path = "Common/Import:Export/RakExportController.m"; sourceTree = "<group>"; };
 		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
 		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
+		B6986F611C53DDA800A61EB8 /* db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = db.h; path = C/Database/DBCache/db.h; sourceTree = "<group>"; };
+		B6986F621C53DDBD00A61EB8 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = Common/Utils/JSONParser.h; sourceTree = "<group>"; };
 		B6993AB51B1A847700FFF894 /* RakPrefsFavoriteListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsFavoriteListView.m; path = "Divers Windows/RakPrefsFavoriteListView.m"; sourceTree = "<group>"; };
 		B69966CF1C300E8B00576396 /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add.png; sourceTree = "<group>"; };
 		B69966D01C300E8B00576396 /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@2x.png"; sourceTree = "<group>"; };
@@ -963,8 +963,8 @@
 		B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAddRepoController.m; path = Utils/RakAddRepoController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = Common/Utils/DotRakSourceParser.m; sourceTree = "<group>"; };
 		B6D7EC081B682B90009FCE64 /* RakImportRarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportRarController.m; path = "Import:Export/RakImportRarController.m"; sourceTree = "<group>"; };
-		B6D7EC0C1B682D33009FCE64 /* unrar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unrar.c; path = C/libarchive/unrar.c; sourceTree = "<group>"; };
-		B6D7EC0E1B682DD2009FCE64 /* libarchivewrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libarchivewrapper.h; path = C/libarchive/libarchivewrapper.h; sourceTree = "<group>"; };
+		B6D7EC0C1B682D33009FCE64 /* unrar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unrar.c; sourceTree = "<group>"; };
+		B6D7EC0E1B682DD2009FCE64 /* libarchivewrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libarchivewrapper.h; sourceTree = "<group>"; };
 		B6D9043D1AB8C8AD001A2D6B /* RakPrefsGeneralView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsGeneralView.h; path = "Divers Windows/RakPrefsGeneralView.h"; sourceTree = "<group>"; };
 		B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsGeneralView.m; path = "Divers Windows/RakPrefsGeneralView.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D904401AB8D7C7001A2D6B /* RakSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedControl.h; path = Utils/RakSegmentedControl.h; sourceTree = "<group>"; };
@@ -972,14 +972,14 @@
 		B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INPopoverController.framework; path = Framework/INPopoverController.framework; sourceTree = "<group>"; };
 		B6DFE1A51B1D007000D65E68 /* settings */ = {isa = PBXFileReference; lastKnownFileType = file; path = settings; sourceTree = "<group>"; };
 		B6DFE1A61B1D007000D65E68 /* backupTags.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = backupTags.db; sourceTree = "<group>"; };
-		B6E07A1A1B3575F60016C9B0 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		B6E07A1B1B3575F60016C9B0 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		B6E07A1D1B35917B0016C9B0 /* minizip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minizip.c; sourceTree = "<group>"; };
+		B6E07A1A1B3575F60016C9B0 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zip.c; path = ../Compression/unzip/zip.c; sourceTree = "<group>"; };
+		B6E07A1B1B3575F60016C9B0 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../Compression/unzip/zip.h; sourceTree = "<group>"; };
+		B6E07A1D1B35917B0016C9B0 /* minizip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = minizip.c; path = ../Compression/unzip/minizip.c; sourceTree = "<group>"; };
 		B6E09697197C9DCE0084873C /* theme 2 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "theme 2"; sourceTree = "<group>"; };
 		B6E45D7018D5F290007E1D5C /* RakPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakPage.h; path = Reader/RakPage.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6E45D7118D5F290007E1D5C /* RakPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPage.m; path = Reader/RakPage.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6E5146418771492006470ED /* RakButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakButton.m; path = Utils/RakButton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBSuggestion.c; path = C/DB/DBSuggestion.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B6E76F481C1CCA89005B8E2E /* DBSuggestion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = DBSuggestion.c; path = C/Database/DBCache/DBSuggestion.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6E89387189EF39700ACAF36 /* CTSelec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = CTSelec.h; path = CTSelec/CTSelec.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6E89388189EF39700ACAF36 /* CTSelec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = CTSelec.m; path = CTSelec/CTSelec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6E8938A189EF3A600ACAF36 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Ressources/Images.xcassets; sourceTree = "<group>"; };
@@ -1018,21 +1018,21 @@
 		B6F131331B372E4100042F8C /* RakImportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakImportController.m; path = "Import:Export/RakImportController.m"; sourceTree = "<group>"; };
 		B6F2F7B019CE2C7D0044A69C /* RakAuthTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAuthTools.h; path = Prefs/RakAuthTools.h; sourceTree = "<group>"; };
 		B6F2F7B119CE2C7D0044A69C /* RakAuthTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAuthTools.m; path = Prefs/RakAuthTools.m; sourceTree = "<group>"; };
-		B6F6ECB118A3001400E3B55B /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defines.h; path = C/defines.h; sourceTree = "<group>"; };
-		B6F6ECB718A3001400E3B55B /* fonctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fonctions.h; path = C/fonctions.h; sourceTree = "<group>"; };
-		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/main.h; sourceTree = "<group>"; };
-		B6F6ECD018A3001400E3B55B /* prototypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prototypes.h; path = C/prototypes.h; sourceTree = "<group>"; };
+		B6F6ECB118A3001400E3B55B /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defines.h; path = C/Headers/defines.h; sourceTree = "<group>"; };
+		B6F6ECB718A3001400E3B55B /* fonctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fonctions.h; path = C/Headers/fonctions.h; sourceTree = "<group>"; };
+		B6F6ECC418A3001400E3B55B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = C/Headers/main.h; sourceTree = "<group>"; };
+		B6F6ECD018A3001400E3B55B /* prototypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prototypes.h; path = C/Headers/prototypes.h; sourceTree = "<group>"; };
 		B6F6ECD118A3001400E3B55B /* rakshata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rakshata.c; path = C/rakshata.c; sourceTree = "<group>"; };
-		B6F6ECD618A3001400E3B55B /* structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = structures.h; path = C/structures.h; sourceTree = "<group>"; };
-		B6F6ECDB18A3001400E3B55B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		B6F6ECDC18A3001400E3B55B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		B6F6ECDF18A3001400E3B55B /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
-		B6F6ECE018A3001400E3B55B /* zlibAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlibAPI.h; sourceTree = "<group>"; };
-		B6F6ECE218A3001400E3B55B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		B6F6ECE318A3001400E3B55B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		B6F6ECE518A3001400E3B55B /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
-		B6F6ECE618A3001400E3B55B /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
-		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = unz_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		B6F6ECD618A3001400E3B55B /* structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = structures.h; path = C/Headers/structures.h; sourceTree = "<group>"; };
+		B6F6ECDB18A3001400E3B55B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = ../Compression/unzip/ioapi.c; sourceTree = "<group>"; };
+		B6F6ECDC18A3001400E3B55B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ioapi.h; path = ../Compression/unzip/ioapi.h; sourceTree = "<group>"; };
+		B6F6ECDF18A3001400E3B55B /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = miniunz.c; path = ../Compression/unzip/miniunz.c; sourceTree = "<group>"; };
+		B6F6ECE018A3001400E3B55B /* zlibAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlibAPI.h; path = ../Compression/unzip/zlibAPI.h; sourceTree = "<group>"; };
+		B6F6ECE218A3001400E3B55B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = ../Compression/unzip/unzip.h; sourceTree = "<group>"; };
+		B6F6ECE318A3001400E3B55B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = ../Compression/unzip/unzip.c; sourceTree = "<group>"; };
+		B6F6ECE518A3001400E3B55B /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zconf.h; path = ../../Compression/unzip/zlib/zconf.h; sourceTree = "<group>"; };
+		B6F6ECE618A3001400E3B55B /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = ../../Compression/unzip/zlib/zlib.h; sourceTree = "<group>"; };
+		B6F6ED1B18A3003500E3B55B /* unz_memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; name = unz_memory.c; path = ../Compression/unzip/unz_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		B6FAD88B1C2A1F5E0084692A /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = iOS/Libraries/lib/libcrypto.a; sourceTree = "<group>"; };
 		B6FAD88D1C2A1F5E0084692A /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = iOS/Libraries/lib/libssl.a; sourceTree = "<group>"; };
 		B6FB5C051A7994F100EF99E6 /* RakSRTagRail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRTagRail.h; path = "Séries/RakSRTagRail.h"; sourceTree = "<group>"; };
@@ -2143,6 +2143,7 @@
 				B6D7EC0E1B682DD2009FCE64 /* libarchivewrapper.h */,
 			);
 			name = rar;
+			path = C/Compression/unrar;
 			sourceTree = "<group>";
 		};
 		B6D7EC0B1B682CF7009FCE64 /* Compression */ = {
@@ -2317,7 +2318,7 @@
 				B6A6ACEC1AAEEA9C00CAF51E /* DBCache */,
 				B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */,
 				B606EB581B68560600DDBBBD /* favoris.c */,
-				B609F8CD19C4C640005CDDD9 /* JSONParser.h */,
+				B6986F621C53DDBD00A61EB8 /* JSONParser.h */,
 				B678D033197717A600D7FE6A /* ProjectParser.m */,
 				B606EB591B68560600DDBBBD /* repo.c */,
 				B61279FA1A585EFF0034C241 /* RepoParser.m */,
@@ -2350,8 +2351,8 @@
 			isa = PBXGroup;
 			children = (
 				B6245AD019F698A60015F11B /* configuration.h */,
-				B606EB171B6854EB00DDBBBD /* db.h */,
 				B6F6ECB118A3001400E3B55B /* defines.h */,
+				B6986F611C53DDA800A61EB8 /* db.h */,
 				B67845A219631311007372C7 /* encoding.h */,
 				B6F6ECB718A3001400E3B55B /* fonctions.h */,
 				B606EB451B68557100DDBBBD /* lecteur.h */,
