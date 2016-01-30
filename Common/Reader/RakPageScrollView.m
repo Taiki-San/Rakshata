@@ -89,7 +89,7 @@
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
-		sliderStart.y = documentViewSize.height - scrollviewSize.height;
+		sliderStart.y = round((documentViewSize.height - scrollviewSize.height) / self.magnification);
 	
 	if(animated)
 		[self scrollWithAnimationToPoint:sliderStart];
@@ -111,10 +111,10 @@
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
-		sliderStart.y = documentViewSize.height - scrollviewSize.height;
+		sliderStart.y = (documentViewSize.height - scrollviewSize.height) / self.magnification;
 	
 	if(_pageTooLarge)
-		sliderStart.x = documentViewSize.width - scrollviewSize.width;
+		sliderStart.x = (documentViewSize.width - scrollviewSize.width) / self.magnification;
 	
 	[self scrollToPoint:sliderStart];
 }
