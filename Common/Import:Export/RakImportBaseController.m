@@ -56,4 +56,9 @@
 	return YES;
 }
 
+- (BOOL) acceptPackageInPackage
+{
+	return NO;
+}
+
 @end

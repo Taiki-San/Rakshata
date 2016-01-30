@@ -34,6 +34,8 @@ enum
 	MAX_DEPTH = 5
 };
 
+bool fileIsBundle(const char * filename, RakImportBaseController <RakImportIO> * IOController);
+
 RakImportNode * _importDataForFiles(const char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController, uint depth)
 {
 	RakImportNode * output = getEmptyImportNode();
@@ -51,30 +53,61 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 	bool imagesAndFlatCT = true;
 	const char * supportedFormat[] = {"png", "jpg", "dat", "jpeg", "pdf", "tiff", "gif"};
 	const byte formatLengths[] = {3, 3, 3, 4, 3, 4, 3};
-	uint nbImages = 0;
+	uint nbImages = 0, pos = 0;
+	
+	//Is the first file the name of the directory we are processing?
+	if([IOController class] == [RakImportDirController class] &&
+	   [nodeName isEqualToString:[NSString stringWithUTF8String:files[0]]] &&
+	   (nbFiles > 1 && !strncmp(files[0], files[1], strlen(files[0]))))
+	{
+		pos = 1;
+	}
 
-	for(uint pos = 0, length, cursor; pos < nbFiles; pos++)
+	for(uint length, cursor; pos < nbFiles; pos++)
 	{
 		if(files[pos] == NULL)
 			continue;
 
 		cursor = length = strlen(files[pos]);
 
-		if(length <= 1)
+		if(length <= 1 || files[pos][length - 1] == '.')
 			continue;
+		
+		//We need to take a different code path if the file is a bundle, but in order to determine that, we need to locate the extension...
+		//This make the code a bit convulated...
+		bool isDir = files[pos][length - 1] == '/';
+		
+		//Okay, we look for extensions
+		while(cursor-- > 0 && files[pos][cursor] != '/' && files[pos][cursor] != '.');
+		
+		//File start with a dot or is straight out invalid
+		if(cursor == 0 || (files[pos][cursor] == '.' && files[pos][cursor - 1] == '/'))
+			continue;
+		
+		//At this point, we still include the dot
+		cursor += 1;
 
 		//Directory, we recursively analyse it
-		if(files[pos][cursor - 1] == '/')
+		if(isDir || fileIsBundle(&files[pos][cursor], IOController))
 		{
 			uint basePosDir = pos;
-			//We look for files in this directory. The filename have to be longer
-			for(; pos + 1 < nbFiles && strlen(files[pos + 1]) > length && !strncmp(files[basePosDir], files[pos + 1], length); pos++);
-
-			//Empty path, we discard it
-			if(basePosDir == pos)
-				continue;
-
-			RakImportNode * newNode = _importDataForFiles(files[basePosDir], &(files[basePosDir + 1]), pos - basePosDir, IOController, depth + 1);
+			RakImportNode * newNode;
+			
+			if(isDir)
+			{
+				//We look for files in this directory. The filename have to be longer
+				for(; pos + 1 < nbFiles && strlen(files[pos + 1]) > length && !strncmp(files[basePosDir], files[pos + 1], length); pos++);
+				
+				//Empty path, we discard it
+				if(basePosDir == pos)
+					continue;
+				
+				newNode = _importDataForFiles(files[basePosDir], &(files[basePosDir + 1]), pos - basePosDir, IOController, depth + 1);
+			}
+			else
+			{
+				newNode = [createIOForFilename([NSString stringWithUTF8String:files[pos]]) getNode];
+			}
 
 			if(!newNode.isValid)
 				continue;
@@ -92,18 +125,10 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 
 			continue;
 		}
-
-		//Okay, we look for extensions
-		while(cursor-- > 0 && files[pos][cursor] != '/' && files[pos][cursor] != '.');
-
-		//File don't start with a dot
-		if(cursor > 0 && files[pos][cursor] == '.' && files[pos][cursor - 1] != '/' && files[pos][cursor - 1] != '.')
+		else	//Image
 		{
 			if(length - cursor < MIN_EXT_LENGTH || length - cursor > MAX_EXT_LENGTH)
 				continue;
-
-			//At this point, we still include the dot
-			cursor += 1;
 
 			//Check if image
 			bool foundOne = false;
@@ -167,6 +192,31 @@ RakImportNode * importDataForFiles(const char * dirName, char ** files, const ui
 RakImportNode * getEmptyImportNode()
 {
 	return [[RakImportNode alloc] init];
+}
+
+bool fileIsBundle(const char * filename, RakImportBaseController <RakImportIO> * IOController)
+{
+	if(![IOController acceptPackageInPackage])
+		return false;
+	
+	const char * supportedBundle[] = {"rak", "zip", "cbz", "rar", "cbr"};
+	const byte bundleLength[] = {3, 3, 3, 3, 3};
+	
+	for(byte i = 0; i < sizeof(bundleLength); i++)
+	{
+		bool isValid = true;
+		
+		for(byte j = 0; j < bundleLength[i] && isValid; j++)
+		{
+			if(filename[j] != supportedBundle[i][j])
+				isValid = false;
+		}
+		
+		if(isValid)
+			return true;
+	}
+
+	return false;
 }
 
 void freeImportNode(RakImportNode * node)

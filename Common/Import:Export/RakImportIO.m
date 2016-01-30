@@ -113,7 +113,9 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				item.issue = IMPORT_PROBLEM_METADATA;
 				item.path = node.nodeName;
 				item.projectData = getEmptyExtraProject();
-				item.IOController = IOController;
+				item.IOController = node.IOController;
+				if(item.IOController == nil)
+					item.IOController = IOController;
 				
 				item.contentID = INVALID_VALUE;
 				item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
@@ -177,43 +179,6 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				item.projectData = extraProject;
 				
 				[output addObject:item];
-			}
-			//If plain directory, we will go the extra mile
-			else if([IOController isKindOfClass:[RakImportDirController class]])
-			{
-				//Okay, first, look for archives
-				NSMutableArray <RakImportBaseController <RakImportIO> *> * newIOControllers = [NSMutableArray new];
-				NSString * dirToLookup = [node.nodeName stringByDeletingPathExtension];
-				
-				//Some files were already converted
-				NSArray <NSString *> * childrenNames = [node getChildrenNames];
-				
-				[IOController evaluateItemFromDir:node.nodeName withInitBlock:nil andWithBlock:^(id<RakImportIO> controller, NSString * filename, uint index, BOOL * stop)
-				 {
-					 //File in a subdir?
-					 //This also happen to remove the current dir because stringByDeletingLastPathComponent is more agressive than stringByDeletingPathExtension :)
-					 if(![dirToLookup isEqualToString:[filename stringByDeletingLastPathComponent]])
-						 return;
-					 
-					 //The file is a directory, so already linearized
-					 if([childrenNames indexOfObject:filename] != NSNotFound)
-						 return;
-					 
-					 //We check if this is an archive
-					 RakImportBaseController <RakImportIO> * item = createIOForFilename(filename);
-					 if(item != nil)
-						 [newIOControllers addObject:item];
-				 }];
-				
-				//Great, we now insert the new IOControllers in output
-				NSArray <RakImportItem *> * items = getManifestForIOs(newIOControllers);
-				if(items != nil)
-					[output addObjectsFromArray:items];
-				
-				//And we process the children
-				items = getManifestForIOs([node getChildrenIOControllers]);
-				if(items != nil)
-					[output addObjectsFromArray:items];
 			}
 		}
 	}

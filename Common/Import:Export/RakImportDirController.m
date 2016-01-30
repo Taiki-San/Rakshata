@@ -40,7 +40,7 @@
 			filenames[i + 1] = filenames[i];
         
 		//Add / at the end if needed
-		if([dirname UTF8String][[dirname length] - 1] != '/')
+		if([dirname characterAtIndex:[dirname length] - 1] != '/')
 			dirname = [dirname stringByAppendingString:@"/"];
 
 		filenames[0] = strdup([dirname UTF8String]);
@@ -91,6 +91,11 @@
 	}
 	
 	return self;
+}
+
+- (BOOL) acceptPackageInPackage
+{
+	return YES;
 }
 
 - (void) dealloc

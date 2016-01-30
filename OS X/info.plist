@@ -106,7 +106,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>13094</string>
+	<string>13095</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.entertainment</string>
 	<key>LSMinimumSystemVersion</key>
@@ -124,7 +124,7 @@
 	<key>SUCheckAtStartup</key>
 	<true/>
 	<key>SUEnableAutomaticChecks</key>
-	<false/>
+	<true/>
 	<key>SUFeedURL</key>
 	<string>https://rakshata.com/update/rakshata-osx-beta.xml</string>
 	<key>SUPublicDSAKeyFile</key>

@@ -49,6 +49,7 @@
 @interface RakImportBaseController : NSObject
 
 - (BOOL) noValidFileFoundForDir : (const char * __nullable) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString * __nullable * __nonnull) redirection;
+- (BOOL) acceptPackageInPackage;
 
 @end
 
