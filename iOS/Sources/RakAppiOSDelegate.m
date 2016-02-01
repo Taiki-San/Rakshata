@@ -152,14 +152,9 @@
 	
 	if(IOController != nil)
 	{
-		NSLog(@"Yay %@ ~ %@", url, IOController);
+		_currentImportURL = url;
 		[RakImportController importFile:@[IOController]];
 	}
-	
-	NSError * error = nil;
-	[[NSFileManager defaultManager] removeItemAtURL:url error:&error];
-	if(error != nil)
-		NSLog(@"Couldn't delete the file to be imported :C %@", error);
 	
 	return YES;
 }

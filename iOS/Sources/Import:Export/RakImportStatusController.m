@@ -14,23 +14,35 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppiOSDelegate : RakAppDelegate <UITabBarControllerDelegate>
+@interface RakImportStatusController()
+
+@end
+
+@implementation RakImportStatusController
+
+- (void) switchToIssueUI : (NSArray *) dataSet
 {
-	UITabBarController * tabBarController;
+	
 }
 
-@property (readonly) BOOL hasFocus;
-@property (strong, nonatomic) UIWindow *window;
+- (NSData *) queryThumbOf : (RakImportItem *) item withIndex : (uint) index
+{
+	return nil;
+}
 
-@property NSURL * currentImportURL;
+- (BOOL) reflectMetadataUpdate : (PROJECT_DATA) project withImages : (NSArray *) overridenImages forItem : (RakImportItem *) item
+{
+	return YES;
+}
 
-- (void) registerTabBarController : (UITabBarController *) _tabBarController;
+- (void) postProcessUpdate
+{
+	
+}
 
-- (void) registerSeries : (Series *) series;
-- (void) registerCT : (CTSelec *) CT;
-- (void) registerMDL : (RakMDLCoreController *) MDL;
-- (void) registerReader : (Reader *) reader;
-
-- (UITabBarController *) tabBarController;
+- (void) close
+{
+	
+}
 
 @end

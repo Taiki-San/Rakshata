@@ -14,23 +14,60 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakAppiOSDelegate : RakAppDelegate <UITabBarControllerDelegate>
+@implementation RakEIStatusController
+
+- (instancetype) init
 {
-	UITabBarController * tabBarController;
+	self = [super init];
+	
+	if(self != nil)
+		[self startUI];
+	
+	return self;
 }
 
-@property (readonly) BOOL hasFocus;
-@property (strong, nonatomic) UIWindow *window;
+- (void) dealloc
+{
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
+}
 
-@property NSURL * currentImportURL;
+- (void) startUI
+{
+	self.view.backgroundColor = [UIColor redColor];
+	
+	NSURL * URL = [RakApp.currentImportURL copy];
+	
+	[RakApp.tabBarController.viewControllers[RakApp.tabBarController.selectedIndex] presentViewController:self animated:YES completion:^{
+		NSError * error = nil;
+		[[NSFileManager defaultManager] removeItemAtURL:URL error:&error];
+		if(error != nil)
+			NSLog(@"Couldn't delete the file to be imported :C %@", error);
+	}];
+}
 
-- (void) registerTabBarController : (UITabBarController *) _tabBarController;
+- (void) refreshUI
+{
+	
+}
 
-- (void) registerSeries : (Series *) series;
-- (void) registerCT : (CTSelec *) CT;
-- (void) registerMDL : (RakMDLCoreController *) MDL;
-- (void) registerReader : (Reader *) reader;
+- (void) closeUI
+{
+	
+}
 
-- (UITabBarController *) tabBarController;
+- (void) finishing
+{
+	
+}
+
+- (NSString *) headerText
+{
+	return nil;
+}
+
+- (RakColor *) backgroundColor
+{
+	return nil;
+}
 
 @end

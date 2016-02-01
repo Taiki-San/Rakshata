@@ -14,11 +14,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakEIStatusController : NSObject
+@interface RakEIStatusController :
+#if TARGET_OS_IPHONE
+									UIViewController
 {
-	CGFloat cachedPosInExport, cachedPosInEntry;
-
-#if !TARGET_OS_IPHONE
+#else
+									NSObject
+{
 	RakSheetWindow * queryWindow;
 
 	RakMenuText * title;
@@ -26,9 +28,13 @@
 	RakText * percentage;
 	RakButton * cancel;
 #endif
+	CGFloat cachedPosInExport, cachedPosInEntry;
 }
 
 @property BOOL haveCanceled;
+#if TARGET_OS_IPHONE
+@property NSURL * fileURL;
+#endif
 
 @property (nonatomic) CGFloat nbElementToExport, posInExport;
 @property (nonatomic) CGFloat nbElementInEntry, posInEntry;
