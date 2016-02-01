@@ -20,6 +20,10 @@
 {
 	[self awakeFromNib];
 	
+	NSURL *url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+	if(url != nil)
+		[self application:application openURL:url sourceApplication:nil annotation:nil];
+	
 	return YES;
 }
 
@@ -136,6 +140,26 @@
 		[(RakTabView *) viewController viewWillFocus];
 		return !((RakTabView *) viewController).initWithNoContent;
 	}
+	
+	return YES;
+}
+
+#pragma mark - Extension handling
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+	RakImportBaseController <RakImportIO> * IOController = createIOForFilename([url path]);
+	
+	if(IOController != nil)
+	{
+		NSLog(@"Yay %@ ~ %@", url, IOController);
+		[RakImportController importFile:@[IOController]];
+	}
+	
+	NSError * error = nil;
+	[[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+	if(error != nil)
+		NSLog(@"Couldn't delete the file to be imported :C %@", error);
 	
 	return YES;
 }

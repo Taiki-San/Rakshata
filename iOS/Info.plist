@@ -34,9 +34,9 @@
 				<string>rak_22x29.png</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Rak</string>
+			<string>Rakshata Archive</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
@@ -101,7 +101,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>32</string>
+	<string>33</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -141,8 +141,8 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.data</string>
 				<string>public.archive</string>
+				<string>com.rarlab.rar-archive</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Rar Comic Archive</string>
@@ -163,8 +163,10 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.data</string>
 				<string>public.archive</string>
+				<string>public.zip-archive</string>
+				<string>com.pkware.zip-archive</string>
+				<string>com.pkware.zipx-archive</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Zip Comic Archive</string>
@@ -207,7 +209,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.archive</string>
-				<string>public.data</string>
+				<string>public.zip-archive</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Rakshata Archive</string>
