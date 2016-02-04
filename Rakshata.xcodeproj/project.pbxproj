@@ -89,6 +89,7 @@
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
 		B62A88521C156BB40082BA3B /* RakSuggestionEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */; };
 		B62B45011A8FAAEA0096FA45 /* RakCTSerieHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */; };
+		B62C39621C63442B0068D0A1 /* Import.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62C39601C63442B0068D0A1 /* Import.xib */; };
 		B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */ = {isa = PBXBuildFile; fileRef = B62DBB891A118AEF007EBAC6 /* RakDRM.m */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
 		B62F67891A02E8D600157DEA /* RakCTHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F67881A02E8D600157DEA /* RakCTHeader.m */; };
@@ -596,6 +597,7 @@
 		B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSuggestionEngine.m; path = Utils/RakSuggestionEngine.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62B44FF1A8FAAEA0096FA45 /* RakCTSerieHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSerieHeader.h; path = CTSelec/RakCTSerieHeader.h; sourceTree = "<group>"; };
 		B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSerieHeader.m; path = CTSelec/RakCTSerieHeader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B62C39611C63442B0068D0A1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = iOS/Base.lproj/Import.xib; sourceTree = SOURCE_ROOT; };
 		B62DBB891A118AEF007EBAC6 /* RakDRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDRM.m; path = Reader/RakDRM.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62E6E7F18F8834C006A0D5F /* RakSerieList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieList.h; path = "Séries/RakSerieList.h"; sourceTree = "<group>"; };
 		B62E6E8018F8834C006A0D5F /* RakSerieList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSerieList.m; path = "Séries/RakSerieList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1134,6 +1136,7 @@
 				B6A9C47E1C2F017600BDE925 /* Extensions */,
 				B67110E11C276C9200E0BFD9 /* Info.plist */,
 				B6A9C4731C2EEB9F00BDE925 /* Main.storyboard */,
+				B62C39601C63442B0068D0A1 /* Import.xib */,
 				B6A9C4711C2EEB9E00BDE925 /* LaunchScreen.storyboard */,
 				B6797D391C2D645C00FF7104 /* settings.debug */,
 			);
@@ -2585,6 +2588,7 @@
 				B667E2901C2ACAE5001E504E /* settings in Resources */,
 				B69966DE1C30224100576396 /* unread.png in Resources */,
 				B69F85681C39CE9A00AF9A41 /* availableToDL@3x.png in Resources */,
+				B62C39621C63442B0068D0A1 /* Import.xib in Resources */,
 				B6A9C4961C2F017600BDE925 /* zip_64x64.png in Resources */,
 				B6A9C49D1C2F023000BDE925 /* source_22x29.png in Resources */,
 				B6A9C48E1C2F017600BDE925 /* rar_320x320.png in Resources */,
@@ -3087,6 +3091,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		B62C39601C63442B0068D0A1 /* Import.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B62C39611C63442B0068D0A1 /* Base */,
+			);
+			name = Import.xib;
+			sourceTree = "<group>";
+		};
 		B63401371A96A890003DC56E /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

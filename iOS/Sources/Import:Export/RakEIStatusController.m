@@ -34,15 +34,12 @@
 - (void) startUI
 {
 	self.view.backgroundColor = [UIColor redColor];
+	self.modalPresentationStyle = UIModalPresentationPopover;
 	
-	NSURL * URL = [RakApp.currentImportURL copy];
+	_fileURL = [RakApp.currentImportURL copy];
 	
-	[RakApp.tabBarController.viewControllers[RakApp.tabBarController.selectedIndex] presentViewController:self animated:YES completion:^{
-		NSError * error = nil;
-		[[NSFileManager defaultManager] removeItemAtURL:URL error:&error];
-		if(error != nil)
-			NSLog(@"Couldn't delete the file to be imported :C %@", error);
-	}];
+	UITabBarController * controller = RakApp.tabBarController;
+	[controller.viewControllers[controller.selectedIndex] presentViewController:self animated:YES completion:^{}];
 }
 
 - (void) refreshUI
@@ -52,7 +49,13 @@
 
 - (void) closeUI
 {
-	
+	UITabBarController * controller = RakApp.tabBarController;
+	[controller.viewControllers[controller.selectedIndex] dismissViewControllerAnimated:YES completion:^{
+		NSError * error = nil;
+		[[NSFileManager defaultManager] removeItemAtURL:_fileURL error:&error];
+		if(error != nil)
+			NSLog(@"Couldn't delete the file to be imported :C %@", error);
+	}];
 }
 
 - (void) finishing

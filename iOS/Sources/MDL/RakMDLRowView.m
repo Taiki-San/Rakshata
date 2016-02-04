@@ -14,37 +14,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#if TARGET_OS_IPHONE
-@interface RakEIStatusController : UIViewController
-{
-#else
-@interface RakEIStatusController : NSObject
-{
-	RakSheetWindow * queryWindow;
-
-	RakMenuText * title;
-	NSProgressIndicator * progressBar;
-	RakText * percentage;
-	RakButton * cancel;
-#endif
-	CGFloat cachedPosInExport, cachedPosInEntry;
-}
-
-@property BOOL haveCanceled;
-#if TARGET_OS_IPHONE
-@property NSURL * fileURL;
-#endif
-
-@property (nonatomic) CGFloat nbElementToExport, posInExport;
-@property (nonatomic) CGFloat nbElementInEntry, posInEntry;
-
-- (void) startUI;
-- (void) refreshUI;
-- (void) closeUI;
-
-- (void) finishing;
-
-- (NSString *) headerText;
-- (RakColor *) backgroundColor;
+@implementation RakMDLRowView
 
 @end
