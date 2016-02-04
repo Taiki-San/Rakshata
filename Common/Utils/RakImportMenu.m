@@ -48,6 +48,24 @@
 		[menu addItem:[NSMenuItem separatorItem]];
 	}
 	
+	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"IMPORT-MENU-COVERT-CHAP", nil) action:@selector(convertToChap) keyEquivalent:@""];
+	if(item != nil)
+	{
+		item.enabled = [_responder canConvertToChap];
+		item.target = _responder;
+		[menu addItem:item];
+		
+		item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"IMPORT-MENU-COVERT-VOL", nil) action:@selector(convertToVol) keyEquivalent:@""];
+		if(item != nil)
+		{
+			item.enabled = [_responder canConvertToVol];
+			item.target = _responder;
+			[menu addItem:item];
+		}
+		
+		[menu addItem:[NSMenuItem separatorItem]];
+	}
+	
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"IMPORT-MENU-NUKE", nil) action:@selector(removeItem) keyEquivalent:@""];
 	if(item != nil)
 	{

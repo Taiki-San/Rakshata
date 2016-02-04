@@ -32,6 +32,11 @@
 - (void) checkRefreshStatusRoot;
 
 - (BOOL) canMoveToIndependentNode;
+- (BOOL) canConvertToVol;
+- (void) convertToVol;
+- (BOOL) canConvertToChap;
+- (void) convertToChap;
+
 - (void) moveToIndependentNode;
 - (void) removeItem;
 

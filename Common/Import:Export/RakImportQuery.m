@@ -1178,76 +1178,8 @@ enum
 	if(!validInput)
 		return;
 
-	PROJECT_DATA_EXTRA project = _item.projectData;
-	_item.contentID = checkedContentID;
+	[_item updateCTIDWith:checkedContentID tomeName:string isTome:wantTome];
 
-	if(wantTome)
-	{
-		META_TOME tomeData;
-		
-		//Somehow, the volume wasn't registered ¯\_(ツ)_/¯
-		if(project.data.nbVolumesLocal == 0)
-		{
-			tomeData.ID = getVolumeIDForImport(project.data.project);
-			if(tomeData.ID != INVALID_VALUE)
-			{
-				tomeData.readingID = (int) checkedContentID;
-				wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));
-				
-				tomeData.details = malloc(sizeof(CONTENT_TOME));
-				if(tomeData.details != NULL)
-				{
-					tomeData.details[0].ID = CHAPTER_FOR_IMPORTED_VOLUMES;
-					tomeData.details[0].isPrivate = true;
-					tomeData.lengthDetails = 1;
-				}
-				
-				project.data.tomeLocal = malloc(sizeof(META_TOME));
-				if(project.data.tomeLocal != NULL)
-				{
-					project.data.nbVolumesLocal = 1;
-					project.data.tomeLocal[0] = tomeData;
-					
-					//If it migrated, we remove the other entry
-					if(project.data.nbChapterLocal > 0)
-					{
-						project.data.nbChapterLocal = 0;
-						free(project.data.chaptersLocal);
-						project.data.chaptersLocal = NULL;
-					}
-				}
-				else
-					free(tomeData.details);
-			}
-			else
-				logR("Couldn't grab a volume ID ಠ_ಠ\nYou should restart Rakshata and/or import smaller chuncks (and send us an email)");
-		}
-		else
-		{
-			project.data.tomeLocal[0].readingID = (int) checkedContentID;
-			wstrncpy(project.data.tomeLocal[0].readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));			
-		}
-	}
-	else if(_item.isTome != wantTome)
-	{
-		releaseParsedData(project.data);
-		nullifyParsedPointers(&project.data);
-		
-		project.data.chaptersLocal = malloc(sizeof(uint));
-		if(project.data.chaptersLocal != NULL)
-		{
-			project.data.nbChapterLocal = 1;
-			project.data.chaptersLocal[0] = _item.contentID;
-			generateCTUsable(&project.data);
-		}
-	}
-	else
-	{
-		project.data.chaptersLocal[0] = _item.contentID;
-	}
-
-	_item.projectData = project;
-	_item.isTome = wantTome;
 	[self close];
 
 	[_item refreshState];

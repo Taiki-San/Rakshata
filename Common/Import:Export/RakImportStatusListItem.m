@@ -151,6 +151,64 @@
 	return !_isRootItem;
 }
 
+- (BOOL) canConvertToVol
+{
+	if(!_isRootItem)
+		return !_itemForChild.isTome;
+
+	for(RakImportStatusListItem * item in children)
+	{
+		if([item canConvertToVol])
+			return YES;
+	}
+
+	return NO;
+}
+
+- (void) convertToVol
+{
+	[self convertToCT:YES];
+}
+
+- (BOOL) canConvertToChap
+{
+	if(!_isRootItem)
+		return _itemForChild.isTome;
+	
+	for(RakImportStatusListItem * item in children)
+	{
+		if([item canConvertToChap])
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (void) convertToChap
+{
+	[self convertToCT:YES];
+}
+
+- (void) convertToCT : (BOOL) wantIsTome
+{
+	if(_isRootItem)
+	{
+		for(RakImportStatusListItem * _item in children)
+		{
+			RakImportItem * item = _item.itemForChild;
+			if(item.isTome != wantIsTome)
+			{
+				[item updateCTIDWith:item.contentID tomeName:nil isTome:wantIsTome];
+			}
+		}
+		
+	}
+	else
+		[_itemForChild updateCTIDWith:_itemForChild.contentID tomeName:nil isTome:wantIsTome];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+}
+
 - (void) moveToIndependentNode
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_NEED_CALLBACK object:nil userInfo:@{@"item":self, @"payload":@(1)}];

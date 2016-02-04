@@ -230,6 +230,8 @@
 "IMPORT-STATUS-MISSING-DATA" = "Incomplete data 😱";
 
 "IMPORT-MENU-MOVE-OUT" = "Move to separate series";
+"IMPORT-MENU-COVERT-CHAP" = "Convert to chapter";
+"IMPORT-MENU-COVERT-VOL" = "Convert to volume";
 "IMPORT-MENU-NUKE" = "Discard";
 
 //Menu title

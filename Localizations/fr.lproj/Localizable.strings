@@ -230,6 +230,8 @@
 "IMPORT-STATUS-MISSING-DATA" = "Données incomplètes 😱";
 
 "IMPORT-MENU-MOVE-OUT" = "Déplacer dans une série séparée";
+"IMPORT-MENU-COVERT-CHAP" = "Convertir en chapitre";
+"IMPORT-MENU-COVERT-VOL" = "Convertir en tome";
 "IMPORT-MENU-NUKE" = "Retirer de la liste";
 
 //Menu title

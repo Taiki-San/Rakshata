@@ -47,6 +47,7 @@
 - (void) deleteData;
 - (BOOL) overrideDuplicate;
 - (BOOL) updateProject : (PROJECT_DATA) project;
+- (void) updateCTIDWith : (uint) contentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome;
 - (void) refreshState;
 
 - (void) processThumbs;
