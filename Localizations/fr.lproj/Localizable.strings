@@ -234,6 +234,8 @@
 "IMPORT-MENU-COVERT-VOL" = "Convertir en tome";
 "IMPORT-MENU-NUKE" = "Retirer de la liste";
 
+"IMPORT-DRAG-VARIOUS-SERIES" = "Divers séries";
+
 //Menu title
 "TITLE-ABOUT" = "À propos de Rakshata";
 "TITLE-UPDATE" = "Vérifier les mises à jour";

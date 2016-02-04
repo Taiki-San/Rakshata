@@ -188,7 +188,7 @@ enum
 				//We will craft a fake PROJECT_DATA if needed not to have to re-create the UI from scratch
 				_draggedProject = getEmptyProject();
 				_draggedProject.isInitialized = true;
-				wstrncpy(_draggedProject.projectName, LENGTH_PROJECT_NAME, L"Divers séries");
+				wstrncpy(_draggedProject.projectName, LENGTH_PROJECT_NAME, (charType*) [NSLocalizedString(@"IMPORT-DRAG-VARIOUS-SERIES", nil) cStringUsingEncoding:NSUTF32StringEncoding]);
 				return;
 			}
 		}

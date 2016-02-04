@@ -234,6 +234,8 @@
 "IMPORT-MENU-COVERT-VOL" = "Convert to volume";
 "IMPORT-MENU-NUKE" = "Discard";
 
+"IMPORT-DRAG-VARIOUS-SERIES" = "Various series";
+
 //Menu title
 "TITLE-ABOUT" = "About Rakshata";
 "TITLE-UPDATE" = "Check for Update";
