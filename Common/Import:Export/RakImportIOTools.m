@@ -55,6 +55,9 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 	const byte formatLengths[] = {3, 3, 3, 4, 3, 4, 3};
 	uint nbImages = 0, pos = 0;
 	
+	//We try to group a bunch of archives in a dir as a single project
+	bool isIOCADir = [IOController isKindOfClass:[RakImportDirController class]], hasDirInDir = false, hasImageInDir = false;
+	
 	//Is the first file the name of the directory we are processing?
 	if([IOController class] == [RakImportDirController class] &&
 	   [nodeName isEqualToString:[NSString stringWithUTF8String:files[0]]] &&
@@ -119,6 +122,9 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 
 				if(imagesAndFlatCT && !newNode.isFlatCT)
 					imagesAndFlatCT = false;
+				
+				if(isDir)
+					hasDirInDir = true;
 			}
 			else
 				freeImportNode(newNode);
@@ -160,7 +166,10 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 			}
 
 			if(foundOne)
+			{
 				++nbImages;
+				hasImageInDir = true;
+			}
 		}
 	}
 
@@ -178,6 +187,10 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 		{
 			output.isValid = true;
 			output.IOController = IOController;
+			
+			//If we have a dir with archives, but no dir nor images, we consider them as a single project
+			if(isIOCADir && !hasDirInDir && !hasImageInDir)
+				output.probablyIsProject = YES;
 		}
 	}
 

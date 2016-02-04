@@ -73,7 +73,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 	//	if the reader was importing the daily releases of various projects in one take
 	for(RakImportBaseController <RakImportIO> * IOController in _IOControllers)
 	{
-		//Cool, simplified analysis available
+		//Cool, simplified analysis available (.rak only :/)
 		if([IOController respondsToSelector:@selector(getManifest)])
 		{
 			[output addObjectsFromArray:[(id) IOController getManifest]];
@@ -91,6 +91,8 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 		}
 		
 		NSArray <RakImportNode *> * nodes = [_node getNodesIncludingChildren];
+		BOOL hadProbableProject = NO;
+		PROJECT_DATA sharedProject;
 
 		for(RakImportNode * node in nodes)
 		{
@@ -103,44 +105,57 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				continue;
 			}
 			
-			//Easy case, no analysis needed
-			if(node.isFlatCT)
+			//Not something we can handle, just ignore the node
+			if(!node.isFlatCT && !node.probablyIsProject)
+				continue;
+			
+			//We build a basic RakImportItem, containing the raw data, needed for further analysis
+			RakImportItem * item = [RakImportItem new];
+			PROJECT_DATA_EXTRA extraProject = getEmptyExtraProject();
+			if(item == nil)
+				continue;
+			
+			item.issue = IMPORT_PROBLEM_METADATA;
+			item.path = node.nodeName;
+			item.IOController = node.IOController;
+			if(item.IOController == nil)
+				item.IOController = IOController;
+			
+			item.contentID = INVALID_VALUE;
+			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
+			
+			//inferedName is only used if we need a project but inferMetadataFromPathWithHint also guess the # of the archive
+			NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
+			
+			//We don't have a cached project ready to go
+			//If we had something we are ready to bet is a group of archives from the same chapter, we only guess its metadata once
+			if(node.probablyIsProject || !hadProbableProject)
 			{
-				RakImportItem * item = [RakImportItem new];
-				if(item == nil)
-					continue;
-				
-				item.issue = IMPORT_PROBLEM_METADATA;
-				item.path = node.nodeName;
-				item.projectData = getEmptyExtraProject();
-				item.IOController = node.IOController;
-				if(item.IOController == nil)
-					item.IOController = IOController;
-				
-				item.contentID = INVALID_VALUE;
-				item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
-				NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
-				
-				PROJECT_DATA_EXTRA extraProject = item.projectData;
-				
 				if(inferedName == nil)
 					inferedName = [[item.path lastPathComponent] stringByDeletingPathExtension];
 				
 				//We try to find if we can easily match a project
-				extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);
+				sharedProject.cacheDBID = getProjectByName([inferedName UTF8String]);
 				
 				//No luck ¯\_(ツ)_/¯
-				if(extraProject.data.project.cacheDBID == INVALID_VALUE)
+				if(sharedProject.cacheDBID == INVALID_VALUE)
 				{
-					wstrncpy(extraProject.data.project.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
-					extraProject.data.project.locale = true;
-					extraProject.data.project.projectID = getEmptyLocalSlot(extraProject.data.project);
+					wstrncpy(sharedProject.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
+					sharedProject.locale = true;
+					sharedProject.projectID = getEmptyLocalSlot(extraProject.data.project);
 				}
 				else
 				{
-					extraProject.data.project = getProjectByID(extraProject.data.project.cacheDBID);
+					sharedProject = getProjectByID(extraProject.data.project.cacheDBID);
 				}
-				
+			}
+			
+			//We apply what we guessed
+			extraProject.data.project = sharedProject;
+			
+			//Easy case, no analysis needed
+			if(node.isFlatCT)
+			{
 				if(item.isTome)
 				{
 					extraProject.data.tomeLocal = calloc(1, sizeof(META_TOME));
@@ -179,6 +194,10 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				item.projectData = extraProject;
 				
 				[output addObject:item];
+			}
+			else if(node.probablyIsProject)
+			{
+				hadProbableProject = YES;
 			}
 		}
 	}

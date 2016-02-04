@@ -64,6 +64,7 @@
 
 @property uint nbImages;
 
+@property bool probablyIsProject;
 @property bool isFlatCT;
 @property bool isValid;
 
