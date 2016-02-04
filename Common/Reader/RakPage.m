@@ -1485,7 +1485,12 @@
 		return;
 	
 	NSImageRep *rep = [[page.image representations] objectAtIndex: 0];
-	NSSize size = page.image.size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
+	NSSize size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
+	
+	if(NSEqualSizes(size, NSZeroSize))
+		size = page.image.size;
+	else
+		page.image.size = size;
 	
 	page.frame = scrollView.contentFrame = NSMakeRect(0, 0, size.width, size.height + READER_PAGE_BORDERS_HIGH);
 	
