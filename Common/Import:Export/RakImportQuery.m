@@ -1227,8 +1227,6 @@ enum
 			project.data.tomeLocal[0].readingID = (int) checkedContentID;
 			wstrncpy(project.data.tomeLocal[0].readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [string UTF8String]));			
 		}
-
-		_item.projectData = project;
 	}
 	else if(_item.isTome != wantTome)
 	{
@@ -1242,10 +1240,13 @@ enum
 			project.data.chaptersLocal[0] = _item.contentID;
 			generateCTUsable(&project.data);
 		}
-
-		_item.projectData = project;
+	}
+	else
+	{
+		project.data.chaptersLocal[0] = _item.contentID;
 	}
 
+	_item.projectData = project;
 	_item.isTome = wantTome;
 	[self close];
 
