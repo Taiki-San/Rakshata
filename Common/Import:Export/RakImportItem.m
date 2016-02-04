@@ -311,13 +311,13 @@
 //If hinted, and we can't figure anything ourselves, we relax the search
 - (NSString *) inferMetadataFromPathWithHint : (BOOL) haveHintedCT
 {
-	NSString * inferedName = nil;
+	NSString * inferedName = nil, * strippedPath = [[_path lastPathComponent] stringByDeletingPathExtension];
 	const char * forbiddenChars = "_ -~:;|", nbForbiddenChars = 7;
 	NSMutableCharacterSet * charSet = [NSMutableCharacterSet new];
 	[charSet addCharactersInString:[NSString stringWithUTF8String:forbiddenChars]];
 
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
-	NSArray * tokens = [[_path lastPathComponent] componentsSeparatedByCharactersInSet:charSet];
+	NSArray * tokens = [strippedPath componentsSeparatedByCharactersInSet:charSet];
 
 	BOOL inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
 	uint elementID, discardedCloseCalls = 0;
@@ -480,7 +480,7 @@
 	}
 
 	if(inferedName == nil || inferedName.length == 0)
-		inferedName = [_path lastPathComponent];
+		inferedName = strippedPath;
 
 	//We try to clean it up a bit
 	return [self cleanupString : inferedName];

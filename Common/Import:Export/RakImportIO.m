@@ -124,7 +124,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				PROJECT_DATA_EXTRA extraProject = item.projectData;
 				
 				if(inferedName == nil)
-					inferedName = [item.path lastPathComponent];
+					inferedName = [[item.path lastPathComponent] stringByDeletingPathExtension];
 				
 				//We try to find if we can easily match a project
 				extraProject.data.project.cacheDBID = getProjectByName([inferedName UTF8String]);

@@ -67,27 +67,17 @@
 	
 	if(self != nil)
 	{
-		filenames = malloc(2 * sizeof(char *));
+		nbFiles = 1;
+
+		filenames = malloc(sizeof(char *));
 		if(filenames == NULL)
 			return nil;
 		
-		if(![dirname isDirectory])
-			dirname = [dirname stringByAppendingString:@"/"];
-		
-		filenames[0] = strdup([dirname UTF8String]);
+		filenames[0] = strdup([filename UTF8String]);
 		if(filenames[0] == NULL)
 			return nil;
 		
-		filenames[1] = strdup([filename UTF8String]);
-		if(filenames[1] == NULL)
-		{
-			free(filenames);
-			return nil;
-		}
-		
-		nbFiles = 2;
-		
-		archiveFileName = dirname;
+		archiveFileName = [filename copy];
 	}
 	
 	return self;
@@ -118,6 +108,9 @@
 
 - (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
+	if(dirName != nil && ![dirName isDirectory])
+		dirName = [dirName stringByDeletingLastPathComponent];
+
 	const char * startExpectedPath = dirName == nil ? NULL : [dirName UTF8String];
 	uint lengthExpected = startExpectedPath == NULL ? 0 : strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
 
