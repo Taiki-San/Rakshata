@@ -396,7 +396,7 @@
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
 	NSArray * tokens = [strippedPath componentsSeparatedByCharactersInSet:charSet];
 
-	BOOL inferingTome, firstPointCrossed, inferedSomethingSolid = NO, isTomeInfered;
+	BOOL inferingTome, firstPointCrossed, justLookingAtSomeNumbers, inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
 	uint elementID, discardedCloseCalls = 0;
 
 	for(uint i = 0, length, posInChunk, baseDigits; i < [tokens count]; ++i)
@@ -407,6 +407,8 @@
 
 		if(length == 0)
 			continue;
+		
+		justLookingAtSomeNumbers = NO;
 
 		char sample = toupper(simplifiedChunk[0]);
 
@@ -415,6 +417,9 @@
 
 		else if(sample == 'V' || sample == 'T')	//Volume? (or Tome)
 			inferingTome = YES;
+		
+		else if(!inferedSomethingSolid && isdigit(sample))
+			justLookingAtSomeNumbers = YES;
 
 		else
 			continue;
@@ -467,7 +472,10 @@
 		}
 
 		//Well, we're good
-		isTomeInfered = inferingTome;
+		
+		if(!justLookingAtSomeNumbers)
+			isTomeInfered = inferingTome;
+		
 		double inferedElementID = atof(&simplifiedChunk[baseDigits]);
 		inferedElementID *= 10;
 
@@ -475,16 +483,22 @@
 		{
 			elementID = (uint) inferedElementID;
 
-			if(inferedSomethingSolid)
+			if(justLookingAtSomeNumbers)
+			{
+				inferedSomethingUsable = YES;
+				isTomeInfered = _isTome;	//isTome is an heuristic based on the number of element in the archive
+			}
+			
+			else if(inferedSomethingSolid)
 				++discardedCloseCalls;
 			else
 				inferedSomethingSolid = YES;
 		}
-		else
+		else if(!justLookingAtSomeNumbers)
 			++discardedCloseCalls;
 	}
 
-	if(inferedSomethingSolid)
+	if(inferedSomethingSolid || inferedSomethingUsable)
 	{
 		_isTome = isTomeInfered;
 		_contentID = elementID;
