@@ -46,7 +46,13 @@
 
 - (void) viewDidMoveToWindow
 {
-	trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+	[super viewDidMoveToWindow];
+	[self updateTrackingAreaToBounds:self.bounds.size];
+}
+
+- (void) updateTrackingAreaToBounds : (NSSize) size
+{
+	trackingArea = [[NSTrackingArea alloc] initWithRect:(NSRect) {NSZeroPoint, size} options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
 	[self addTrackingArea:trackingArea];
 }
 
@@ -357,6 +363,7 @@
 			popoverFrame.origin.x -= pageCount.frame.origin.x;
 		
 		[self recalculateElementsPosition : isAnimated : frameRect.size.width];
+		[self updateTrackingAreaToBounds:frameRect.size];
 		
 		if(isAnimated)
 			popoverFrame.origin.x += pageCount.frame.origin.x;

@@ -529,7 +529,7 @@
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = ([_scrollView documentViewFrame].size.width - _scrollView.frame.size.width) / _scrollView.magnification;
+		CGFloat basePos = round(([_scrollView documentViewFrame].size.width - _scrollView.frame.size.width) / (2 * _scrollView.magnification));
 		if(point.x == basePos)
 			return NO;
 		else if(point.x > basePos - move)

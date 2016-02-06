@@ -142,11 +142,11 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				{
 					wstrncpy(sharedProject.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
 					sharedProject.locale = true;
-					sharedProject.projectID = getEmptyLocalSlot(extraProject.data.project);
+					sharedProject.projectID = getEmptyLocalSlot(sharedProject);
 				}
 				else
 				{
-					sharedProject = getProjectByID(extraProject.data.project.cacheDBID);
+					sharedProject = getProjectByID(sharedProject.cacheDBID);
 				}
 			}
 			
