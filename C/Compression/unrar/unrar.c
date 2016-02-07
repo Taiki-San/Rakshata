@@ -181,6 +181,7 @@ ARCHIVE * openArchiveFromFile(const char * path)
 void rarJumpBackAtBegining(ARCHIVE * archive)
 {
 	archive_read_free(archive->archive);
+	archive->cachedEntry = NULL;
 
 	rewind(archive->fileHandle);
 	archive->archive = getArchive();
@@ -309,7 +310,18 @@ bool rarExtractOnefile(ARCHIVE * archive, const char* filename, const char* outp
 		if(size > 0)
 			fwrite(buffer, (uint64_t) size, 1, output);
 		else
+		{
+			if(size < 0)
+			{
+				const char * errorString = archive_error_string(archive->archive);
+				char logMessage[100 + strlen(filename) + strlen(errorString)];
+				
+				snprintf(logMessage, sizeof(logMessage), "libarchive failure, couldn't decompress file %s because of code %lld: %s", filename, size, errorString);
+				logR(logMessage);
+			}
+			
 			break;
+		}
 	}
 
 	return true;
