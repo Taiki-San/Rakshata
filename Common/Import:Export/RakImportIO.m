@@ -16,7 +16,7 @@
 
 #define THREESOLD_IMAGES_FOR_VOL 80
 
-RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
+RakImportBaseController <RakImportIO> * _createIOForFilename(NSString * filename)
 {
 	NSString * extension = [filename pathExtension];
 
@@ -59,6 +59,40 @@ RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 		return [[RakImportDirController alloc] initWithFilename:filename];
 
 	return nil;
+}
+
+RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
+{
+	RakImportBaseController <RakImportIO> * output = _createIOForFilename(filename);
+	
+	if(output == nil)	//_createIOForFilename should handle the files if the extension is there and correct. Otherwise, we try to recover whatever we can
+	{
+		FILE * file = fopen([filename UTF8String], "rb");
+		if(file != NULL)
+		{
+			rawData buffer[0x10];
+			
+			if(fread(buffer, sizeof(rawData), 0x10, file) == 0x10)
+			{
+				if(isZIP(buffer))
+				{
+					output = [[RakImportZipController alloc] initWithFilename:filename];
+				}
+				else if(isRAR(buffer))
+				{
+					output = [[RakImportRarController alloc] initWithFilename:filename];
+				}
+				else if(isPDF(buffer))
+				{
+					output = [[RakImportDirController alloc] initWithFilename:filename];
+				}
+			}
+			
+			fclose(file);
+		}
+	}
+	
+	return output;
 }
 
 NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <RakImportIO> * > * _IOControllers)

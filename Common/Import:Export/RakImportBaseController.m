@@ -19,7 +19,7 @@
 - (BOOL) noValidFileFoundForDir : (const char *) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString **) redirection
 {
 #ifdef EXTENSIVE_LOGGING
-	NSLog(@"[WARNING]: was tasked with processing a CT but couldn't find a file starting with %s (could %s find dirname)", dirname == NULL ? "(no name)" : dirname, foundDirInFiles ? "" : "not");
+	NSLog(@"[WARNING]: was tasked with processing a CT but couldn't find a file starting with %s (could %sfind dirname)", dirname == NULL ? "(no name)" : dirname, foundDirInFiles ? "" : "not ");
 #endif
 	
 	//If the directory existed in the dir, or we were already using a wildcard, no need to enlarge the search

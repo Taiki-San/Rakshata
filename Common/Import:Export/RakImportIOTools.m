@@ -73,7 +73,7 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 
 		cursor = length = strlen(files[pos]);
 
-		if(length <= 1 || files[pos][length - 1] == '.')
+		if(length <= 1 || files[pos][length - 1] == '.' || !strncmp(files[pos], "._", 2))
 			continue;
 		
 		//We need to take a different code path if the file is a bundle, but in order to determine that, we need to locate the extension...

@@ -178,6 +178,9 @@ bool isStringLongerOrAsLongThan(const char * input, uint length);
 #define isNbr(caract) isdigit(caract)
 #define isJPEG(input) (((rawData *) input)[0] == (rawData) '\xff' && ((rawData *) input)[1] == (rawData) '\xd8')
 #define isPNG(input) (((rawData *) input)[0] == (rawData) '\x89' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'N' && ((rawData *) input)[3] == (rawData) 'G')
+#define isZIP(input) (((rawData *) input)[0] == (rawData) 'P' && ((rawData *) input)[1] == (rawData) 'K' && ((rawData *) input)[2] == (rawData) 0x3 && ((rawData *) input)[3] == (rawData) 0x4)
+#define isRAR(input) (((rawData *) input)[0] == (rawData) 'R' && ((rawData *) input)[1] == (rawData) 'a' && ((rawData *) input)[2] == (rawData) 'r' && ((rawData *) input)[3] == (rawData) '!')
+#define isPDF(input) (((rawData *) input)[0] == (rawData) '%' && ((rawData *) input)[1] == (rawData) 'P' && ((rawData *) input)[2] == (rawData) 'D' && ((rawData *) input)[3] == (rawData) 'F')
 
 #if !TARGET_OS_IPHONE || !defined(__OBJC__)
 	#define MIN(a, b) ((a) < (b) ? (a) : (b))
