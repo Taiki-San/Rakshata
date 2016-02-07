@@ -926,7 +926,7 @@
 		
 		[self updateContext : NO];
 		
-		if(byChangingPage)
+		if((goToNext ^ mainScroller.flipped) && byChangingPage)
 			[self jumpToPage : _data.nbPage - 1];
 	}
 	
