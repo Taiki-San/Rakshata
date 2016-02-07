@@ -55,6 +55,9 @@
 	//We gather the indexes of the files we'll evaluate
 	for(uint pos = 0; pos < archive->nbFiles; pos++)
 	{
+		if(!isStringLongerOrAsLongThan(archive->fileList[pos], lengthExpected))
+			continue;
+		
 		if(archive->fileList[pos][lengthExpected] != '\0' && (startExpectedPath == NULL || !strncmp(archive->fileList[pos], startExpectedPath, lengthExpected)))
 		{
 			indexOfFiles[nbFileToEvaluate++] = pos;
