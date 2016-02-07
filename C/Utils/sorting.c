@@ -19,6 +19,23 @@ int sortNumbers(const void *a, const void *b)
 	return ( *(uint*)a > *(uint*)b ) ? 1 : (( *(uint*)a == *(uint*)b ) ? 0 : -1);
 }
 
+int sortTomesWithReadingID(const void *a, const void *b)
+{
+	if(a == NULL)
+		return 1;
+	
+	if(b == NULL)
+		return -1;
+	
+	if(((META_TOME *) a)->readingID != INVALID_SIGNED_VALUE && ((META_TOME *) b)->readingID != INVALID_SIGNED_VALUE)
+		return sortNumbers(&(((META_TOME *) a)->readingID), &(((META_TOME *) b)->readingID));
+
+	if(((META_TOME *) a)->readingName[0] && ((META_TOME *) b)->readingName[0])
+		return wstrcmp(((META_TOME *) a)->readingName, ((META_TOME *) b)->readingName);
+	
+	return sortNumbers(&(((META_TOME *) a)->ID), &(((META_TOME *) b)->ID));
+}
+
 int sortTomes(const void *a, const void *b)
 {
 	if(a == NULL)

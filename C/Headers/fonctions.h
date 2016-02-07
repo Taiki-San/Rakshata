@@ -138,6 +138,7 @@ char* loadLargePrefs(char* flag);
 
 /**Sorting.c**/
 int sortNumbers(const void *a, const void *b);
+int sortTomesWithReadingID(const void *a, const void *b);
 int sortTomes(const void *a, const void *b);
 int sortProjects(const void *a, const void *b);
 int sortRepo(const void *a, const void *b);

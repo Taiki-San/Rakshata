@@ -71,7 +71,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 	char requestString[400];
 	uint64_t repoID = getRepoID(project.project.repo);
 
-	//Does the oroject exist?
+	//Does the project exist?
 	snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectID)" = %d AND "DBNAMETOID(RDB_repo)" = %llu %s ORDER BY "DBNAMETOID(RDB_ID)" ASC", project.project.projectID, repoID, isLocalProject(project.project) ? "AND "DBNAMETOID(RDB_isLocal)" = 1" : "");
 
 	sqlite3_stmt * request = createRequest(cache, requestString);
@@ -120,7 +120,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 			cachedProject.nbVolumesLocal += project.nbVolumesLocal;
 			cachedProject.tomeLocal = newField;
 
-			qsort(cachedProject.tomeLocal, cachedProject.nbVolumesLocal, sizeof(META_TOME), sortTomes);
+			qsort(cachedProject.tomeLocal, cachedProject.nbVolumesLocal, sizeof(META_TOME), sortTomesWithReadingID);
 		}
 	}
 	else
