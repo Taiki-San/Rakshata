@@ -169,7 +169,7 @@ void internalDeleteCT(PROJECT_DATA projectDB, bool isTome, uint selection)
 				memcpy(dataField, data, pos * sizeOfData);
 
 				if(pos + 1 < length)
-					memcpy(&(dataField[pos]), data + (pos + 1) * sizeOfData, (length - pos - 1) * sizeOfData);
+					memcpy(dataField + pos * sizeOfData, data + (pos + 1) * sizeOfData, (length - pos - 1) * sizeOfData);
 
 				if(isTome)
 				{
