@@ -177,13 +177,18 @@
 
 - (BOOL) updateProject : (PROJECT_DATA) project
 {
-	if(_projectData.data.project.cacheDBID != project.cacheDBID &&  project.nbVolumes > 0 && (project.locale || project.volumesFull[0].ID > MIN_LOCAL_VOLUME_ID))
+	if(_projectData.data.project.cacheDBID != project.cacheDBID && _isTome									//Worth even considering
+	   && project.nbVolumes > 0 && (project.locale || project.volumesFull[0].ID > MIN_LOCAL_VOLUME_ID))		//Already have volumes, so collision possible
 	{
-		uint ID = project.volumesFull[0].ID;
+		uint ID = _projectData.data.tomeLocal[0].ID;
+		
+		project.volumesFull = _projectData.data.tomeLocal;
+		project.nbVolumes = _projectData.data.nbVolumesLocal;
+		
 		while(checkTomeReadable(project, ID))
 			ID = getVolumeIDForImport(project);
 		
-		project.volumesFull[0].ID = _projectData.data.tomeLocal[0].ID  = _contentID = ID;
+		project.volumesFull[0].ID = _projectData.data.tomeLocal[0].ID = _contentID = ID;
 	}
 	
 	_projectData.data.project = project;
