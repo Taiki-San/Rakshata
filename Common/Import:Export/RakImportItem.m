@@ -183,7 +183,7 @@
 		while(checkTomeReadable(project, ID))
 			ID = getVolumeIDForImport(project);
 		
-		project.volumesFull[0].ID = _contentID = ID;
+		project.volumesFull[0].ID = _projectData.data.tomeLocal[0].ID  = _contentID = ID;
 	}
 	
 	_projectData.data.project = project;
