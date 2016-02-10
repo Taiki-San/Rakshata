@@ -81,13 +81,12 @@
 		if(!isStringLongerOrAsLongThan(filenames[pos], lengthExpected))
 			continue;
 		
-		if(filenames[pos][lengthExpected] != '\0' && (startExpectedPath == NULL || !strncmp(filenames[pos], startExpectedPath, lengthExpected)))
+		if(startExpectedPath == NULL || !strncmp(filenames[pos], startExpectedPath, lengthExpected))
 		{
-			indexOfFiles[nbFileToEvaluate++] = pos;
-		}
-		else if(filenames[pos][lengthExpected] == '\0')
-		{
-			couldFindDirInArray = true;
+			if(filenames[pos][lengthExpected] != '\0')
+				indexOfFiles[nbFileToEvaluate++] = pos;
+			else if(startExpectedPath != NULL)
+				couldFindDirInArray = true;
 		}
 	}
 

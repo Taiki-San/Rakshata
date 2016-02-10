@@ -51,7 +51,7 @@ struct libArchiveWrapper
 	char ** fileList;
 	uint64_t currentEntryLength;
 	uint nbFiles;
-	bool isEOF;
+	bool isEOF, didJustRewind;
 };
 
 

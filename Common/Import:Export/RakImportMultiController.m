@@ -68,13 +68,12 @@
 		if(!isStringLongerOrAsLongThan(archive->fileList[pos], lengthExpected))
 			continue;
 		
-		if(archive->fileList[pos][lengthExpected] != '\0' && (startExpectedPath == NULL || !strncmp(archive->fileList[pos], startExpectedPath, lengthExpected)))
+		if(startExpectedPath == NULL || !strncmp(archive->fileList[pos], startExpectedPath, lengthExpected))
 		{
-			indexOfFiles[nbFileToEvaluate++] = pos;
-		}
-		else if(archive->fileList[pos][lengthExpected] != '\0')
-		{
-			couldFindDirInArray = true;
+			if(archive->fileList[pos][lengthExpected] != '\0')
+				indexOfFiles[nbFileToEvaluate++] = pos;
+			else if(startExpectedPath != NULL)
+				couldFindDirInArray = true;
 		}
 	}
 

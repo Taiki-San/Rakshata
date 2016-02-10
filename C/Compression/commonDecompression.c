@@ -44,7 +44,11 @@ ARCHIVE * openArchiveFromFile(const char * path, byte format)
 		}
 	}
 	
-	output->utils.open_archive(output, path);
+	if(!output->utils.open_archive(output, path))
+	{
+		free(output);
+		return NULL;
+	}
 	
 	//Okay, we can now crawl filenames
 	//However, archive_file_count contains garbage until we crawled at least once the archive
@@ -179,36 +183,33 @@ bool archiveLocateFile(ARCHIVE * archive, const char * filename)
 	if(archive == NULL || filename == NULL)
 		return false;
 	
-	//Don't locate the file if we receive a hint this is already the active header
-	if(archive->workingEntry != NULL)
-	{
-		const char * currentFile = archive->utils.get_name(archive);
-		if(currentFile != NULL && !strcmp(currentFile, filename))
-			return true;
-	}
+	const char * currentFile = archive->utils.get_name(archive);
+	if(currentFile != NULL && !strcmp(currentFile, filename))
+		return true;
 	
 	if(archive->utils.cleanup_entry != NULL)
 		archive->utils.cleanup_entry(archive);
 	
+	if(archive->utils.is_EOF(archive))
+		archive->utils.jump_back_begining(archive);
+	
 	bool firstPass = true, success;
 	do
 	{
-		success = archive->utils.move_next_file(archive->archive);
+		success = archive->utils.move_next_file(archive);
 		
 		if(success)
 		{
-			const char * currentFile = archive->utils.get_name(archive);
+			currentFile = archive->utils.get_name(archive);
 			if(currentFile != NULL && !strcmp(currentFile, filename))
-			{
 				return true;
-			}
 		}
 		else if(archive->utils.is_EOF(archive))
 		{
 			archive->utils.jump_back_begining(archive);
 			if(firstPass)
 			{
-				success = archive->utils.move_next_file(archive->archive);
+				success = archive->utils.move_next_file(archive);
 				firstPass = false;
 				success = true;
 			}
@@ -222,7 +223,7 @@ bool archiveLocateFile(ARCHIVE * archive, const char * filename)
 		{
 			logR("Error while reading the file");
 			if(archive->utils.get_error_string != NULL)
-				logR(archive->utils.get_error_string(archive->archive));
+				logR(archive->utils.get_error_string(archive));
 			break;
 		}
 		
@@ -258,7 +259,7 @@ bool archiveExtractOnefile(ARCHIVE * archive, const char* filename, const char* 
 	while(1)
 	{
 		//Grab a small chunk of the file
-		size = archive->utils.read_data(archive->archive, buffer, sizeof(buffer));
+		size = archive->utils.read_data(archive, buffer, sizeof(buffer));
 		
 		//Write it to the disk
 		if(size > 0)
@@ -267,7 +268,7 @@ bool archiveExtractOnefile(ARCHIVE * archive, const char* filename, const char* 
 		{
 			if(size < 0 && archive->utils.get_error_string != NULL)
 			{
-				const char * errorString = archive->utils.get_error_string(archive->archive);
+				const char * errorString = archive->utils.get_error_string(archive);
 				char logMessage[100 + strlen(filename) + strlen(errorString)];
 				
 				snprintf(logMessage, sizeof(logMessage), "libarchive failure, couldn't decompress file %s because of code %lld: %s", filename, size, errorString);
@@ -303,7 +304,7 @@ bool archiveExtractToMem(ARCHIVE * archive, const char* filename, byte ** data, 
 	rawData buffer[8192];
 	while(1)
 	{
-		bufferSize = archive->utils.read_data(archive->archive, buffer, sizeof(buffer));
+		bufferSize = archive->utils.read_data(archive, buffer, sizeof(buffer));
 		
 		if(bufferSize > 0)
 		{

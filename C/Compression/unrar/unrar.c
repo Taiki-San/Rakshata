@@ -48,7 +48,19 @@ bool isEOF(ARCHIVE * archive)
 
 bool moveToNextFile(ARCHIVE * archive)
 {
-	bool output = ar_parse_entry(archive->archive) && !isEOF(archive);
+	bool output;
+
+	//moveToNextFile discard the first call after rewinding, as we already are on the first file
+	if(archive->didJustRewind)
+	{
+		archive->didJustRewind = false;
+		output = true;
+	}
+	else
+		output = ar_parse_entry(archive->archive);
+	
+	if(output)
+		output &= !isEOF(archive);
 
 	if(output && archive->currentEntryLength != UINT64_MAX)
 		archive->currentEntryLength = UINT64_MAX;
@@ -80,7 +92,8 @@ int readData(ARCHIVE * archive, rawData * buffer, uint64_t length)
 
 void jumpBackAtBegining(ARCHIVE * archive)
 {
-	ar_seek(archive->archive, 0, SEEK_SET);
+	ar_parse_entry_at(archive->archive, 0);
+	archive->didJustRewind = true;
 }
 
 size_t getSize(ARCHIVE * archive)
