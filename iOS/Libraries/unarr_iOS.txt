@@ -1,0 +1,4 @@
+clang -arch armv7 -O2 -c -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk */*.c && ar rcs libunarr_armv7.a *.o && rm *.o
+clang -arch arm64 -O2 -c -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk */*.c && ar rcs libunarr_arm64.a *.o && rm *.o
+clang -arch x86_64 -O2 -c */*.c && ar rcs libunarr_x86_64.a *.o && rm *.o
+lipo -create -arch x86_64 libunarr_x86_64.a -arch arm64 libunarr_arm64.a -arch armv7 libunarr_armv7.a -output libunarr.a
