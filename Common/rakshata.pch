@@ -33,12 +33,12 @@
 //Define everything we need to define stuffs around
 #include <TargetConditionals.h>
 
-#include "commonDecompression.h"
-
 #include "main.h"
 #include "encoding.h"
 #include "moduleDL.h"
+
 #include "zlibAPI.h"
+#include "commonDecompression.h"
  
 #ifdef __OBJC__
 	#import <Foundation/Foundation.h>

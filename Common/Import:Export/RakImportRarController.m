@@ -24,7 +24,7 @@
 
 	if(self != nil)
 	{
-		archive = openArchiveFromFile([filename UTF8String]);
+		archive = openArchiveFromFile([filename UTF8String], LIB_LIBARCHIVE);
 		if(archive == NULL)
 			return nil;
 
@@ -82,15 +82,12 @@
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)
 	{
-		void * entry;
 		NSString * string = [NSString stringWithUTF8String:archive->fileList[indexOfFiles[pos]]];
 		
-		if([string isEqualToString:[dirName stringByAppendingString:@"/"]] || !rarLocateFile(archive, &entry, archive->fileList[indexOfFiles[pos]]))
+		if([string isEqualToString:[dirName stringByAppendingString:@"/"]] || !archiveLocateFile(archive, archive->fileList[indexOfFiles[pos]]))
 			continue;
 
-		archive->cachedEntry = entry;
 		workingBlock(self, string, pos, &abort);
-		archive->cachedEntry = NULL;
 	}
 }
 
@@ -104,14 +101,14 @@
 
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toPath : (NSString * __nonnull) path
 {
-	return rarExtractOnefile(archive, [name UTF8String], [path UTF8String]);
+	return archiveExtractOnefile(archive, [name UTF8String], [path UTF8String]);
 }
 
 - (BOOL) copyItemOfName : (NSString * __nullable) name toData : (NSData * __nullable * __nonnull) data
 {
 	byte * dataBytes = NULL;
 	uint64_t length = 0;
-	BOOL retValue = rarExtractToMem(archive, [name UTF8String], &dataBytes, &length);
+	BOOL retValue = archiveExtractToMem(archive, [name UTF8String], &dataBytes, &length);
 
 	*data = [NSData dataWithBytes:dataBytes length:length];
 	free(dataBytes);
@@ -121,7 +118,7 @@
 
 - (void) willStartEvaluateFromScratch
 {
-	rarJumpBackAtBegining(archive);
+	archive->utils.jump_back_begining(archive);
 }
 
 - (RakImportNode *) getNode

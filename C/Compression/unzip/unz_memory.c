@@ -99,7 +99,7 @@ static long zmemseek(voidpf opaque, voidpf stream, uint64_t offset, int origin)
 	return 0;
 }
 
-static void init_zmemfile(zlib_filefunc_def *inst, char *bufZip, char* mask, size_t length)
+void init_zmemfile(zlib_filefunc_def *inst, char *bufZip, char* mask, size_t length)
 {
 	struct zmem_data *data = malloc(sizeof(struct zmem_data));
 
@@ -117,7 +117,7 @@ static void init_zmemfile(zlib_filefunc_def *inst, char *bufZip, char* mask, siz
 	inst->zerror_file = zmemerror;
 }
 
-static void destroy_zmemfile(zlib_filefunc_def *inst)
+void destroy_zmemfile(zlib_filefunc_def *inst)
 {
 	free(inst->opaque);
 	inst->opaque = NULL;

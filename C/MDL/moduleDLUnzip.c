@@ -14,7 +14,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "../Compression/unzip/unz_memory.c"
+void init_zmemfile(zlib_filefunc_def *inst, char *bufZip, char* mask, size_t length);
+void destroy_zmemfile(zlib_filefunc_def *inst);
 
 //Utils
 bool checkNameFileZip(char * fileToTest)
