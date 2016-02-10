@@ -40,7 +40,7 @@ RakImportBaseController <RakImportIO> * _createIOForFilename(NSString * filename
 	}
 
 	if(foundIt)
-		return [[RakImportRarController alloc] initWithFilename:filename];
+		return [[RakImportMultiController alloc] initWithRarFilename:filename];
 
 	//Look for zip
 	for(NSString * string in EXTERNAL_FILE_EXT_ZIP)
@@ -80,11 +80,15 @@ RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 				}
 				else if(isRAR(buffer))
 				{
-					output = [[RakImportRarController alloc] initWithFilename:filename];
+					output = [[RakImportMultiController alloc] initWithRarFilename:filename];
 				}
 				else if(isPDF(buffer))
 				{
 					output = [[RakImportDirController alloc] initWithFilename:filename];
+				}
+				else
+				{
+					output = [[RakImportMultiController alloc] initWithMultiFilename:filename];
 				}
 			}
 			

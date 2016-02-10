@@ -94,13 +94,14 @@
 
 @end
 
-@interface RakImportRarController : RakImportBaseController <RakImportIO>
+@interface RakImportMultiController : RakImportBaseController <RakImportIO>
 {
 	ARCHIVE * archive;
 	NSString * archiveFileName;
 }
 
-- (instancetype __nullable) initWithFilename : (NSString * __nonnull) filename;
+- (instancetype __nullable) initWithRarFilename : (NSString * __nonnull) filename;
+- (instancetype __nullable) initWithMultiFilename : (NSString * __nonnull) filename;
 
 @end
 

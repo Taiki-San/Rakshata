@@ -16,15 +16,25 @@
 
 #include "JSONParser.h"
 
-@implementation RakImportRarController
+@implementation RakImportMultiController
 
-- (instancetype) initWithFilename : (NSString *) filename
+- (instancetype) initWithRarFilename : (NSString *) filename
+{
+	return [self initWithInternalFilename:filename withOption:LIB_UNARR];
+}
+
+- (instancetype) initWithMultiFilename : (NSString *) filename
+{
+	return [self initWithInternalFilename:filename withOption:LIB_LIBARCHIVE];
+}
+
+- (instancetype) initWithInternalFilename : (NSString *) filename withOption : (byte) option
 {
 	self = [super init];
 
 	if(self != nil)
 	{
-		archive = openArchiveFromFile([filename UTF8String], LIB_LIBARCHIVE);
+		archive = openArchiveFromFile([filename UTF8String], option);
 		if(archive == NULL)
 			return nil;
 

@@ -26,6 +26,15 @@ struct archive * getArchive()
 	//RAR support of libarchive is incomplete, and thus we don't use it
 	//	archive_read_support_format_rar(archive);
 	archive_read_support_format_7zip(archive);
+	archive_read_support_format_ar(archive);
+	archive_read_support_format_cab(archive);
+	archive_read_support_format_cpio(archive);
+	archive_read_support_format_gnutar(archive);
+	archive_read_support_format_iso9660(archive);
+	archive_read_support_format_lha(archive);
+	archive_read_support_format_mtree(archive);
+	archive_read_support_format_raw(archive);
+	archive_read_support_format_tar(archive);
 	archive_read_support_filter_all(archive);
 	
 	return archive;

@@ -27,11 +27,13 @@ ARCHIVE * openArchiveFromFile(const char * path, byte format)
 	{
 		case LIB_UNARR:
 		{
+			configureUnarrJumptable(output);
 			break;
 		}
 			
 		case LIB_LIBARCHIVE:
 		{
+			configureLibarchiveJumptable(output);
 			break;
 		}
 			
