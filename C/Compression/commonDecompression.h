@@ -5,38 +5,40 @@
  **	 |    |   \ / __ \|    <  \___ \|   Y  \/ __ \|  |  / __ \_  \   //       \  \  \_/   \	**
  **	 |____|_  /(____  /__|_ \/____  >___|  (____  /__| (____  /	  \_/ \_______ \ /\_____  /	**
  **	        \/      \/     \/     \/     \/     \/          \/ 	              \/ \/     \/ 	**
- **                                                                                          **
+ **                                                                                         **
  **			This Source Code Form is subject to the terms of the Mozilla Public				**
  **			License, v. 2.0. If a copy of the MPL was not distributed with this				**
  **			file, You can obtain one at https://mozilla.org/MPL/2.0/.						**
  **                                                                                         **
  **                     			© Taiki 2011-2016                                       **
- **                                                                                          **
+ **                                                                                         **
  *********************************************************************************************/
 
-#include <archive.h>
-#include <archive_entry.h>
+typedef struct libArchiveWrapper ARCHIVE;
 
-typedef struct libArchiveWrapper
+typedef void* (*open_archive_ptr) (ARCHIVE * structure, char * path);
+typedef void (*jump_back_begining_ptr) (ARCHIVE * structure);
+typedef void (*close_archive_ptr) (ARCHIVE * structure);
+
+
+struct libArchiveWrapper
 {
-	struct archive * archive;
-	struct archive_entry * cachedEntry;
-
-	FILE * fileHandle;
-
+	void * archive;
+	void * cachedEntry;
+	
+	void * fileHandle;
+	
 	char ** fileList;
 	uint nbFiles;
+	
+	struct
+	{
+		open_archive_ptr open_archive;
+		jump_back_begining_ptr jump_back_begining;
+		close_archive_ptr close_archive;
+	} utils;
+	
+};
 
-} ARCHIVE;
-
-//Utils
-ARCHIVE * openArchiveFromFile(const char * path);
-void rarJumpBackAtBegining(ARCHIVE * archive);
-
-bool rarExtractOnefile(ARCHIVE * archive, const char* filename, const char* outputPath);
-bool rarExtractToMem(ARCHIVE * archive, const char* filename, byte ** data, uint64_t * length);
-
-bool fileExistInArchive(ARCHIVE * archive, const char * filename);
-bool rarLocateFile(ARCHIVE * archive, void ** entryBackup, const char * filename);
-
-void closeArchive(ARCHIVE * archive);
+#include "libarchivewrapper.h"
+#include "unarrwrapper.h"

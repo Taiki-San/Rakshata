@@ -33,7 +33,7 @@
 //Define everything we need to define stuffs around
 #include <TargetConditionals.h>
 
-#include "libarchivewrapper.h"
+#include "commonDecompression.h"
 
 #include "main.h"
 #include "encoding.h"
