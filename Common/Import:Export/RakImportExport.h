@@ -30,8 +30,9 @@
 #define ARCHIVE_FILE_EXT		@"rak"
 #define EXTERNAL_FILE_EXT_ZIP	@[@"zip", @"cbz"]
 #define EXTERNAL_FILE_EXT_RAR	@[@"rar", @"cbr"]
+#define EXTERNAL_FILE_EXT_MISC	@[@"7z", @"cb7", @"gz"]
 #define EXTERNAL_FILE_EXT_PLAIN @[@"pdf"]
-#define ARCHIVE_SUPPORT			@[@"rak", @"zip", @"cbz", @"rar", @"cbr", @"pdf"]
+#define ARCHIVE_SUPPORT			@[@"rak", @"zip", @"cbz", @"rar", @"cbr", @"7z", @"cb7", @"gz", @"pdf"]
 #define DEFAULT_ARCHIVE_SUPPORT	@[@"rak", @"cbz", @"cbr"]
 
 //Values

@@ -25,7 +25,6 @@ struct archive * getArchive()
 	//Add support for the format we want to support
 	//RAR support of libarchive is incomplete, and thus we don't use it
 	//	archive_read_support_format_rar(archive);
-	archive_read_support_format_7zip(archive);
 	archive_read_support_format_ar(archive);
 	archive_read_support_format_cab(archive);
 	archive_read_support_format_cpio(archive);
@@ -35,6 +34,7 @@ struct archive * getArchive()
 	archive_read_support_format_mtree(archive);
 	archive_read_support_format_raw(archive);
 	archive_read_support_format_tar(archive);
+	archive_read_support_format_7zip(archive);
 	archive_read_support_filter_all(archive);
 	
 	return archive;
@@ -145,6 +145,11 @@ int libarchiveReadData(ARCHIVE * archive, rawData * buffer, uint64_t length)
 	return archive_read_data(archive->archive, buffer, sizeof(buffer));
 }
 
+const char * libarchiveErrorString(ARCHIVE * archive)
+{
+	return archive_error_string(archive->archive);
+}
+
 void configureLibarchiveJumptable(ARCHIVE * archive)
 {
 	archive->utils.open_archive = openLibArchiveFromFile;
@@ -156,5 +161,5 @@ void configureLibarchiveJumptable(ARCHIVE * archive)
 	archive->utils.read_data = libarchiveReadData;
 	archive->utils.cleanup_entry = NULL;
 	archive->utils.close_archive = closeLibArchive;
-	archive->utils.get_error_string = NULL;
+	archive->utils.get_error_string = libarchiveErrorString;
 }

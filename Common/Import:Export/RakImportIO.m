@@ -57,6 +57,18 @@ RakImportBaseController <RakImportIO> * _createIOForFilename(NSString * filename
 	
 	if([extension caseInsensitiveCompare:@"pdf"] == NSOrderedSame)
 		return [[RakImportDirController alloc] initWithFilename:filename];
+	
+	for(NSString * string in EXTERNAL_FILE_EXT_MISC)
+	{
+		if([extension caseInsensitiveCompare:string] == NSOrderedSame)
+		{
+			foundIt = YES;
+			break;
+		}
+	}
+	
+	if(foundIt)
+		return [[RakImportMultiController alloc] initWithMultiFilename:filename];
 
 	return nil;
 }

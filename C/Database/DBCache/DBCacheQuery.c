@@ -411,8 +411,10 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 		free(output);
 		output = NULL;
 
+#ifdef EXTENSIVE_LOGGING
 		if(!installed)
 			logR("[Error]: Request not found, something went wrong when parsing the data :/");
+#endif
 	}
 
 	destroyRequest(request);
