@@ -19,6 +19,12 @@ The most interesting part of the codebase is probably the various subclasses for
 
 The various formats documentation will be made available shortly.
 
+##Building
+
+Rakshata require a non-trivial amount of dependencies, which are included in the repository but packed in an archive.  
+In order to build Rakshata, you need to decompress Frameworks/Frameworks.zip and in OS X/Libraries/include.zip.  
+Please note that the content of Frameworks.zip need to be directly in Frameworks/ (and not in Frameworks/Frameworks/*.frameworks).
+
 ##Contributing
 
 You can chat with the dev team on IRC on freenode, #Rakshata
