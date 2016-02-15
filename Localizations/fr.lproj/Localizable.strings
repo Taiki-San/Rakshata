@@ -246,6 +246,10 @@
 "TITLE-CT" = "Chapitres et tomes";
 "TITLE-READER" = "Lecteur";
 "TITLE-DF" = "Entrer dans le mode discret";
+"TITLE-ZOOM-OUT" = "Dézoomer";
+"TITLE-RESET-ZOOM" = "Taille réelle";
+"TITLE-ZOOM-WIDTH" = "Occuper la largeur";
+"TITLE-ZOOM-IN" = "Zoomer";
 
 //Others
 "FOSS-USAGE" = "Rakshata utilise des outils open source";

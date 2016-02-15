@@ -246,6 +246,10 @@
 "TITLE-CT" = "Chapters and volumes";
 "TITLE-READER" = "Reader";
 "TITLE-DF" = "Enter Distraction Free";
+"TITLE-ZOOM-OUT" = "Zoom out";
+"TITLE-RESET-ZOOM" = "Full size";
+"TITLE-ZOOM-WIDTH" = "Fill width";
+"TITLE-ZOOM-IN" = "Zoom in";
 
 //Others
 "FOSS-USAGE" = "Rakshata use open source technologies";
