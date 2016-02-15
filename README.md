@@ -1,8 +1,10 @@
 #Rakshata
 
 [Rakshata][website] is a decentralized offline manga/comic/BD reader for OS X.  
-Rakshata is designed to manage your library, with content coming from either a source compatible with Rakshata's open standard or from your local stuffs that you can easily import.
+Rakshata is designed to manage your library, with content coming from either a source compatible with Rakshata's open standard or from your local stuffs that you can easily import.  
+You can download a recent build [there][dl-link].
 [website]:https://www.rakshata.com/
+[dl-link]:https://www.rakshata.com/beta
 
 ##Spirit
 
