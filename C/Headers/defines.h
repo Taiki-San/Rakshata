@@ -19,7 +19,11 @@
 /*Environnement*/
 #define STORE_URL	"https://store.rakshata.com"
 #define SERVEUR_URL "https://rsp.rakshata.com"
+#ifdef __APPLE__
 #define BACKUP_INTERNET_CHECK "http://www.apple.com/library/test/success.html"
+#else
+#define BACKUP_INTERNET_CHECK "http://www.msftncsi.com/ncsi.txt"
+#endif
 
 #ifdef DOWNLOAD_DB_WHEN_EMPTY
 #define REPO_REC_NAME "repo"

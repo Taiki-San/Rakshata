@@ -49,7 +49,7 @@ void checkHostNonModifie()
 				if(i >= 15)
 				{
 					fclose(host);
-					logR("Violation détecté: redirection dans host\n");
+					logR("Someone doesn't want us to talk to our mothership :(\n");
 
 					NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
 					break; //On quitte la boucle en while
@@ -83,42 +83,46 @@ void networkAndVersionTest()
     if(download_mem(testURL, NULL, &bufferDL, &lengthBufferDL, SSL_ON) == CODE_FAILED_AT_RESOLVE) //On lui dit d'executer quand même le test avec 2 en activation
         hostNotReached++;
 
-    /*  Si fichier téléchargé, on teste son intégrité. Le fichier est sensé contenir 1 ou 0.
-	 Si ce n'est pas le cas, il y a un problème avec le serveur  */
-
+	//The call is supposed to return either 1 or 0.
+	//If not the case, something went wrong and our server is down.
     if(lengthBufferDL == 0 || bufferDL == NULL || (bufferDL[0] != '0' && bufferDL[0] != '1')) //Pas le fichier attendu
     {
-#ifdef _WIN32 //On check le fichier HOST
-        checkHostNonModifie();
-#endif
 		free(bufferDL);
 		bufferDL = NULL;
+
+#ifdef _WIN32
+		//Check if the host file was modified to prevent access to our mothership :(
+        checkHostNonModifie();
+		if(NETWORK_ACCESS != CONNEXION_TEST_IN_PROGRESS)
+			quit_thread(0);
+#endif
 		
-        if(download_mem(BACKUP_INTERNET_CHECK, NULL, &bufferDL, &lengthBufferDL, SSL_OFF) == CODE_FAILED_AT_RESOLVE) //On fais un test avec un site fiable
+		//Try to load the connectivity test URL of the platform
+        if(download_mem(BACKUP_INTERNET_CHECK, NULL, &bufferDL, &lengthBufferDL, SSL_OFF) == CODE_FAILED_AT_RESOLVE)
             hostNotReached++;
 		
-        if(hostNotReached == 2 || bufferDL == NULL || bufferDL[0] != '<') //Si on a jamais réussi à ce connecter à un serveur
+		//Could we talk to the server?
+        if(hostNotReached == 2 || bufferDL == NULL || (bufferDL[0] != '<' && bufferDL[0] != 'M'))
             NETWORK_ACCESS = CONNEXION_DOWN;
         else
             NETWORK_ACCESS = CONNEXION_IDENTIFIED_DOWN;
-
-		free(bufferDL);
     }
 
 	else
     {
         NETWORK_ACCESS = CONNEXION_OK;
 		
-		if(COMPTE_PRINCIPAL_MAIL != NULL && COMPTE_PRINCIPAL_MAIL[0] != 0 && bufferDL[0] == '0')	//A partir d'ici, le compte est killswitche
+		//The account is problematic, and we were asked to scrub the DRM key file.
+		//Imported/Non-DRMed file are fine and DRMed files will need the server to let us generate a new key.
+		if(COMPTE_PRINCIPAL_MAIL != NULL && COMPTE_PRINCIPAL_MAIL[0] != 0 && bufferDL[0] == '0')
 			remove(SECURE_DATABASE);
-		
-		free(bufferDL);
-		bufferDL = NULL;
 		
 		updateDatabase(false);
 		updateFavorites();
 		checkIfRefreshTag();
     }
+	
+	free(bufferDL);
     quit_thread(0);
 }
 
