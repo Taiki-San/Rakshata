@@ -32,8 +32,6 @@ enum
 {
 	if(prefsCache == nil)
 		prefsCache = [[Prefs alloc] init : RakRealApp.savedContext[0]];
-	
-	RakApp.haveDistractionFree = prefsCache.mainThread == TAB_READER;
 }
 
 + (NSString *) dumpPrefs

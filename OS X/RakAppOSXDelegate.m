@@ -18,6 +18,8 @@
 
 - (RakView *) earlyInit
 {
+	self.haveDistractionFree = getMainThread() == TAB_READER;
+
 	_hasFocus = YES;
 
 	self.window.isMainWindow = YES;
