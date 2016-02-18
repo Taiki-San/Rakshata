@@ -40,7 +40,11 @@
 
 - (void) startUI;
 - (void) refreshUI;
+#if TARGET_OS_IPHONE
+- (IBAction)closeUI;
+#else
 - (void) closeUI;
+#endif
 
 - (void) finishing;
 

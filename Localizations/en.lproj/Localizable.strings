@@ -236,6 +236,8 @@
 
 "IMPORT-DRAG-VARIOUS-SERIES" = "Various series";
 
+"IMPORT-PERFORM" = "Import";
+
 //Menu title
 "TITLE-ABOUT" = "About Rakshata";
 "TITLE-UPDATE" = "Check for Update";

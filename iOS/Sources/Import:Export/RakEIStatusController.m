@@ -14,6 +14,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakEIStatusController ()
+
+@property IBOutlet UINavigationItem * header;
+@property IBOutlet UILabel * archiveLabel;
+
+@end
+
 @implementation RakEIStatusController
 
 - (instancetype) init
@@ -26,15 +33,43 @@
 	return self;
 }
 
-- (void) dealloc
-{
-	[Prefs deRegisterForChange:self forType:KVO_THEME];
-}
-
 - (void) startUI
 {
-	self.view.backgroundColor = [UIColor redColor];
+	NSArray * array = [[NSBundle mainBundle] loadNibNamed:@"Import" owner:self options:nil];
+	if(array == nil || [array count] == 0)
+		return;
+	
+	self.view = array[0];
+	self.header.title = [self headerText];
+	self.archiveLabel.text = [self archiveName];
 	self.modalPresentationStyle = UIModalPresentationPopover;
+
+	//Increase button size to the maximum
+	UIButton * button = [self.header.leftBarButtonItem customView];
+	if(button != nil)
+	{
+		CGRect frame = button.frame;
+		UILabel * label = button.titleLabel;
+		
+		label.text = NSLocalizedString(@"CANCEL", nil);
+		[label sizeToFit];
+		
+		frame.size.width = label.frame.size.width;
+		button.frame = frame;
+	}
+	
+	button = [self.header.rightBarButtonItem customView];
+	if(button != nil)
+	{
+		CGRect frame = button.frame;
+		UILabel * label = button.titleLabel;
+		
+		label.text = NSLocalizedString(@"IMPORT-PERFORM", nil);
+		[label sizeToFit];
+		
+		frame.size.width = label.frame.size.width;
+		button.frame = frame;
+	}
 	
 	_fileURL = [RakApp.currentImportURL copy];
 	
@@ -47,7 +82,7 @@
 	
 }
 
-- (void) closeUI
+- (IBAction) closeUI
 {
 	UITabBarController * controller = RakApp.tabBarController;
 	[controller.viewControllers[controller.selectedIndex] dismissViewControllerAnimated:YES completion:^{
@@ -65,7 +100,12 @@
 
 - (NSString *) headerText
 {
-	return nil;
+	return @"Mass Effect : Inquisition is an excessive name";
+}
+
+- (NSString *) archiveName
+{
+	return @"Archive name yay";
 }
 
 - (RakColor *) backgroundColor
