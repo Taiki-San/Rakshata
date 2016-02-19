@@ -348,6 +348,13 @@ enum
 			}
 		}
 	}
+	else if(coreView == nil)
+	{
+		if(self.mainThread == TAB_SERIES)
+			maximumSize.origin.x = -maximumSize.size.width;
+		else
+			maximumSize.origin.y = -maximumSize.size.height;
+	}
 	
 	[self setLastFrame:maximumSize];
 	return maximumSize;
