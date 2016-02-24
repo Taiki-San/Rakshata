@@ -164,7 +164,7 @@
 		if([isTome boolValue])
 		{
 			if(isLocalVolumeID((uint) item.contentID))
-			   volumeData->ID = INVALID_VALUE;
+			   volumeData->ID = getVolumeIDForImport(projectData.data.project);
 			else
 			   volumeData->ID = (uint) item.contentID;
 			
