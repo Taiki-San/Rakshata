@@ -129,6 +129,10 @@
 			else
 			{
 				[UI finishing];
+
+				syncCacheToDisk(SYNC_PROJECTS);
+				[RakDBUpdate postNotificationFullUpdate];
+
 				[UI closeUI];
 			}
 		});
@@ -140,7 +144,7 @@
 + (void) postProcessingUI: (RakImportStatusController *) UI
 {
 	syncCacheToDisk(SYNC_PROJECTS);
-	notifyFullUpdate();
+	[RakDBUpdate postNotificationFullUpdate];
 
 	if([NSThread isMainThread])
 		[UI closeUI];
