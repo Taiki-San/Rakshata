@@ -46,6 +46,14 @@ If you want to report a violation, please contact us at [this address][abuse-add
 [code-of-conduct]: http://contributor-covenant.org/version/1/4/
 [abuse-address]:mailto:abuse@rakshata.com
 
+###Security
+
+Rakshata was designed with security in mind, and a particular attention was given to protect Rakshata from potentially dangerous input and was regularly submitted to static analysis.  
+However, in the case you find something we missed that could potentially harm our users, please send us an encrypted email at [this address][security-address].  
+The GPG key for this address is `AD4D 9753 4993 54C3 1B19  5CCA 8597 FA21 D9F4 E395`.  
+Unless you ask otherwise, you'll be credited for the discovery.
+[security-address]:mailto:taiki@rakshata.com
+
 ##Licence
 
 Rakshata is licenced under the [MPL][mpl-licence].  
