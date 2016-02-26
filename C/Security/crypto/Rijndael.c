@@ -1236,14 +1236,15 @@ void rijndaelDecrypt(const u32 *rk, int nrounds, const u8 ciphertext[16], u8 pla
   PUTU32(plaintext + 12, s3);
 }
 
-void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput, int cryptIntoMemory, bool encrypt, bool ECB)
+void _AES(const void *_password, const void *_pathInput, uint lengthInput, void *_pathOutput, int cryptIntoMemory, bool encrypt, bool ECB)
 {
 	bool inputMemory = true, outputMemory = true, CBC_started = false;
 	uint posInput = 0, posOutput = 0;
 	int aesData;
 	
 	RK_KEY rijndaelKey[RKLENGTH(KEYBITS)];
-	byte *password = _password, *input = _pathInput, *output = _pathOutput, key[KEYLENGTH(KEYBITS)];
+	const byte *password = _password, *input = _pathInput;
+	byte *output = _pathOutput, key[KEYLENGTH(KEYBITS)];
 	FILE *inputFile = NULL, *outputFile = NULL;
 	
 	if((cryptIntoMemory & INPUT_IN_MEMORY) == 0)
@@ -1355,12 +1356,12 @@ void _AES(void *_password, void *_pathInput, uint lengthInput, void *_pathOutput
 		fclose(inputFile);
 }
 
-void AESEncrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+void AESEncrypt(const void *_password, const void *_path_input, void *_path_output, int cryptIntoMemory)
 {
 	_AES(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, AES_ENCRYPT, AES_CBC);
 }
 
-void AESDecrypt(void *_password, void *_path_input, void *_path_output, int cryptIntoMemory)
+void AESDecrypt(const void *_password, const void *_path_input, void *_path_output, int cryptIntoMemory)
 {
 	_AES(_password, _path_input, strlen(_path_input), _path_output, cryptIntoMemory, AES_DECRYPT, AES_CBC);
 }

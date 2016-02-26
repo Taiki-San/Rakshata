@@ -18,6 +18,9 @@ uint locateEndString(const char* input, const char *stringToFind);
 
 char *loadPrefFile()
 {
+	if(!checkFileExist(SETTINGS_FILE) && checkFileExist(SETTINGS_FILE".tmp"))
+		rename(SETTINGS_FILE".tmp", SETTINGS_FILE);
+
 	size_t filesize = getFileSize(SETTINGS_FILE);
 
     if(filesize == 0)
@@ -75,12 +78,15 @@ void addToPref(char* flag, char *stringToAdd)
                 newPrefs[i] = newPrefs[j];
         }
         newPrefs[i] = 0;
-        AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+        AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
         free(newPrefs);
         free(prefs);
     }
     else
-        AESEncrypt(SETTINGS_PASSWORD, stringToAdd, SETTINGS_FILE, INPUT_IN_MEMORY);
+        AESEncrypt(SETTINGS_PASSWORD, stringToAdd, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
+	
+	remove(SETTINGS_FILE);
+	rename(SETTINGS_FILE".tmp", SETTINGS_FILE);
 }
 
 void removeFromPref(char* flag)
@@ -116,8 +122,12 @@ void removeFromPref(char* flag)
         else
             newPrefs[i++] = *(prefs++);
     }
-    newPrefs[i] = 0;
-    AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE, INPUT_IN_MEMORY);
+
+	newPrefs[i] = 0;
+    AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
+	remove(SETTINGS_FILE);
+	rename(SETTINGS_FILE".tmp", SETTINGS_FILE);
+
     free(newPrefs);
     free(prefsBak);
 }
