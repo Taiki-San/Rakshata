@@ -17,6 +17,8 @@
 @interface RakImportStatusController()
 {
 	NSArray <RakImportItem *> * manifest;
+	IBOutlet UITextField * CTID;
+	IBOutlet UITextField * volumeName;
 }
 
 @end
@@ -65,8 +67,16 @@
 		button.frame = frame;
 	}
 	
+	[CTID setKeyboardType:UIKeyboardTypeDecimalPad];
+	CTID.delegate = (id <UITextFieldDelegate>) self;
+	
 	UITabBarController * controller = RakApp.tabBarController;
 	[controller.viewControllers[controller.selectedIndex] presentViewController:self animated:YES completion:^{}];
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	[self updateCTIDWidth:NO];
 }
 
 - (NSArray *) validateMetadata : (NSArray *) dataset
@@ -124,7 +134,7 @@
 
 - (NSString *) archiveName
 {
-	return [self.fileURL lastPathComponent];
+	return [NSString stringWithFormat:@"Import de %@", [self.fileURL lastPathComponent]];
 }
 
 - (RakColor *) backgroundColor
@@ -152,4 +162,36 @@
 	
 }
 
+#pragma mark - Text fields management
+
+- (IBAction) buttonChanging : (UISegmentedControl *) sender
+{
+	[self updateCTIDWidth:sender.selectedSegmentIndex != 0];
+	[UIView animateWithDuration:0.2
+					 animations:^{
+						 [self.view layoutIfNeeded]; // Called on parent view
+					 }];
+}
+
+- (void) updateCTIDWidth : (BOOL) isTome
+{
+	const CGFloat width = isTome ? 60 : RakApp.window.frame.size.width - (CTID.frame.origin.x + 15);
+	
+	for(NSLayoutConstraint * constraint in CTID.constraints)
+	{
+		if([constraint class] != [NSLayoutConstraint class])
+			continue;
+		
+		constraint.constant = width;
+	}
+}
+
+//Only really usefull on iPad
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+	if (string.length && textField == CTID)
+		return [RakCTFormatter isStringValid:[textField.text stringByReplacingCharactersInRange:range withString:string]];
+	
+	return YES;
+}
 @end
