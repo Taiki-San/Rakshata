@@ -570,10 +570,14 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	authors = objectForKey(bloc, JSON_PROJ_AUTHOR , @"author", [NSString class]);
 	if(authors == nil || [authors length] == 0)
 	{
-#ifdef EXTENSIVE_LOGGING
+#ifdef REQUIRE_AUTHOR_TO_IMPORT
+	#ifdef EXTENSIVE_LOGGING
 		NSLog(@"Project parser error: no author for project of ID %@ (%@) in %@", ID, projectName, bloc);
-#endif
+	#endif
 		goto end;
+#else
+		authors = nil;
+#endif
 	}
 	
 	status = objectForKey(bloc, JSON_PROJ_STATUS , @"status", [NSNumber class]);
@@ -639,7 +643,11 @@ PROJECT_DATA parseBloc(NSDictionary * bloc)
 	data.isInitialized = true;
 	
 	wcsncpy(data.projectName, (charType*) [projectName cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_PROJECT_NAME);
-	wcsncpy(data.authorName, (charType*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
+	
+#ifndef REQUIRE_AUTHOR_TO_IMPORT
+	if(authors != nil)
+#endif
+		wcsncpy(data.authorName, (charType*) [authors cStringUsingEncoding:NSUTF32StringEncoding], LENGTH_AUTHORS);
 	
 	if(description != nil)
 	{
