@@ -134,7 +134,7 @@
 
 - (NSString *) archiveName
 {
-	return [NSString stringWithFormat:@"Import de %@", [self.fileURL lastPathComponent]];
+	return [NSString localizedStringWithFormat:NSLocalizedString(@"IMPORT-OF-%@", nil), [self.fileURL lastPathComponent]];
 }
 
 - (RakColor *) backgroundColor

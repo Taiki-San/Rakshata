@@ -237,6 +237,7 @@
 "IMPORT-DRAG-VARIOUS-SERIES" = "Various series";
 
 "IMPORT-PERFORM" = "Import";
+"IMPORT-OF-%@" = "Importing %1$@";
 
 //Menu title
 "TITLE-ABOUT" = "About Rakshata";
