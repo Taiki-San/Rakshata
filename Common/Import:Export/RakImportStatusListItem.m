@@ -228,6 +228,13 @@
 
 - (void) checkRefreshStatusRoot
 {
+	if(_nbChildren > 0)
+	{
+		PROJECT_DATA project = [[children firstObject] itemForChild].projectData.data.project;
+		nullifyCTPointers(&project);
+		_projectData = project;
+	}
+	
 	_status = [self checkStatusFromChildren];
 	
 	if(_status == STATUS_BUTTON_WARN)

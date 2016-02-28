@@ -1034,6 +1034,8 @@ enum
 
 - (void) configureProject : (PROJECT_DATA) project withImages : (NSArray *) array
 {
+	[CATransaction begin];
+	
 	author.stringValue = getStringForWchar(project.authorName);
 	description.stringValue = getStringForWchar(project.description);
 	
@@ -1084,6 +1086,8 @@ enum
 				break;
 		}
 	}
+	
+	[CATransaction commit];
 }
 
 #pragma mark - Button responder
