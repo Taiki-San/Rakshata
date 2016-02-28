@@ -111,8 +111,10 @@ void registerDefaultForExtension(NSString * extension);
 	#import "UIImage+Performance.h"
 	#import "RakDownloadStatus.h"
 #endif
-	#import "RakTabView.h"
-	#import "RakTabContentTemplate.h"
+
+#import "RakTabView.h"
+#import "RakTabContentTemplate.h"
+
 #if !TARGET_OS_IPHONE
 	#import "RakDragView.h"
 	#import "RakDragItem.h"
@@ -122,6 +124,7 @@ void registerDefaultForExtension(NSString * extension);
 	#import "RakGradientView.h"
 #endif
 
+#import "RakFormatter.h"
 #import "RakDBUpdate.h"
 #import "RakSuggestionEngine.h"
 

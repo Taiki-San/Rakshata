@@ -46,10 +46,6 @@
 
 @end
 
-@interface RakCTFormatter : NSNumberFormatter
-
-@end
-
 enum
 {
 	META_TOP_BORDER = 8,
@@ -1206,47 +1202,6 @@ enum
 - (void) close
 {
 	[self closePopover];
-}
-
-@end
-
-@implementation RakCTFormatter
-
-- (BOOL)isPartialStringValid:(NSString*)partialString newEditingString:(NSString**)newString errorDescription:(NSString**)error
-{
-	if([partialString length] == 0)
-		return YES;
-
-	NSMutableCharacterSet * chSet = [NSMutableCharacterSet decimalDigitCharacterSet];
-	[chSet addCharactersInString:@".,"];
-
-	//Check for non-numerical chars
-	if([partialString rangeOfCharacterFromSet:[chSet invertedSet]].location != NSNotFound)
-		return NO;
-
-	//Don't allow both , and .
-	if([partialString rangeOfString:@","].location != NSNotFound && [partialString rangeOfString:@"."].location != NSNotFound)
-		return NO;
-
-	//Try to convert in a way that convert , but fails with .
-	NSNumber * content = getNumberForString(partialString);
-
-	if(content == nil)
-	{
-		//Try to convert in a way that convert . but fails with ,
-		content = [[NSDecimalNumber alloc] initWithString:partialString];
-
-		if(content == nil)
-			return NO;
-	}
-
-	double numberWithNoDecimal = [content doubleValue] * 10;
-
-	//We only want one number after ./,
-	if((numberWithNoDecimal * 10) - (((int64_t) numberWithNoDecimal) * 10))
-		return NO;
-
-	return YES;
 }
 
 @end
