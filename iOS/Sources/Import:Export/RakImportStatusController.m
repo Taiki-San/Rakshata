@@ -17,8 +17,8 @@
 @interface RakImportStatusController()
 {
 	NSArray <RakImportItem *> * manifest;
-	IBOutlet UITextField * CTID;
-	IBOutlet UITextField * volumeName;
+	IBOutlet UITextField * projectName, * CTID, * volumeName;
+	IBOutlet UILabel * contentIDTitle;
 }
 
 @end
@@ -175,6 +175,8 @@
 
 - (void) updateCTIDWidth : (BOOL) isTome
 {
+	contentIDTitle.text = [NSString stringWithFormat:@"%@ #", NSLocalizedString(isTome ? @"VOLUME" : @"CHAPTER", nil)];
+
 	const CGFloat width = isTome ? 60 : RakApp.window.frame.size.width - (CTID.frame.origin.x + 15);
 	
 	for(NSLayoutConstraint * constraint in CTID.constraints)
