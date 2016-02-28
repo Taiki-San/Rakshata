@@ -16,21 +16,26 @@
 
 @implementation RakCTFormatter
 
-- (BOOL)isPartialStringValid:(NSString*)partialString newEditingString:(NSString**)newString errorDescription:(NSString**)error
++ (BOOL) isStringValid : (NSString *) string
 {
-	if([partialString length] == 0)
+	if([string length] == 0)
 		return YES;
-
+	
 	NSString *expression = @"^([0-9]+)?([,.]([0-9])?)?$";
 	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:expression
 																		   options:NSRegularExpressionCaseInsensitive
 																			 error:nil];
-	if([regex numberOfMatchesInString:partialString
+	if([regex numberOfMatchesInString:string
 							  options:0
-								range:NSMakeRange(0, [partialString length])] == 0)
+								range:NSMakeRange(0, [string length])] == 0)
 		return NO;
 
 	return YES;
+}
+
+- (BOOL) isPartialStringValid : (NSString *) partialString newEditingString : (NSString**) newString errorDescription : (NSString**) error
+{
+	return [[self class] isStringValid:partialString];
 }
 
 @end

@@ -16,4 +16,6 @@
 
 @interface RakCTFormatter : NSNumberFormatter
 
++ (BOOL) isStringValid : (NSString *) string;
+
 @end
