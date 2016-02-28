@@ -14,13 +14,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakEIStatusController ()
-
-@property IBOutlet UINavigationItem * header;
-@property IBOutlet UILabel * archiveLabel;
-
-@end
-
 @implementation RakEIStatusController
 
 - (instancetype) init
@@ -28,53 +21,9 @@
 	self = [super init];
 	
 	if(self != nil)
-		[self startUI];
+		_fileURL = [RakApp.currentImportURL copy];
 	
 	return self;
-}
-
-- (void) startUI
-{
-	NSArray * array = [[NSBundle mainBundle] loadNibNamed:@"Import" owner:self options:nil];
-	if(array == nil || [array count] == 0)
-		return;
-	
-	self.view = array[0];
-	self.header.title = [self headerText];
-	self.archiveLabel.text = [self archiveName];
-	self.modalPresentationStyle = UIModalPresentationPopover;
-
-	//Increase button size to the maximum
-	UIButton * button = [self.header.leftBarButtonItem customView];
-	if(button != nil)
-	{
-		CGRect frame = button.frame;
-		UILabel * label = button.titleLabel;
-		
-		label.text = NSLocalizedString(@"CANCEL", nil);
-		[label sizeToFit];
-		
-		frame.size.width = label.frame.size.width;
-		button.frame = frame;
-	}
-	
-	button = [self.header.rightBarButtonItem customView];
-	if(button != nil)
-	{
-		CGRect frame = button.frame;
-		UILabel * label = button.titleLabel;
-		
-		label.text = NSLocalizedString(@"IMPORT-PERFORM", nil);
-		[label sizeToFit];
-		
-		frame.size.width = label.frame.size.width;
-		button.frame = frame;
-	}
-	
-	_fileURL = [RakApp.currentImportURL copy];
-	
-	UITabBarController * controller = RakApp.tabBarController;
-	[controller.viewControllers[controller.selectedIndex] presentViewController:self animated:YES completion:^{}];
 }
 
 - (void) refreshUI
@@ -100,12 +49,7 @@
 
 - (NSString *) headerText
 {
-	return @"Mass Effect : Inquisition is an excessive name";
-}
-
-- (NSString *) archiveName
-{
-	return @"Archive name yay";
+	return @"";
 }
 
 - (RakColor *) backgroundColor

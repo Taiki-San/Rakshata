@@ -31,21 +31,27 @@
 }
 
 @property BOOL haveCanceled;
-#if TARGET_OS_IPHONE
-@property NSURL * fileURL;
-#endif
 
 @property (nonatomic) CGFloat nbElementToExport, posInExport;
 @property (nonatomic) CGFloat nbElementInEntry, posInEntry;
 
-- (void) startUI;
-- (void) refreshUI;
 #if TARGET_OS_IPHONE
+	
+@property NSURL * fileURL;
+@property IBOutlet UINavigationItem * header;
+@property IBOutlet UILabel * archiveLabel;
+
+	
 - (IBAction)closeUI;
+
 #else
+
+- (void) startUI;
 - (void) closeUI;
+
 #endif
 
+- (void) refreshUI;
 - (void) finishing;
 
 - (NSString *) headerText;
