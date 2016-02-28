@@ -1042,6 +1042,7 @@ enum
 	[rightToLeft setSelectedSegment:project.rightToLeft];
 	[status selectItemAtIndex:project.status];
 	
+	BOOL updatedList = NO;
 	if(project.mainTag != CAT_NO_VALUE)
 	{
 		for(uint i = 0; i < nbTags; i++)
@@ -1049,10 +1050,16 @@ enum
 			if(tags[i].ID == project.mainTag)
 			{
 				[tagList selectItemAtIndex:i];
+				updatedList = YES;
 				break;
 			}
 		}
 	}
+	
+	if(!updatedList)
+		[tagList selectItemAtIndex:0];
+	else
+		updatedList = NO;
 	
 	if(project.category)
 	{
@@ -1061,10 +1068,14 @@ enum
 			if(cats[i].ID == project.category)
 			{
 				[catList selectItemAtIndex:i];
+				updatedList = YES;
 				break;
 			}
 		}
 	}
+
+	if(!updatedList)
+		[catList selectItemAtIndex:0];
 	
 	if(array == nil)
 		return;
