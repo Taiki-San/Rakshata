@@ -36,7 +36,7 @@
 @property id<RakImportIO> IOController;
 @property PROJECT_DATA_EXTRA projectData;
 @property uint contentID;
-@property BOOL isTome;
+@property BOOL isTome, guessedProject;
 
 @property byte issue;
 

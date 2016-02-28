@@ -649,6 +649,7 @@ enum
 			{
 				author = inputField;
 				
+#ifdef REQUIRE_AUTHOR_TO_IMPORT
 				author.wantCustomBorder = [author.stringValue isEqualToString:@""];
 				author.customBorderColor = [Prefs getSystemColor:COLOR_BUTTON_STATUS_WARN];
 				
@@ -657,6 +658,7 @@ enum
 				author.callbackOnChange = ^(NSNotification * notification, BOOL didComplete){
 					copyAuthor.wantCustomBorder = [copyAuthor.stringValue isEqualToString:@""];
 				};
+#endif
 			}
 			//Synopsis, this one is slightly different
 			else if(i == 2)

@@ -43,14 +43,19 @@
 {
 	if(_projectData.data.project.isInitialized)
 		return false;
+	
+	if(_guessedProject)
+		return true;
 
 	PROJECT_DATA project = _projectData.data.project;
 
 	if(project.projectName[0] == 0)
 		return true;
 
+#ifdef REQUIRE_AUTHOR_TO_IMPORT
 	if(project.authorName[0] == 0)
 		return true;
+#endif
 
 	return false;
 }
@@ -192,6 +197,7 @@
 	}
 	
 	_projectData.data.project = project;
+	_guessedProject = NO;
 
 	[self refreshState];
 

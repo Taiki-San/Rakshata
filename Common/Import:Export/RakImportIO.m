@@ -173,6 +173,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 			
 			item.contentID = INVALID_VALUE;
 			item.isTome = node.nbImages > THREESOLD_IMAGES_FOR_VOL;
+			item.guessedProject = YES;
 			
 			//inferedName is only used if we need a project but inferMetadataFromPathWithHint also guess the # of the archive
 			NSString * inferedName = [item inferMetadataFromPathWithHint:YES];
@@ -197,6 +198,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				else
 				{
 					sharedProject = getProjectByID(sharedProject.cacheDBID);
+					item.guessedProject = NO;
 				}
 			}
 			
