@@ -601,6 +601,7 @@ PROJECT_DATA getEmptyProject()
 	memset(&project, 0, sizeof(PROJECT_DATA));
 	
 	project.mainTag = CAT_NO_VALUE;
+	project.cacheDBID = DEFAULT_CACHEDBID;
 
 	return project;
 }
@@ -612,6 +613,7 @@ PROJECT_DATA_PARSED getEmptyParsedProject()
 	memset(&project, 0, sizeof(project));
 
 	project.project.mainTag = CAT_NO_VALUE;
+	project.project.cacheDBID = DEFAULT_CACHEDBID;
 
 	return project;
 }
@@ -623,6 +625,7 @@ PROJECT_DATA_EXTRA getEmptyExtraProject()
 	memset(&project, 0, sizeof(project));
 
 	project.data.project.mainTag = CAT_NO_VALUE;
+	project.data.project.cacheDBID = DEFAULT_CACHEDBID;
 	
 	return project;
 }

@@ -91,6 +91,7 @@ enum
 
 /*Tags*/
 #define CAT_NO_VALUE 0
+#define DEFAULT_CACHEDBID 0
 
 /*Repo*/
 enum
