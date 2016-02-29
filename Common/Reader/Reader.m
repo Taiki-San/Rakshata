@@ -298,6 +298,9 @@
 
 - (void) collapseAllTabs : (BOOL) forced
 {
+	if(self.distractionFree)
+		return;
+	
 	if(forced || [self isCursorOnMe] || [self mouseOutOfWindow])
 	{
 		[Prefs setPref:PREFS_SET_READER_TABS_STATE: STATE_READER_TAB_ALL_COLLAPSED];
