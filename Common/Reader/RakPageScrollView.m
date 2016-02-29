@@ -36,6 +36,8 @@
 		self.scrollerStyle =	NSScrollerStyleOverlay;
 		self.drawsBackground =	NO;
 		self.allowsMagnification = YES;
+		self.minMagnification = READER_MAGNIFICATION_MIN;
+		self.maxMagnification = READER_MAGNIFICATION_MAX;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMagnify) name:NSScrollViewDidEndLiveMagnifyNotification object:self];
 #else

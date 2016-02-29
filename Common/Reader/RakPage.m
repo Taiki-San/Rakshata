@@ -178,7 +178,7 @@
 	if(_scrollView.magnification < READER_MAGNIFICATION_MAX)
 	{
 		lastKnownMagnification = _scrollView.magnification;
-		lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+		lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : (lastKnownMagnification > 0.25 ? 0.25 : 0.05);
 		lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
 		_scrollView.animator.magnification = lastKnownMagnification;
 	}
@@ -186,10 +186,10 @@
 
 - (void) zoomOut
 {
-	if(round(_scrollView.magnification * 4) > 1)
+	if(round(_scrollView.magnification / READER_MAGNIFICATION_MIN) > 1)
 	{
 		lastKnownMagnification = _scrollView.magnification;
-		lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+		lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : (lastKnownMagnification > 0.25 ? 0.25 : 0.05);
 		lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
 		_scrollView.animator.magnification = lastKnownMagnification;
 	}
@@ -539,7 +539,7 @@
 
 - (BOOL) _moveSliderX : (int) move : (BOOL) animated : (BOOL) contextExist
 {
-	if(_scrollView == nil || !_scrollView.pageTooLarge)
+	if(_scrollView == nil || (!_scrollView.pageTooLarge && _scrollView.magnification <= 1))
 		return NO;
 	
 	NSPoint point = [_scrollView scrollerPosition];
@@ -591,7 +591,7 @@
 
 - (BOOL) _moveSliderY : (int) move : (BOOL) animated : (BOOL) contextExist
 {
-	if(_scrollView == nil || !_scrollView.pageTooHigh)
+	if(_scrollView == nil || (!_scrollView.pageTooHigh && _scrollView.magnification <= 1))
 		return NO;
 	
 	NSPoint point = [_scrollView scrollerPosition];
@@ -1128,10 +1128,10 @@
 	NSPoint sliderStart = [_scrollView scrollerPosition];
 
 	if(scrollView.pageTooHigh)
-		sliderStart.y += (previousSize.height - scrollView.scrollViewFrame.size.height) / 2;
+		sliderStart.y += (previousSize.height - scrollView.documentViewFrame.size.height) / 2;
 	
 	if(scrollView.pageTooLarge)
-		sliderStart.x += (previousSize.width - scrollView.scrollViewFrame.size.width) / 2;
+		sliderStart.x += (previousSize.width - scrollView.documentViewFrame.size.width) / 2;
 	
 	[scrollView scrollToPoint:sliderStart];
 }

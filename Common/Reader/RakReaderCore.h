@@ -17,8 +17,8 @@
 #include "lecteur.h"
 #import "RakPageScrollView.h"
 
-#define READER_MAGNIFICATION_MIN	0.25
-#define READER_MAGNIFICATION_MAX	3.0
+#define READER_MAGNIFICATION_MIN	0.05
+#define READER_MAGNIFICATION_MAX	4.0
 #define READER_PAGE_TOP_BORDER		50
 
 @interface RakReaderCore : RakTabView
