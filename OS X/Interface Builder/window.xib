@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39d" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15E49a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10109"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -245,6 +245,7 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-OUT"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <action selector="zoomOut:" target="494" id="9sf-EO-dQG"/>
                                     <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="btS-8O-GoH"/>
                                 </connections>
                             </menuItem>
@@ -253,6 +254,7 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-RESET-ZOOM"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <action selector="resetZoom:" target="494" id="YKI-wA-B9f"/>
                                     <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="0sf-39-lsm"/>
                                 </connections>
                             </menuItem>
@@ -261,6 +263,7 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-WIDTH"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <action selector="zoomFillWidth:" target="494" id="qDS-V0-Ssf"/>
                                     <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="Uo4-u8-gaG"/>
                                 </connections>
                             </menuItem>
@@ -269,6 +272,7 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-IN"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <action selector="zoomIn:" target="494" id="qPl-is-dWz"/>
                                     <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="bhe-O7-4Ua"/>
                                 </connections>
                             </menuItem>

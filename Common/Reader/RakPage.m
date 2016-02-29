@@ -166,6 +166,50 @@
 
 /*Event handling*/
 
+#pragma mark - Zoom handling
+
+- (void) resetZoom
+{
+	_scrollView.animator.magnification = lastKnownMagnification = 1.0;
+}
+
+- (void) zoomIn
+{
+	if(_scrollView.magnification < READER_MAGNIFICATION_MAX)
+	{
+		lastKnownMagnification = _scrollView.magnification;
+		lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+		lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
+		_scrollView.animator.magnification = lastKnownMagnification;
+	}
+}
+
+- (void) zoomOut
+{
+	if(round(_scrollView.magnification * 4) > 1)
+	{
+		lastKnownMagnification = _scrollView.magnification;
+		lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
+		lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
+		_scrollView.animator.magnification = lastKnownMagnification;
+	}
+}
+
+- (void) zoomFill : (BOOL) fillWidth
+{
+	lastKnownMagnification = _scrollView.magnification;
+	
+	if(fillWidth)
+		lastKnownMagnification = _scrollView.bounds.size.width / _scrollView.contentFrame.size.width;
+	else
+		lastKnownMagnification = _scrollView.bounds.size.height / _scrollView.contentFrame.size.height;
+	
+	lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
+	lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
+	_scrollView.animator.magnification = lastKnownMagnification;
+
+}
+
 #pragma mark    -   Events
 
 - (void) mouseUp:(NSEvent *)theEvent
@@ -360,31 +404,22 @@
 				case '0':
 				{
 					if(RakApp.window.commandPressed)
-						_scrollView.animator.magnification = lastKnownMagnification = 1.0;
+						[self resetZoom];
 					break;
 				}
 					
 				case '+':
 				{
-					if(RakApp.window.commandPressed && _scrollView.magnification < READER_MAGNIFICATION_MAX)
-					{
-						lastKnownMagnification = _scrollView.magnification;
-						lastKnownMagnification += (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
-						lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
-						_scrollView.animator.magnification = lastKnownMagnification;
-					}
+					if(RakApp.window.commandPressed)
+						[self zoomIn];
+
 					break;
 				}
 					
 				case '-':
 				{
-					if(RakApp.window.commandPressed && round(_scrollView.magnification * 4) > 1)
-					{
-						lastKnownMagnification = _scrollView.magnification;
-						lastKnownMagnification -= (lastKnownMagnification > 1.5) ? 0.5f : 0.25f;
-						lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
-						_scrollView.animator.magnification = lastKnownMagnification;
-					}
+					if(RakApp.window.commandPressed)
+						[self zoomOut];
 					break;
 				}
 					
@@ -393,18 +428,7 @@
 					BOOL altPressed = RakApp.window.optionPressed, commandPressed = RakApp.window.commandPressed;
 					
 					if(altPressed || commandPressed)
-					{
-						lastKnownMagnification = _scrollView.magnification;
-						
-						if(commandPressed)
-							lastKnownMagnification = _scrollView.bounds.size.width / _scrollView.contentFrame.size.width;
-						else
-							lastKnownMagnification = _scrollView.bounds.size.height / _scrollView.contentFrame.size.height;
-						
-						lastKnownMagnification = MAX(lastKnownMagnification, READER_MAGNIFICATION_MIN);
-						lastKnownMagnification = MIN(lastKnownMagnification, READER_MAGNIFICATION_MAX);
-						_scrollView.animator.magnification = lastKnownMagnification;
-					}
+						[self zoomFill:commandPressed];
 				}
 			}
 		}

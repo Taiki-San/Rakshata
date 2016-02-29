@@ -220,6 +220,26 @@
 	[[RakRealApp keyWindow] close];
 }
 
+- (IBAction) zoomOut : (id) sender
+{
+	[tabReader zoomOut];
+}
+
+- (IBAction) resetZoom : (id) sender
+{
+	[tabReader resetZoom];
+}
+
+- (IBAction) zoomIn : (id) sender
+{
+	[tabReader zoomIn];
+}
+
+- (IBAction) zoomFillWidth : (id) sender
+{
+	[tabReader zoomFill:YES];
+}
+
 #pragma mark Debug
 
 - (IBAction) reloadFromRemote : (id)sender
