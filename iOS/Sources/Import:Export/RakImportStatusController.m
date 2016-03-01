@@ -19,6 +19,9 @@
 	NSArray <RakImportItem *> * manifest;
 	IBOutlet UITextField * projectName, * CTID, * volumeName;
 	IBOutlet UILabel * contentIDTitle;
+	IBOutlet UISegmentedControl * isTomeSelector;
+	
+	BOOL didProjectNameChange;
 }
 
 @end
@@ -194,6 +197,51 @@
 	if (string.length && textField == CTID)
 		return [RakCTFormatter isStringValid:[textField.text stringByReplacingCharactersInRange:range withString:string]];
 	
+	if(textField == projectName)
+		didProjectNameChange = YES;
+	
 	return YES;
 }
+
+#pragma mark - Perform import
+
+- (IBAction) updateWithMetadata
+{
+	charType * localProjectName = didProjectNameChange ? getStringFromUTF8((const byte *)[projectName.text UTF8String]) : NULL;
+	NSMutableArray * cleanItems = [NSMutableArray array];
+
+	for(RakImportItem * item in manifest)
+	{
+		if(localProjectName != NULL)
+			wstrncpy(item.projectData.data.project.projectName, LENGTH_PROJECT_NAME, localProjectName);
+		
+		item.guessedProject = NO;
+		
+		if(![item checkDetailsMetadata] && [manifest count] > 1)
+		{
+			[item refreshState];
+			if(item.issue == IMPORT_PROBLEM_NONE)
+				[cleanItems addObject:item];
+		}
+	}
+	
+	if([cleanItems count] > 0)
+	{
+		manifest = [manifest mutableCopy];
+		[(NSMutableArray *) manifest removeObjectsInArray:cleanItems];
+	}
+	
+	if([manifest count] == 1)
+	{
+		RakImportItem * item = manifest[0];
+		if(![item updateCTIDWith:getNumberForString(CTID.text) tomeName:volumeName.text isTome:isTomeSelector.selectedSegmentIndex != 0])
+			return;
+
+		[item refreshState];
+	}
+	
+	syncCacheToDisk(SYNC_PROJECTS);
+	[RakDBUpdate postNotificationFullUpdate];
+}
+
 @end
