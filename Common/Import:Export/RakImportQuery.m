@@ -1158,40 +1158,9 @@ enum
 
 - (void) validateDetail
 {
-	BOOL wantTome = isTome.selectedSegment != 0, validInput = NO;
-
-	NSNumber * number = @([getNumberForString(contentID.stringValue) intValue] * 10);
-	NSString * string = contentName.stringValue;
-
-	uint checkedContentID = INVALID_VALUE;
-
-	//Valid name and reading ID
-	if(wantTome)
-	{
-		if(number != nil && [number longLongValue] <= INT_MAX && [number longLongValue] >= INT_MIN && [number intValue] != INVALID_SIGNED_VALUE)
-		{
-			checkedContentID = (uint) [number intValue];
-			validInput = YES;
-		}
-		
-		if(string != nil && [string length] > 0)
-			validInput = YES;
-		else
-			string = nil;
-	}
-
-	//Valid number ID
-	else if(number != nil && [number unsignedIntValue] != INVALID_VALUE)
-	{
-		checkedContentID = [number unsignedIntValue];
-		validInput = YES;
-	}
-
-	//No valid data :(
-	if(!validInput)
+	//Error parsing data
+	if(![_item updateCTIDWith:getNumberForString(contentID.stringValue) tomeName:contentName.stringValue isTome:isTome.selectedSegment != 0])
 		return;
-
-	[_item updateCTIDWith:checkedContentID tomeName:string isTome:wantTome];
 
 	[self close];
 

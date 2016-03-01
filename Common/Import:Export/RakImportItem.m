@@ -60,6 +60,18 @@
 	return false;
 }
 
+- (BOOL) checkDetailsMetadata
+{
+	if(_contentID == INVALID_VALUE)
+		return YES;
+	
+	if(_isTome && _projectData.data.tomeLocal[0].readingID == INVALID_SIGNED_VALUE
+										   && _projectData.data.tomeLocal[0].readingName[0] == 0)
+		return YES;
+	
+	return NO;
+}
+
 - (BOOL) installWithUI : (RakImportStatusController *) UI
 {
 	char * projectPath = getPathForProject(_projectData.data.project);
@@ -213,10 +225,41 @@
 	return NO;
 }
 
-- (void) updateCTIDWith : (uint) contentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome
+- (BOOL) updateCTIDWith : (NSNumber *) rawContentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome
 {
+	BOOL validInput = NO;
+	uint checkedContentID = INVALID_VALUE;
+	
+	rawContentID = @([rawContentID intValue] * 10);
+	
+	//Valid name and reading ID
+	if(isTome)
+	{
+		if(rawContentID != nil && [rawContentID longLongValue] <= INT_MAX && [rawContentID longLongValue] >= INT_MIN && [rawContentID intValue] != INVALID_SIGNED_VALUE)
+		{
+			checkedContentID = (uint) [rawContentID intValue];
+			validInput = YES;
+		}
+		
+		if(tomeName != nil && [tomeName length] > 0)
+			validInput = YES;
+		else
+			tomeName = nil;
+	}
+	
+	//Valid number ID
+	else if(rawContentID != nil && [rawContentID unsignedIntValue] != INVALID_VALUE)
+	{
+		checkedContentID = [rawContentID unsignedIntValue];
+		validInput = YES;
+	}
+	
+	//No valid data :(
+	if(!validInput)
+		return NO;
+	
 	PROJECT_DATA_EXTRA project = _projectData;
-	_contentID = contentID;
+	_contentID = checkedContentID;
 	
 	if(isTome)
 	{
@@ -231,7 +274,7 @@
 			tomeData.ID = getVolumeIDForImport(project.data.project);
 			if(tomeData.ID != INVALID_VALUE)
 			{
-				tomeData.readingID = (int) contentID;
+				tomeData.readingID = (int) checkedContentID;
 				wstrncpy(tomeData.readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [tomeName UTF8String]));
 				
 				tomeData.details = malloc(sizeof(CONTENT_TOME));
@@ -264,7 +307,7 @@
 		}
 		else
 		{
-			project.data.tomeLocal[0].readingID = (int) contentID;
+			project.data.tomeLocal[0].readingID = (int) checkedContentID;
 			wstrncpy(project.data.tomeLocal[0].readingName, MAX_TOME_NAME_LENGTH + 1, getStringFromUTF8((const byte *) [tomeName UTF8String]));
 		}
 	}
@@ -277,17 +320,19 @@
 		if(project.data.chaptersLocal != NULL)
 		{
 			project.data.nbChapterLocal = 1;
-			project.data.chaptersLocal[0] = contentID;
+			project.data.chaptersLocal[0] = checkedContentID;
 			generateCTUsable(&project.data);
 		}
 	}
 	else
 	{
-		project.data.chaptersLocal[0] = contentID;
+		project.data.chaptersLocal[0] = checkedContentID;
 	}
 	
 	_projectData = project;
 	_isTome = isTome;
+	
+	return YES;
 }
 
 - (void) refreshState
@@ -297,8 +342,7 @@
 		_issue = IMPORT_PROBLEM_METADATA;
 
 	//We have a valid targer
-	else if(_contentID == INVALID_VALUE || (_isTome && _projectData.data.tomeLocal[0].readingID == INVALID_SIGNED_VALUE
-											&& _projectData.data.tomeLocal[0].readingName[0] == 0))
+	else if([self checkDetailsMetadata])
 		_issue = IMPORT_PROBLEM_METADATA_DETAILS;
 
 	//Quick check we're not already installed
