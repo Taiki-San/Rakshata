@@ -42,6 +42,7 @@
 @property IBOutlet UILabel * archiveLabel;
 
 	
+- (void) deleteImportedFile;
 - (IBAction)closeUI;
 
 #else

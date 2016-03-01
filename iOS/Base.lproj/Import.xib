@@ -43,14 +43,17 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <state key="normal" title="Importer"/>
                                     <connections>
-                                        <action selector="updateWithMetadata" destination="-1" eventType="valueChanged" id="Fkt-fS-4nn"/>
+                                        <action selector="updateWithMetadata" destination="-1" eventType="primaryActionTriggered" id="Dmc-ga-QU8"/>
                                     </connections>
                                 </button>
+                                <connections>
+                                    <action selector="updateWithMetadata" destination="-1" id="OSC-pb-JY5"/>
+                                </connections>
                             </barButtonItem>
                         </navigationItem>
                     </items>
                 </navigationBar>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D9n-0B-HEY">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D9n-0B-HEY">
                     <rect key="frame" x="15" y="79" width="570" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>

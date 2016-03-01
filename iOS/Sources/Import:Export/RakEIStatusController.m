@@ -35,11 +35,16 @@
 {
 	UITabBarController * controller = RakApp.tabBarController;
 	[controller.viewControllers[controller.selectedIndex] dismissViewControllerAnimated:YES completion:^{
-		NSError * error = nil;
-		[[NSFileManager defaultManager] removeItemAtURL:_fileURL error:&error];
-		if(error != nil)
-			NSLog(@"Couldn't delete the file to be imported :C %@", error);
+		[self deleteImportedFile];
 	}];
+}
+
+- (void) deleteImportedFile
+{
+	NSError * error = nil;
+	[[NSFileManager defaultManager] removeItemAtPath:[_fileURL path] error:&error];
+	if(error != nil)
+		NSLog(@"Couldn't delete the file to be imported :C %@", error);
 }
 
 - (void) finishing

@@ -31,8 +31,11 @@
 - (void) switchToIssueUI : (NSArray *) dataSet
 {
 	manifest = [self validateMetadata:dataSet];
-	if(manifest == nil)
+	if(manifest == nil || [manifest count] == 0)
+	{
+		[self deleteImportedFile];
 		return;
+	}
 	
 	NSArray * array = [[NSBundle mainBundle] loadNibNamed:@"Import" owner:self options:nil];
 	if(array == nil || [array count] == 0)
@@ -73,6 +76,22 @@
 	[CTID setKeyboardType:UIKeyboardTypeDecimalPad];
 	CTID.delegate = (id <UITextFieldDelegate>) self;
 	
+	RakImportItem * item = manifest[0];
+	NSString * name = getStringForWchar(item.projectData.data.project.projectName);
+	if(name != nil)
+		projectName.text = name;
+	
+	if([manifest count] == 1)
+	{
+		isTomeSelector.selectedSegmentIndex = item.isTome;
+		
+		if(item.contentID != INVALID_VALUE)
+			CTID.text = getStringForCTID((int) item.contentID);
+		
+		if(item.isTome)
+			volumeName.text = getStringForWchar(item.projectData.data.tomeRemote[0].readingName);
+	}
+	
 	UITabBarController * controller = RakApp.tabBarController;
 	[controller.viewControllers[controller.selectedIndex] presentViewController:self animated:YES completion:^{}];
 }
@@ -92,7 +111,7 @@
 	NSMutableArray * nonProcessedCollector = [NSMutableArray array];
 	for(RakImportItem * item in dataset)
 	{
-		if(item.issue == IMPORT_PROBLEM_NONE)
+		if(item.issue == IMPORT_PROBLEM_NONE || item.issue == IMPORT_PROBLEM_DUPLICATE)
 			continue;
 		
 		PROJECT_DATA project = item.projectData.data.project;
@@ -242,6 +261,7 @@
 	
 	syncCacheToDisk(SYNC_PROJECTS);
 	[RakDBUpdate postNotificationFullUpdate];
+	[self closeUI];
 }
 
 @end
