@@ -874,6 +874,9 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 	if(additionnalRequest == NULL)
 		additionnalRequest = "";
 	
+	if(nbElemOutput != NULL)
+		*nbElemOutput = 0;
+	
 	char requestString[1024 + strlen(additionnalRequest)];
 	
 	if(categoryName != NULL)
@@ -972,7 +975,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
 		
-		dataCount++;
+		if(intermediaryData[dataCount] != NULL)
+			dataCount++;
 	}
 	
 	if(nbRestrictionSource)
@@ -982,7 +986,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
 		
-		dataCount++;
+		if(intermediaryData[dataCount] != NULL)
+			dataCount++;
 	}
 	
 	if(nbRestrictionCat)
@@ -992,7 +997,8 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
 		
-		dataCount++;
+		if(intermediaryData[dataCount] != NULL)
+			dataCount++;
 	}
 	
 	if(nbRestrictionTag)
@@ -1002,14 +1008,23 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
 		
-		dataCount++;
+		if(intermediaryData[dataCount] != NULL)
+			dataCount++;
 	}
 	
 	//If there was no other restriction
 	if(haveAdditionnalRequest || dataCount == 0)
 	{
 		intermediaryData[dataCount] = _getIDForRestriction(NULL, 0, false, additionnalRequest, &(nbElemInData[dataCount]));
-		dataCount++;
+
+		if(intermediaryData[dataCount] != NULL)
+			dataCount++;
+		else if(dataCount == 0)	//No data at all
+		{
+			*dataLength = 0;
+			free(output);
+			return NULL;
+		}
 	}
 	
 	//We find the largest array
@@ -1027,7 +1042,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	//Array are all sorted, we want the ID appearing in all of them. We pick the smallest, then check that all its item appear in all the other items
 	uint validateLength = 0;
-	bool reachedEndOfAList = false, itemValidated;
+	bool reachedEndOfAList = dataCount == 0, itemValidated;
 	
 	while(!reachedEndOfAList)
 	{

@@ -258,6 +258,12 @@
 	if(!validInput)
 		return NO;
 	
+	return [self _updateCTIDWith:checkedContentID tomeName:tomeName isTome:isTome];
+}
+
+- (BOOL) _updateCTIDWith : (uint) checkedContentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome
+	{
+	
 	PROJECT_DATA_EXTRA project = _projectData;
 	_contentID = checkedContentID;
 	

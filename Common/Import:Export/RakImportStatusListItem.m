@@ -198,13 +198,13 @@
 			RakImportItem * item = _item.itemForChild;
 			if(item.isTome != wantIsTome)
 			{
-				[item updateCTIDWith:item.contentID tomeName:nil isTome:wantIsTome];
+				[item _updateCTIDWith:item.contentID tomeName:nil isTome:wantIsTome];
 			}
 		}
 		
 	}
 	else
-		[_itemForChild updateCTIDWith:_itemForChild.contentID tomeName:nil isTome:wantIsTome];
+		[_itemForChild _updateCTIDWith:_itemForChild.contentID tomeName:nil isTome:wantIsTome];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_IMPORT_STATUS_UI object:nil];
 }

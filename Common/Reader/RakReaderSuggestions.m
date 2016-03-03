@@ -78,7 +78,7 @@
 
 - (void) setupView
 {
-	NSSize firstItemSize = [thumbs firstObject].bounds.size, newSize = _bounds.size;
+	NSSize firstItemSize = [thumbs firstObject].bounds.size, newSize;
 	CGFloat baseX = 8;
 	
 	//Create the buttons

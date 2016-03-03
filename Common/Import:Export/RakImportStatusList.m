@@ -158,7 +158,7 @@ enum
 	else if([item getNbChildren] == 0)
 		return nil;
 	
-	NSMutableArray <RakImportItem *> * collector = [NSMutableArray new];
+	NSMutableArray <NSDictionary *> * collector = [NSMutableArray new];
 	
 	for(uint i = 0; i < [item getNbChildren]; ++i)
 	{

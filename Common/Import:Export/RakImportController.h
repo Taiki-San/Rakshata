@@ -49,6 +49,7 @@
 - (BOOL) overrideDuplicate;
 - (BOOL) updateProject : (PROJECT_DATA) project;
 - (BOOL) updateCTIDWith : (NSNumber *) rawContentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome;
+- (BOOL) _updateCTIDWith : (uint) checkedContentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome;
 - (void) refreshState;
 
 - (void) processThumbs;

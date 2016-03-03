@@ -243,8 +243,11 @@ void MDLUpdateIcons(uint selfCode, DATA_LOADED * metadata)
 
 void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata)
 {
+	if(metadata == NULL)
+		return;
+	
 	//If we have to recover UIInstance
-	if(metadata == NULL && mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
+	if(mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
 		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
 		if(todoList != NULL && *todoList != NULL)

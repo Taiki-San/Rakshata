@@ -211,7 +211,6 @@ bool archiveLocateFile(ARCHIVE * archive, const char * filename)
 			{
 				success = archive->utils.move_next_file(archive);
 				firstPass = false;
-				success = true;
 			}
 			else
 			{

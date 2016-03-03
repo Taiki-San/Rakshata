@@ -71,6 +71,16 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 		return UNZ_OK;
 	}
 
+	if((err = unzOpenCurrentFile(zipFile)) != UNZ_OK)
+	{
+#ifdef EXTENSIVE_LOGGING
+		char temp[100];
+		snprintf(temp, 100, "Decompression error (%d)\n", err);
+		logR(temp);
+#endif
+		return err;
+	}
+	
 	const char * outputFilename = NULL;
 	if(extractWithoutPath == STRIP_TRUST_PATH_AS_FILENAME)
 	{
@@ -91,16 +101,6 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 		outputFilename = output;
 	}
 
-	if((err = unzOpenCurrentFile(zipFile)) != UNZ_OK)
-	{
-#ifdef EXTENSIVE_LOGGING
-		char temp[100];
-		snprintf(temp, 100, "Decompression error (%d)\n", err);
-		logR(temp);
-#endif
-		return err;
-	}
-
 	//We open the output file, eventually creating the path if missing
 	FILE * outputFile = fopen(outputFilename, "wb");
 	if(outputFile == NULL)		//Hum, who knows, maybe the output path wasn't built
@@ -115,6 +115,9 @@ int unzExtractCurrentFile(unzFile zipFile, char* filenameExpected, const char* o
 			snprintf(temp, 200, "Error creating path to %s\n", outputFilename);
 			logR(temp);
 #endif
+			if(extractWithoutPath != STRIP_TRUST_PATH_AS_FILENAME)
+				free((char *) outputFilename);
+
 			return UNZ_INTERNALERROR;
 		}
 	}

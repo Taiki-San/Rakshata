@@ -285,6 +285,7 @@
 
 - (void) didReceiveMemoryWarning
 {
+	[super didReceiveMemoryWarning];
 	NSLog(@"Received memory warning!");
 	//Purge the cache
 	@autoreleasepool
@@ -413,7 +414,7 @@
 		movingIndex = baseIndexPage;
 	
 	NSMutableArray * validRange = [NSMutableArray array];
-	for(uint i = 0, section = INVALID_VALUE, CTID; i < rangeToCheck; i++)
+	for(uint i = 0, section = INVALID_VALUE, CTID = INVALID_VALUE; i < rangeToCheck; i++)
 	{
 		if(section != (uint) movingIndex.section)
 		{

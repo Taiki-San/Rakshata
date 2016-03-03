@@ -1137,6 +1137,7 @@ char * reversedParseData(PROJECT_DATA_PARSED * data, uint nbElem, REPO_DATA ** r
 	bool projectLinkedToRepo = false, fullLocal = repo == NULL || !nbRepo, haveLocal = false;
 	
 	memset(counters, 0, sizeof(counters));
+	memset(jumpTable, 0, sizeof(jumpTable));
 	
 	//Create a table linking projects to a repo
 	for(uint pos = 0, posRepo; pos < nbElem; pos++)
