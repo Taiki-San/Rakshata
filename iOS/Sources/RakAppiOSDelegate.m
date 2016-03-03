@@ -24,6 +24,26 @@
 	if(url != nil)
 		[self application:application openURL:url sourceApplication:nil annotation:nil];
 	
+#ifdef DEV_VERSION
+	if(checkDirExist("Inbox"))
+	{
+		//Check if we don't have a file to load, simplify import module dev
+		NSError * error = nil;
+		NSArray * array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"Inbox/" error:&error];
+		if(array != nil && [array count] != 0 && error == nil)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[self application:application
+						  openURL:[NSURL URLWithString:[NSString stringWithFormat:@"Inbox/%@", [array firstObject]]]
+				sourceApplication:nil
+					   annotation:nil];
+			});
+		}
+		else if(error != nil)
+			NSLog(@"Error in early loading: %@", error);
+	}
+#endif
+	
 	return YES;
 }
 
