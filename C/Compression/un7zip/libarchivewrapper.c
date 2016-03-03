@@ -17,6 +17,18 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+#if (TARGET_OS_SIMULATOR)
+	#define DISABLE_LIBARCHIVE
+#endif
+
+#ifdef DISABLE_LIBARCHIVE
+
+void configureLibarchiveJumptable(ARCHIVE * archive)
+{
+	
+}
+
+#else
 struct archive * getArchive()
 {
 	//Create the libarchive archive
@@ -163,3 +175,5 @@ void configureLibarchiveJumptable(ARCHIVE * archive)
 	archive->utils.close_archive = closeLibArchive;
 	archive->utils.get_error_string = libarchiveErrorString;
 }
+
+#endif
