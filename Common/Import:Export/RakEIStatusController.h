@@ -38,9 +38,6 @@
 #if TARGET_OS_IPHONE
 	
 @property NSURL * fileURL;
-@property IBOutlet UINavigationItem * header;
-@property IBOutlet UILabel * archiveLabel;
-
 	
 - (void) deleteImportedFile;
 - (IBAction)closeUI;

@@ -18,8 +18,9 @@
 {
 	NSArray <RakImportItem *> * manifest;
 	IBOutlet UITextField * projectName, * CTID, * volumeName;
-	IBOutlet UILabel * contentIDTitle;
+	IBOutlet UILabel * contentIDTitle, * archiveLabel;
 	IBOutlet UISegmentedControl * isTomeSelector;
+	IBOutlet UINavigationItem * header;
 	
 	BOOL didProjectNameChange;
 }
@@ -42,12 +43,12 @@
 		return;
 
 	self.view = array[0];
-	self.header.title = [self headerText];
-	self.archiveLabel.text = [self archiveName];
+	header.title = [self headerText];
+	archiveLabel.text = [self archiveName];
 	self.modalPresentationStyle = UIModalPresentationPopover;
 	
 	//Increase button size to the maximum
-	UIButton * button = [self.header.leftBarButtonItem customView];
+	UIButton * button = [header.leftBarButtonItem customView];
 	if(button != nil)
 	{
 		CGRect frame = button.frame;
@@ -56,11 +57,11 @@
 		label.text = NSLocalizedString(@"CANCEL", nil);
 		[label sizeToFit];
 		
-		frame.size.width = label.frame.size.width;
+		frame.size.width = label.frame.size.width + 15;
 		button.frame = frame;
 	}
 	
-	button = [self.header.rightBarButtonItem customView];
+	button = [header.rightBarButtonItem customView];
 	if(button != nil)
 	{
 		CGRect frame = button.frame;
@@ -69,7 +70,7 @@
 		label.text = NSLocalizedString(@"IMPORT-PERFORM", nil);
 		[label sizeToFit];
 		
-		frame.size.width = label.frame.size.width;
+		frame.size.width = label.frame.size.width + 15;
 		button.frame = frame;
 	}
 	
