@@ -154,7 +154,7 @@
 {
 	const char * email = [mailInput.stringValue UTF8String], * pass = [passInput.stringValue UTF8String];
 	
-	switch (login((char*) email, (char*) pass, signup))
+	switch (loginToRSP((char*) email, (char*) pass, signup))
 	{
 		case 1:
 		{

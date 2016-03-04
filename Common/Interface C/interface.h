@@ -36,6 +36,7 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 
 bool isSandboxed();
 void configureSandbox();
+void restoreSettingsFile();
 void registerExtensions();
 int getBuildID();
 void openWebsite(const char * URL);

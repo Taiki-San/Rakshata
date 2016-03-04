@@ -305,7 +305,7 @@ byte checkLogin(const char *adresseEmail)
 	return 2;
 }
 
-int login(const char * adresseEmail, const char * password, bool createAccount)
+int loginToRSP(const char * adresseEmail, const char * password, bool createAccount)
 {
     char passHashed[2*SHA256_DIGEST_LENGTH+1], *downloadedData = NULL, dataCheck[2*SHA256_DIGEST_LENGTH+1];
 	size_t lengthRemote = 0;

@@ -68,9 +68,14 @@ void configureSandbox()
 //	remove(SETTINGS_FILE);
 #ifdef DEV_VERSION
 	if(!checkFileExist(SETTINGS_FILE))
-		[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
+		restoreSettingsFile();
 #endif
 #endif
+}
+
+void restoreSettingsFile()
+{
+	[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
 }
 
 void registerExtensions()

@@ -140,6 +140,8 @@ void updatePrefs(char* flag, char *stringToAdd)
 
 bool loadEmailProfile()
 {
+	free(COMPTE_PRINCIPAL_MAIL);
+
     char *prefs = loadPrefFile();
     if(prefs != NULL)
     {
@@ -164,7 +166,6 @@ bool loadEmailProfile()
 		free(prefs);
     }
 
-	free(COMPTE_PRINCIPAL_MAIL);
 	COMPTE_PRINCIPAL_MAIL = NULL;
 	return false;
 }
