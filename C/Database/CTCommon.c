@@ -274,9 +274,9 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 				else
 				{
 					if(!isTome)
-						memcpy(outputData, dataBase, nbElemToInject * sizeOfType);
+						memcpy(outputData, dataBase, nbElemBase * sizeOfType);
 					else
-						copyTomeList(dataBase, nbElemToInject, outputData);
+						copyTomeList(dataBase, nbElemBase, outputData);
 				}
 
 				//We actually have something to inject, otherwise, we only had one list
