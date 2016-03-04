@@ -372,6 +372,8 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 	sqlite3_bind_int64(request, 1, (int64_t) IDRepo);
 	sqlite3_bind_int(request, 2, (int32_t) projectID);
 	sqlite3_bind_int(request, 3, (int32_t) locale);
+	
+	MUTEX_LOCK(cacheParseMutex);
 
 	if(sqlite3_step(request) == SQLITE_ROW)
 	{
@@ -416,6 +418,8 @@ void * _getProjectFromSearch (uint64_t IDRepo, uint projectID, bool locale, bool
 			logR("[Error]: Request not found, something went wrong when parsing the data :/");
 #endif
 	}
+	
+	MUTEX_UNLOCK(cacheParseMutex);
 
 	destroyRequest(request);
 
@@ -580,9 +584,14 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 		request = createRequest(cache, "SELECT "DBNAMETOID(RDB_nbChapter)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitresPrice)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	sqlite3_bind_int(request, 1, (int32_t) cacheID);
+	
+	MUTEX_LOCK(cacheParseMutex);
 
 	if(sqlite3_step(request) != SQLITE_ROW)
+	{
+		MUTEX_UNLOCK(cacheParseMutex);
 		return NULL;
+	}
 
 	uint nbElemOut = (uint32_t) sqlite3_column_int(request, 0);
 	void * output = NULL, * input = (void *) sqlite3_column_int64(request, 1);
@@ -629,6 +638,8 @@ void * getUpdatedCTForID(uint cacheID, bool wantTome, size_t * nbElemUpdated, ui
 	}
 	else if(nbElemUpdated != NULL)
 		*nbElemUpdated = 0;
+	
+	MUTEX_UNLOCK(cacheParseMutex);
 
 	return output;
 }
