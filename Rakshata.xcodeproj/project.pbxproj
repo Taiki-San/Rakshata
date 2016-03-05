@@ -84,6 +84,7 @@
 		B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B625760E1C27723C00811C33 /* QuartzCore.framework */; };
 		B62576121C27725D00811C33 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62576111C27725D00811C33 /* Foundation.framework */; };
 		B625761B1C27883D00811C33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B625761A1C27883D00811C33 /* Assets.xcassets */; };
+		B6291ED01C89779E0079E6BE /* RakshataCoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6291ECF1C89779E0079E6BE /* RakshataCoreTests.m */; };
 		B62935D31A7E65EC00DE20E2 /* RakSRSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */; };
 		B62935DB1A80209600DE20E2 /* RakSRSearchTabGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */; };
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
@@ -481,6 +482,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B6291ED21C89779E0079E6BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6CF07B31868DD58009B16A3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B6CF07BA1868DD58009B16A3;
+			remoteInfo = Rakshata;
+		};
 		B67C68971C270699005AB992 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B6CF07B31868DD58009B16A3 /* Project object */;
@@ -597,6 +605,9 @@
 		B62576111C27725D00811C33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B62576131C2773CF00811C33 /* RakOSXWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOSXWrapper.h; path = "OS X/RakOSXWrapper.h"; sourceTree = "<group>"; };
 		B625761A1C27883D00811C33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = iOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		B6291ECD1C89779E0079E6BE /* RakshataCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6291ECF1C89779E0079E6BE /* RakshataCoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakshataCoreTests.m; sourceTree = "<group>"; };
+		B6291ED11C89779E0079E6BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B62935D11A7E65EC00DE20E2 /* RakSRSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchList.h; path = "Séries/RakSRSearchList.h"; sourceTree = "<group>"; };
 		B62935D21A7E65EC00DE20E2 /* RakSRSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchList.m; path = "Séries/RakSRSearchList.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTabGroup.h; path = "Séries/RakSRSearchTabGroup.h"; sourceTree = "<group>"; };
@@ -1068,6 +1079,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B6291ECA1C89779E0079E6BE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B67C68781C270698005AB992 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1235,6 +1253,15 @@
 				B61EBE7219EC699400EE6837 /* RakCTSelectionListContainer.m */,
 			);
 			name = "CT List";
+			sourceTree = "<group>";
+		};
+		B6291ECE1C89779E0079E6BE /* RakshataCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				B6291ECF1C89779E0079E6BE /* RakshataCoreTests.m */,
+				B6291ED11C89779E0079E6BE /* Info.plist */,
+			);
+			path = RakshataCoreTests;
 			sourceTree = "<group>";
 		};
 		B62935DC1A803A9400DE20E2 /* RakText */ = {
@@ -2107,6 +2134,7 @@
 			children = (
 				B66B4627189A7129000354D1 /* C Core */,
 				B6CF07C41868DD58009B16A3 /* Common */,
+				B6291ECE1C89779E0079E6BE /* RakshataCoreTests */,
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
 				B67C687C1C270698005AB992 /* iOS */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
@@ -2127,6 +2155,7 @@
 				B67C687B1C270698005AB992 /* Rakshata iOS.app */,
 				B67C68961C270699005AB992 /* Rakshata iOSTests.xctest */,
 				B67C68A11C270699005AB992 /* Rakshata iOSUITests.xctest */,
+				B6291ECD1C89779E0079E6BE /* RakshataCoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2447,6 +2476,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B6291ECC1C89779E0079E6BE /* RakshataCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6291ED61C89779E0079E6BE /* Build configuration list for PBXNativeTarget "RakshataCoreTests" */;
+			buildPhases = (
+				B6291EC91C89779E0079E6BE /* Sources */,
+				B6291ECA1C89779E0079E6BE /* Frameworks */,
+				B6291ECB1C89779E0079E6BE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B6291ED31C89779E0079E6BE /* PBXTargetDependency */,
+			);
+			name = RakshataCoreTests;
+			productName = RakshataCoreTests;
+			productReference = B6291ECD1C89779E0079E6BE /* RakshataCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B67C687A1C270698005AB992 /* Rakshata iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B67C68AE1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOS" */;
@@ -2530,6 +2577,10 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
+					B6291ECC1C89779E0079E6BE = {
+						CreatedOnToolsVersion = 7.2.1;
+						TestTargetID = B6CF07BA1868DD58009B16A3;
+					};
 					B67C687A1C270698005AB992 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = GNHH4Q9D6U;
@@ -2578,11 +2629,19 @@
 				B67C687A1C270698005AB992 /* Rakshata iOS */,
 				B67C68951C270699005AB992 /* Rakshata iOSTests */,
 				B67C68A01C270699005AB992 /* Rakshata iOSUITests */,
+				B6291ECC1C89779E0079E6BE /* RakshataCoreTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B6291ECB1C89779E0079E6BE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B67C68791C270698005AB992 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2766,6 +2825,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B6291EC91C89779E0079E6BE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6291ED01C89779E0079E6BE /* RakshataCoreTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B67C68771C270698005AB992 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3118,6 +3185,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B6291ED31C89779E0079E6BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B6CF07BA1868DD58009B16A3 /* Rakshata */;
+			targetProxy = B6291ED21C89779E0079E6BE /* PBXContainerItemProxy */;
+		};
 		B67C68981C270699005AB992 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B67C687A1C270698005AB992 /* Rakshata iOS */;
@@ -3168,6 +3240,76 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		B6291ED41C89779E0079E6BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Framework/",
+					"$(PROJECT_DIR)/Framework",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = RakshataCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.RakshataCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rakshata.app/Contents/MacOS/Rakshata";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Framework/";
+			};
+			name = Debug;
+		};
+		B6291ED51C89779E0079E6BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Framework/",
+					"$(PROJECT_DIR)/Framework",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = RakshataCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.RakshataCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rakshata.app/Contents/MacOS/Rakshata";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Framework/";
+			};
+			name = Release;
+		};
 		B67C68A81C270699005AB992 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3321,6 +3463,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Rakshata iOSUITests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
@@ -3343,6 +3486,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Rakshata iOSUITests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
@@ -3604,6 +3748,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B6291ED61C89779E0079E6BE /* Build configuration list for PBXNativeTarget "RakshataCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6291ED41C89779E0079E6BE /* Debug */,
+				B6291ED51C89779E0079E6BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		B67C68AE1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -49,9 +49,31 @@ char *loadPrefFile()
 
 void addToPref(char* flag, char *stringToAdd)
 {
+	bool needFree = false;
     uint i, j, length;
     char setFlag[10], *prefs = NULL, *newPrefs = NULL;
-    snprintf(setFlag, 10, "<%s>", flag);
+    snprintf(setFlag, 10, "<%s>\n", flag);
+	
+	//Incorrect (for now) use of the API, lack the prefix so we add it
+	const uint lengthSetFlag = strlen(setFlag);
+	if(strncmp(setFlag, stringToAdd, lengthSetFlag))
+	{
+		length = strlen(stringToAdd);
+		
+		char * tmpString = malloc(length + 2 * lengthSetFlag + 1);
+		if(tmpString == NULL || length > UINT_MAX - (2 * lengthSetFlag + 1))
+			return;
+		
+		strcpy(tmpString, setFlag);
+		strcpy(&tmpString[lengthSetFlag], stringToAdd);
+		
+		char finishFlag[10];
+		snprintf(finishFlag, sizeof(finishFlag), "\n</%s>", flag);
+		strcpy(&tmpString[lengthSetFlag + length], finishFlag);
+		
+		needFree = true;
+		stringToAdd = tmpString;
+	}
 
     prefs = loadPrefFile();
     if(prefs != NULL)
@@ -65,6 +87,10 @@ void addToPref(char* flag, char *stringToAdd)
         if(newPrefs == NULL)
         {
             free(prefs);
+			
+			if(needFree)
+				free(stringToAdd);
+			
             return;
         }
 
@@ -87,6 +113,9 @@ void addToPref(char* flag, char *stringToAdd)
 	
 	remove(SETTINGS_FILE);
 	rename(SETTINGS_FILE".tmp", SETTINGS_FILE);
+
+	if(needFree)
+		free(stringToAdd);
 }
 
 void removeFromPref(char* flag)

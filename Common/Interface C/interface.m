@@ -66,16 +66,16 @@ void configureSandbox()
 	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
 	
 //	remove(SETTINGS_FILE);
+#endif
 #ifdef DEV_VERSION
 	if(!checkFileExist(SETTINGS_FILE))
 		restoreSettingsFile();
-#endif
 #endif
 }
 
 void restoreSettingsFile()
 {
-	[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"debug"]] writeToFile:@""SETTINGS_FILE"" options:NSDataWritingAtomic error:nil];
+	[[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@""]] writeToFile:@SETTINGS_FILE options:NSDataWritingAtomic error:nil];
 }
 
 void registerExtensions()

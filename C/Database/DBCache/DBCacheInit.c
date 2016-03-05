@@ -308,6 +308,8 @@ void flushDB()
 
 	if(request != NULL)
 	{
+		MUTEX_LOCK(cacheParseMutex);
+
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
 			free((void*) sqlite3_column_int64(request, 0));
@@ -319,6 +321,8 @@ void flushDB()
 			freeTomeList((void*) sqlite3_column_int64(request, 8), (uint32_t) sqlite3_column_int(request, 9), true);
 			free((void*) sqlite3_column_int64(request, 10));
 		}
+		
+		MUTEX_UNLOCK(cacheParseMutex);
 
 		destroyRequest(request);
 	}
