@@ -108,6 +108,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	NSDictionary * manifest = [self generateManifestForItem:item contentDetail:&content thumbFiles:&thumbnails];
 	if(manifest == nil)
 	{
+		NSLog(@"Couldn't generate a manifest for request");
 		dispatch_async(dispatch_get_main_queue(), ^{		[UI closeUI];		});
 		return;
 	}
@@ -310,7 +311,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 	NSMutableArray * output = nil;
 
-	//To insert a full project, we first inject the
+	//To insert a full project, we first inject the chapters
 	if(fullProject)
 	{
 		selection = INVALID_VALUE;
@@ -343,6 +344,16 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 		if([collector count] > 0)
 			output = collector;
+	}
+	else if(isTome)
+	{
+		uint pos = getPosForID(*project, true, selection);
+		if(pos != INVALID_VALUE)
+		{
+			NSDictionary * dict = linearizeContentLine(*project, projectID, isTome, &project->volumesInstalled[pos], index);
+			if(dict != nil)
+				output = [NSMutableArray arrayWithObject:dict];
+		}
 	}
 	else
 	{
@@ -546,13 +557,9 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 	if(isTome)
 	{
-		uint pos = getPosForID(project, true, * (uint *) selection);
-		if(pos == INVALID_VALUE)
-			return nil;
+		[dict setObject:@(((META_TOME *) selection)->ID) forKey:RAK_STRING_CONTENT_ID];
 		
-		[dict setObject:@(* (uint *) selection) forKey:RAK_STRING_CONTENT_ID];
-		
-		NSArray * volumeMetadata = recoverVolumeBloc(&(project.volumesInstalled[pos]), 1, project.isPaid);
+		NSArray * volumeMetadata = recoverVolumeBloc(selection, 1, project.isPaid);
 		if(volumeMetadata != nil && [volumeMetadata count] > 0)
 			[dict setObject:[volumeMetadata objectAtIndex:0] forKey:RAK_STRING_CONTENT_VOL_DETAILS];
 	}
