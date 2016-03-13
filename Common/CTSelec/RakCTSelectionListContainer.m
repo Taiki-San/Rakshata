@@ -204,6 +204,11 @@
 	
 	[_title setFrame : [self frameForTitle : _bounds]];
 	
+	[self reloadContentFrame];
+}
+
+- (void) reloadContentFrame
+{
 	NSRect contentFrame = [self frameForContent : _bounds];
 	[_content setFrame : contentFrame];
 	[_placeholder setFrameOrigin : NSCenteredRect(contentFrame, _placeholder.bounds)];
@@ -257,7 +262,7 @@
 
 - (BOOL) reloadData : (PROJECT_DATA) project : (BOOL) resetScroller;
 {
-	BOOL retValue = [_content reloadData : project : resetScroller];
+	BOOL wasEmpty = _content.isEmpty, retValue = [_content reloadData : project : resetScroller];
 	
 	if(_placeholderActive == retValue)
 	{
@@ -292,6 +297,9 @@
 				[_content setHidden : YES];			
 		}];
 	}
+	
+	if(wasEmpty && !_content.isEmpty && !_placeholderActive)
+		[self reloadContentFrame];	
 	
 	_title.currentID = project.cacheDBID;
 	_title.isEmpty = !retValue;
