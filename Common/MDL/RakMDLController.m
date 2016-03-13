@@ -386,7 +386,6 @@
 		{
 			free(status[nbElem]);			status[nbElem] = NULL;
 			MDLFlushElement(newElement);	newElement = NULL;
-			IDToPosition[discardedCount++] = nbElem++;
 			discardedCount--;	nbElem--;
 		}
 		else
