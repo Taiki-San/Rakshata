@@ -139,7 +139,7 @@ enum
 
 - (void) tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	DATA_LOADED ** todoList = [controller getData:row : YES];
+	DATA_LOADED ** todoList = [controller getData:row];
 	
 	if(todoList != NULL && *todoList != NULL)
 	{
@@ -153,7 +153,7 @@ enum
 	if(row == -1)
 		return;
 	
-	DATA_LOADED ** todoList = [controller getData:row : YES];
+	DATA_LOADED ** todoList = [controller getData:row];
 	
 	if(todoList != NULL && *todoList != NULL)
 	{
@@ -191,7 +191,7 @@ enum
 
 - (BOOL) tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
-	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	DATA_LOADED ** dataProject = [controller getData:row];
 	
 	if(dataProject != NULL && (*dataProject)->datas != NULL)
 	{
@@ -205,7 +205,7 @@ enum
 
 - (PROJECT_DATA) getProjectDataForDrag : (uint) row
 {
-	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	DATA_LOADED ** dataProject = [controller getData:row];
 	
 	if(dataProject == NULL || 	(*dataProject)->datas == NULL)
 		return [super getProjectDataForDrag:row];
@@ -215,7 +215,7 @@ enum
 
 - (NSString *) contentNameForDrag : (uint) row
 {
-	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	DATA_LOADED ** dataProject = [controller getData:row];
 	
 	if(dataProject == NULL)
 		return nil;
@@ -238,7 +238,7 @@ enum
 {
 	row = row / _nbCoupleColumn + _tableView.preCommitedLastClickedColumn / _nbElemPerCouple;
 	
-	DATA_LOADED ** dataProject = [controller getData:row :YES];
+	DATA_LOADED ** dataProject = [controller getData:row];
 	
 	if(dataProject == NULL || *dataProject == NULL)
 		return;

@@ -37,7 +37,7 @@ enum
 		
 		[Prefs registerForChange:self forType:KVO_THEME];
 		
-		todoList = [_controller getData: _row : YES];
+		todoList = [_controller getData: _row];
 		if(todoList == NULL || *todoList == NULL)
 		{
 			_invalidData = YES;
@@ -315,7 +315,7 @@ enum
 {
 	_row = data;
 	
-	todoList = [_controller getData : _row : YES];
+	todoList = [_controller getData :_row];
 	if(todoList == NULL || *todoList == NULL)
 	{
 		_invalidData = YES;
@@ -339,28 +339,6 @@ enum
 
 #pragma mark - Delete row
 
-- (void) removeRowFromList
-{
-	RakView * tableView = self;
-	while (tableView != nil && [tableView class] != [RakTableView class])
-		tableView = tableView.superview;
-	
-	if(tableView != nil)
-		[(RakTableView*) tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex : _row] withAnimation:NSTableViewAnimationSlideLeft];
-	
-	MDL * tabMDL = [RakApp MDL];
-	if(tabMDL != nil)
-	{
-		NSRect lastFrame = [tabMDL lastFrame], newFrame = [tabMDL createFrame];
-		
-		if(!NSEqualRects(lastFrame, newFrame))
-			[tabMDL fastAnimatedRefreshLevel : tabMDL.superview];
-	}
-	
-	//Now, we can send a notification to update _row counters
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"RakMDLListViewRowDeleted" object:self userInfo:@{ @"deletedRow" : @(_row)}];
-}
-
 - (void) rowDeleted : (NSNotification *) notification
 {
 	NSDictionary *userInfo = [notification userInfo];
@@ -375,7 +353,7 @@ enum
 
 - (void) updateContext
 {
-	int8_t newStatus = [_controller statusOfID : _row : YES];
+	int8_t newStatus = [_controller statusOfID : _row];
 	
 	if(newStatus == previousStatus)
 		return;
@@ -394,7 +372,7 @@ enum
 			[_pause setHidden:NO];
 			[DLprogress setHidden:NO];
 			
-			DATA_LOADED ** entry = [_controller getData : _row : YES];
+			DATA_LOADED ** entry = [_controller getData : _row];
 			
 			if(entry != NULL && *entry != NULL)
 			{
@@ -458,7 +436,7 @@ enum
 	if(todoList == nil)
 		return NO;
 	
-	int8_t status = [_controller statusOfID:_row :YES];
+	int8_t status = [_controller statusOfID:_row];
 	
 	(*todoList)->downloadSuspended |= DLSTATUS_ABORT;	//Send the code to stop the download
 	
@@ -467,7 +445,7 @@ enum
 		curl_easy_pause((*todoList)->curlHandler, CURLPAUSE_CONT);
 	}
 	
-	[_controller setStatusOfID: _row : YES : MDL_CODE_ABORTED];
+	[_controller setStatusOfID: _row bypassDiscarded:NO withValue: MDL_CODE_ABORTED];
 	(*todoList)->rowViewResponsible = NULL;
 	
 	return status == MDL_CODE_DL;
@@ -475,7 +453,7 @@ enum
 
 - (void) sendRemove
 {
-	int8_t status = [_controller statusOfID:_row :YES];
+	int8_t status = [_controller statusOfID:_row];
 	
 	[self abortProcessing];
 	

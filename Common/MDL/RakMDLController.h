@@ -49,11 +49,13 @@
 
 - (uint) getNbElem : (BOOL) considerDiscarded;
 - (uint) getNbElemToProcess;
-- (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded;
+- (DATA_LOADED **) getData : (uint) row;
+- (DATA_LOADED **) getData : (uint) row  bypassDiscarded : (BOOL) bypassDiscarded;
 
-- (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded;
+- (int8_t) statusOfID : (uint) row;
+- (int8_t) statusOfID : (uint) row bypassDiscarded : (BOOL) bypassDiscarded;
 - (void) discardInstalled;
-- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value;
+- (void) setStatusOfID : (uint) row bypassDiscarded : (BOOL) bypassDiscarded withValue: (int8_t) value;
 - (void) removingEmailAddress;
 - (void) addElement : (uint) cacheDBID : (BOOL) isTome : (uint) element : (BOOL) partOfBatch;
 - (uint) addBatch : (PROJECT_DATA) data : (BOOL) isTome : (BOOL) launchAtTheEnd;

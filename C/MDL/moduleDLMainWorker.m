@@ -249,7 +249,7 @@ void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata)
 	//If we have to recover UIInstance
 	if(mainTab != nil && [mainTab respondsToSelector:@selector(getData::)])
 	{
-		DATA_LOADED ** todoList = [mainTab getData:selfCode : YES];
+		DATA_LOADED ** todoList = [mainTab getData:selfCode bypassDiscarded:YES];
 		if(todoList != NULL && *todoList != NULL)
 			metadata = *todoList;
 		else

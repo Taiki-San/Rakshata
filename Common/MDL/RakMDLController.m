@@ -293,27 +293,37 @@
 	
 	for(uint i = 0, length = nbValue; i < length; ++i)
 	{
-		if(!MDLStatusIsProcessing([self statusOfID : i : YES]))
+		if(!MDLStatusIsProcessing([self statusOfID : i]))
 			nbValue--;
 	}
 	
 	return nbValue;
 }
 
-- (DATA_LOADED **) getData : (uint) row : (BOOL) considerDiscarded
+- (DATA_LOADED **) getData : (uint) row
 {
-	if(row >= (considerDiscarded ? discardedCount : nbElem))
-		return NULL;
-	
-	return &(*todoList)[considerDiscarded ? IDToPosition[row] : row];
+	return [self getData:row bypassDiscarded:NO];
 }
 
-- (int8_t) statusOfID : (uint) row : (BOOL) considerDiscarded
+- (DATA_LOADED **) getData : (uint) row bypassDiscarded : (BOOL) bypassDiscarded
 {
-	if(row >= (considerDiscarded ? discardedCount : nbElem) || status == NULL)
+	if(row >= (bypassDiscarded ? nbElem : discardedCount))
+		return NULL;
+	
+	return &(*todoList)[bypassDiscarded ? row : IDToPosition[row]];
+}
+
+- (int8_t) statusOfID : (uint) row
+{
+	return [self statusOfID:row bypassDiscarded:NO];
+}
+
+- (int8_t) statusOfID : (uint) row  bypassDiscarded : (BOOL) bypassDiscarded
+{
+	if(row >= (bypassDiscarded ? nbElem : discardedCount) || status == NULL)
 		return MDL_CODE_INTERNAL_ERROR;
 	
-	if(considerDiscarded)
+	if(!bypassDiscarded)
 		row = IDToPosition[row];
 	
 	return *(status[row]);
@@ -560,12 +570,12 @@
 #endif
 }
 
-- (void) setStatusOfID : (uint) row : (BOOL) considerDiscarded : (int8_t) value
+- (void) setStatusOfID : (uint) row bypassDiscarded : (BOOL) bypassDiscarded withValue: (int8_t) value
 {
-	if(row >= (considerDiscarded ? discardedCount : nbElem) || status == NULL)
+	if(row >= (bypassDiscarded ? nbElem : discardedCount) || status == NULL)
 		return;
 	
-	if(considerDiscarded)
+	if(!bypassDiscarded)
 		row = IDToPosition[row];
 	
 	if(status[row] != NULL)
