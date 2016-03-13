@@ -223,12 +223,10 @@ DATA_LOADED ** MDLLoadDataFromState(PROJECT_DATA ** projectDB, uint* nbProjectTo
 DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainListSize, uint * currentPosition, DATA_LOADED ** newChunk)
 {
 	if(mainList == NULL || newChunk == NULL)
-	{
 		(*mainListSize)--;
-		return mainList;
-	}
-	
-	mainList[(*currentPosition)++] = *newChunk;
+	else
+		mainList[(*currentPosition)++] = *newChunk;
+
 	return mainList;
 }
 
