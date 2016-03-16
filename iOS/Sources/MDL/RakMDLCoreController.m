@@ -54,7 +54,7 @@
 {
 	uint pos = (NSUInteger) indexPath.row;
 	
-	DATA_LOADED ** todoList = [controller getData : pos : YES];
+	DATA_LOADED ** todoList = [controller getData : pos];
 	if(todoList == NULL || *todoList == NULL)
 		return nil;
 	
@@ -128,7 +128,7 @@
 	if(![NSThread isMainThread])
 		return dispatch_sync(dispatch_get_main_queue(), ^{	[self rowUpdate:row];	});
 	
-	DATA_LOADED ** data = [controller getData : row : YES];
+	DATA_LOADED ** data = [controller getData : row];
 	if(data == NULL)
 		return;
 	
@@ -148,7 +148,7 @@
 		return dispatch_sync(dispatch_get_main_queue(), ^{	[self percentageUpdate:percentage atSpeed:speed forObject:rowNumber];	});
 	
 	NSUInteger row = [rowNumber unsignedIntegerValue];
-	DATA_LOADED ** data = [controller getData : row : YES];
+	DATA_LOADED ** data = [controller getData : row];
 	if(data == NULL)
 		return;
 	
