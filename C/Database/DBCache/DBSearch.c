@@ -869,7 +869,7 @@ uint * _copyDataForRequest(sqlite3_stmt * request, uint * nbElemOutput)
 	return output;
 }
 
-uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bool wantAND, const char * additionnalRequest, uint * nbElemOutput)
+uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bool wantAND, const char * additionnalRequest, const char * searchString, uint * nbElemOutput)
 {
 	if(additionnalRequest == NULL)
 		additionnalRequest = "";
@@ -907,6 +907,17 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 	if(request == NULL)
 		return NULL;
 	
+	if(searchString != NULL)
+	{
+		uint length = strlen(searchString);
+		char copySearchString[length + 2];
+		
+		memcpy(copySearchString, searchString, length * sizeof(char));
+		copySearchString[length] = copySearchString[length + 1] = '%';
+		
+		sqlite3_bind_text(request, 1, copySearchString, sizeof(copySearchString), NULL);
+	}
+	
 	void * output = _copyDataForRequest(request, nbElemOutput);
 	
 	destroyRequest(request);
@@ -931,7 +942,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	uint searchLength = searchQuery == NULL ? 0 : strlen(searchQuery);
 	bool haveAdditionnalRequest = false;
-	char additionnalRequest[256 + searchLength];	additionnalRequest[0] = 0;
+	char additionnalRequest[256];	additionnalRequest[0] = 0;
 
 	//We craft the additional parts of the request
 	if(searchLength || wantInstalledOnly || wantFreeOnly || wantFavsOnly)
@@ -939,9 +950,9 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(searchLength)
 		{
 			if(nbRestrictionSource || nbRestrictionAuthor || nbRestrictionCat || nbRestrictionTag)
-				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND list."DBNAMETOID(RDB_ID)" = cache."DBNAMETOID(RDB_ID)" AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND list."DBNAMETOID(RDB_ID)" = cache."DBNAMETOID(RDB_ID)" AND cache."DBNAMETOID(RDB_projectName)" LIKE ?1");
 			else
-				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", searchQuery);
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE ?1");
 		}
 		
 		if(wantFavsOnly)
@@ -970,7 +981,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	//We get the data for the various restrictions
 	if(nbRestrictionAuthor)
 	{
-		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_AUTHOR), nbRestrictionAuthor, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_AUTHOR), nbRestrictionAuthor, false, haveAdditionnalRequest ? additionnalRequest : NULL, haveAdditionnalRequest ? searchQuery : NULL, &(nbElemInData[dataCount]));
 		
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
@@ -981,7 +992,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	if(nbRestrictionSource)
 	{
-		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_SOURCE), nbRestrictionSource, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_SOURCE), nbRestrictionSource, false, haveAdditionnalRequest ? additionnalRequest : NULL, haveAdditionnalRequest ? searchQuery : NULL, &(nbElemInData[dataCount]));
 		
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
@@ -992,7 +1003,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	if(nbRestrictionCat)
 	{
-		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_CAT), nbRestrictionCat, false, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_CAT), nbRestrictionCat, false, haveAdditionnalRequest ? additionnalRequest : NULL, haveAdditionnalRequest ? searchQuery : NULL, &(nbElemInData[dataCount]));
 		
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
@@ -1003,7 +1014,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	if(nbRestrictionTag)
 	{
-		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_TAG), nbRestrictionTag, true, haveAdditionnalRequest ? additionnalRequest : NULL, &(nbElemInData[dataCount]));
+		intermediaryData[dataCount] = _getIDForRestriction(STRINGIZE(RDBS_TYPE_TAG), nbRestrictionTag, true, haveAdditionnalRequest ? additionnalRequest : NULL, haveAdditionnalRequest ? searchQuery : NULL, &(nbElemInData[dataCount]));
 		
 		if(haveAdditionnalRequest)
 			haveAdditionnalRequest = false;
@@ -1015,7 +1026,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	//If there was no other restriction
 	if(haveAdditionnalRequest || dataCount == 0)
 	{
-		intermediaryData[dataCount] = _getIDForRestriction(NULL, 0, false, additionnalRequest, &(nbElemInData[dataCount]));
+		intermediaryData[dataCount] = _getIDForRestriction(NULL, 0, false, additionnalRequest, searchQuery, &(nbElemInData[dataCount]));
 
 		if(intermediaryData[dataCount] != NULL)
 			dataCount++;
@@ -1114,8 +1125,8 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 		return NULL;
 	
 	uint length = strlen(start);
-	char requestText[length + 200];
-	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\" ORDER BY "DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC" ASC", start);
+	char requestText[200];
+	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE ?1 ORDER BY "DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC" ASC");
 	
 	sqlite3_stmt * request;
 	
@@ -1124,6 +1135,11 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 		free(output);
 		return NULL;
 	}
+	
+	char copyString[length + 2];
+	memcpy(copyString, start, length * sizeof(char));
+	copyString[length] = copyString[length + 1] = '%';
+	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), NULL);
 	
 	size_t realLength = 0;
 	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
@@ -1145,15 +1161,19 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 bool haveOneOrLessMatchForNameStartingWith(const char * start)
 {
 	bool oneOrLess = false;
+	char requestText[200];
 	uint length = strlen(start);
-	char requestText[length + 200];
-	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE \"%s%%\"", start);
+	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE ?1");
 	
 	sqlite3_stmt * request;
-	
-	if((request = createRequest(cache, requestText)) == NULL)
+	if(length > INT_MAX || (request = createRequest(cache, requestText)) == NULL)
 		return false;
 	
+	char copyString[length + 2];
+	memcpy(copyString, start, length * sizeof(char));
+	copyString[length] = copyString[length + 1] = '%';
+
+	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), NULL);
 	oneOrLess = (sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) <= 1);
 	
 	destroyRequest(request);

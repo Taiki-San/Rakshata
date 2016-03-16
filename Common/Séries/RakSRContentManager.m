@@ -178,7 +178,6 @@
 	uint tmpSortedToOrdered[*_nbElemFull];
 	memset(tmpSortedToOrdered, 0, sizeof(tmpSortedToOrdered));	//Not really needed but clang analyzer want some clearer initialization
 																//I believe so because highestValue > _nbElemFull, and collector contain _nbElemFull valid entry
-
 	for(uint i = 0, pos = 0; i < highestValue; i++)
 	{
 		if(collector[i] != invalidValue)
