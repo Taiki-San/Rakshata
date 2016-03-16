@@ -384,9 +384,9 @@
 		DATA_LOADED ** newTodoList = realloc(*todoList, nbElem * sizeof(DATA_LOADED *));
 		if(newTodoList == NULL)
 		{
+			discardedCount--;	nbElem--;
 			free(status[nbElem]);			status[nbElem] = NULL;
 			MDLFlushElement(newElement);	newElement = NULL;
-			discardedCount--;	nbElem--;
 		}
 		else
 		{
