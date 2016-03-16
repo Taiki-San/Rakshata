@@ -80,9 +80,16 @@ enum
 		{
 			[self addSubview:[list getContent]];
 		}
+		
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 #pragma mark - Sizing & color
@@ -118,6 +125,15 @@ enum
 - (RakColor *) textColor
 {
 	return [Prefs getSystemColor:COLOR_INACTIVE];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	header.textColor = [self textColor];
+	autoDLMessage.textColor = [self textColor];
 }
 
 #pragma mark - Logic

@@ -14,6 +14,13 @@
  **                                                                                         **
  *********************************************************************************************/
 
+@interface RakClickableText ()
+{
+	BOOL hasFocus;
+}
+
+@end
+
 @implementation RakClickableText
 
 - (instancetype) initWithText:(NSString *) text : (RakColor *)color responder : (NSObject *) responder
@@ -59,13 +66,19 @@
 - (void) mouseEntered : (NSEvent *) theEvent
 {
 	if(_URL != nil || _ignoreURL)
-		self.textColor = [self focusTextColor];
+	{
+		hasFocus = YES;
+		super.textColor = [self focusTextColor];
+	}
 }
 
 - (void) mouseExited : (NSEvent *) theEvent
 {
 	if(_URL != nil || _ignoreURL)
-		self.textColor = classicalTextColor;
+	{
+		hasFocus = NO;
+		super.textColor = classicalTextColor;
+	}
 }
 
 - (void) mouseDown:(NSEvent *)theEvent
@@ -89,6 +102,12 @@
 - (RakColor *) focusTextColor
 {
 	return [Prefs getSystemColor:COLOR_HIGHLIGHT];
+}
+
+- (void) setTextColor:(NSColor *)textColor
+{
+	classicalTextColor = textColor;
+	super.textColor = hasFocus ? [self focusTextColor] : classicalTextColor;
 }
 
 @end

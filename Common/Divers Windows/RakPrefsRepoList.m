@@ -446,11 +446,10 @@ enum
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if([object class] != [Prefs class])
-		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	detail.textColor = [self detailTextColor];
-	[self setNeedsDisplay:YES];
+	if([object class] == [Prefs class])
+		detail.textColor = [self detailTextColor];
 }
 
 @end

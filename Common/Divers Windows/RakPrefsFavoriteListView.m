@@ -153,6 +153,16 @@ enum
 	return [self detailTextColor];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	if([object class] == [Prefs class])
+	{
+		repo.textColor = [self detailTextColor];
+	}
+}
+
 #pragma mark - Responder
 
 - (void) clickRepo

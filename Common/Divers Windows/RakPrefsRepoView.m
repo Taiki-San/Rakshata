@@ -99,6 +99,8 @@ enum
 			
 			[self addSubview:placeholder];
 		}
+		
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 	
 	return self;
@@ -107,6 +109,7 @@ enum
 - (void) dealloc
 {
 	[RakDBUpdate unRegister:self];
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 }
 
 - (void) mouseUp:(NSEvent *)theEvent
@@ -146,6 +149,15 @@ enum
 - (RakColor *) placeholderColor
 {
 	return [Prefs getSystemColor:COLOR_REPO_TEXT_PLACEHOLDER];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	placeholder.textColor = [self placeholderColor];
+	switchMessage.textColor = [self textColor];
 }
 
 #pragma mark - Data interface
