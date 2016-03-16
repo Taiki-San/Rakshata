@@ -300,16 +300,18 @@ do
 		fi
 		
 		echo "Found everything we needed, compiling!"
+
+		SQLITE_FLAGS="-O3 -c -DHAVE_USLEEP=1 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_ICU -I/usr/local/opt/icu4c/include"
 		
 		#Compiling
 		echo "Compiling x86"
-		clang -O3 -c -DHAVE_USLEEP=1 $SQLITE_SOURCE_FILE -o sqlite3_x86.o
+		clang -O3 $SQLITE_FLAGS $SQLITE_SOURCE_FILE -o sqlite3_x86.o
 
 		echo "Compiling arm64"
-		clang -arch arm64 -O3 -c -DHAVE_USLEEP=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $SQLITE_SOURCE_FILE -o sqlite3_arm64.o
+		clang -arch arm64 $SQLITE_FLAGS -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $SQLITE_SOURCE_FILE -o sqlite3_arm64.o
 
 		echo "Compiling armv7"
-		clang -arch armv7 -O3 -c -DHAVE_USLEEP=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $SQLITE_SOURCE_FILE -o sqlite3_armv7.o
+		clang -arch armv7 $SQLITE_FLAGS -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk $SQLITE_SOURCE_FILE -o sqlite3_armv7.o
 
 		#Packaging the library
 		lipo -create -arch x86_64 sqlite3_x86.o -arch arm64 sqlite3_arm64.o -arch armv7 sqlite3_armv7.o -output $OUTPUT_FILE

@@ -54,6 +54,8 @@
 		B61063C01C38963200746B1B /* UIImage+Performance.m in Sources */ = {isa = PBXBuildFile; fileRef = B61063BE1C3891B000746B1B /* UIImage+Performance.m */; };
 		B61279FB1A585EFF0034C241 /* RepoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B61279FA1A585EFF0034C241 /* RepoParser.m */; };
 		B613C7CF199C04E50036CFA8 /* RakPrefsTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */; };
+		B614F9C11C9A05F9000A9FE1 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B667DEA41C2A2AAB001E504E /* libsqlite.a */; };
+		B614F9C31C9A0606000A9FE1 /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B614F9C21C9A0606000A9FE1 /* libicucore.tbd */; };
 		B61A790A18E389F300D8E0E0 /* RakText.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790918E389F300D8E0E0 /* RakText.m */; };
 		B61A790D18E3AABD00D8E0E0 /* RakBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A790C18E3AABD00D8E0E0 /* RakBackButton.m */; };
 		B61DD14D18E23915009D51E3 /* RakBorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B61DD14C18E23915009D51E3 /* RakBorder.m */; };
@@ -185,7 +187,6 @@
 		B667E2911C2ACAEB001E504E /* theme 1 in Resources */ = {isa = PBXBuildFile; fileRef = B66ED1971949EC20002A333F /* theme 1 */; };
 		B667E2921C2ACAEB001E504E /* theme 2 in Resources */ = {isa = PBXBuildFile; fileRef = B6E09697197C9DCE0084873C /* theme 2 */; };
 		B667E2981C2ADE5F001E504E /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B667E28B1C2AC545001E504E /* libarchive.a */; };
-		B667E2991C2ADE5F001E504E /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B667DEA41C2A2AAB001E504E /* libsqlite.a */; };
 		B668D6B01953A1B000E3127D /* RakReaderControllerUIQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = B668D6AF1953A1B000E3127D /* RakReaderControllerUIQuery.m */; };
 		B668FBEE188344AE00549A3C /* RakPrefsDeepData.m in Sources */ = {isa = PBXBuildFile; fileRef = B668FBED188344AE00549A3C /* RakPrefsDeepData.m */; };
 		B66CDD35189C8866007B9389 /* RakTabAnimationResize.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDD34189C8866007B9389 /* RakTabAnimationResize.m */; };
@@ -579,6 +580,9 @@
 		B61279FA1A585EFF0034C241 /* RepoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RepoParser.m; path = Common/Utils/RepoParser.m; sourceTree = "<group>"; };
 		B613C7CE199C04E50036CFA8 /* RakPrefsTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakPrefsTools.m; path = Prefs/RakPrefsTools.m; sourceTree = "<group>"; };
 		B613C7D0199C04FD0036CFA8 /* RakPrefsTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakPrefsTools.h; path = Prefs/RakPrefsTools.h; sourceTree = "<group>"; };
+		B614F9BB1C99FE50000A9FE1 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
+		B614F9BF1C99FF6A000A9FE1 /* libicucore.A.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.A.tbd; path = usr/lib/libicucore.A.tbd; sourceTree = SDKROOT; };
+		B614F9C21C9A0606000A9FE1 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/usr/lib/libicucore.tbd; sourceTree = DEVELOPER_DIR; };
 		B61A790818E389F300D8E0E0 /* RakText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakText.h; path = Utils/RakText.h; sourceTree = "<group>"; };
 		B61A790918E389F300D8E0E0 /* RakText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakText.m; path = Utils/RakText.m; sourceTree = "<group>"; };
 		B61A790B18E3AABD00D8E0E0 /* RakBackButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RakBackButton.h; path = Utils/RakBackButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1090,10 +1094,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B614F9C31C9A0606000A9FE1 /* libicucore.tbd in Frameworks */,
 				B62576121C27725D00811C33 /* Foundation.framework in Frameworks */,
+				B614F9C11C9A05F9000A9FE1 /* libsqlite.a in Frameworks */,
 				B6FAD8901C2A1F5E0084692A /* libssl.a in Frameworks */,
 				B667E2981C2ADE5F001E504E /* libarchive.a in Frameworks */,
-				B667E2991C2ADE5F001E504E /* libsqlite.a in Frameworks */,
 				B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */,
 				B69835C61C6A3A8600F65CE4 /* libunarr.a in Frameworks */,
 				B667E28E1C2AC8D6001E504E /* libcurl.a in Frameworks */,
@@ -2163,6 +2168,9 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B614F9C21C9A0606000A9FE1 /* libicucore.tbd */,
+				B614F9BF1C99FF6A000A9FE1 /* libicucore.A.tbd */,
+				B614F9BB1C99FE50000A9FE1 /* libicucore.tbd */,
 				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B62576101C27724900811C33 /* iOS */,
@@ -3349,7 +3357,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
-				OTHER_LDFLAGS = "-lz";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lsqlite3",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -3399,7 +3410,10 @@
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
 				LLVM_LTO = YES;
-				OTHER_LDFLAGS = "-lz";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lsqlite3",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -3640,9 +3654,18 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					/usr/local/Cellar/icu4c/56.1/lib,
 				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = (
+					"-licui18n",
+					"-licuio",
+					"-licule",
+					"-liculx",
+					"-licutu",
+					"-licuuc",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
@@ -3726,10 +3749,19 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
 					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					/usr/local/Cellar/icu4c/56.1/lib,
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-licui18n",
+					"-licuio",
+					"-licule",
+					"-liculx",
+					"-licutu",
+					"-licuuc",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
@@ -3755,6 +3787,7 @@
 				B6291ED51C89779E0079E6BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B67C68AE1C270699005AB992 /* Build configuration list for PBXNativeTarget "Rakshata iOS" */ = {
 			isa = XCConfigurationList;
