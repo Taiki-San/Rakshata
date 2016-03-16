@@ -23,6 +23,7 @@
 	if(self != nil)
 	{
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRefreshStatus) name:NOTIFICATION_IMPORT_STATUS_UI object:nil];
+		[Prefs registerForChange:self forType:KVO_THEME];
 	}
 
 	return self;
@@ -30,6 +31,7 @@
 
 - (void) dealloc
 {
+	[Prefs deRegisterForChange:self forType:KVO_THEME];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -58,6 +60,7 @@
 		button = [[RakStatusButton alloc] initWithStatus:item.status];
 		if(button != nil)
 		{
+			button.underlyingBackgroundColor = [Prefs getSystemColor:COLOR_IMPORT_LIST_BACKGROUND];
 			button.target = self;
 			button.action = @selector(getDetails);
 			[self addSubview:button];
@@ -184,6 +187,16 @@
 		_list.query = alert = [[RakImportQuery alloc] autoInitWithDetails:_item];
 	
 	[alert launchPopover:button :self];
+}
+
+#pragma mark - Theme
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([object class] != [Prefs class])
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	button.underlyingBackgroundColor = [Prefs getSystemColor:COLOR_IMPORT_LIST_BACKGROUND];
 }
 
 @end

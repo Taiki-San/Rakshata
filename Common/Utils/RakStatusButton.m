@@ -277,6 +277,20 @@ enum
 	//Find our origin
 	[cachedColor setStroke];
 	
+	//Draw the background
+	CGContextBeginPath(contextBorder);
+	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
+	
+	//Line to the other side is implied when drawing the other half of the circle
+	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+	CGContextClosePath(contextBorder);
+
+	if(_underlyingBackgroundColor != nil)
+	{
+		[_underlyingBackgroundColor setFill];
+		CGContextFillPath(contextBorder);
+	}
+	
 	if(_status != STATUS_BUTTON_OK && _backgroundAnimation != nil)
 	{
 		const CGFloat animationFrame = _backgroundAnimation.animationFrame;
@@ -289,14 +303,6 @@ enum
 			ratio *= 2;
 		
 		[[cachedBackgroundColor colorWithAlphaComponent:[cachedBackgroundColor alphaComponent] * ratio] setFill];
-
-		CGContextBeginPath(contextBorder);
-		CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
-		
-		//Line to the other side is implied when drawing the other half of the circle
-		CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
-		CGContextClosePath(contextBorder);
-
 		CGContextFillPath(contextBorder);
 	}
 

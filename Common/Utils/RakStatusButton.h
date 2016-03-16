@@ -31,6 +31,7 @@
 @property SEL action;
 
 @property (nonatomic) NSString * stringValue;
+@property NSColor * underlyingBackgroundColor;
 
 - (instancetype) initWithStatus : (byte) status;
 
