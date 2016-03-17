@@ -127,6 +127,11 @@ void createCrashFileCallBackWithResponse(BOOL haveResponse, NSInteger response);
 
 void createCrashFile()
 {
+#ifdef DEV_VERSION
+	if(checkFileExist(LAUNCH_CRASH_FILE))
+		remove(LAUNCH_CRASH_FILE);
+#endif
+	
 	if(checkFileExist(LAUNCH_CRASH_FILE))
 	{
 		BOOL partialFuckUp = checkFileExist(CONTEXT_FILE) || checkFileExist(SETTINGS_FILE);
