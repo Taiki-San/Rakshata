@@ -21,7 +21,7 @@ sqlite3_stmt * getAddToCacheRequest(sqlite3 * db)
 	return createRequest(db, "INSERT INTO "MAIN_CACHE"("DBNAMETOID(RDB_repo)", "DBNAMETOID(RDB_projectID)", "DBNAMETOID(RDB_isInstalled)", "DBNAMETOID(RDB_projectName)", "DBNAMETOID(RDB_description)", "DBNAMETOID(RDB_authors)", "DBNAMETOID(RDB_status)", "DBNAMETOID(RDB_category)", "DBNAMETOID(RDB_asianOrder)", "DBNAMETOID(RDB_isPaid)", "DBNAMETOID(RDB_mainTagID)", "DBNAMETOID(RDB_tagData)", "DBNAMETOID(RDB_nbTagData)", "DBNAMETOID(RDB_nbChapter)", "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreRemoteLength)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitreLocalLength)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_DRM)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_favoris)", "DBNAMETOID(RDB_isLocal)") values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29);");
 }
 
-uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID)
+uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled)
 {
 	if(!data.project.isInitialized)
 		return false;
@@ -92,18 +92,14 @@ uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID
 	
 	nbElemInCache++;
 	
-	if(!wantID)
-		return true;
-	
-	//Eh, we need to return the new cacheID
-	
-	internalRequest = createRequest(cache, "SELECT "DBNAMETOID(RDB_ID)"FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2");
+	//We need the cacheDBID to insert into the FTS table
+	internalRequest = createRequest(cache == NULL ? immatureCache : cache, "SELECT "DBNAMETOID(RDB_ID)"FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1 AND "DBNAMETOID(RDB_projectID)" = ?2");
 	
 	sqlite3_bind_int64(internalRequest, 1, (int64_t) repoID);
 	sqlite3_bind_int(internalRequest, 2, (int32_t) data.project.projectID);
 
 	if(sqlite3_step(internalRequest) != SQLITE_ROW)
-		return false;
+		return false;	//If we wanted to recover the ID, we failed
 
 	uint cacheID = (uint) sqlite3_column_int(internalRequest, 0);
 	

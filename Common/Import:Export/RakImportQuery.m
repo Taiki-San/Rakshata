@@ -943,7 +943,7 @@ enum
 {
 	const char * projectName = [[name.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" "]] UTF8String];
 	
-	if(!haveOneOrLessMatchForNameStartingWith(projectName))
+	if(!haveOneOrLessMatchForNameWith(projectName))
 		return;
 	
 	uint cacheID = getProjectByName(projectName);

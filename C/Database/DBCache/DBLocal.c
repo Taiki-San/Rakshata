@@ -98,7 +98,7 @@ void registerImportEntry(PROJECT_DATA_PARSED project, bool isTome)
 
 			generateCTUsable(&project);
 
-			project.project.cacheDBID = addToCache(NULL, project, repoID, true, true);
+			project.project.cacheDBID = addToCache(NULL, project, repoID, true);
 			if(project.project.cacheDBID != 0)
 			{
 				insertInSearch(NULL, INSERT_PROJECT, project.project);

@@ -209,8 +209,8 @@ uint getIDForTag(byte type, uint code);
 uint _getFromSearch(void * _table, byte type, void * data);
 
 uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly, bool wantFavsOnly);
-char ** getProjectNameStartingWith(const char * start, uint * nbProject);
-bool haveOneOrLessMatchForNameStartingWith(const char * start);
+char ** getProjectNameWith(const char * partial, uint * nbProject);
+bool haveOneOrLessMatchForNameWith(const char * partial);
 
 /**DBRecent.c**/
 void flushRecentMutex();

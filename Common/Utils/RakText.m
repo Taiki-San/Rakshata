@@ -445,7 +445,7 @@
 
 	uint nbElem;
 	const char * partialString = [textView.string UTF8String];
-	char ** output = getProjectNameStartingWith(partialString, &nbElem);
+	char ** output = getProjectNameWith(partialString, &nbElem);
 
 	if(output == NULL || nbElem == 0)
 	{

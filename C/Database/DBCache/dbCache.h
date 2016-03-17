@@ -32,7 +32,7 @@ extern MUTEX_VAR cacheMutex, cacheParseMutex;
 
 /**DBCache.c**/
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
-uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled, bool wantID);
+uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled);
 void removeFromCache(PROJECT_DATA_PARSED data);
 void consolidateCache();
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic, bool evenWantTags);
@@ -153,9 +153,14 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_REC_lastScrollerY		11
 #define RDB_REC_lastChange			12
 
+#define RDB_FTS_CACHEID				1
+#define RDB_FTS_REAL_CODE			2
+#define RDB_FTS_STRING				3
+
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 
 #define MAIN_CACHE "thisWouldBeADumbName"
+#define FTS_TABLE "mordin"
 #define SORT_FUNC "LEGOLAS"
 
 enum SEARCH_REQUEST

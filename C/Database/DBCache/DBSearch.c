@@ -35,6 +35,8 @@ typedef struct randoName
 	sqlite3_stmt * removeProject;
 	sqlite3_stmt * flushCategories;
 	sqlite3_stmt * readProject;
+	sqlite3_stmt * addString;
+	sqlite3_stmt * updateString;
 	
 } * SEARCH_JUMPTABLE;
 
@@ -160,7 +162,7 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
-	if((output->removeProject = createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1")) == NULL)
+	if((output->removeProject = createRequest(_cache, "DELETE FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1; DELETE FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1")) == NULL)
 		goto fail;
 	else
 		stage++;
@@ -171,6 +173,16 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 		stage++;
 	
 	if((output->readProject = createRequest(_cache, "SELECT "DBNAMETOID(RDBS_dataID)", "DBNAMETOID(RDBS_dataType)" FROM "TABLE_NAME_CORRES" WHERE "DBNAMETOID(RDB_ID)" = ?1;")) == NULL)
+		goto fail;
+	else
+		stage++;
+	
+	if((output->addString = createRequest(_cache, "INSERT INTO "FTS_TABLE" ("DBNAMETOID(RDB_FTS_CACHEID)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_STRING)") values (?1, "STRINGIZE(RDB_projectName)", ?2), (?1, "STRINGIZE(RDB_authors)", ?3), (?1, "STRINGIZE(RDB_description)", ?4)")) == NULL)
+		goto fail;
+	else
+		stage++;
+	
+	if((output->updateString = createRequest(_cache, "UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?2 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?3 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_authors)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?4 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_description)";")) == NULL)
 		goto fail;
 	else
 		stage++;
@@ -188,6 +200,8 @@ fail:
 		if(stage > 7)	destroyRequest(output->updateProject);
 		if(stage > 8)	destroyRequest(output->removeProject);
 		if(stage > 9)	destroyRequest(output->flushCategories);
+		if(stage > 10)	destroyRequest(output->readProject);
+		if(stage > 11)	destroyRequest(output->addString);
 		
 		free(output);
 		output = NULL;
@@ -218,6 +232,8 @@ void flushSearchJumpTable(void * _table)
 	destroyRequest(table->removeProject);
 	destroyRequest(table->flushCategories);
 	destroyRequest(table->readProject);
+	destroyRequest(table->addString);
+	destroyRequest(table->updateString);
 	
 	free(table);
 }
@@ -297,6 +313,30 @@ uint _getFromSearch(void * _table, byte type, void * data)
 	return output;
 }
 
+bool _insertUpdateStringsInSearch(SEARCH_JUMPTABLE table, bool wantInsert, PROJECT_DATA project)
+{
+	bool output;
+	sqlite3_stmt * request = wantInsert ? table->addString : table->updateString;
+	
+	size_t lengthProjectName = wstrlen(project.projectName), lengthAuthor = wstrlen(project.authorName), lengthDescription = wstrlen(project.description);
+	char utf8ProjectName[4 * lengthProjectName + 1],  utf8Author[4 * lengthAuthor + 1],  utf8Description[4 * lengthDescription + 1];
+
+	lengthProjectName = wchar_to_utf8(project.projectName, lengthProjectName, utf8ProjectName, 4 * lengthProjectName + 1, 0);
+	lengthAuthor = wchar_to_utf8(project.authorName, lengthAuthor, utf8Author, 4 * lengthAuthor + 1, 0);
+	lengthDescription = wchar_to_utf8(project.description, lengthDescription, utf8Description, 4 * lengthDescription + 1, 0);
+	
+	sqlite3_bind_int(request, 1, (int32_t) project.cacheDBID);
+	sqlite3_bind_text(request, 2, utf8ProjectName, (int32_t) lengthProjectName, SQLITE_STATIC);
+	sqlite3_bind_text(request, 3, utf8Author, (int32_t) lengthAuthor, SQLITE_STATIC);
+	sqlite3_bind_text(request, 4, utf8Description, (int32_t) lengthDescription, SQLITE_STATIC);
+
+	output = sqlite3_step(request) == SQLITE_DONE;
+	
+	sqlite3_reset(request);
+	
+	return output;
+}
+
 bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 {
 	SEARCH_JUMPTABLE table = _table;
@@ -311,7 +351,7 @@ bool insertInSearch(void * _table, byte type, PROJECT_DATA project)
 
 	if(type == INSERT_PROJECT)
 	{
-		bool output = manipulateProjectSearch(table, true, project);
+		bool output = manipulateProjectSearch(table, true, project) && _insertUpdateStringsInSearch(table, true, project);
 		
 		if(_table == NULL)
 			flushSearchJumpTable(table);
@@ -418,7 +458,7 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project)
 			return false;
 	}
 
-	bool output = manipulateProjectSearch(table, false, project);
+	bool output = manipulateProjectSearch(table, false, project) & _insertUpdateStringsInSearch(table, false, project);
 	
 	if(_table == NULL)
 		flushSearchJumpTable(table);
@@ -883,11 +923,11 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 	{
 		if(wantAND)
 		{
-			snprintf(requestString, sizeof(requestString), "SELECT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s GROUP BY list."DBNAMETOID(RDB_ID)" HAVING COUNT(list."DBNAMETOID(RDB_ID)") >= %d ORDER BY list."DBNAMETOID(RDB_ID)" ASC;", categoryName, categoryName, additionnalRequest, nbItemInCategory);
+			snprintf(requestString, sizeof(requestString), "SELECT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache, "FTS_TABLE" AS fts WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s GROUP BY list."DBNAMETOID(RDB_ID)" HAVING COUNT(list."DBNAMETOID(RDB_ID)") >= %d ORDER BY list."DBNAMETOID(RDB_ID)" ASC;", categoryName, categoryName, additionnalRequest, nbItemInCategory);
 		}
 		else
 		{
-			snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s ORDER BY list."DBNAMETOID(RDB_ID)" ASC", categoryName, categoryName, additionnalRequest);
+			snprintf(requestString, sizeof(requestString), "SELECT DISTINCT list."DBNAMETOID(RDB_ID)" FROM "TABLE_NAME_CORRES" AS list, "TABLE_NAME_RESTRICTIONS" AS rest, "MAIN_CACHE" AS cache, "FTS_TABLE" AS fts WHERE rest."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataType)" = %s AND list."DBNAMETOID(RDBS_dataID)" = rest."DBNAMETOID(RDBS_dataID)" %s ORDER BY list."DBNAMETOID(RDB_ID)" ASC", categoryName, categoryName, additionnalRequest);
 		}
 	}
 	else if(additionnalRequest[0] != 0)		//Not an empty request
@@ -898,7 +938,7 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 		if(*additionnalRequest == 0)
 			return NULL;
 		
-		snprintf(requestString, sizeof(requestString), "SELECT DISTINCT cache."DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache WHERE %s ORDER BY cache."DBNAMETOID(RDB_ID)" ASC", additionnalRequest);
+		snprintf(requestString, sizeof(requestString), "SELECT DISTINCT cache."DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache, "FTS_TABLE" AS fts WHERE %s ORDER BY cache."DBNAMETOID(RDB_ID)" ASC", additionnalRequest);
 	}
 	else
 		snprintf(requestString, sizeof(requestString), "SELECT "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" AS cache ORDER BY "DBNAMETOID(RDB_ID)" ASC");
@@ -912,8 +952,8 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 		uint length = strlen(searchString);
 		char copySearchString[length + 2];
 		
-		memcpy(copySearchString, searchString, length * sizeof(char));
-		copySearchString[length] = copySearchString[length + 1] = '%';
+		memcpy(&copySearchString[1], searchString, length * sizeof(char));
+		copySearchString[0] = copySearchString[length + 1] = '*';
 		
 		sqlite3_bind_text(request, 1, copySearchString, sizeof(copySearchString), NULL);
 	}
@@ -950,9 +990,9 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 		if(searchLength)
 		{
 			if(nbRestrictionSource || nbRestrictionAuthor || nbRestrictionCat || nbRestrictionTag)
-				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND list."DBNAMETOID(RDB_ID)" = cache."DBNAMETOID(RDB_ID)" AND cache."DBNAMETOID(RDB_projectName)" LIKE ?1");
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND list."DBNAMETOID(RDB_ID)" = fts."DBNAMETOID(RDB_FTS_CACHEID)" AND fts."DBNAMETOID(RDB_FTS_STRING)" MATCH ?1");
 			else
-				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_projectName)" LIKE ?1");
+				snprintf(additionnalRequest, sizeof(additionnalRequest), " AND cache."DBNAMETOID(RDB_ID)" = fts."DBNAMETOID(RDB_FTS_CACHEID)" AND fts."DBNAMETOID(RDB_FTS_STRING)" MATCH ?1");
 		}
 		
 		if(wantFavsOnly)
@@ -1118,15 +1158,15 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	return output;
 }
 
-char ** getProjectNameStartingWith(const char * start, uint * nbProject)
+char ** getProjectNameWith(const char * partial, uint * nbProject)
 {
 	char ** output = calloc(nbElemInCache, sizeof(char *));
 	if(output == NULL)
 		return NULL;
 	
-	uint length = strlen(start);
+	uint length = strlen(partial);
 	char requestText[200];
-	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_projectName)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE ?1 ORDER BY "DBNAMETOID(RDB_projectName)" COLLATE "SORT_FUNC" ASC");
+	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)" FROM "FTS_TABLE" WHERE "/*"DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)" AND*/" "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 ORDER BY "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC" ASC");
 	
 	sqlite3_stmt * request;
 	
@@ -1137,8 +1177,8 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	}
 	
 	char copyString[length + 2];
-	memcpy(copyString, start, length * sizeof(char));
-	copyString[length] = copyString[length + 1] = '%';
+	memcpy(&copyString[1], partial, length * sizeof(char));
+	copyString[0] = copyString[length + 1] = '*';
 	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), NULL);
 	
 	size_t realLength = 0;
@@ -1158,20 +1198,20 @@ char ** getProjectNameStartingWith(const char * start, uint * nbProject)
 	return output;
 }
 
-bool haveOneOrLessMatchForNameStartingWith(const char * start)
+bool haveOneOrLessMatchForNameWith(const char * partial)
 {
 	bool oneOrLess = false;
 	char requestText[200];
-	uint length = strlen(start);
-	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_projectName)" LIKE ?1");
+	uint length = strlen(partial);
+	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1");
 	
 	sqlite3_stmt * request;
 	if(length > INT_MAX || (request = createRequest(cache, requestText)) == NULL)
 		return false;
 	
 	char copyString[length + 2];
-	memcpy(copyString, start, length * sizeof(char));
-	copyString[length] = copyString[length + 1] = '%';
+	memcpy(&copyString[1], partial, length * sizeof(char));
+	copyString[0] = copyString[length + 1] = '*';
 
 	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), NULL);
 	oneOrLess = (sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) <= 1);

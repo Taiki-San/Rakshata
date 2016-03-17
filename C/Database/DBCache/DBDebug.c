@@ -28,6 +28,13 @@ sqlite3_stmt * createRequest(sqlite3 *db, const char *zSql)
 #ifdef VERBOSE_REQUEST
 	printf("Creating request %p with `%s` (status: %d)\n", ppStmt, zSql, output);
 #endif
+	
+#ifdef EXTENSIVE_LOGGING
+	if(output != SQLITE_OK && ppStmt == NULL)
+	{
+		printf("Failed at creating request for %s (status: %d)", zSql, output);
+	}
+#endif
 
 	if(output != SQLITE_OK && ppStmt != NULL)
 	{

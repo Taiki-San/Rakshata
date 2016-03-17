@@ -101,6 +101,14 @@ uint setupBDDCache()
 		sqlite3_close(internalDB);
 		goto fail;
 	}
+	
+	destroyRequest(request);
+	request = createRequest(internalDB, "CREATE VIRTUAL TABLE "FTS_TABLE" USING fts4("DBNAMETOID(RDB_FTS_CACHEID)" INTEGER, "DBNAMETOID(RDB_FTS_REAL_CODE)" INTEGER, "DBNAMETOID(RDB_FTS_STRING)" TEXT);");
+	if(request == NULL || sqlite3_step(request) != SQLITE_DONE)
+	{
+		sqlite3_close(internalDB);
+		goto fail;
+	}
 
 	buildSearchTables(internalDB);
 	createCollate(internalDB);
@@ -115,6 +123,7 @@ uint setupBDDCache()
 		size_t decodedLength = strlen(projectDB);
 		
 		//We share the immature DB because getCategoryForID is deep in the call tree and needs it
+		//			Because it was available, we started using it in addToCache when cache == NULL
 		immatureCache = internalDB;
 		
 		if(decodedLength > 1 && projectDB[decodedLength - 1] == '\n')	decodedLength--;
@@ -177,7 +186,9 @@ uint setupBDDCache()
 				if((posRepo < nbRepo || isWorkingOnLocalRepo) && encodedRepo[posRepo] != NULL)
 				{
 					snprintf(pathInstall, sizeof(pathInstall), PROJECT_ROOT"%s/%s%d/", encodedRepo[posRepo], projects[pos].project.locale ? LOCAL_PATH_NAME"_" : "", projects[pos].project.projectID);
-					if(addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall), false))
+
+					projects[pos].project.cacheDBID = addToCache(request, projects[pos], getRepoID(projects[pos].project.repo), isInstalled(projects[pos].project, pathInstall));
+					if(projects[pos].project.cacheDBID != 0)
 					{
 #ifdef VERBOSE_DB_MANAGEMENT
 						FILE * output = fopen("log/log.txt", "a+");

@@ -345,7 +345,7 @@
 	if(_ID == SEARCH_BAR_ID_MAIN)
 	{
 		uint nbElem;
-		char ** output = getProjectNameStartingWith([prefix UTF8String], &nbElem);
+		char ** output = getProjectNameWith([prefix UTF8String], &nbElem);
 
 		if(output == NULL || nbElem == 0)
 		{
