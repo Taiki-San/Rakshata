@@ -558,6 +558,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	if(isTome)
 	{
 		[dict setObject:@(((META_TOME *) selection)->ID) forKey:RAK_STRING_CONTENT_ID];
+		[dict setObject:@(isLocalVolumeID(((META_TOME *) selection)->ID)) forKey:JSON_PROJ_ISLOCAL];
 		
 		NSArray * volumeMetadata = recoverVolumeBloc(selection, 1, project.isPaid);
 		if(volumeMetadata != nil && [volumeMetadata count] > 0)
