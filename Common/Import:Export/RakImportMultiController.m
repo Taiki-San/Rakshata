@@ -56,7 +56,7 @@
 	return [archiveFileName isEqualToString:file] || fileExistInArchive(archive, [file UTF8String]);
 }
 
-- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
+- (void) evaluateItem : (RakImportItem * __nonnull) item forDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, uint iteration))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
 	bool couldFindDirInArray = false;
 	const char * startExpectedPath = dirName == nil || [dirName length] == 0 ? NULL : [dirName UTF8String];
@@ -81,12 +81,12 @@
 	if(nbFileToEvaluate == 0)
 	{
 		if([self noValidFileFoundForDir:startExpectedPath butFoundInFiles:couldFindDirInArray shouldRedirectTo:&dirName])
-			[self evaluateItemFromDir:dirName withInitBlock:initBlock andWithBlock:workingBlock];
+			[self evaluateItem : (RakImportItem * __nonnull) item forDir:dirName withInitBlock:initBlock andWithBlock:workingBlock];
 		
 		return;
 	}
 
-	initBlock(nbFileToEvaluate, NO);
+	initBlock(nbFileToEvaluate, 0);
 
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)

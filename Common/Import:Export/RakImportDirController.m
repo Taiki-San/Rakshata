@@ -106,7 +106,7 @@
 	return checkFileExist([file UTF8String]);
 }
 
-- (void) evaluateItemFromDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, BOOL wantBroadWriteAccess))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
+- (void) evaluateItem : (RakImportItem * __nonnull) item forDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, uint iteration))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
 	if(dirName != nil && ![dirName isDirectory])
 		dirName = [dirName stringByDeletingLastPathComponent];
@@ -131,7 +131,7 @@
 		return;
 
 	if(initBlock != nil)
-		initBlock(nbFileToEvaluate, NO);
+		initBlock(nbFileToEvaluate, 0);
 
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)

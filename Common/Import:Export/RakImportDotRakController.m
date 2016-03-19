@@ -122,10 +122,16 @@
 		if(dirName == nil)
 			continue;
 
-		NSNumber * isTome = objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]), * entityID = objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]);
+		NSNumber * isTome = objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]), *entityID;
+		BOOL isLocal = [isTome boolValue] && [objectForKey(entry, JSON_PROJ_ISLOCAL, nil, [NSNumber class]) boolValue];
+		
+		if(!isLocal)
+			entityID = objectForKey(entry, RAK_STRING_CONTENT_ID, nil, [NSNumber class]);
+		else
+			entityID = nil;
 
 		//We can lack a contentID if this is a volume (the case of an imported volume)
-		if(isTome == nil || entityID == nil)
+		if(isTome == nil || (!isLocal && entityID == nil))
 			continue;
 
 		//If this is a volume, we need the metadata
@@ -147,6 +153,7 @@
 		}
 
 		//Okay, everything is complete, we throw it in a data structre and we're good
+		PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 		RakImportItem * item = [RakImportItem new];
 		if(item == nil)
 		{
@@ -157,14 +164,13 @@
 		item.issue = IMPORT_PROBLEM_NONE;
 		item.path = [dirName stringByAppendingString:@"/"];
 		item.isTome = [isTome boolValue];
-		item.contentID = [entityID unsignedIntValue];
+		item.contentID = isLocal ? INVALID_VALUE : [entityID unsignedIntValue];
 
 		//We insert into the structure the metadata of the volume
-		PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
 		if([isTome boolValue])
 		{
-			if(isLocalVolumeID((uint) item.contentID))
-			   volumeData->ID = getVolumeIDForImport(projectData.data.project);
+			if(isLocal)
+			   item.contentID = volumeData->ID = getVolumeIDForImport(projectData.data.project);
 			else
 			   volumeData->ID = (uint) item.contentID;
 			
@@ -459,5 +465,34 @@
 }
 
 - (void) generateConfigDatInPath : (NSString *) path    {}
+
+- (BOOL) needCraftedPathForUnread
+{
+	return YES;
+}
+
+#pragma mark - Handle multi chapter-volumes
+
+- (void) evaluateItem : (RakImportItem * __nonnull) item forDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, uint iteration))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
+{
+	uint nbItems;
+	//If a single volume chapter, standard processing
+	if(!item.isTome || (nbItems = item.projectData.data.tomeLocal[0].lengthDetails) <= 1)
+		return [super evaluateItem:item forDir:dirName withInitBlock:initBlock andWithBlock:workingBlock];
+	
+	do
+	{
+		[super evaluateItem:item
+					 forDir:[dirName stringByAppendingString:[NSString stringWithFormat:@"%d/", iterationCounter]]
+			  withInitBlock:initBlock
+			   andWithBlock:workingBlock];
+	} while(++iterationCounter < nbItems);
+}
+
+//Shouldn't happen in a .rak file
+- (BOOL) noValidFileFoundForDir : (const char *) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString **) redirection
+{
+	return NO;
+}
 
 @end

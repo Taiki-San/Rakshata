@@ -104,38 +104,56 @@
 	if([_IOController respondsToSelector:@selector(willStartEvaluateFromScratch)])
 		[_IOController willStartEvaluateFromScratch];
 
-	__block BOOL foundOneThing = NO, wantedBroadAccess = NO;
-	__block NSString * basePathObj = [NSString stringWithUTF8String:basePath];
-
-	[_IOController evaluateItemFromDir:_path withInitBlock:^(uint nbItems, BOOL wantBroadWriteAccess) {
+	__block BOOL foundOneThing = NO, isSharedChapter = NO;
+	__block NSString * basePathObj = [NSString stringWithUTF8String:basePath], *basePathObjCopy = [basePathObj copy];
+	
+	[_IOController evaluateItem:self forDir:_path withInitBlock:^(uint nbItems, uint iteration) {
 
 		if(UI != nil)
 			UI.nbElementInEntry = nbItems;
 		
 		//.rak need to write in the whole dir, to handle shared CT
 		//However, arbitrary imports want a more focused decompression
-		if(!wantBroadWriteAccess && self.isTome)
+		if(self.isTome)
 		{
-			META_TOME tomeData = self.projectData.data.tomeLocal[0];
-			uint chapID = tomeData.details[0].ID;
+			PROJECT_DATA_PARSED project = self.projectData.data;
+			META_TOME tomeData = project.tomeLocal[0];
+			CONTENT_TOME content = tomeData.details[iteration];
 			
-			if(chapID % 10)
-				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u.%u/", tomeData.ID, chapID / 10, chapID % 10]];
+			uint chapID = content.ID;
+			if(content.isPrivate)
+			{
+				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+			}
+			else if (checkChapterReadable(project.project, chapID))
+			{
+				PROJECT_DATA projectData = project.project;
+				
+				projectData.volumesFull = project.tomeLocal;
+				projectData.nbVolumes = project.nbVolumesLocal;
+				
+				MDL_createSharedFile(projectData, chapID, 0, false);
+				isSharedChapter = YES;
+				basePathObj = nil;
+			}
 			else
-				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+			{
+				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+			}
+			
+			if(basePathObj != nil && chapID % 10)
+				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@".%u/", chapID % 10]];
 		}
-		else if(wantBroadWriteAccess && self.isTome)
-			wantedBroadAccess = YES;
 		
 		//We create the path if needed
-		if(!checkDirExist([basePathObj UTF8String]))
+		if(basePathObj != nil && !checkDirExist([basePathObj UTF8String]))
 		{
 			createPath([basePathObj UTF8String]);
 		}
 
 	} andWithBlock:^(id<RakImportIO> controller, NSString * filename, uint index, BOOL * stop)
 	{
-		if(UI == nil || ![UI haveCanceled])
+		if((UI == nil || ![UI haveCanceled]) && !isSharedChapter)
 		{
 			if(UI != nil)
 				UI.posInEntry = index;
@@ -144,13 +162,16 @@
 			foundOneThing = YES;
 		}
 		else
+		{
 			*stop = YES;
+			isSharedChapter = NO;
+		}
 	}];
 	
 	[_IOController generateConfigDatInPath:basePathObj];
 	
-	if(wantedBroadAccess)	//We need to add the unread flag
-		basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/", self.projectData.data.tomeLocal[0].ID]];
+	if([_IOController isKindOfClass:[RakImportBaseController class]] && [(RakImportBaseController*) _IOController needCraftedPathForUnread])	//We need to modify the path to add the unread flag
+		basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@"/"VOLUME_PREFIX"%u/", self.projectData.data.tomeLocal[0].ID]];
 
 	finishInstallationAtPath([basePathObj UTF8String]);
 
@@ -195,7 +216,7 @@
 - (BOOL) updateProject : (PROJECT_DATA) project
 {
 	if(_projectData.data.project.cacheDBID != project.cacheDBID && _isTome									//Worth even considering
-	   && project.nbVolumes > 0 && (project.locale || project.volumesFull[0].ID > MIN_LOCAL_VOLUME_ID))		//Already have volumes, so collision possible
+	   && project.nbVolumes > 0 && (project.locale || isLocalVolumeID(project.volumesFull[0].ID)))		//Already have volumes, so collision possible
 	{
 		uint ID = _projectData.data.tomeLocal[0].ID;
 		
@@ -262,8 +283,7 @@
 }
 
 - (BOOL) _updateCTIDWith : (uint) checkedContentID tomeName : (NSString *) tomeName isTome : (BOOL) isTome
-	{
-	
+{
 	PROJECT_DATA_EXTRA project = _projectData;
 	_contentID = checkedContentID;
 	

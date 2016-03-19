@@ -442,43 +442,34 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 		//Then add those files
 		BOOL error = NO;
-		char * outFile, * baseInzipPath = NULL;
+		char * outFile;
+		const char * baseInzipPath = NULL;
 		uint baseInzipVolPathLength;
 		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nbPage && !error; pos++)
 		{
 			controller.posInEntry = pos;
 
-			if(isTome)
+			//We choose the directory in which we'll write the files.
+			//We'll use the following architecture:
+			//	Chapter : $root path with entry ID$/files
+			//	Volumes : $root path with entry ID$/$entry index$/files
+			
+			if(isTome && baseInzipPath == NULL)
 			{
-				//We must detect shared chapters and throw them into native/
-				if(baseInzipPath == NULL)
-				{
-					CONTENT_TOME volumeContent = volumeMetadata.details[chunkCount];
-					char baseInzipPathTmp[rootZipPathLength + 100], chapterID[32];
+				char baseInzipPathTmp[rootZipPathLength + 100];
 
-					if(volumeContent.ID % 10)
-						snprintf(chapterID, sizeof(chapterID), "%d.%d", volumeContent.ID / 10, volumeContent.ID % 10);
-					else
-						snprintf(chapterID, sizeof(chapterID), "%d", volumeContent.ID / 10);
-
-					if(volumeContent.isPrivate)
-						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
-					else
-						baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s"VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%s/", rootInzipPath, volumeMetadata.ID, chapterID);
-
-					baseInzipPath = strdup(baseInzipPathTmp);
-				}
-
-				char inzipOfFile[baseInzipVolPathLength + 50];
-				snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", baseInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
-				outFile = strdup(inzipOfFile);
+				baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s%d/", rootInzipPath, chunkCount);
+				baseInzipPath = strdup(baseInzipPathTmp);
 			}
-			else
+			else if(baseInzipPath == NULL)
 			{
-				char inzipOfFile[rootZipPathLength + strlen(&(entryData.nomPages[pos][basePagePathLength])) + 2];
-				snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", rootInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
-				outFile = strdup(inzipOfFile);
+				baseInzipPath = rootInzipPath;
+				baseInzipVolPathLength = rootZipPathLength;
 			}
+			
+			char inzipOfFile[baseInzipVolPathLength + strlen(&(entryData.nomPages[pos][basePagePathLength])) + 2];
+			snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", baseInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
+			outFile = strdup(inzipOfFile);
 
 			//Add the file to the zip, then cleanup
 			if(!addFileToZip(file, entryData.nomPages[pos], outFile))
@@ -487,11 +478,12 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			free(outFile);
 
 			//If we need to insert the config.dat file
+			//This is either the last entry (chapter) or the last entry of the chunk (chapter in volume)
 			if(pos + 1 == entryData.nbPage || entryData.pathNumber[pos] != entryData.pathNumber[pos + 1])
 			{
 				char pathToConfig[basePagePathLength + 50], inzipOfConfig[rootZipPathLength + 50];
 				snprintf(pathToConfig, sizeof(pathToConfig), "%s/"CONFIGFILE, entryData.path[entryData.pathNumber[pos]]);
-				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s"CONFIGFILE, isTome ? baseInzipPath : rootInzipPath);
+				snprintf(inzipOfConfig, sizeof(inzipOfConfig), "%s"CONFIGFILE, baseInzipPath);
 
 				if(!addFileToZip(file, pathToConfig, inzipOfConfig))
 					error = YES;
@@ -503,7 +495,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				if(isTome)
 				{
 					chunkCount++;
-					free(baseInzipPath);
+					free((void *) baseInzipPath);
 					baseInzipPath = NULL;
 				}
 			}
@@ -557,8 +549,10 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 
 	if(isTome)
 	{
-		[dict setObject:@(((META_TOME *) selection)->ID) forKey:RAK_STRING_CONTENT_ID];
-		[dict setObject:@(isLocalVolumeID(((META_TOME *) selection)->ID)) forKey:JSON_PROJ_ISLOCAL];
+		if(isLocalVolumeID(((META_TOME *) selection)->ID))
+			[dict setObject:@YES forKey:JSON_PROJ_ISLOCAL];
+		else
+			[dict setObject:@(((META_TOME *) selection)->ID) forKey:RAK_STRING_CONTENT_ID];
 		
 		NSArray * volumeMetadata = recoverVolumeBloc(selection, 1, project.isPaid);
 		if(volumeMetadata != nil && [volumeMetadata count] > 0)

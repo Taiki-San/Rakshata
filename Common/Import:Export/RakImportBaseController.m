@@ -61,4 +61,9 @@
 	return NO;
 }
 
+- (BOOL) needCraftedPathForUnread
+{
+	return NO;
+}
+
 @end
