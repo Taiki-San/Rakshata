@@ -193,7 +193,7 @@ DATA_LOADED ** MDLInjectElementIntoMainList(DATA_LOADED ** mainList, uint *mainL
 DATA_LOADED * MDLCreateElement(PROJECT_DATA * data, bool isTome, uint element);
 void MDLFlushElement(DATA_LOADED * element);
 uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint IDChap, uint *posIndexTome);
-void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID);
+void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID, bool markUnread);
 bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 int sortProjectsToDownload(const void *a, const void *b);
 

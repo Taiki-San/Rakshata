@@ -138,7 +138,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 					
 					rename(oldPath, newPath);
 					
-					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct, true);
 				}
 				
 				if(i + 1 == nbElement && *(input.currentState) == MDL_CODE_DL)
@@ -152,7 +152,7 @@ void MDLHandleProcess(MDL_HANDLER_ARG* inputVolatile)
 			{
 				if(isTome)
 				{
-					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct);
+					MDL_createSharedFile(*todoListTmp.datas, todoListTmp.chapitre, posTomeInStruct, true);
 				}
 				
 				if(i + 1 == nbElement && *(input.currentState) == MDL_CODE_DL)

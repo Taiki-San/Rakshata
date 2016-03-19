@@ -409,7 +409,7 @@ uint MDL_isAlreadyInstalled(PROJECT_DATA projectData, bool isSubpartOfTome, uint
 	return NOT_INSTALLED;
 }
 
-void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
+void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID, bool markUnread)
 {
 	if(tomeID >= data.nbVolumes || data.volumesFull == NULL || chapitreID == INVALID_VALUE)
 		return;
@@ -433,7 +433,8 @@ void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID)
 		fprintf(file, "%d", data.volumesFull[tomeID].ID);
 		fclose(file);
 		
-		finishInstallationAtPath(basePath);
+		if(markUnread)
+			finishInstallationAtPath(basePath);
 	}
 #ifdef EXTENSIVE_LOGGING
 	else

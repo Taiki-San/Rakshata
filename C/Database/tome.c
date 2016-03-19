@@ -120,7 +120,7 @@ bool checkTomeReadable(PROJECT_DATA projectDB, uint ID)
 				snprintf(fullPath, sizeof(fullPath), "%s/%s/"VOLUME_CHAP_SHARED_TOKEN, basePath, intermediaryDirectory);
 				if(!checkFileExist(fullPath))
 				{
-					MDL_createSharedFile(projectDB, cache[posDetails].ID, pos);
+					MDL_createSharedFile(projectDB, cache[posDetails].ID, pos, false);
 				}
 			}
 		}
