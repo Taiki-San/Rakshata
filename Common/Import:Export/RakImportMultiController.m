@@ -102,10 +102,7 @@
 
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toDir : (NSString * __nonnull) dirName
 {
-	NSArray * part = [name componentsSeparatedByString:@"/"];
-	NSString * strippedName = [part count] <= 1 ? name : [part objectAtIndex:[part count] - 1];
-
-	return [self copyItemOfName:name toPath:[NSString stringWithFormat:@"%@/%@", dirName, strippedName]];
+	return [self copyItemOfName:name toPath:[NSString stringWithFormat:@"%@/%@", dirName, [name lastPathComponent]]];
 }
 
 - (BOOL) copyItemOfName : (NSString * __nonnull) name toPath : (NSString * __nonnull) path

@@ -121,7 +121,7 @@
 	if(strcmp([name UTF8String], filename) && unzLocateFile(archive, [name UTF8String], true) != UNZ_OK)
 		return NO;
 
-	unzExtractCurrentFile(archive, NULL, [dirName UTF8String], STRIP_PATH_FIRST, NULL);
+	unzExtractCurrentFile(archive, NULL, [dirName UTF8String], STRIP_PATH_ALL, NULL);
 
 	return YES;
 }
