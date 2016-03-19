@@ -123,7 +123,7 @@
 			uint chapID = content.ID;
 			if(content.isPrivate)
 			{
-				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"CHAPTER_PREFIX"%u", tomeData.ID, chapID / 10]];
 			}
 			else if (checkChapterReadable(project.project, chapID))
 			{
@@ -138,11 +138,16 @@
 			}
 			else
 			{
-				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u/", tomeData.ID, chapID / 10]];
+				basePathObj = [basePathObjCopy stringByAppendingString:[NSString stringWithFormat:@VOLUME_PREFIX"%u/"VOLUME_PRESHARED_DIR"/"CHAPTER_PREFIX"%u", tomeData.ID, chapID / 10]];
 			}
 			
-			if(basePathObj != nil && chapID % 10)
-				basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@".%u/", chapID % 10]];
+			if(basePathObj != nil)
+			{
+				if(chapID % 10)
+					basePathObj = [basePathObj stringByAppendingString:[NSString stringWithFormat:@".%u/", chapID % 10]];
+				else
+					basePathObj = [basePathObj stringByAppendingString:@"/"];
+			}
 		}
 		
 		//We create the path if needed
