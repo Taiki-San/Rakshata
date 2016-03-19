@@ -99,6 +99,7 @@
 
 	//Okay! Catalog is built, we can start crawling the directory
 	NSMutableArray * output = [NSMutableArray array];
+	NSMutableDictionary * usedID = [NSMutableDictionary dictionary];	//Faster than an array to insert/search
 	if(output == nil)
 		return nil;
 
@@ -118,9 +119,16 @@
 		else
 			continue;
 
-		NSString * dirName = objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]);
-		if(dirName == nil)
-			continue;
+		NSNumber * dirID = objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSNumber class]);
+		if(dirID == nil)
+		{
+			//Retrocompatibility
+			NSString * dirName = objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]);
+			if(dirName == nil)
+				continue;
+			else
+				dirID = getNumberForString(dirName);
+		}
 
 		NSNumber * isTome = objectForKey(entry, RAK_STRING_CONTENT_ISTOME, nil, [NSNumber class]), *entityID;
 		BOOL isLocal = [isTome boolValue] && [objectForKey(entry, JSON_PROJ_ISLOCAL, nil, [NSNumber class]) boolValue];
@@ -151,6 +159,16 @@
 				continue;
 			}
 		}
+		
+		//Prevent reusing the same files over and over in an archive, that could lead to zip bomb
+		NSString * dirName = [NSString stringWithFormat:@"%@/", dirID];
+		if([usedID objectForKey:dirName] != nil)
+		{
+			NSLog(@"Duplicate detected in archive!");
+			continue;
+		}
+		else
+			[usedID setObject:@(1) forKey:dirName];
 
 		//Okay, everything is complete, we throw it in a data structre and we're good
 		PROJECT_DATA_EXTRA projectData = * (PROJECT_DATA_EXTRA *) [currentProject bytes];
@@ -160,9 +178,8 @@
 			free(volumeData);
 			continue;
 		}
-
 		item.issue = IMPORT_PROBLEM_NONE;
-		item.path = [dirName stringByAppendingString:@"/"];
+		item.path = dirName;
 		item.isTome = [isTome boolValue];
 		item.contentID = isLocal ? INVALID_VALUE : [entityID unsignedIntValue];
 

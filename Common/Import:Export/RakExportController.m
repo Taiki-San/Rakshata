@@ -430,7 +430,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		}
 
 		//Okay, all files exists, let's add them to the archive
-		NSString * _rootPath = [objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSString class]) stringByAppendingString:@"/"];
+		NSString * _rootPath = [NSString stringWithFormat:@"%@/", objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSNumber class])];
 		const char * rootInzipPath = [_rootPath UTF8String];
 		const uint rootZipPathLength = [_rootPath length];
 
@@ -544,7 +544,7 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 	NSMutableDictionary * dict = [NSMutableDictionary new];
 
 	[dict setObject:@(projectID) forKey:RAK_STRING_CONTENT_PROJECT];
-	[dict setObject:[NSString stringWithFormat:@"%d", (*index)++] forKey:RAK_STRING_CONTENT_DIRECTORY];
+	[dict setObject:@((*index)++) forKey:RAK_STRING_CONTENT_DIRECTORY];
 	[dict setObject:@(isTome) forKey:RAK_STRING_CONTENT_ISTOME];
 
 	if(isTome)
