@@ -303,6 +303,9 @@
 			//We define what changed on the structure, except chapters/volumes
 			[(RakChapterView*) self.superview projectDataUpdate:data :newData];
 			
+			[_buttons setEnabled:(newData.nbChapterInstalled > 0) forSegment:0];
+			[_buttons setEnabled:(newData.nbVolumesInstalled > 0) forSegment:1];
+
 			[_chapterView reloadData : newData : NO];
 			[_volView reloadData : newData : NO];
 			
