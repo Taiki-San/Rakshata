@@ -110,6 +110,7 @@ uint setupBDDCache()
 		goto fail;
 	}
 
+	destroyRequest(request);
 	buildSearchTables(internalDB);
 	createCollate(internalDB);
 
