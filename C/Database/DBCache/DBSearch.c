@@ -98,7 +98,7 @@ void buildSearchTables(sqlite3 *_cache)
 		return;
 	}
 	
-	if(createCollate(_cache) != SQLITE_OK)
+	if(!createCollate(_cache))
 	{
 		initialized = false;
 		return;
@@ -177,12 +177,12 @@ void * buildSearchJumpTable(sqlite3 * _cache)
 	else
 		stage++;
 	
-	if((output->addString = createRequest(_cache, "INSERT INTO "FTS_TABLE" ("DBNAMETOID(RDB_FTS_CACHEID)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_STRING)") values (?1, "STRINGIZE(RDB_projectName)", ?2), (?1, "STRINGIZE(RDB_authors)", ?3), (?1, "STRINGIZE(RDB_description)", ?4)")) == NULL)
+	if((output->addString = createRequest(_cache, "INSERT INTO "FTS_TABLE" ("DBNAMETOID(RDB_FTS_CACHEID)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_STRING)") values (?1, "STRINGIZE(RDB_FTS_CODE_NAME)", ?2), (?1, "STRINGIZE(RDB_FTS_CODE_AUTHOR)", ?3), (?1, "STRINGIZE(RDB_FTS_CODE_DESCRIPTION)", ?4)")) == NULL)
 		goto fail;
 	else
 		stage++;
 	
-	if((output->updateString = createRequest(_cache, "UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?2 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?3 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_authors)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?4 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_description)";")) == NULL)
+	if((output->updateString = createRequest(_cache, "UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?2 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?3 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_AUTHOR)"; UPDATE "FTS_TABLE" SET "DBNAMETOID(RDB_FTS_STRING)" = ?4 WHERE "DBNAMETOID(RDB_FTS_CACHEID)" = ?1 AND "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_DESCRIPTION)";")) == NULL)
 		goto fail;
 	else
 		stage++;
@@ -1166,7 +1166,7 @@ char ** getProjectNameWith(const char * partial, uint * nbProject)
 	
 	uint length = strlen(partial);
 	char requestText[200];
-	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)" FROM "FTS_TABLE" WHERE "/*"DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)" AND*/" "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 ORDER BY "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC" ASC");
+	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)" FROM "FTS_TABLE" WHERE "/*"DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)" AND*/" "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 GROUP BY "DBNAMETOID(RDB_FTS_STRING)" ORDER BY "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC_SEARCH" ASC");
 	
 	sqlite3_stmt * request;
 	
@@ -1179,7 +1179,9 @@ char ** getProjectNameWith(const char * partial, uint * nbProject)
 	char copyString[length + 2];
 	memcpy(&copyString[1], partial, length * sizeof(char));
 	copyString[0] = copyString[length + 1] = '*';
-	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), NULL);
+	sqlite3_bind_text(request, 1, copyString, sizeof(copyString), SQLITE_STATIC);
+	
+	searchStringForCollate = &partial;
 	
 	size_t realLength = 0;
 	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
@@ -1189,6 +1191,8 @@ char ** getProjectNameWith(const char * partial, uint * nbProject)
 		if(output[realLength] != NULL)
 			realLength++;
 	}
+	
+	searchStringForCollate = NULL;
 	
 	destroyRequest(request);
 	
@@ -1203,7 +1207,7 @@ bool haveOneOrLessMatchForNameWith(const char * partial)
 	bool oneOrLess = false;
 	char requestText[200];
 	uint length = strlen(partial);
-	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_projectName)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1");
+	snprintf(requestText, sizeof(requestText), "SELECT COUNT() FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1");
 	
 	sqlite3_stmt * request;
 	if(length > INT_MAX || (request = createRequest(cache, requestText)) == NULL)

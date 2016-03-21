@@ -27,6 +27,7 @@ enum
 };
 
 int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int compareEncoding);
+int compareBeginingStrings(const void* a, uint lengthA, const void* b, uint lengthB, int compareEncoding);
 
 /*****************************************
  **										**

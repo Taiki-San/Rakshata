@@ -757,7 +757,26 @@ int compareProjects(void * null, uint lengthA, const char * a, uint lengthB, con
 	return compareStrings(a, lengthA, b, lengthB, COMPARE_UTF8);
 }
 
-int createCollate(sqlite3 * database)
+int compareProjectsSearch(char *** _search, uint lengthA, const char * a, uint lengthB, const char * b)
 {
-	return sqlite3_create_collation_v2(database, SORT_FUNC, SQLITE_UTF8, NULL, (void*) compareProjects, NULL);
+	if(_search != NULL && *_search != NULL && **_search != NULL)
+	{
+		const char * search = **_search;
+		uint length = strlen(search);
+		
+		bool aMatch = compareBeginingStrings(search, length, a, lengthA, COMPARE_UTF8) == 0;
+		bool bMatch = compareBeginingStrings(search, length, b, lengthB, COMPARE_UTF8) == 0;
+		
+		if(aMatch != bMatch)
+			return aMatch ? -1 : 1;
+	}
+	return compareStrings(a, lengthA, b, lengthB, COMPARE_UTF8);
+}
+
+const char ** searchStringForCollate = NULL;
+
+bool createCollate(sqlite3 * database)
+{
+	return sqlite3_create_collation_v2(database, SORT_FUNC, SQLITE_UTF8, NULL, (void*) compareProjects, NULL) == SQLITE_OK &&
+		sqlite3_create_collation_v2(database, SORT_FUNC_SEARCH, SQLITE_UTF8, &searchStringForCollate, (void*) compareProjectsSearch, NULL) == SQLITE_OK;
 }

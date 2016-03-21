@@ -317,6 +317,22 @@ int compareStrings(const void* a, uint lengthA, const void* b, uint lengthB, int
 	return [stringA localizedCompare:stringB];
 }
 
+int compareBeginingStrings(const void* a, uint lengthA, const void* b, uint lengthB, int compareEncoding)
+{
+	NSString * stringA = compareEncoding == COMPARE_UTF8 ? [[NSString alloc] initWithBytes:a length:lengthA encoding:NSUTF8StringEncoding] : getStringForWchar(a);
+	NSString * stringB = compareEncoding == COMPARE_UTF8 ? [[NSString alloc] initWithBytes:b length:lengthB encoding:NSUTF8StringEncoding] : getStringForWchar(b);
+
+	if([stringA length] != [stringB length])
+	{
+		if([stringA length] > [stringB length])
+			stringA = [stringA substringWithRange:NSMakeRange(0, [stringB length])];
+		else
+			stringB = [stringB substringWithRange:NSMakeRange(0, [stringA length])];
+	}
+	
+	return [stringA localizedCaseInsensitiveCompare:stringB];
+}
+
 //The retina version pixelSize = 2 x size
 void exportImageToPath(RakImage * image, NSSize size, NSSize pixelSize,  NSString * outputPath)
 {

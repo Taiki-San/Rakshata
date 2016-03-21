@@ -30,6 +30,8 @@ extern uint lengthRepo;
 extern bool mutexInitialized;
 extern MUTEX_VAR cacheMutex, cacheParseMutex;
 
+extern const char ** searchStringForCollate;
+
 /**DBCache.c**/
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled);
@@ -87,7 +89,7 @@ bool downloadedProjectListSeemsLegit(char *data);
 uint defineBoundsRepoOnProjectDB(PROJECT_DATA_PARSED * oldData, uint posBase, uint nbElem);
 
 void applyChangesProject(PROJECT_DATA_PARSED * oldData, uint magnitudeOldData, PROJECT_DATA_PARSED * newData, uint magnitudeNewData);
-int createCollate(sqlite3 * database);
+bool createCollate(sqlite3 * database);
 
 /******		DBTags.c	*******/
 void initializeTags(void * mainCache);
@@ -157,11 +159,16 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_FTS_REAL_CODE			2
 #define RDB_FTS_STRING				3
 
+#define RDB_FTS_CODE_NAME			1
+#define RDB_FTS_CODE_AUTHOR			2
+#define RDB_FTS_CODE_DESCRIPTION	3
+
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 
 #define MAIN_CACHE "thisWouldBeADumbName"
 #define FTS_TABLE "mordin"
 #define SORT_FUNC "LEGOLAS"
+#define SORT_FUNC_SEARCH "javik"
 
 enum SEARCH_REQUEST
 {
