@@ -950,12 +950,13 @@ uint * _getIDForRestriction(const char * categoryName, uint nbItemInCategory, bo
 	if(searchString != NULL)
 	{
 		uint length = strlen(searchString);
-		char copySearchString[length + 2];
+		char copySearchString[length + 3];
 		
 		memcpy(&copySearchString[1], searchString, length * sizeof(char));
 		copySearchString[0] = copySearchString[length + 1] = '*';
+		copySearchString[length + 2] = 0;
 		
-		sqlite3_bind_text(request, 1, copySearchString, sizeof(copySearchString), NULL);
+		sqlite3_bind_text(request, 1, copySearchString, -1, SQLITE_TRANSIENT);
 	}
 	
 	void * output = _copyDataForRequest(request, nbElemOutput);
