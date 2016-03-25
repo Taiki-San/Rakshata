@@ -15,6 +15,7 @@
  *********************************************************************************************/
 
 #define SEARCH_BAR_ID_NBCASES 2
+
 enum
 {
 	SEARCH_BAR_ID_MAIN		= 0,
@@ -70,3 +71,5 @@ enum
 @interface RakSRSearchBarCell : NSSearchFieldCell
 
 @end
+
+#import "APPLSuggestionsWindowController.h"

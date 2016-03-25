@@ -16,6 +16,20 @@
 
 #define OFFSET 22
 
+@interface RakSRSearchBar ()
+{
+	APPLSuggestionsWindowController * _suggestionsController;
+}
+
+@end
+
+@interface RakSRSearchBarCell ()
+{
+
+}
+
+@end
+
 @implementation RakSRSearchBarCell
 
 - (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
@@ -333,49 +347,23 @@
 
 - (NSArray *)control:(NSControl *)control textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
-	NSMutableArray * array = [NSMutableArray array];
-	NSString * prefix = textView.string;
-	
-	uint length = [prefix length];
-	const char * prefixChar = [prefix UTF8String];
-
-	while(length > 0 && prefixChar[length - 1] != ' ')
-		length -= 1;
-	
-	if(_ID == SEARCH_BAR_ID_MAIN)
-	{
-		uint nbElem;
-		char ** output = getProjectNameWith([prefix UTF8String], &nbElem);
-
-		if(output == NULL || nbElem == 0)
-		{
-			free(output);
-			return @[];
-		}
-		
-		for(uint i = 0; i < nbElem; i++)
-		{
-			[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
-			free(output[i]);
-		}
-		free(output);
-	}
-	
-	else if(_ID == SEARCH_BAR_ID_AUTHOR || _ID == SEARCH_BAR_ID_SOURCE || _ID == SEARCH_BAR_ID_TAG || _ID == SEARCH_BAR_ID_CAT)
-	{
-		[data enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
-		{
-			if([obj hasPrefix:prefix caseInsensitive:YES])
-			{
-				[array addObject:[obj substringFromIndex:length]];
-			}
-		}];
-	}
-	
-	return array;
+	return [self suggestionsForText:textView.string];
 }
 
 #pragma mark - Delegate code
+
+- (void)controlTextDidBeginEditing:(NSNotification *)notification
+{
+	// We keep the suggestionsController around, but lazely allocate it the first time it is needed.
+	if (!_suggestionsController)
+	{
+		_suggestionsController = [[APPLSuggestionsWindowController alloc] init];
+		_suggestionsController.target = self;
+		_suggestionsController.action = @selector(updateWithSelectedSuggestion:);
+	}
+	
+	[self shouldSuggest : notification.object];
+}
 
 - (void)controlTextDidChange:(NSNotification *)obj
 {
@@ -384,15 +372,25 @@
 	if(!noRecursive && view != nil && ![view.string isEqualToString:@""])
 	{
 		if(deletinChar)
+		{
+			[_suggestionsController cancelSuggestions];
 			deletinChar = NO;
+		}
 		else
 		{
 			normalKeyPressed = YES;
 			noRecursive = YES;
-			[view complete:nil];
+			[self shouldSuggest : view];
+//			[view complete:nil];
 			noRecursive = NO;
 		}
 	}
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)obj
+{
+	//If the suggestionController is already in a cancelled state, this call does nothing and is therefore always safe to call.
+	[_suggestionsController cancelSuggestions];
 }
 
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector
@@ -403,6 +401,32 @@
 	{
 		if(textView.nextKeyView != self.nextKeyView)
 			textView.nextKeyView = self.nextKeyView;
+	}
+	
+	
+	else if (commandSelector == @selector(moveUp:))
+	{
+		// Move up in the suggested selections list
+		[_suggestionsController moveUp:textView];
+		return YES;
+	}
+	
+	else if (commandSelector == @selector(moveDown:))
+	{
+		// Move down in the suggested selections list
+		[_suggestionsController moveDown:textView];
+		return YES;
+	}
+	
+	else if (commandSelector == @selector(complete:))
+	{
+		// The user has pressed the key combination for auto completion. AppKit has a built in auto completion. By overriding this command we prevent AppKit's auto completion and can respond to the user's intention by showing or cancelling our custom suggestions window.
+		if ([_suggestionsController.window isVisible])
+			[_suggestionsController cancelSuggestions];
+		else
+			[self shouldSuggest : textView];
+		
+		return YES;
 	}
 	
 	else if([textView respondsToSelector:commandSelector])
@@ -428,6 +452,108 @@
 	}
 	
 	return result;
+}
+
+#pragma mark - UI Completion hooks
+
+/* Update the field editor with a suggested string. The additional suggested characters are auto selected.
+ */
+- (void)updateFieldEditor:(NSText *)fieldEditor withSuggestion:(NSString *)suggestion
+{
+	NSRange selection = NSMakeRange([fieldEditor selectedRange].location, [suggestion length]);
+	[fieldEditor setString:suggestion];
+	[fieldEditor setSelectedRange:selection];
+}
+
+- (void) updateWithSelectedSuggestion : (id)sender
+{
+	NSString *entry = [sender selectedSuggestion];
+	if (entry)
+	{
+		NSText *fieldEditor = [self.window fieldEditor:NO forObject:self];
+		if (fieldEditor)
+		{
+			[self updateFieldEditor:fieldEditor withSuggestion:entry];
+		}
+	}
+}
+
+- (void) shouldSuggest : (NSView *) view
+{
+	if(_ID != SEARCH_BAR_ID_MAIN)
+	{
+		[view complete:nil];
+	}
+	
+	NSText *fieldEditor = [self.window fieldEditor:NO forObject:self];
+	if (fieldEditor != nil)
+	{
+		// Only use the text up to the caret position
+		NSRange selection = [fieldEditor selectedRange];
+		NSString *text = [[fieldEditor string] substringToIndex:selection.location];
+		
+		NSArray *suggestions = [self suggestionsForText:text];
+		if ([suggestions count] > 0)
+		{
+			// We have at least 1 suggestion. Update the field editor to the first suggestion and show the suggestions window.
+			NSString *suggestion = [suggestions objectAtIndex:0];
+			[self updateFieldEditor:fieldEditor withSuggestion:suggestion];
+			
+			[_suggestionsController setSuggestions:suggestions];
+			if (![_suggestionsController.window isVisible])
+			{
+				[_suggestionsController beginForTextField:self];
+			}
+		}
+		else
+		{
+			// No suggestions. Cancel the suggestion window
+			[_suggestionsController cancelSuggestions];
+		}
+	}
+
+}
+
+- (NSArray *) suggestionsForText : (NSString *) prefix
+{
+	NSMutableArray * array = @[].mutableCopy;
+	uint length = [prefix length];
+	const char * prefixChar = [prefix UTF8String];
+	
+	while(length > 0 && prefixChar[length - 1] != ' ')
+		length -= 1;
+	
+	if(_ID == SEARCH_BAR_ID_MAIN)
+	{
+		uint nbElem;
+		char ** output = getProjectNameWith([prefix UTF8String], &nbElem);
+		
+		if(output == NULL || nbElem == 0)
+		{
+			free(output);
+			return @[];
+		}
+		
+		for(uint i = 0; i < nbElem; i++)
+		{
+			[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
+			free(output[i]);
+		}
+		free(output);
+	}
+	
+	else if(_ID == SEARCH_BAR_ID_AUTHOR || _ID == SEARCH_BAR_ID_SOURCE || _ID == SEARCH_BAR_ID_TAG || _ID == SEARCH_BAR_ID_CAT)
+	{
+		[data enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
+		 {
+			 if([obj hasPrefix:prefix caseInsensitive:YES])
+			 {
+				 [array addObject:[obj substringFromIndex:length]];
+			 }
+		 }];
+	}
+	
+	return array;
 }
 
 @end

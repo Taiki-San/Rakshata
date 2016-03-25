@@ -439,6 +439,8 @@
 		B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */; };
 		B6D127011AC713F7003FFEC6 /* RakAddRepoController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */; };
 		B6D127031AC72062003FFEC6 /* DotRakSourceParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */; };
+		B6D316491CA5FFA900C1BE16 /* APPLHighlightingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D316461CA5FFA900C1BE16 /* APPLHighlightingView.m */; };
+		B6D3164A1CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D316481CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m */; };
 		B6D7EC091B682B90009FCE64 /* RakImportMultiController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D7EC081B682B90009FCE64 /* RakImportMultiController.m */; };
 		B6D9043F1AB8C8AD001A2D6B /* RakPrefsGeneralView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */; };
 		B6D904421AB8D7C7001A2D6B /* RakSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D904411AB8D7C7001A2D6B /* RakSegmentedControl.m */; };
@@ -1023,6 +1025,9 @@
 		B6D126FF1AC713F7003FFEC6 /* RakAddRepoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAddRepoController.h; path = Utils/RakAddRepoController.h; sourceTree = "<group>"; };
 		B6D127001AC713F7003FFEC6 /* RakAddRepoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakAddRepoController.m; path = Utils/RakAddRepoController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D127021AC72062003FFEC6 /* DotRakSourceParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DotRakSourceParser.m; path = Common/Utils/DotRakSourceParser.m; sourceTree = "<group>"; };
+		B6D316461CA5FFA900C1BE16 /* APPLHighlightingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APPLHighlightingView.m; sourceTree = "<group>"; };
+		B6D316471CA5FFA900C1BE16 /* APPLSuggestionsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APPLSuggestionsWindowController.h; sourceTree = "<group>"; };
+		B6D316481CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APPLSuggestionsWindowController.m; sourceTree = "<group>"; };
 		B6D7EC081B682B90009FCE64 /* RakImportMultiController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakImportMultiController.m; path = "Import:Export/RakImportMultiController.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6D9043D1AB8C8AD001A2D6B /* RakPrefsGeneralView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakPrefsGeneralView.h; path = "Divers Windows/RakPrefsGeneralView.h"; sourceTree = "<group>"; };
 		B6D9043E1AB8C8AD001A2D6B /* RakPrefsGeneralView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsGeneralView.m; path = "Divers Windows/RakPrefsGeneralView.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2058,6 +2063,7 @@
 				B62935D91A80209600DE20E2 /* RakSRSearchTabGroup.h */,
 				B62935DA1A80209600DE20E2 /* RakSRSearchTabGroup.m */,
 				B654548C1BE6A2B700A12D36 /* RakSRSearchUtils.m */,
+				B6D316451CA5FFA900C1BE16 /* SuggestionList */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -2267,6 +2273,17 @@
 			);
 			name = "Add Repo";
 			sourceTree = "<group>";
+		};
+		B6D316451CA5FFA900C1BE16 /* SuggestionList */ = {
+			isa = PBXGroup;
+			children = (
+				B6D316461CA5FFA900C1BE16 /* APPLHighlightingView.m */,
+				B6D316471CA5FFA900C1BE16 /* APPLSuggestionsWindowController.h */,
+				B6D316481CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m */,
+			);
+			name = SuggestionList;
+			path = "OS X/SuggestionList";
+			sourceTree = SOURCE_ROOT;
 		};
 		B6D7EC0A1B682CEE009FCE64 /* 7zip */ = {
 			isa = PBXGroup;
@@ -3032,6 +3049,7 @@
 				B6BC730B1A90093000018BE9 /* RakSRSuggestions.m in Sources */,
 				B606EB431B68556900DDBBBD /* lecteur_loading.c in Sources */,
 				B6BF49D819D189FE00A2AAC9 /* RakCTHeaderImage.m in Sources */,
+				B6D3164A1CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m in Sources */,
 				B6748AE21A936E80003FBC1D /* RakSynopsis.m in Sources */,
 				B6251F741A98CC92001C4F06 /* RakAboutWindow.m in Sources */,
 				B6EC482318E5E03E00288C3B /* RakChapterView.m in Sources */,
@@ -3071,6 +3089,7 @@
 				B6FC0D8319E1EC7C00D94284 /* RakCTProjectSynopsis.m in Sources */,
 				B66F09CC1C6B464D009BE831 /* miniunz.c in Sources */,
 				B6F2F7B219CE2C7D0044A69C /* RakAuthTools.m in Sources */,
+				B6D316491CA5FFA900C1BE16 /* APPLHighlightingView.m in Sources */,
 				B606EB501B6855D300DDBBBD /* error.c in Sources */,
 				B634EAD61C01DF170078F33A /* RakPageController.m in Sources */,
 				B66392251BD65A00003FD758 /* sorting.c in Sources */,
