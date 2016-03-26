@@ -16,6 +16,10 @@
 
 #define SEARCH_BAR_ID_NBCASES 2
 
+#define kSuggestionString @"string"
+#define kSuggestionType @"type"
+#define kSuggestionID @"id"
+
 enum
 {
 	SEARCH_BAR_ID_MAIN		= 0,

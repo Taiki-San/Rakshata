@@ -445,7 +445,7 @@
 
 	uint nbElem;
 	const char * partialString = [textView.string UTF8String];
-	char ** output = getProjectNameWith(partialString, &nbElem);
+	SEARCH_SUGGESTION * output = getProjectNameWith(partialString, &nbElem, true);
 
 	if(output == NULL || nbElem == 0)
 	{
@@ -462,8 +462,8 @@
 
 	for(uint i = 0; i < nbElem; i++)
 	{
-		[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
-		free(output[i]);
+		[array addObject:[NSString stringWithUTF8String:&output[i].string[length]]];
+		free(output[i].string);
 	}
 	
 	free(output);

@@ -23,13 +23,6 @@
 
 @end
 
-@interface RakSRSearchBarCell ()
-{
-
-}
-
-@end
-
 @implementation RakSRSearchBarCell
 
 - (NSText*) setUpFieldEditorAttributes : (NSText*) textObj
@@ -467,13 +460,13 @@
 
 - (void) updateWithSelectedSuggestion : (id)sender
 {
-	NSString *entry = [sender selectedSuggestion];
-	if (entry)
+	NSDictionary * entry = [sender selectedSuggestion];
+	if (entry != nil)
 	{
 		NSText *fieldEditor = [self.window fieldEditor:NO forObject:self];
 		if (fieldEditor)
 		{
-			[self updateFieldEditor:fieldEditor withSuggestion:entry];
+			[self updateFieldEditor:fieldEditor withSuggestion:[entry objectForKey:kSuggestionString]];
 		}
 	}
 }
@@ -496,8 +489,8 @@
 		if ([suggestions count] > 0)
 		{
 			// We have at least 1 suggestion. Update the field editor to the first suggestion and show the suggestions window.
-			NSString *suggestion = [suggestions objectAtIndex:0];
-			[self updateFieldEditor:fieldEditor withSuggestion:suggestion];
+			NSDictionary *suggestion = [suggestions objectAtIndex:0];
+			[self updateFieldEditor:fieldEditor withSuggestion:[suggestion objectForKey:kSuggestionString]];
 			
 			[_suggestionsController setSuggestions:suggestions];
 			if (![_suggestionsController.window isVisible])
@@ -526,7 +519,7 @@
 	if(_ID == SEARCH_BAR_ID_MAIN)
 	{
 		uint nbElem;
-		char ** output = getProjectNameWith([prefix UTF8String], &nbElem);
+		SEARCH_SUGGESTION * output = getProjectNameWith([prefix UTF8String], &nbElem, false);
 		
 		if(output == NULL || nbElem == 0)
 		{
@@ -536,9 +529,12 @@
 		
 		for(uint i = 0; i < nbElem; i++)
 		{
-			[array addObject:[NSString stringWithUTF8String:&output[i][length]]];
-			free(output[i]);
+			[array addObject:@{kSuggestionString:[NSString stringWithUTF8String:&output[i].string[length]],
+							   kSuggestionType	:@(output[i].type),
+							   kSuggestionID	:@(output[i].cacheDBID)}];
+			free(output[i].string);
 		}
+
 		free(output);
 	}
 	

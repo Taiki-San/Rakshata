@@ -355,8 +355,8 @@ enum
 	/* The width of each suggestion view should match the width of the window. The height is determined by the view's height set in IB.
 	 */
 	NSRect contentFrame = contentView.frame;
-	NSRect frame = NSMakeRect(5, 0, contentFrame.size.width, 44);
-	for (NSString *entry in _suggestions)
+	NSRect frame = NSMakeRect(0, 0, contentFrame.size.width, 44);
+	for (NSDictionary *entry in [_suggestions reverseObjectEnumerator])
 	{
 		if(entry != nil)
 		{
@@ -368,7 +368,7 @@ enum
 			NSTextField * text = [[NSTextField alloc] initWithFrame:frame];
 			if(text != nil)
 			{
-				text.stringValue = entry;
+				text.stringValue = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
 				[text sizeToFit];
 				text.frameOrigin = NSMakePoint(5, contentFrame.size.height / 2 - text.bounds.size.height / 2);
 				[mainView addSubview:text];
