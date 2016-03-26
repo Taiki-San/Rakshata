@@ -53,29 +53,24 @@
 
 @interface APPLSuggestionsWindowController : NSWindowController
 {
-@private
 	NSTextField *_parentTextField;
-	SEL _action;
-	id _target;
 	
-	NSArray *_suggestions;
+	NSArray<NSDictionary *> *_suggestions;
 	NSMutableArray *_viewControllers;
 	NSMutableArray *_trackingAreas;
-	BOOL _needsLayoutUpdate;
 	
 	id _localMouseDownEventMonitor;
 	id _lostFocusObserver;
-	APPLHighlightingView * _selectedView;
 }
 
-@property (assign) SEL action;
+@property SEL action;
 @property id target;
 
 // The designated initializer. This window controller creates its own custom suggestions window.
 - (id)init;
 
 // -beginForControl: is used to display the suggestions window just underneath the parent control.
-- (void)beginForTextField:(NSTextField *)parentTextField;
+- (void) beginForTextField : (NSTextField *)parentTextField;
 
 /* Order out the suggestion window, disconnect the accessibility logical relationship and dismantle any observers for auto cancel.
  Note: It is safe to call this method even if the suggestions window is not currently visible.
@@ -83,9 +78,9 @@
 - (void)cancelSuggestions;
 
 // Update the array of suggestions
-- (void)setSuggestions : (NSArray*) suggestions;
+- (void)setSuggestions : (NSArray <NSDictionary *> *) suggestions;
 
 // Returns the dictionary of the currently selected suggestion.
-- (id)selectedSuggestion;
+- (NSDictionary *) selectedSuggestion;
 
 @end

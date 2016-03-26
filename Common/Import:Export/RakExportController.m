@@ -414,21 +414,6 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			continue;
 		}
 
-		//If it is a volume, we need those metadata
-		META_TOME volumeMetadata;
-		if(isTome)
-		{
-			uint posSelectionTome = getPosForID(item.project, true, selection);
-			if(posSelectionTome == INVALID_VALUE)
-			{
-				releaseDataReader(&entryData);
-				[invalidContent addObject:entry];
-				continue;
-			}
-
-			volumeMetadata = item.project.volumesInstalled[posSelectionTome];
-		}
-
 		//Okay, all files exists, let's add them to the archive
 		NSString * _rootPath = [NSString stringWithFormat:@"%@/", objectForKey(entry, RAK_STRING_CONTENT_DIRECTORY, nil, [NSNumber class])];
 		const char * rootInzipPath = [_rootPath UTF8String];

@@ -61,10 +61,10 @@ enum
 @end
 
 @interface APPLSuggestionsWindowController()
-/* declare the these properties in an anonymous category since they are private
- */
-@property (assign) BOOL needsLayoutUpdate;
-@property (nonatomic) NSView *selectedView;
+
+//declare the these properties in an anonymous category since they are private
+@property BOOL needsLayoutUpdate;
+@property (nonatomic) APPLHighlightingView * selectedView;
 
 // private helper methods
 -(void)layoutSuggestions;
@@ -73,11 +73,6 @@ enum
 
 
 @implementation APPLSuggestionsWindowController
-
-@synthesize target = _target;
-@synthesize action = _action;
-@synthesize needsLayoutUpdate = _needsLayoutUpdate;
-@synthesize selectedView = _selectedView;
 
 - (instancetype) init
 {
@@ -130,27 +125,22 @@ enum
 	return self;
 }
 
-- (void) windowDidLoad
-{
-}
-
-
 /* Custom selectedView property setter so that we can set the highlighted property of the old and new selected views.
  */
-- (void)setSelectedView:(APPLHighlightingView *)view
+- (void) setSelectedView : (APPLHighlightingView *) view
 {
 	if (_selectedView != view)
 	{
 		_selectedView.highlighted = NO;
 		_selectedView = view;
 	}
-	
+
 	_selectedView.highlighted = YES;
 }
 
 /* Set selected view and send action
  */
-- (void)userSetSelectedView:(NSView *)view
+- (void)userSetSelectedView : (APPLHighlightingView *) view
 {
 	self.selectedView = view;
 	
@@ -190,13 +180,7 @@ enum
 	// The window must know its accessibility parent, the control must know the window one of its accessibility children
 	// Note that views (controls especially) are often ignored, so we want the unignored descendant - usually a cell
 	// Finally, post that we have created the unignored decendant of the suggestions window
-	id unignoredAccessibilityDescendant = NSAccessibilityUnignoredDescendant(parentTextField);
-	[(SuggestionsWindow *)suggestionWindow setParentElement:unignoredAccessibilityDescendant];
-#warning "The search field need a reference to the suggestion window"
-	//	if ([unignoredAccessibilityDescendant respondsToSelector:@selector(setSuggestionsWindow:)])
-	//	{
-	//		[unignoredAccessibilityDescendant setSuggestionsWindow:suggestionWindow];
-	//	}
+	[(SuggestionsWindow *)suggestionWindow setParentElement:NSAccessibilityUnignoredDescendant(parentTextField)];
 	NSAccessibilityPostNotification(NSAccessibilityUnignoredDescendant(suggestionWindow),  NSAccessibilityCreatedNotification);
 	
 	// setup auto cancellation if the user clicks outside the suggestion window and parent text field. Note: this is a local event monitor and will only catch clicks in windows that belong to this application. We use another technique below to catch clicks in other application windows.
@@ -254,9 +238,6 @@ enum
 		[suggestionWindow orderOut:nil];
 		
 		// Disconnect the accessibility parent/child relationship
-		
-#warning "The search field need a reference to the suggestion window"
-		//		[[(SuggestionsWindow *)suggestionWindow parentElement] setSuggestionsWindow:nil];
 		[(SuggestionsWindow *)suggestionWindow setParentElement:nil];
 	}
 	
@@ -274,27 +255,25 @@ enum
 	}
 }
 
-// Update the array of suggestions. The array should consist of NSDictionaries each containing the following keys:
-- (void)setSuggestions : (NSArray*) suggestions
+- (void) setSuggestions : (NSArray<NSDictionary *> *) suggestions
 {
-	_suggestions = [suggestions copy];
+	_suggestions = suggestions;
 	
 	// We only need to update the layout if the window is currently visible.
 	if ([self.window isVisible])
-	{
 		[self layoutSuggestions];
-	}
 }
 
 /* Returns the dictionary of the currently selected suggestion.
  */
-- (id)selectedSuggestion
+- (NSDictionary *) selectedSuggestion
 {
-	id suggestion = nil;
+	NSDictionary * suggestion = nil;
 	
 	// Find the currently selected view's controller (if there is one) and return the representedObject which is the NSMutableDictionary that was passed in via -setSuggestions:
-	NSView *selectedView = self.selectedView;
-	for (NSViewController *viewController in _viewControllers)
+	APPLHighlightingView * selectedView = self.selectedView;
+
+	for (NSViewController * viewController in _viewControllers)
 	{
 		if (selectedView == viewController.view)
 		{
@@ -333,7 +312,7 @@ enum
 	
 	if (_trackingAreas)
 	{
-		for(NSView * view in [[contentView subviews] copy])
+		for(NSView * view in [contentView.subviews copy])
 			[view removeFromSuperview];
 		
 		for (NSTrackingArea *trackingArea in _trackingAreas)
@@ -346,7 +325,7 @@ enum
 	}
 	else
 	{
-		_trackingAreas = [[NSMutableArray alloc] initWithCapacity:1];
+		_trackingAreas = [[NSMutableArray alloc] initWithCapacity:[_suggestions count]];
 	}
 	
 	/* Iterate througn each suggestion creating a view for each entry.
@@ -425,19 +404,17 @@ enum
 /* In addition to tracking the mouse, we want to allow changing our selection via the keyboard. However, the suggestion window never gets key focus as the key focus remains on te text field. Therefore we need to route move up and move down action commands from the text field and this controller. See CustomMenuAppDelegate.m -control:textView:doCommandBySelector: to see how that is done.
  */
 
-/* move the selection up and send action.
- */
-- (void)moveUp:(id)sender
+// Move the selection up and send action.
+- (void) moveUp : (id) sender
 {
-	NSView *selectedView = self.selectedView;
-	NSView *previousView = nil;
-	for (NSViewController *viewController in _viewControllers)
+	APPLHighlightingView * selectedView = self.selectedView, * previousView = nil;
+	for (NSViewController * viewController in _viewControllers)
 	{
-		NSView *view = viewController.view;
+		APPLHighlightingView * view = (id) viewController.view;
+		
 		if (view == selectedView)
-		{
 			break;
-		}
+
 		previousView = view;
 	}
 	
@@ -447,19 +424,16 @@ enum
 	}
 }
 
-/* move the selection down and send action.
- */
-- (void)moveDown:(id)sender
+// Move the selection down and send action.
+- (void) moveDown : (id) sender
 {
-	NSView *selectedView = self.selectedView;
-	NSView *previousView = nil;
-	for (NSViewController *viewController in [_viewControllers reverseObjectEnumerator])
+	APPLHighlightingView * selectedView = self.selectedView, * previousView = nil;
+	for (NSViewController * viewController in [_viewControllers reverseObjectEnumerator])
 	{
-		NSView *view = viewController.view;
+		APPLHighlightingView *view = (id) viewController.view;
 		if (view == selectedView)
-		{
 			break;
-		}
+
 		previousView = view;
 	}
 	
@@ -477,14 +451,11 @@ enum
 
 /* This window is acting as a popup menu of sorts.  Since this isn't semantically a window, we ignore it for accessibility purposes.  Similarly, the parent of this window is its logical parent in the parent window.  In this code sample, the text field, but essentially any UI element that is the logical 'parent' of the window.
  */
-- (BOOL)accessibilityIsIgnored
-{
-	return YES;
-}
+- (BOOL) accessibilityIsIgnored	{	return YES;		}
+- (BOOL) isAccessibilityElement {	return NO;		}
 
-/* If we are asked for our AXParent, return the unignored anscestor of our parent element
- */
-- (id)accessibilityAttributeValue:(NSString *)attribute
+// If we are asked for our AXParent, return the unignored anscestor of our parent element
+- (id) accessibilityAttributeValue:(NSString *)attribute
 {
 	if ([attribute isEqualToString:NSAccessibilityParentAttribute])
 		return NSAccessibilityUnignoredAncestor(_parentElement);

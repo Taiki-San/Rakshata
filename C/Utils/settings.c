@@ -62,14 +62,14 @@ void addToPref(char* flag, char *stringToAdd)
 		
 		char * tmpString = malloc(length + 2 * lengthSetFlag + 1);
 		if(tmpString == NULL || length > UINT_MAX - (2 * lengthSetFlag + 1))
-			return;
+			return free(tmpString);
 		
-		strcpy(tmpString, setFlag);
-		strcpy(&tmpString[lengthSetFlag], stringToAdd);
+		strncpy(tmpString, setFlag, lengthSetFlag);
+		strncpy(&tmpString[lengthSetFlag], stringToAdd, length);
 		
 		char finishFlag[10];
 		snprintf(finishFlag, sizeof(finishFlag), "\n</%s>", flag);
-		strcpy(&tmpString[lengthSetFlag + length], finishFlag);
+		strncpy(&tmpString[lengthSetFlag + length], finishFlag, lengthSetFlag);
 		
 		needFree = true;
 		stringToAdd = tmpString;
