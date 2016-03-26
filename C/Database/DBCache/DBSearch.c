@@ -1159,15 +1159,22 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	return output;
 }
 
-char ** getProjectNameWith(const char * partial, uint * nbProject)
+SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, bool projectNameOnly)
 {
-	char ** output = calloc(nbElemInCache, sizeof(char *));
+	SEARCH_SUGGESTION * output = calloc(nbElemInCache, sizeof(SEARCH_SUGGESTION));
 	if(output == NULL)
 		return NULL;
 	
 	uint length = strlen(partial);
-	char requestText[200];
-	snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)" FROM "FTS_TABLE" WHERE "/*"DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)" AND*/" "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 GROUP BY "DBNAMETOID(RDB_FTS_STRING)" ORDER BY "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC_SEARCH" ASC");
+	char requestText[256];
+	
+	if(projectNameOnly)
+		snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_CACHEID)" FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 ORDER BY "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC_SEARCH" DESC");
+	else
+		//Two part request. First, we get the project and try to give them a higher RDB_FTS_REAL_CODE if the search have multiple hits (name & author)
+		//	description is ignored in the computation
+		//The second part excludes specifically the project name and try to bring up direct hit of authors
+		snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)", SUM("DBNAMETOID(RDB_FTS_REAL_CODE)") AS "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_CACHEID)" FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" != "STRINGIZE(RDB_FTS_CODE_DESCRIPTION)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 GROUP BY "DBNAMETOID(RDB_FTS_CACHEID)" UNION ALL SELECT "DBNAMETOID(RDB_FTS_STRING)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_CACHEID)" FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" != "STRINGIZE(RDB_FTS_CODE_NAME)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 GROUP BY "DBNAMETOID(RDB_FTS_STRING)", "DBNAMETOID(RDB_FTS_REAL_CODE)" ORDER BY "DBNAMETOID(RDB_FTS_REAL_CODE)" DESC, "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC_SEARCH" ASC");
 	
 	sqlite3_stmt * request;
 	
@@ -1184,12 +1191,34 @@ char ** getProjectNameWith(const char * partial, uint * nbProject)
 	
 	searchStringForCollate = &partial;
 	
-	size_t realLength = 0;
-	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
+	size_t realLength = 0, maxEntries = MIN(nbElemInCache, 100);
+	while (realLength < maxEntries && sqlite3_step(request) == SQLITE_ROW)
 	{
-		output[realLength] = strdup((void*) sqlite3_column_text(request, 0));
+		output[realLength].type = (byte) sqlite3_column_int(request, 1);
+		output[realLength].cacheDBID = (uint) sqlite3_column_int(request, 2);
 		
-		if(output[realLength] != NULL)
+		//If a project, the author name may be produced by the database instead of the project name
+		//In this case, we must recover it with the cacheDBID
+		if(output[realLength].type != RDB_FTS_CODE_AUTHOR)
+		{
+			uint i = 0, currentCacheValue = output[realLength].cacheDBID;
+		
+			//We don't want a duplicate
+			for(; i < realLength; i++)
+			{
+				if(output[i].cacheDBID == currentCacheValue && output[i].type != RDB_FTS_CODE_AUTHOR)
+					break;
+			}
+			
+			if(i == realLength)
+				output[realLength].string = getProjectNameByID(output[realLength].cacheDBID);
+		}
+		
+		//There may be repetitions in the dataset, we reject them if we run into them
+		else if(realLength == 0 || output[realLength - 1].cacheDBID != output[realLength].cacheDBID)
+			output[realLength].string = getAuthorNameByID(output[realLength].cacheDBID);
+		
+		if(output[realLength].string != NULL)
 			realLength++;
 	}
 	

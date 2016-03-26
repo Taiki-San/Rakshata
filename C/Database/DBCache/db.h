@@ -138,6 +138,14 @@ typedef struct
 	
 } SUGGESTIONS_FAVS;
 
+typedef struct
+{
+	char * string;
+	uint cacheDBID;
+	byte type;
+	
+} SEARCH_SUGGESTION;
+
 /**DBCache.c**/
 uint setupBDDCache();
 void syncCacheToDisk(byte syncCode);
@@ -160,6 +168,8 @@ PROJECT_DATA * getProjectFromSearch (uint64_t IDRepo, uint projectID, bool local
 PROJECT_DATA_PARSED getProjectByIDHelper(uint cacheID, bool copyDynamic, bool wantParsed, bool wantTags);
 PROJECT_DATA_PARSED getParsedProjectByID(uint cacheID);
 PROJECT_DATA getProjectByID(uint cacheID);
+char * getProjectNameByID(uint cacheID);
+char * getAuthorNameByID(uint cacheID);
 bool checkProjectStillExist(uint cacheID);
 uint getProjectByName(const char * UTF8Name);
 
@@ -209,7 +219,7 @@ uint getIDForTag(byte type, uint code);
 uint _getFromSearch(void * _table, byte type, void * data);
 
 uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly, bool wantFavsOnly);
-char ** getProjectNameWith(const char * partial, uint * nbProject);
+SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, bool projectNameOnly);
 bool haveOneOrLessMatchForNameWith(const char * partial);
 
 /**DBRecent.c**/

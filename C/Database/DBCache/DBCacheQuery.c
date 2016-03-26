@@ -465,6 +465,36 @@ PROJECT_DATA getProjectByID(uint cacheID)
 	return getProjectByIDHelper(cacheID, true, false, false).project;
 }
 
+char * _getNameByID(sqlite3_stmt * request, uint cacheID)
+{
+	if(request == NULL)
+		return NULL;
+	
+	char * output = NULL;
+	
+	sqlite3_bind_int(request, 1, (int) cacheID);
+	
+	if(sqlite3_step(request) == SQLITE_ROW)
+	{
+		char * buffer = (void*) sqlite3_column_text(request, 0);
+		if(buffer != NULL)
+			output = strdup(buffer);
+	}
+	
+	destroyRequest(request);
+	return output;
+}
+
+char * getProjectNameByID(uint cacheID)
+{
+	return _getNameByID(createRequest(cache, "SELECT "DBNAMETOID(RDB_projectName)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1"), cacheID);
+}
+
+char * getAuthorNameByID(uint cacheID)
+{
+	return _getNameByID(createRequest(cache, "SELECT "DBNAMETOID(RDB_authors)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1"), cacheID);
+}
+
 bool checkProjectStillExist(uint cacheID)
 {
 	if(cacheID == INVALID_VALUE)

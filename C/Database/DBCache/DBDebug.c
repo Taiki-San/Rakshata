@@ -32,7 +32,7 @@ sqlite3_stmt * createRequest(sqlite3 *db, const char *zSql)
 #ifdef EXTENSIVE_LOGGING
 	if(output != SQLITE_OK && ppStmt == NULL)
 	{
-		printf("Failed at creating request for %s (status: %d)", zSql, output);
+		printf("Failed at creating request for %s (status: %d)\nError: %s", zSql, output, sqlite3_errmsg(db));
 	}
 #endif
 
