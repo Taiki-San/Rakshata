@@ -48,6 +48,7 @@
 @interface APPLHighlightingView : NSView
 
 @property (assign, nonatomic, getter=isHighlighted) BOOL highlighted;
+@property NSDictionary * payload;
 
 @end
 
@@ -56,8 +57,8 @@
 	NSTextField *_parentTextField;
 	
 	NSArray<NSDictionary *> *_suggestions;
-	NSMutableArray *_viewControllers;
-	NSMutableArray *_trackingAreas;
+	NSArray *_views;
+	NSArray *_trackingAreas;
 	
 	id _localMouseDownEventMonitor;
 	id _lostFocusObserver;

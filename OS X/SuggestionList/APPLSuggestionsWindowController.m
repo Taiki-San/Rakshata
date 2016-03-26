@@ -268,21 +268,7 @@ enum
  */
 - (NSDictionary *) selectedSuggestion
 {
-	NSDictionary * suggestion = nil;
-	
-	// Find the currently selected view's controller (if there is one) and return the representedObject which is the NSMutableDictionary that was passed in via -setSuggestions:
-	APPLHighlightingView * selectedView = self.selectedView;
-
-	for (NSViewController * viewController in _viewControllers)
-	{
-		if (selectedView == viewController.view)
-		{
-			suggestion = [viewController representedObject];
-			break;
-		}
-	}
-	
-	return suggestion;
+	return self.selectedView.payload;
 }
 
 #pragma mark -
@@ -293,13 +279,12 @@ enum
 
 /* Properly creates a tracking area for an image view.
  */
-- (id)trackingAreaForView:(NSView *)view
+- (id) trackingAreaForView : (NSView *) view
 {
-	NSRect trackingRect = [[self.window contentView] convertRect:view.bounds fromView:view];
-	NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
-	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:trackingOptions owner:self userInfo:@{kTrackerKey : view}];
-	
-	return trackingArea;
+	return [[NSTrackingArea alloc] initWithRect:[self.window.contentView convertRect:view.bounds fromView:view]
+										options:NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp
+										  owner:self
+									   userInfo:@{kTrackerKey : view}];
 }
 
 - (void)layoutSuggestions
@@ -312,29 +297,23 @@ enum
 	
 	if (_trackingAreas)
 	{
-		for(NSView * view in [contentView.subviews copy])
+		for(NSView * view in _views)
 			[view removeFromSuperview];
 		
 		for (NSTrackingArea *trackingArea in _trackingAreas)
-		{
 			[contentView removeTrackingArea:trackingArea];
-		}
-		
-		[_trackingAreas removeAllObjects];
-		
 	}
 	else
 	{
 		_trackingAreas = [[NSMutableArray alloc] initWithCapacity:[_suggestions count]];
 	}
 	
-	/* Iterate througn each suggestion creating a view for each entry.
-	 */
-	
-	/* The width of each suggestion view should match the width of the window. The height is determined by the view's height set in IB.
-	 */
+	// Iterate througn each suggestion creating a view for each entry.
+
 	NSRect contentFrame = contentView.frame;
 	NSRect frame = NSMakeRect(0, 0, contentFrame.size.width, 44);
+	NSMutableArray * workingTrackingAreas = @[].mutableCopy, * workingViews = @[].mutableCopy;
+	
 	for (NSDictionary *entry in [_suggestions reverseObjectEnumerator])
 	{
 		if(entry != nil)
@@ -342,25 +321,31 @@ enum
 			APPLHighlightingView * mainView = [[APPLHighlightingView alloc] initWithFrame:frame];
 			if(mainView == nil)
 				continue;
+			else
+				mainView.payload = entry;
 			
 #warning "Create view"
-			NSTextField * text = [[NSTextField alloc] initWithFrame:frame];
+			NSString * string = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
+			RakText * text = [[RakText alloc] initWithText:string :[Prefs getSystemColor:COLOR_ACTIVE]];
 			if(text != nil)
 			{
-				text.stringValue = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
-				[text sizeToFit];
-				text.frameOrigin = NSMakePoint(5, contentFrame.size.height / 2 - text.bounds.size.height / 2);
+				text.frameOrigin = NSMakePoint(5, frame.size.height / 2 - text.bounds.size.height / 2);
 				[mainView addSubview:text];
 			}
 			
 			NSTrackingArea *trackingArea = [self trackingAreaForView:mainView];
 			[contentView addTrackingArea:trackingArea];
-			[_trackingAreas addObject:trackingArea];
+
+			[workingTrackingAreas addObject:trackingArea];
+			[workingViews addObject:mainView];
 			
 			[contentView addSubview:mainView];
 			frame.origin.y += frame.size.height;
 		}
 	}
+	
+	_trackingAreas = [workingTrackingAreas count] != 0 ? [NSArray arrayWithArray:workingTrackingAreas] : nil;
+	_views = [workingViews count] != 0 ? [NSArray arrayWithArray:workingViews] : nil;
 	
 	/* We have added all of the suggestion to the window. Now set the size of the window.
 	 */
@@ -407,40 +392,25 @@ enum
 // Move the selection up and send action.
 - (void) moveUp : (id) sender
 {
-	APPLHighlightingView * selectedView = self.selectedView, * previousView = nil;
-	for (NSViewController * viewController in _viewControllers)
-	{
-		APPLHighlightingView * view = (id) viewController.view;
-		
-		if (view == selectedView)
-			break;
+	NSUInteger index = [_views indexOfObject:self.selectedView];
+	if(index != NSNotFound)
+		index += 1;
+	else
+		index = 0;
 
-		previousView = view;
-	}
-	
-	if (previousView)
-	{
-		[self userSetSelectedView:previousView];
-	}
+	[self userSetSelectedView:[_views objectAtIndex:index]];
 }
 
 // Move the selection down and send action.
 - (void) moveDown : (id) sender
 {
-	APPLHighlightingView * selectedView = self.selectedView, * previousView = nil;
-	for (NSViewController * viewController in [_viewControllers reverseObjectEnumerator])
-	{
-		APPLHighlightingView *view = (id) viewController.view;
-		if (view == selectedView)
-			break;
-
-		previousView = view;
-	}
+	NSUInteger index = [_views indexOfObject:self.selectedView];
+	if(index != NSNotFound)
+		index -= 1;
+	else
+		index = [_views count] - 1;
 	
-	if (previousView)
-	{
-		[self userSetSelectedView:previousView];
-	}
+	[self userSetSelectedView:[_views objectAtIndex:index]];
 }
 @end
 
