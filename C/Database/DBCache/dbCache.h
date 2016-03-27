@@ -159,10 +159,6 @@ void migrateRemovedInstalledToLocal(PROJECT_DATA_PARSED oldProject, PROJECT_DATA
 #define RDB_FTS_REAL_CODE			2
 #define RDB_FTS_STRING				3
 
-#define RDB_FTS_CODE_NAME			4
-#define RDB_FTS_CODE_AUTHOR			2
-#define RDB_FTS_CODE_DESCRIPTION	0
-
 #define DBNAMETOID(s) "`"STRINGIZE(s)"`"
 
 #define MAIN_CACHE "thisWouldBeADumbName"

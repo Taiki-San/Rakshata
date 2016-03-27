@@ -324,6 +324,16 @@ enum
 			else
 				mainView.payload = entry;
 			
+			//Create a suggestion for an author
+			if([(NSNumber *) [entry objectForKey:kSuggestionType] unsignedCharValue] == RDB_FTS_CODE_AUTHOR)
+			{
+				
+			}
+			//Create a suggestion for a serie
+			else
+			{
+				
+			}
 #warning "Create view"
 			NSString * string = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
 			RakText * text = [[RakText alloc] initWithText:string :[Prefs getSystemColor:COLOR_ACTIVE]];
@@ -347,10 +357,7 @@ enum
 	_trackingAreas = [workingTrackingAreas count] != 0 ? [NSArray arrayWithArray:workingTrackingAreas] : nil;
 	_views = [workingViews count] != 0 ? [NSArray arrayWithArray:workingViews] : nil;
 	
-	/* We have added all of the suggestion to the window. Now set the size of the window.
-	 */
-	
-	// Don't forget to account for the extra room needed the rounded corners.
+	//We have added all of the suggestion to the window. Now set the size of the window.
 	contentFrame.size.height = frame.origin.y;
 	
 	NSRect winFrame = window.frame;
@@ -379,7 +386,7 @@ enum
 {
 	[_parentTextField validateEditing];
 	[_parentTextField abortEditing];
-	[_parentTextField sendAction:[_parentTextField action] to:[_parentTextField target]];
+	[_parentTextField sendAction:_parentTextField.action to:_parentTextField.target];
 	[self cancelSuggestions];
 }
 
@@ -394,7 +401,7 @@ enum
 {
 	NSUInteger index = [_views indexOfObject:self.selectedView];
 	if(index != NSNotFound)
-		index += 1;
+		index += index == [_views count] - 1 ? 0 : 1;
 	else
 		index = 0;
 
@@ -406,7 +413,7 @@ enum
 {
 	NSUInteger index = [_views indexOfObject:self.selectedView];
 	if(index != NSNotFound)
-		index -= 1;
+		index -= index == 0 ? 0 : 1;
 	else
 		index = [_views count] - 1;
 	

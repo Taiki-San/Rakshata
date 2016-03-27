@@ -72,6 +72,10 @@ enum RDB_CODES
 #define RDBS_TYPE_CAT		4
 #define RDBS_TYPE_UNUSED	5
 
+#define RDB_FTS_CODE_NAME			4
+#define RDB_FTS_CODE_AUTHOR			2
+#define RDB_FTS_CODE_DESCRIPTION	0
+
 //Image cache suffixes
 #define IMAGE_CACHE_DIR 		"imageCache"
 #define PROJ_IMG_SUFFIX_SRGRID	"GRID"		//Thumbnails in grid mode in SR
