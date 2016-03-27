@@ -318,14 +318,60 @@ enum
 	{
 		if(entry != nil)
 		{
-			APPLHighlightingView * mainView = [[APPLHighlightingView alloc] initWithFrame:frame];
-			if(mainView == nil)
-				continue;
-			else
-				mainView.payload = entry;
+			APPLHighlightingView * view = [self getViewForEntry:entry forWitdth:contentFrame.size.width];
+			if(view != nil)
+			{
+				view.frameOrigin = frame.origin;
+				
+				NSTrackingArea *trackingArea = [self trackingAreaForView:view];
+				[contentView addTrackingArea:trackingArea];
+				
+				[workingTrackingAreas addObject:trackingArea];
+				[workingViews addObject:view];
+				
+				[contentView addSubview:view];
+				frame.origin.y += frame.size.height;
+			}
+		}
+	}
+	
+	_trackingAreas = [workingTrackingAreas count] != 0 ? [NSArray arrayWithArray:workingTrackingAreas] : nil;
+	_views = [workingViews count] != 0 ? [NSArray arrayWithArray:workingViews] : nil;
+	
+	//We have added all of the suggestion to the window. Now set the size of the window.
+	contentFrame.size.height = frame.origin.y;
+	
+	NSRect winFrame = window.frame;
+	winFrame.origin.y = NSMaxY(winFrame) - frame.origin.y;
+	winFrame.size.height = frame.origin.y;
+	[window setFrame:winFrame display:YES];
+}
+
+- (APPLHighlightingView *) getViewForEntry : (NSDictionary *) entry forWitdth : (CGFloat) width
+{
+	__block APPLHighlightingView * output = nil;
+	
+	[_views enumerateObjectsUsingBlock:^(APPLHighlightingView * obj, NSUInteger idx, BOOL * stop)
+	{
+		if([obj.payload isEqualToDictionary:entry])
+		{
+			output = obj;
+			*stop = YES;
+		}
+	}];
+	
+	if(output == nil)
+	{
+		BOOL isAuthor = [(NSNumber *) [entry objectForKey:kSuggestionType] unsignedCharValue] == RDB_FTS_CODE_AUTHOR;
+		
+		NSRect frame = NSMakeRect(0, 0, width, 44);
+		output = [[APPLHighlightingView alloc] initWithFrame:frame];
+		if(output != nil)
+		{
+			output.payload = entry;
 			
 			//Create a suggestion for an author
-			if([(NSNumber *) [entry objectForKey:kSuggestionType] unsignedCharValue] == RDB_FTS_CODE_AUTHOR)
+			if(isAuthor)
 			{
 				
 			}
@@ -340,30 +386,12 @@ enum
 			if(text != nil)
 			{
 				text.frameOrigin = NSMakePoint(5, frame.size.height / 2 - text.bounds.size.height / 2);
-				[mainView addSubview:text];
+				[output addSubview:text];
 			}
-			
-			NSTrackingArea *trackingArea = [self trackingAreaForView:mainView];
-			[contentView addTrackingArea:trackingArea];
-
-			[workingTrackingAreas addObject:trackingArea];
-			[workingViews addObject:mainView];
-			
-			[contentView addSubview:mainView];
-			frame.origin.y += frame.size.height;
 		}
 	}
 	
-	_trackingAreas = [workingTrackingAreas count] != 0 ? [NSArray arrayWithArray:workingTrackingAreas] : nil;
-	_views = [workingViews count] != 0 ? [NSArray arrayWithArray:workingViews] : nil;
-	
-	//We have added all of the suggestion to the window. Now set the size of the window.
-	contentFrame.size.height = frame.origin.y;
-	
-	NSRect winFrame = window.frame;
-	winFrame.origin.y = NSMaxY(winFrame) - frame.origin.y;
-	winFrame.size.height = frame.origin.y;
-	[window setFrame:winFrame display:YES];
+	return output;
 }
 
 /* The mouse is now over one of our child image views. Update selection and send action.
