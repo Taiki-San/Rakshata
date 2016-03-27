@@ -311,7 +311,7 @@ enum
 	// Iterate througn each suggestion creating a view for each entry.
 
 	NSRect contentFrame = contentView.frame;
-	NSRect frame = NSMakeRect(0, 0, contentFrame.size.width, 44);
+	NSPoint movingOrigin = NSZeroPoint;
 	NSMutableArray * workingTrackingAreas = @[].mutableCopy, * workingViews = @[].mutableCopy;
 	
 	for (NSDictionary *entry in [_suggestions reverseObjectEnumerator])
@@ -321,7 +321,7 @@ enum
 			APPLHighlightingView * view = [self getViewForEntry:entry forWitdth:contentFrame.size.width];
 			if(view != nil)
 			{
-				view.frameOrigin = frame.origin;
+				view.frameOrigin = movingOrigin;
 				
 				NSTrackingArea *trackingArea = [self trackingAreaForView:view];
 				[contentView addTrackingArea:trackingArea];
@@ -330,7 +330,7 @@ enum
 				[workingViews addObject:view];
 				
 				[contentView addSubview:view];
-				frame.origin.y += frame.size.height;
+				movingOrigin.y += view.bounds.size.height;
 			}
 		}
 	}
@@ -339,11 +339,11 @@ enum
 	_views = [workingViews count] != 0 ? [NSArray arrayWithArray:workingViews] : nil;
 	
 	//We have added all of the suggestion to the window. Now set the size of the window.
-	contentFrame.size.height = frame.origin.y;
+	contentFrame.size.height = movingOrigin.y;
 	
 	NSRect winFrame = window.frame;
-	winFrame.origin.y = NSMaxY(winFrame) - frame.origin.y;
-	winFrame.size.height = frame.origin.y;
+	winFrame.origin.y = NSMaxY(winFrame) - movingOrigin.y;
+	winFrame.size.height = movingOrigin.y;
 	[window setFrame:winFrame display:YES];
 }
 
