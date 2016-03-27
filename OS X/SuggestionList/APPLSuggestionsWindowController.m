@@ -400,8 +400,8 @@ enum
 - (void) moveUp : (id) sender
 {
 	NSUInteger index = [_views indexOfObject:self.selectedView];
-	if(index != NSNotFound)
-		index += index == [_views count] - 1 ? 0 : 1;
+	if(index != NSNotFound && index != [_views count] - 1)
+		index += 1;
 	else
 		index = 0;
 
@@ -412,8 +412,8 @@ enum
 - (void) moveDown : (id) sender
 {
 	NSUInteger index = [_views indexOfObject:self.selectedView];
-	if(index != NSNotFound)
-		index -= index == 0 ? 0 : 1;
+	if(index != NSNotFound && index != 0)
+		index -= 1;
 	else
 		index = [_views count] - 1;
 	
