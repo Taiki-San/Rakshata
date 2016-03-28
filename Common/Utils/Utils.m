@@ -276,7 +276,15 @@ NSNumber * getNumberForString(NSString * string)
 	NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
 	formatter.numberStyle = NSNumberFormatterDecimalStyle;
 
-	return [formatter numberFromString:string];
+	NSNumber * number = [formatter numberFromString:string];
+	if(number == nil)
+	{
+		number = [formatter numberFromString:[string stringByReplacingOccurrencesOfString:@"," withString:@"."]];
+		if(number == nil)
+			number = [formatter numberFromString:[string stringByReplacingOccurrencesOfString:@"." withString:@","]];
+	}
+	
+	return number;
 }
 
 NSString * getStringForPrice(uint price)

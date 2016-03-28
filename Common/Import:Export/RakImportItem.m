@@ -256,7 +256,7 @@
 	BOOL validInput = NO;
 	uint checkedContentID = INVALID_VALUE;
 	
-	rawContentID = @([rawContentID intValue] * 10);
+	rawContentID = @([rawContentID doubleValue] * 10);
 	
 	//Valid name and reading ID
 	if(isTome)

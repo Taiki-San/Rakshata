@@ -16,6 +16,22 @@
 
 @implementation RakCTFormatter
 
+- (NSString *)stringForObjectValue:(id)anObject
+{
+	if (![anObject isKindOfClass:[NSString class]] && ![anObject isKindOfClass:[NSNumber class]])
+		return nil;
+
+	if([anObject isKindOfClass:[NSNumber class]])
+		return [NSString stringWithFormat:@"%.20g", [anObject doubleValue]];
+
+	return anObject;
+}
+
+- (BOOL) getObjectValue:(out id _Nullable *)anObject forString:(NSString *)string errorDescription:(out NSString * _Nullable *)error
+{
+	return (*anObject = string) != nil;
+}
+
 + (BOOL) isStringValid : (NSString *) string
 {
 	if([string length] == 0)
