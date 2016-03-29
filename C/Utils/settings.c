@@ -60,8 +60,8 @@ void addToPref(char* flag, char *stringToAdd)
 	{
 		length = strlen(stringToAdd);
 		
-		char * tmpString = malloc(length + 2 * lengthSetFlag + 1);
-		if(tmpString == NULL || length > UINT_MAX - (2 * lengthSetFlag + 1))
+		char * tmpString = malloc(length + 2 * lengthSetFlag + 2);
+		if(tmpString == NULL || length > UINT_MAX - (2 * lengthSetFlag + 2))
 			return free(tmpString);
 		
 		strncpy(tmpString, setFlag, lengthSetFlag);
@@ -69,7 +69,7 @@ void addToPref(char* flag, char *stringToAdd)
 		
 		char finishFlag[10];
 		snprintf(finishFlag, sizeof(finishFlag), "\n</%s>", flag);
-		strncpy(&tmpString[lengthSetFlag + length], finishFlag, lengthSetFlag);
+		strncpy(&tmpString[lengthSetFlag + length], finishFlag, lengthSetFlag + 1);
 		
 		needFree = true;
 		stringToAdd = tmpString;

@@ -44,7 +44,7 @@
 	
 	for(NSArray * entry in data)
 	{
-		XCTAssert([RakCTFormatter isStringValid:[entry firstObject]] == [[entry lastObject] boolValue], @"Failed the validation test: was expecting %s for string %@", [[entry lastObject] boolValue] ? "rejection" : "validation", [entry firstObject]);
+		XCTAssert([RakCTFormatter isStringValid:[entry firstObject]] == [[entry lastObject] boolValue], @"Failed the validation test: was expecting %s for string %@", [[entry lastObject] boolValue] ? "validation" : "rejection", [entry firstObject]);
 	}
 }
 
