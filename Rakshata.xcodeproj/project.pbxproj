@@ -91,6 +91,7 @@
 		B62989201AA5E4A30072B5D5 /* RakPrefsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B629891F1AA5E4A30072B5D5 /* RakPrefsWindow.m */; };
 		B62A88521C156BB40082BA3B /* RakSuggestionEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */; };
 		B62B45011A8FAAEA0096FA45 /* RakCTSerieHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */; };
+		B62C14851CAB1C5A0043F8D0 /* RakFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B62C14841CAB1C5A0043F8D0 /* RakFormatterTest.m */; };
 		B62C39621C63442B0068D0A1 /* Import.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62C39601C63442B0068D0A1 /* Import.xib */; };
 		B62DBB8A1A118AEF007EBAC6 /* RakDRM.m in Sources */ = {isa = PBXBuildFile; fileRef = B62DBB891A118AEF007EBAC6 /* RakDRM.m */; };
 		B62E6E8118F8834C006A0D5F /* RakSerieList.m in Sources */ = {isa = PBXBuildFile; fileRef = B62E6E8018F8834C006A0D5F /* RakSerieList.m */; };
@@ -627,6 +628,7 @@
 		B62A88511C156BB40082BA3B /* RakSuggestionEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSuggestionEngine.m; path = Utils/RakSuggestionEngine.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62B44FF1A8FAAEA0096FA45 /* RakCTSerieHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTSerieHeader.h; path = CTSelec/RakCTSerieHeader.h; sourceTree = "<group>"; };
 		B62B45001A8FAAEA0096FA45 /* RakCTSerieHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTSerieHeader.m; path = CTSelec/RakCTSerieHeader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B62C14841CAB1C5A0043F8D0 /* RakFormatterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakFormatterTest.m; sourceTree = "<group>"; };
 		B62C39611C63442B0068D0A1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = iOS/Base.lproj/Import.xib; sourceTree = SOURCE_ROOT; };
 		B62DBB891A118AEF007EBAC6 /* RakDRM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakDRM.m; path = Reader/RakDRM.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B62E6E7F18F8834C006A0D5F /* RakSerieList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSerieList.h; path = "Séries/RakSerieList.h"; sourceTree = "<group>"; };
@@ -1291,6 +1293,7 @@
 		B6291ECE1C89779E0079E6BE /* RakshataCoreTests */ = {
 			isa = PBXGroup;
 			children = (
+				B62C14841CAB1C5A0043F8D0 /* RakFormatterTest.m */,
 				B6291ECF1C89779E0079E6BE /* RakshataCoreTests.m */,
 				B6291ED11C89779E0079E6BE /* Info.plist */,
 			);
@@ -2875,6 +2878,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6291ED01C89779E0079E6BE /* RakshataCoreTests.m in Sources */,
+				B62C14851CAB1C5A0043F8D0 /* RakFormatterTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

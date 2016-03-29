@@ -22,7 +22,7 @@
 		return nil;
 
 	if([anObject isKindOfClass:[NSNumber class]])
-		return [NSString stringWithFormat:@"%.20g", [anObject doubleValue]];
+		return [NSString stringWithFormat:@"%.5g", [anObject doubleValue]];
 
 	return anObject;
 }
@@ -36,6 +36,15 @@
 {
 	if([string length] == 0)
 		return YES;
+	
+	if([string characterAtIndex:0] == '-')
+	{
+		if([string length] == 1)
+			return YES;
+		
+		//Trim the first -
+		string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+	}
 	
 	NSString *expression = @"^([0-9]+)?([,.]([0-9])?)?$";
 	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:expression
