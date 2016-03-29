@@ -3313,6 +3313,12 @@
 				);
 				INFOPLIST_FILE = RakshataCoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Ressources",
+					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					/usr/local/Cellar/icu4c/56.1/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.RakshataCoreTests;
@@ -3348,6 +3354,12 @@
 				);
 				INFOPLIST_FILE = RakshataCoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Ressources",
+					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					/usr/local/Cellar/icu4c/56.1/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.RakshataCoreTests;
