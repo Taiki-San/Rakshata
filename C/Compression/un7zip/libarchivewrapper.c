@@ -67,8 +67,7 @@ bool openLibArchiveFromFile(ARCHIVE * archive, const char * path)
 	//Open the actual file
 	if(archive_read_open_FILE(archive->archive, archive->fileHandle) != ARCHIVE_OK)
 	{
-		logR("Couldn't open the archive!");
-		logR(archive_error_string(archive->archive));
+		logR("Couldn't open the archive! Error message: %s", archive_error_string(archive->archive));
 		archive->utils.close_archive(archive);
 		fclose(archive->fileHandle);
 		return false;
@@ -121,8 +120,7 @@ void libArchiveJumpBackAtBegining(ARCHIVE * archive)
 	
 	if(archive_read_open_FILE(archive->archive, archive->fileHandle) != ARCHIVE_OK)
 	{
-		logR("Couldn't rewind the archive!");
-		logR(archive_error_string(archive->archive));
+		logR("Couldn't rewind the archive! Error message: %s", archive_error_string(archive->archive));
 		archive->archive = NULL;
 	}
 	else

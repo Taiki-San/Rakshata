@@ -14,23 +14,27 @@
  **                                                                                         **
  *********************************************************************************************/
 
-void logR(const char *error)
+void logR(const char *error, ...)
 {
+	va_list args;
+	va_start(args, error);
+	
 #ifdef __APPLE__
-	sendToLog(error);
+	sendToLog(error, args);
 #else
     FILE* logFile = fopen("log", "a+");
     if(logFile != NULL)
     {
-        if(error != NULL)
+        if(error != NULL && error[0] != '0')
         {
-            fputs(error, logFile);
-            if(error[strlen(error)-1] != '\n')
-                fputc('\n', logFile);
+			vfprintf(logFile, error, args);
+			fputc('\n', logFile);
         }
         fclose(logFile);
     }
 #endif
+	
+	va_end(args);
 }
 
 int libcurlErrorCode(CURLcode code)
@@ -109,17 +113,16 @@ int libcurlErrorCode(CURLcode code)
     }
     if(!noLog)
         logR(log_message);
+	
     return ret_value;
 }
 
 void memoryError(size_t size)
 {
-    char temp[0x100];
 #ifndef __APPLE__
-    snprintf(temp, 0x100, "Failed at allocate memory for : %d bytes\n", size);
+    logR("Failed at allocate memory for : %d bytes\n", size);
 #else
-    snprintf(temp, 0x100, "Failed at allocate memory for : %ld bytes\n", size);
+    logR("Failed at allocate memory for : %ld bytes\n", size);
 #endif
-    logR(temp);
 }
 

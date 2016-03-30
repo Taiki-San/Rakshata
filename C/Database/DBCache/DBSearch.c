@@ -207,7 +207,7 @@ fail:
 		output = NULL;
 		
 #ifdef EXTENSIVE_LOGGING
-		logR(sqlite3_errmsg(_cache));
+		logR("Failed while building the request table for searching: %s", sqlite3_errmsg(_cache));
 #endif
 	}
 	
@@ -1244,7 +1244,14 @@ uint getNbSeriesForAuthorOfID(uint cacheDBID)
 	uint output;
 	
 	if(sqlite3_step(request) == SQLITE_ROW)
+	{
 		output = (uint) sqlite3_column_int64(request, 0);
+		
+		if(output == 0)
+		{
+			logR("Uhm? Tried to count the number of series for author but results don't make sense");
+		}
+	}
 	else
 		output = 1;
 	

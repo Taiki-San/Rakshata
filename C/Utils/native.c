@@ -116,11 +116,7 @@ void removeFolder(const char *path)
 {
 #ifdef EXTENSIVE_LOGGING
 	if(!depth)
-	{
-		char temp[100 + strlen(path)];
-		snprintf(temp, sizeof(temp), "Will remove %s/*\n", path);
-		logR(temp);
-	}
+		logR("Will remove %s/*", path);
 #endif
 	
     DIR *directory;           /* pointeur de répertoire */
@@ -200,8 +196,8 @@ char ** listDir(const char * dirName, uint * nbElements)
 			//Overflow or allocation error
 			if(baseLength < currentLength || (tmp = realloc(output, (baseLength * sizeof(char *)))) == NULL)
 			{
-				logR("Too many files in dir");
-				logR(dirName);
+				logR("Too many files in dir %s", dirName);
+
 				while(currentLength-- > 0)
 					free(output[currentLength]);
 
@@ -260,8 +256,7 @@ char ** listDir(const char * dirName, uint * nbElements)
 					{
 						if(tmp != NULL)
 						{
-							logR("Too many files in dir");
-							logR(dirName);
+							logR("Too many files in dir %s", dirName);
 						}
 
 						while(currentLength-- > 0)

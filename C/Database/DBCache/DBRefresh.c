@@ -48,8 +48,7 @@ int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo)
 	
 	else
 	{
-		snprintf(temp, 500, "Failed at understand what is the repo: %d", repo.type);
-		logR(temp);
+		logR("Failed at understand what is the repo: %d", repo.type);
 		return -1;
 	}
 	
@@ -148,9 +147,7 @@ int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo)
 
         else
         {
-            char temp[LENGTH_PROJECT_NAME + 100];
-            snprintf(temp, sizeof(temp), "Failed at read mode (project database): %d", repo->type);
-            logR(temp);
+            logR("Failed at read mode (project database): %d", repo->type);
             return -1;
         }
 		
@@ -327,9 +324,7 @@ void updateProjects()
 							if(posRepo == realNumberOfRepo)
 							{
 #ifdef EXTENSIVE_LOGGING
-								char temp[100+LONGUEUR_URL];
-								snprintf(temp, sizeof(temp), "Repo deleted during refresh? %d - %d", oldData[posBase].project.repo->parentRepoID, oldData[posBase].project.repo->repoID);
-								logR(temp);
+								logR("Repo deleted during refresh? %d - %d", oldData[posBase].project.repo->parentRepoID, oldData[posBase].project.repo->repoID);
 #endif
 								posBase = posEnd;								
 								continue;

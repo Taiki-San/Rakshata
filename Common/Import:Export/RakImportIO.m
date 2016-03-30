@@ -149,8 +149,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 			if(!node.isValid)
 			{
 #ifdef EXTENSIVE_LOGGING
-				logR("Invalid node");
-				NSLog(@"%@", node);
+				NSLog(@"Invalid node %@", node);
 #endif
 				continue;
 			}

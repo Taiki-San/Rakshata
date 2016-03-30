@@ -34,10 +34,10 @@ char *loadPrefFile()
 
     if(output[0] != '<')
     {
-        logR("Incorrect settings decryption");
-
 #ifdef EXTENSIVE_LOGGING
-		logR(output);
+		logR("Incorrect settings decryption: %s", output);
+#else
+		logR("Incorrect settings decryption");
 #endif
 		
         free(output);

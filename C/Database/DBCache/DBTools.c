@@ -43,7 +43,7 @@ bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version,
 			else if(!strcmp(data, "internal_error"))
 				logR("An error occured on our server, please try again later");
 			else
-				logR("An error occured when parsing a root repo");
+				logR("An error occured when parsing a root repo! (%s)", data);
 		}
 		else
 			logR("Unsupported repo, an update is probably required");

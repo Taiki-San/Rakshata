@@ -250,14 +250,11 @@ void initializeTags(void * mainCache)
 #ifdef EXTENSIVE_LOGGING
 					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 1);
-					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];
 					
 					if(text == NULL)
-						snprintf(logMessage, sizeof(logMessage), "Error building the tag DB for ID %d: no text!", ID);
+						logR("Error building the tag DB for ID %d: no text!", ID);
 					else
-						snprintf(logMessage, sizeof(logMessage), "Error building the tag DB for ID %d of text %s!", ID, text);
-					
-					logR(logMessage);
+						logR("Error building the tag DB for ID %d of text %s!", ID, text);
 #endif
 				}
 				sqlite3_reset(requestWrite);
@@ -291,14 +288,11 @@ void initializeTags(void * mainCache)
 #ifdef EXTENSIVE_LOGGING
 					uint ID = (uint32_t) sqlite3_column_int(requestRead, 0);
 					const unsigned char * text = sqlite3_column_text(requestRead, 2);
-					char logMessage[100 + (text != NULL ? ustrlen(text) : 0)];
 					
 					if(text == NULL)
-						snprintf(logMessage, sizeof(logMessage), "Error building the category DB for ID %d: no text!", ID);
+						logR("Error building the category DB for ID %d: no text!", ID);
 					else
-						snprintf(logMessage, sizeof(logMessage), "Error building the category DB for ID %d of text %s!", ID, text);
-					
-					logR(logMessage);
+						logR("Error building the category DB for ID %d of text %s!", ID, text);
 #endif
 				}
 				sqlite3_reset(requestWrite);

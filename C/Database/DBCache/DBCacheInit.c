@@ -72,7 +72,7 @@ uint setupBDDCache()
 	//On détruit le cache
 	if(sqlite3_open(":memory:", &internalDB) != SQLITE_OK)
 	{
-		logR("Couldn't setup cache DB\n");
+		logR("Couldn't setup cache DB");
 		MUTEX_UNLOCK(cacheMutex);
 		return 0;
 	}

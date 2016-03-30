@@ -347,9 +347,9 @@ void deleteCrashFile()
 	}
 }
 
-void sendToLog(const char * string)
+void sendToLog(const char * string, va_list args)
 {
-	NSLog(@"%s", string);
+	NSLogv([NSString stringWithUTF8String:string], args);
 }
 
 #ifdef VERBOSE_DB_MANAGEMENT
@@ -364,7 +364,7 @@ void alertExit(const char * exitReason)
 	if(![NSThread isMainThread])
 		return dispatch_sync(dispatch_get_main_queue(), ^{	alertExit(exitReason);	});
 	
-	sendToLog(exitReason);
+	logR(exitReason);
 	
 #if TARGET_OS_IPHONE
 	UIAlertController * alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"MAJOR-FAILURE-TITLE", nil)

@@ -51,7 +51,7 @@ uint getActiveProjectForTab(uint32_t tabID);
 
 void createCrashFile();
 void deleteCrashFile();
-void sendToLog(const char * string);
+void sendToLog(const char * string, va_list args);
 void alertExit(const char * exitReason);
 
 /*****************************************

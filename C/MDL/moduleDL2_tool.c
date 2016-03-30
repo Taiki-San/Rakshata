@@ -60,17 +60,14 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     }
 
     else
-    {
-        char errorMessage[400];
-        snprintf(errorMessage, 400, "URL non gérée: %d\n", data.datas->repo->type);
-        logR(errorMessage);
-    }
-    return output;
+        logR("Repo URL isn't compatible with this version of Rakshata: %d\n", data.datas->repo->type);
+
+	return output;
 }
 
 char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
 {
-    char *output = NULL;
+    char *output;
     if(repoData.type == TYPE_DEPOT_DB)
     {
         *length = 60 + 15 + strlen(repoData.URL) + LENGTH_PROJECT_NAME + LONGUEUR_COURT; //Core URL + numbers + elements
@@ -86,6 +83,8 @@ char* internalCraftBaseURL(REPO_DATA repoData, uint* length)
         if(output != NULL)
             snprintf(output, *length, "http://%s", repoData.URL);
     }
+	else
+		output = NULL;
 
     return output;
 }
@@ -438,10 +437,7 @@ void MDL_createSharedFile(PROJECT_DATA data, uint chapitreID, uint tomeID, bool 
 	}
 #ifdef EXTENSIVE_LOGGING
 	else
-	{
-		logR("Couldn't open the shared file");
-		logR(pathToSharedFile);
-	}
+		logR("Couldn't open the shared file %s", pathToSharedFile);
 #endif
 }
 

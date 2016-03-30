@@ -49,7 +49,7 @@ void checkHostNonModifie()
 				if(i >= 15)
 				{
 					fclose(host);
-					logR("Someone doesn't want us to talk to our mothership :(\n");
+					logR("Someone doesn't want us to talk to our mothership :(");
 
 					NETWORK_ACCESS = CONNEXION_DOWN; //Blocage des fonctionnalités réseau
 					break; //On quitte la boucle en while

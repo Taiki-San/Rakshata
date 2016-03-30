@@ -200,7 +200,7 @@ static void downloadChapterCore(DL_DATA *data)
 
 #ifdef EXTENSIVE_LOGGING
 			if(data->errorCode != CODE_RETOUR_DL_CLOSE)
-				logR(data->outputContainer->URL);
+				logR("An error occured during the download of %s", data->outputContainer->URL);
 #endif
 		}
 	}

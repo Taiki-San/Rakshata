@@ -69,9 +69,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
         createPath(outputPath);
         if(!checkDirExist(outputPath))
         {
-            char temp[lengthOutput + 100];
-            snprintf(temp, sizeof(temp), "Error creating path %s", outputPath);
-            logR(temp);
+            logR("Error creating path %s", outputPath);
             goto quit;
         }
     }
@@ -158,7 +156,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nbFichierDansConfigFile, NULL)) == NULL || (nbFichierDansConfigFile != nbFichierValide && nbFichierDansConfigFile != nbFichierValide-1))
 			{
 #ifdef EXTENSIVE_LOGGING
-				logR("config.dat invalid: encryption aborted.\n");
+				logR("config.dat invalid: encryption aborted");
 #endif
 
 				removeFolder(outputPath);
@@ -214,7 +212,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			if(hugeBuffer == NULL)
 			{
 #ifdef EXTENSIVE_LOGGING
-				logR("Failed at allocate memory to buffer\n");
+				logR("Failed at allocate memory to buffer");
 #endif
 				memoryError((SHA256_DIGEST_LENGTH + 1) * nbFichierValide + 15 + CRYPTO_BUFFER_SIZE);
 				removeFolder(outputPath);

@@ -220,9 +220,10 @@ bool archiveLocateFile(ARCHIVE * archive, const char * filename)
 		}
 		else
 		{
-			logR("Error while reading the file");
 			if(archive->utils.get_error_string != NULL)
-				logR(archive->utils.get_error_string(archive));
+				logR("Error while reading the file %s", archive->utils.get_error_string(archive));
+			else
+				logR("Error while reading a file!");
 			break;
 		}
 		
@@ -266,13 +267,7 @@ bool archiveExtractOnefile(ARCHIVE * archive, const char* filename, const char* 
 		else
 		{
 			if(size < 0 && archive->utils.get_error_string != NULL)
-			{
-				const char * errorString = archive->utils.get_error_string(archive);
-				char logMessage[100 + strlen(filename) + strlen(errorString)];
-				
-				snprintf(logMessage, sizeof(logMessage), "libarchive failure, couldn't decompress file %s because of code %lld: %s", filename, size, errorString);
-				logR(logMessage);
-			}
+				logR("libarchive failure, couldn't decompress file %s because of code %lld: %s", filename, size, archive->utils.get_error_string(archive));
 			
 			break;
 		}

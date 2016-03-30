@@ -298,7 +298,7 @@ byte checkLogin(const char *adresseEmail)
 	}
 
 #ifdef EXTENSIVE_LOGGING
-    logR(output);
+    logR("Login failed (unexpected!) with the following response: %s", output);
 #endif
 	free(output);
 
@@ -372,7 +372,7 @@ byte createSecurePasswordDB(unsigned char *key_sent)
 	if(date[0] == 0)
 	{
 #ifdef EXTENSIVE_LOGGING
-        logR("Couldn't get date of file\n");
+        logR("Couldn't get date of file");
 #endif
         return GMK_RETVAL_INTERNALERROR;
     }
@@ -533,20 +533,14 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 				else
 				{
 					if(buffer_dl != NULL)
-					{
-						char temp[1024];
-						snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s", buffer_dl);
-						logR(temp);
-					}
+						logR("Failed at send password to server, unexpected output: %s", buffer_dl);
 					else
 						logR("Failed at send password to server, no output");
 				}
 			}
 			else
 			{
-				char temp[1024];
-				snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
-				logR(temp);
+				logR("Failed at send password to server, unexpected output: %s", buffer_dl);
 			}
 		}
 		else if(length >= strlen("old_key_found") && !strcmp(buffer_dl, "old_key_found"))
@@ -561,10 +555,7 @@ bool createNewMK(char *password, unsigned char key[SHA256_DIGEST_LENGTH])
 		else if(COMPTE_PRINCIPAL_MAIL != NULL)
 		{
 #ifdef EXTENSIVE_LOGGING
-			char temp[1024];
-			snprintf(temp, sizeof(temp), "Failed at send password to server, unexpected output: %s\n", buffer_dl);
-			logR(temp);
-			logR(randomKeyHex);
+			logR("Failed at send password to server, unexpected output: %s (had key %s)", buffer_dl, randomKeyHex);
 #endif
 		}
 	}

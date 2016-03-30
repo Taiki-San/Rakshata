@@ -319,7 +319,7 @@ bool MDLTelechargement(DATA_MOD_DL* input, uint currentPos, uint nbElem)
             {
                 /*Output du RSP, à gérer*/
 #ifdef EXTENSIVE_LOGGING
-                logR(firstTwentyBytesOfArchive);
+                logR("Begins with %s", firstTwentyBytesOfArchive);
 #endif
                 if(dataDL.buf != NULL)
                 {
@@ -449,8 +449,7 @@ bool MDLInstallation(void *buf, size_t sizeBuf, PROJECT_DATA *projectDB, uint ch
 
 		if(!subFolder && !wentFine)
 		{
-			snprintf(temp, 500, "Archive Corrompue: %ls - %d - %d\n", projectDB->repo->name, projectDB->projectID, chapitre);
-			logR(temp);
+			logR("Archive Corrompue: %ls - %d - %d", projectDB->repo->name, projectDB->projectID, chapitre);
 			removeFolder(basePath);
 		}
     }
