@@ -241,6 +241,9 @@ enum
 		[[suggestionWindow parentWindow] removeChildWindow:suggestionWindow];
 		[suggestionWindow orderOut:nil];
 		
+		[self resetLayout];
+		_views = _trackingAreas = nil;
+		
 		// Disconnect the accessibility parent/child relationship
 		[(SuggestionsWindow *)suggestionWindow setParentElement:nil];
 	}
@@ -291,26 +294,26 @@ enum
 									   userInfo:@{kTrackerKey : view}];
 }
 
+- (void) resetLayout
+{
+	for(NSView * view in _views)
+		[view removeFromSuperview];
+	
+	NSView * contentView = self.window.contentView;
+	for (NSTrackingArea *trackingArea in _trackingAreas)
+		[contentView removeTrackingArea:trackingArea];
+}
+
 - (void)layoutSuggestions
 {
 	NSWindow *window = self.window;
-	NSView *contentView = [window contentView];
+	NSView *contentView = window.contentView;
 	
 	// Remove any existing suggestion view and associated tracking area and set the selection to nil
 	self.selectedView = nil;
 	
 	if (_trackingAreas)
-	{
-		for(NSView * view in _views)
-			[view removeFromSuperview];
-		
-		for (NSTrackingArea *trackingArea in _trackingAreas)
-			[contentView removeTrackingArea:trackingArea];
-	}
-	else
-	{
-		_trackingAreas = [[NSMutableArray alloc] initWithCapacity:[_suggestions count]];
-	}
+		[self resetLayout];
 	
 	// Iterate througn each suggestion creating a view for each entry.
 
