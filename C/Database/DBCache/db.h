@@ -224,6 +224,7 @@ uint _getFromSearch(void * _table, byte type, void * data);
 
 uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool wantInstalledOnly, bool wantFreeOnly, bool wantFavsOnly);
 SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, bool projectNameOnly);
+uint getNbSeriesForAuthorOfID(uint cacheDBID);
 bool haveOneOrLessMatchForNameWith(const char * partial);
 
 /**DBRecent.c**/

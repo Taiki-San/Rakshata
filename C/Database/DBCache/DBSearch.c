@@ -1232,6 +1232,27 @@ SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, b
 	return output;
 }
 
+uint getNbSeriesForAuthorOfID(uint cacheDBID)
+{
+	sqlite3_stmt * request = createRequest(cache, "SELECT COUNT() FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_AUTHOR)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH (SELECT "DBNAMETOID(RDB_FTS_STRING)" FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_AUTHOR)" AND "DBNAMETOID(RDB_FTS_CACHEID)" = ?1);");
+	
+	if(request == NULL)
+		return 1;
+	
+	sqlite3_bind_int(request, 1, (int) cacheDBID);
+	
+	uint output;
+	
+	if(sqlite3_step(request) == SQLITE_ROW)
+		output = (uint) sqlite3_column_int64(request, 0);
+	else
+		output = 1;
+	
+	destroyRequest(request);
+	
+	return output;
+}
+
 bool haveOneOrLessMatchForNameWith(const char * partial)
 {
 	bool oneOrLess = false;
