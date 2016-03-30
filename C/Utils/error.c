@@ -120,9 +120,9 @@ int libcurlErrorCode(CURLcode code)
 void memoryError(size_t size)
 {
 #ifndef __APPLE__
-    logR("Failed at allocate memory for : %d bytes\n", size);
+    logR("Failed at allocate memory for : %d bytes", size);
 #else
-    logR("Failed at allocate memory for : %ld bytes\n", size);
+    logR("Failed at allocate memory for : %ld bytes", size);
 #endif
 }
 

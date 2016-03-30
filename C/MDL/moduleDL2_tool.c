@@ -60,7 +60,7 @@ char* MDL_craftDownloadURL(PROXY_DATA_LOADED data)
     }
 
     else
-        logR("Repo URL isn't compatible with this version of Rakshata: %d\n", data.datas->repo->type);
+        logR("Repo URL isn't compatible with this version of Rakshata: %d", data.datas->repo->type);
 
 	return output;
 }
