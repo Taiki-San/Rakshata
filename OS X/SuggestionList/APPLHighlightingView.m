@@ -45,7 +45,23 @@
  
  */
 
+enum
+{
+	BORDER_OFFSET = 20
+};
+
 @implementation APPLHighlightingView
+
+- (instancetype) initWithFrame:(NSRect)frameRect
+{
+	self = [super initWithFrame:frameRect];
+	if(self != nil)
+	{
+		underlineColor = [Prefs getSystemColor:COLOR_SEARCHSUG_SEPARATOR];
+	}
+	
+	return self;
+}
 
 // Draw with or without a highlight style
 - (void)drawRect:(NSRect)dirtyRect
@@ -55,7 +71,16 @@
 	else
 		[[NSColor clearColor] set];
 	
+	if(dirtyRect.origin.y == 0)
+	{
+		dirtyRect.origin.y += 1;
+		dirtyRect.size.height -= 1;
+	}
+
 	NSRectFillUsingOperation(dirtyRect, NSCompositeSourceOver);
+	
+	[underlineColor set];
+	NSRectFill(NSMakeRect(BORDER_OFFSET, 0, dirtyRect.size.width - 2 * BORDER_OFFSET, 1));
 }
 
 /* Custom highlighted property setter because when the property changes we need to redraw and update the containing text fields.

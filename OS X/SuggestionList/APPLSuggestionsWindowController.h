@@ -46,6 +46,9 @@
  */
 
 @interface APPLHighlightingView : NSView
+{
+	NSColor * underlineColor;
+}
 
 @property (assign, nonatomic, getter=isHighlighted) BOOL highlighted;
 @property NSDictionary * payload;

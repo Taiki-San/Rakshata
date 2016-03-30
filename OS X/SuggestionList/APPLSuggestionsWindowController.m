@@ -315,7 +315,7 @@ enum
 	// Iterate througn each suggestion creating a view for each entry.
 
 	NSRect contentFrame = contentView.frame;
-	NSPoint movingOrigin = NSZeroPoint;
+	NSPoint movingOrigin = NSMakePoint(0, -1);
 	NSMutableArray * workingTrackingAreas = @[].mutableCopy, * workingViews = @[].mutableCopy;
 	
 	for (NSDictionary *entry in [_suggestions reverseObjectEnumerator])
