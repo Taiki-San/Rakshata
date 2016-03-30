@@ -115,6 +115,9 @@
 "PROJ-SEARCH-TAGS" = "Tags";
 "PROJ-SEARCH-TYPE" = "Categories";
 
+"PROJ-SEARCH-AUTHOR-PROJECT" = "Author of one series";
+"PROJ-SEARCH-AUTHOR-%d-PROJECTS" = "Author of %1$d series";
+
 "PROJ-EXPAND-FILTER-AREA" = "Display the advanced search tools";
 "PROJ-CLOSE-FILTER-ARRAY" = "Close ▲";
 "PROJ-FILTER-FREE-ONLY" = "Free only";

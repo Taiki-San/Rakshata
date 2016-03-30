@@ -51,7 +51,11 @@
 
 enum
 {
-	OFFSET = 22
+	OFFSET = 22,
+	HEIGHT = 44,
+	INTERLINE = 3,
+	BORDER = 5,
+	IMAGE_WITDH = 34
 };
 
 @interface SuggestionsWindow : NSWindow
@@ -363,8 +367,9 @@ enum
 	if(output == nil)
 	{
 		BOOL isAuthor = [(NSNumber *) [entry objectForKey:kSuggestionType] unsignedCharValue] == RDB_FTS_CODE_AUTHOR;
-		
-		NSRect frame = NSMakeRect(0, 0, width, 44);
+
+		CGFloat baseY = BORDER + 1;
+		NSRect frame = NSMakeRect(0, 0, width, HEIGHT);
 		output = [[APPLHighlightingView alloc] initWithFrame:frame];
 		if(output != nil)
 		{
@@ -373,20 +378,62 @@ enum
 			//Create a suggestion for an author
 			if(isAuthor)
 			{
+				//First, create the views so we can have a real idea of the height of the view
+				RakText * author = [[RakText alloc] initWithText:[entry objectForKey:kSuggestionString] :[Prefs getSystemColor:COLOR_ACTIVE]];
+				if(author != nil)
+				{
+					author.enableWraps = YES;
+					author.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
+				}
 				
+				uint nbSeries = getNbSeriesForAuthorOfID([[entry objectForKey:kSuggestionID] unsignedIntValue]);
+				NSString * detailString;
+				
+				if(nbSeries == 1)
+					detailString = NSLocalizedString(@"PROJ-SEARCH-AUTHOR-PROJECT", nil);
+				else
+					detailString = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-SEARCH-AUTHOR-%d-PROJECTS", nil), nbSeries];
+				
+				RakText * detail = [[RakText alloc] initWithText:detailString :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
+				if(detail != nil)
+				{
+					detail.enableWraps = YES;
+					detail.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
+				}
+				
+				//Now, layout work
+				NSFont * oldFont = author.font;
+				author.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 1.05)];
+				[author sizeToFit];
+
+				detail.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 0.95)];
+				[detail sizeToFit];
+
+				CGFloat requiredHeight = 2 * BORDER + author.bounds.size.height + detail.bounds.size.height + INTERLINE;
+				
+				if(requiredHeight != HEIGHT)
+				{
+					frame.size.height = requiredHeight;
+					output.frame = frame;
+				}
+				
+				detail.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, baseY);
+				author.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, NSMaxY(detail.frame) + INTERLINE);
+				
+				[output addSubview:author];
+				[output addSubview:detail];
 			}
 			//Create a suggestion for a serie
 			else
 			{
-				
-			}
 #warning "Create view"
-			NSString * string = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
-			RakText * text = [[RakText alloc] initWithText:string :[Prefs getSystemColor:COLOR_ACTIVE]];
-			if(text != nil)
-			{
-				text.frameOrigin = NSMakePoint(5, frame.size.height / 2 - text.bounds.size.height / 2);
-				[output addSubview:text];
+				NSString * string = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
+				RakText * text = [[RakText alloc] initWithText:string :[Prefs getSystemColor:COLOR_ACTIVE]];
+				if(text != nil)
+				{
+					text.frameOrigin = NSMakePoint(5, frame.size.height / 2 - text.bounds.size.height / 2);
+					[output addSubview:text];
+				}
 			}
 		}
 	}

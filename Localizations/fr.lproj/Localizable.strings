@@ -115,6 +115,9 @@
 "PROJ-SEARCH-TAGS" = "Tags";
 "PROJ-SEARCH-TYPE" = "Catégories";
 
+"PROJ-SEARCH-AUTHOR-PROJECT" = "Auteur d'une série";
+"PROJ-SEARCH-AUTHOR-%d-PROJECTS" = "Auteur de %1$d séries";
+
 "PROJ-EXPAND-FILTER-AREA" = "Afficher les outils de recherche avancée";
 "PROJ-CLOSE-FILTER-ARRAY" = "Refermer ▲";
 "PROJ-FILTER-FREE-ONLY" = "Gratuit";
