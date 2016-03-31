@@ -485,7 +485,12 @@ enum
 {
 	[_parentTextField validateEditing];
 	[_parentTextField abortEditing];
-	[_parentTextField sendAction:_parentTextField.action to:_parentTextField.target];
+	
+	if([_parentTextField respondsToSelector:@selector(performSearchFromDropDown)])
+		[(id) _parentTextField performSearchFromDropDown];
+	else
+		[_parentTextField sendAction:_parentTextField.action to:_parentTextField.target];
+	
 	[self cancelSuggestions];
 }
 

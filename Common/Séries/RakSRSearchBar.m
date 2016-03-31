@@ -309,6 +309,13 @@
 
 #pragma mark - Logic behind auto-completion
 
+- (void) performSearchFromDropDown
+{
+	didAuthorizeSearch = YES;
+	normalKeyPressed = NO;
+	[self performSearch];
+}
+
 - (void) performSearch
 {
 	if(noRecursive || !didAuthorizeSearch)

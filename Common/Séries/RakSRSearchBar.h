@@ -62,6 +62,7 @@ enum
 - (void) updateData : (charType **) names ofSize : (uint) nbData andIndexes : (uint64_t *) listIndexes;
 
 + (void) triggeringSearchBar : (BOOL) goingIn : (byte) ID;
+- (void) performSearchFromDropDown;
 
 - (void) resizeAnimation : (NSRect) frame;
 
