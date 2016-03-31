@@ -52,6 +52,8 @@
 
 @property (assign, nonatomic, getter=isHighlighted) BOOL highlighted;
 @property NSDictionary * payload;
+@property RakImage * thumbnail;
+@property NSRect thumbnailFrame;
 
 @end
 

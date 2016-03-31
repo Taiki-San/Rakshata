@@ -81,6 +81,24 @@ enum
 	
 	[underlineColor set];
 	NSRectFill(NSMakeRect(BORDER_OFFSET, 0, dirtyRect.size.width - 2 * BORDER_OFFSET, 1));
+	
+	if(_thumbnail != nil)
+	{
+		[NSGraphicsContext saveGraphicsState];
+		
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:_thumbnailFrame
+															 xRadius:_thumbnailFrame.size.width / 2
+															 yRadius:_thumbnailFrame.size.height / 2];
+		[path addClip];
+		
+		[_thumbnail drawInRect:_thumbnailFrame
+				 fromRect:NSZeroRect
+				operation:NSCompositeSourceOver
+				 fraction:1.0];
+		
+		[NSGraphicsContext restoreGraphicsState];
+
+	}
 }
 
 /* Custom highlighted property setter because when the property changes we need to redraw and update the containing text fields.

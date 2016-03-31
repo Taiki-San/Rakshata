@@ -378,18 +378,16 @@ enum
 		{
 			output.payload = entry;
 			
+			RakText * prime, * secondary;
+			uint cacheID = [[entry objectForKey:kSuggestionID] unsignedIntValue];
+			
+			//First, create the views so we can have a real idea of the height of the view
 			//Create a suggestion for an author
 			if(isAuthor)
 			{
-				//First, create the views so we can have a real idea of the height of the view
-				RakText * author = [[RakText alloc] initWithText:[entry objectForKey:kSuggestionString] :[Prefs getSystemColor:COLOR_ACTIVE]];
-				if(author != nil)
-				{
-					author.enableWraps = YES;
-					author.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
-				}
+				prime = [[RakText alloc] initWithText:[entry objectForKey:kSuggestionString] :[Prefs getSystemColor:COLOR_ACTIVE]];
 				
-				uint nbSeries = getNbSeriesForAuthorOfID([[entry objectForKey:kSuggestionID] unsignedIntValue]);
+				uint nbSeries = getNbSeriesForAuthorOfID(cacheID);
 				NSString * detailString;
 				
 				if(nbSeries == 1)
@@ -397,22 +395,56 @@ enum
 				else
 					detailString = [NSString localizedStringWithFormat:NSLocalizedString(@"PROJ-SEARCH-AUTHOR-%d-PROJECTS", nil), nbSeries];
 				
-				RakText * detail = [[RakText alloc] initWithText:detailString :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
-				if(detail != nil)
-				{
-					detail.enableWraps = YES;
-					detail.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
-				}
+				secondary = [[RakText alloc] initWithText:detailString :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 				
-				//Now, layout work
-				NSFont * oldFont = author.font;
-				author.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 1.05)];
-				[author sizeToFit];
+			}
+			//Create a suggestion for a serie
+			else
+			{
+				byte type = [[entry objectForKey:kSuggestionType] unsignedCharValue];
+				PROJECT_DATA project = getProjectByIDHelper(cacheID, false, false, false).project;
+				
+				prime = [[RakText alloc] initWithText:[entry objectForKey:kSuggestionString]
+													 : (type & RDB_FTS_CODE_NAME) != 0 ?	[Prefs getSystemColor:COLOR_ACTIVE]
+																						:	[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 
-				detail.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 0.95)];
-				[detail sizeToFit];
+				secondary = [[RakText alloc] initWithText:getStringForWchar(project.authorName)
+														 : (type & RDB_FTS_CODE_AUTHOR) != 0 ?	[Prefs getSystemColor:COLOR_ACTIVE]
+																							 :	[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
+				
+				output.thumbnail = loadDDThumbnail(project);
+				output.thumbnailFrame = NSMakeRect(BORDER, BORDER + 1, IMAGE_WITDH, IMAGE_WITDH);
+			}
+			
+			//Shared layout work
+			CGFloat requiredHeight = 0;
+			NSFont * oldFont = prime.font;
+			if(prime != nil)
+			{
+				prime.enableWraps = YES;
+				prime.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
+				prime.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 1.05)];
+				[prime sizeToFit];
 
-				CGFloat requiredHeight = 2 * BORDER + author.bounds.size.height + detail.bounds.size.height + INTERLINE;
+				requiredHeight += prime.bounds.size.height;
+			}
+
+			if(secondary != nil)
+			{
+				secondary.enableWraps = YES;
+				secondary.fixedWidth = width - IMAGE_WITDH - 3 * BORDER;
+				secondary.font = [NSFont fontWithName:oldFont.fontName size:round(oldFont.pointSize * 0.95)];
+				[secondary sizeToFit];
+				
+				if(requiredHeight != 0)
+					requiredHeight += INTERLINE;
+				
+				requiredHeight += secondary.bounds.size.height;
+			}
+			
+			if(requiredHeight != 0)	//Not empty row
+			{
+				requiredHeight += 2 * BORDER;
 				
 				if(requiredHeight != HEIGHT)
 				{
@@ -420,23 +452,12 @@ enum
 					output.frame = frame;
 				}
 				
-				detail.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, baseY);
-				author.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, NSMaxY(detail.frame) + INTERLINE);
+				//Now, layout work
+				secondary.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, baseY);
+				prime.frameOrigin = NSMakePoint(IMAGE_WITDH + 2 * BORDER, secondary != nil ? (NSMaxY(secondary.frame) + INTERLINE) : baseY);
 				
-				[output addSubview:author];
-				[output addSubview:detail];
-			}
-			//Create a suggestion for a serie
-			else
-			{
-#warning "Create view"
-				NSString * string = [((NSNumber *) [entry objectForKey:kSuggestionType]).stringValue stringByAppendingFormat:@" - %@", [entry objectForKey:kSuggestionString]];
-				RakText * text = [[RakText alloc] initWithText:string :[Prefs getSystemColor:COLOR_ACTIVE]];
-				if(text != nil)
-				{
-					text.frameOrigin = NSMakePoint(5, frame.size.height / 2 - text.bounds.size.height / 2);
-					[output addSubview:text];
-				}
+				[output addSubview:prime];
+				[output addSubview:secondary];
 			}
 		}
 	}
