@@ -413,7 +413,6 @@ enum
 																							 :	[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 				
 				output.thumbnail = loadDDThumbnail(project);
-				output.thumbnailFrame = NSMakeRect(BORDER, BORDER + 1, IMAGE_WITDH, IMAGE_WITDH);
 			}
 			
 			//Shared layout work
@@ -458,6 +457,12 @@ enum
 				
 				[output addSubview:prime];
 				[output addSubview:secondary];
+				
+				//We must set the thumbnail frame
+				if(!isAuthor)
+				{
+					output.thumbnailFrame = NSMakeRect(BORDER, round((requiredHeight - 1) / 2 - IMAGE_WITDH / 2), IMAGE_WITDH, IMAGE_WITDH);
+				}
 			}
 		}
 	}

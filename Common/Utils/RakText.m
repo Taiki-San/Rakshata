@@ -235,6 +235,14 @@
 	}
 }
 
+- (void) sizeToFit
+{
+	if(haveFixedWidth)
+		[self setFrameSize:[self intrinsicContentSize]];
+	else
+		[super sizeToFit];
+}
+
 - (NSSize) intrinsicContentSize
 {
 	if(![self enableWraps])
