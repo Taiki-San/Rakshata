@@ -532,7 +532,13 @@
 
 		//We only want digits at this point, any interruption will result in elimination
 		firstPointCrossed = NO;
-		for(baseDigits = posInChunk; posInChunk < length; ++posInChunk)
+		
+		if(posInChunk == 1 && isdigit(sample))
+			baseDigits = 0;
+		else
+			baseDigits = posInChunk;
+		
+		for(; posInChunk < length; ++posInChunk)
 		{
 			if(isdigit(simplifiedChunk[posInChunk]))
 				continue;
