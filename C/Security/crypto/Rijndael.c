@@ -1266,6 +1266,7 @@ void _AES(const void *_password, const void *_pathInput, uint lengthInput, void 
 		return;
 	
 	//Key generation
+	//Copy the key and pad with 0
 	for(byte i = 0; i < KEYLENGTH(KEYBITS); key[i++] = (*password != 0 ? *password++ : 0));
 	
 	if(encrypt)
@@ -1273,7 +1274,7 @@ void _AES(const void *_password, const void *_pathInput, uint lengthInput, void 
 	else
 		aesData = rijndaelSetupDecrypt(rijndaelKey, key, KEYBITS);
 	
-	for(byte i = 0; i < KEYLENGTH(KEYBITS); key[i++] = 0);
+	bzero(key, sizeof(key));
 	
 	//Encryption loop
 	byte inputBuf[CRYPTO_BUFFER_SIZE], outputBuf[CRYPTO_BUFFER_SIZE], previousCipher[CRYPTO_BUFFER_SIZE];
