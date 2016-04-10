@@ -84,8 +84,6 @@ static int compare_right(const char *a, const char *b)
 		else if (!*a && !*b)
 			return bias;
 	}
-
-	return 0;
 }
 
 static int compare_left(const char *a, const char *b)
@@ -105,8 +103,6 @@ static int compare_left(const char *a, const char *b)
 		else if (*a > *b)
 			return 1;
 	}
-
-	return 0;
 }
 
 int _strnatcmp(const char *a, const char *b)

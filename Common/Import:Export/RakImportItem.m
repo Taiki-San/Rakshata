@@ -533,7 +533,7 @@
 		//We only want digits at this point, any interruption will result in elimination
 		firstPointCrossed = NO;
 		
-		if(posInChunk == 1 && isdigit(sample))
+		if(posInChunk == 1 && justLookingAtSomeNumbers)
 			baseDigits = 0;
 		else
 			baseDigits = posInChunk;
