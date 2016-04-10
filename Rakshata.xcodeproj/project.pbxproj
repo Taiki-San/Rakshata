@@ -577,7 +577,7 @@
 		B606EB631B68564B00DDBBBD /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = C/Security/keys.c; sourceTree = "<group>"; };
 		B606EB641B68564B00DDBBBD /* securite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = securite.c; path = C/Security/securite.c; sourceTree = "<group>"; };
 		B6073C431C2978350061070A /* tagSyncParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = tagSyncParser.m; path = Common/Utils/tagSyncParser.m; sourceTree = "<group>"; };
-		B6073C4A1C29C2C40061070A /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = "OS X/RakTabView/RakTabView.m"; sourceTree = "<group>"; };
+		B6073C4A1C29C2C40061070A /* RakTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTabView.m; path = macOS/RakTabView/RakTabView.m; sourceTree = "<group>"; };
 		B60AE4BB1B061F3600DA44E6 /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSlideshowButton.h; path = Utils/RakSlideshowButton.h; sourceTree = "<group>"; };
 		B60AE4BC1B061F3600DA44E6 /* RakSlideshowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSlideshowButton.m; path = Utils/RakSlideshowButton.m; sourceTree = "<group>"; };
 		B60AE4BE1B06247400DA44E6 /* RakCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCustomButton.h; path = Utils/RakCustomButton.h; sourceTree = "<group>"; };
@@ -613,7 +613,7 @@
 		B625760C1C27723400811C33 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B625760E1C27723C00811C33 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		B62576111C27725D00811C33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		B62576131C2773CF00811C33 /* RakOSXWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOSXWrapper.h; path = "OS X/RakOSXWrapper.h"; sourceTree = "<group>"; };
+		B62576131C2773CF00811C33 /* RakOSXWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakOSXWrapper.h; path = macOS/RakOSXWrapper.h; sourceTree = "<group>"; };
 		B625761A1C27883D00811C33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = iOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		B6291ECD1C89779E0079E6BE /* RakshataCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RakshataCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6291ECF1C89779E0079E6BE /* RakshataCoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RakshataCoreTests.m; sourceTree = "<group>"; };
@@ -759,8 +759,8 @@
 		B66F09C71C6B464D009BE831 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		B66F09C81C6B464D009BE831 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		B66F09C91C6B464D009BE831 /* zlibAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlibAPI.h; sourceTree = "<group>"; };
-		B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBridgeOSX.m; path = "OS X/RakBridgeOSX.m"; sourceTree = "<group>"; };
-		B67110DF1C276C8A00E0BFD9 /* info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = info.plist; path = "OS X/info.plist"; sourceTree = "<group>"; };
+		B67110DD1C276C6F00E0BFD9 /* RakBridgeOSX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakBridgeOSX.m; path = macOS/RakBridgeOSX.m; sourceTree = "<group>"; };
+		B67110DF1C276C8A00E0BFD9 /* info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = info.plist; path = macOS/info.plist; sourceTree = "<group>"; };
 		B67110E11C276C9200E0BFD9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = iOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		B67449441876116200F96DB4 /* prefsControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsControl.h; path = Prefs/prefsControl.h; sourceTree = "<group>"; };
 		B6744946187611BF00F96DB4 /* prefsMagic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = prefsMagic.h; path = Prefs/prefsMagic.h; sourceTree = "<group>"; };
@@ -835,7 +835,7 @@
 		B6978A7C1B420D34002CBB45 /* RakExportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakExportController.m; path = "Common/Import:Export/RakExportController.m"; sourceTree = "<group>"; };
 		B697B0FA1A04F64A00E254C3 /* RakDBUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakDBUpdate.h; path = Utils/RakDBUpdate.h; sourceTree = "<group>"; };
 		B697B0FB1A04F64A00E254C3 /* RakDBUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakDBUpdate.m; path = Utils/RakDBUpdate.m; sourceTree = "<group>"; };
-		B69835C31C6A3A7700F65CE4 /* libunarr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libunarr.a; path = "OS X/Libraries/lib/libunarr.a"; sourceTree = "<group>"; };
+		B69835C31C6A3A7700F65CE4 /* libunarr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libunarr.a; path = macOS/Libraries/lib/libunarr.a; sourceTree = "<group>"; };
 		B69835C51C6A3A8600F65CE4 /* libunarr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libunarr.a; path = iOS/Libraries/lib/libunarr.a; sourceTree = "<group>"; };
 		B6986F611C53DDA800A61EB8 /* db.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = db.h; path = C/Database/DBCache/db.h; sourceTree = "<group>"; };
 		B6986F621C53DDBD00A61EB8 /* JSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONParser.h; path = Common/Utils/JSONParser.h; sourceTree = "<group>"; };
@@ -989,17 +989,17 @@
 		B6BD45C71A7D602A00C2A675 /* project_large@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "project_large@2x.png"; path = "default/project_large@2x.png"; sourceTree = "<group>"; };
 		B6BD45D21A7D628100C2A675 /* defaultSRImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = defaultSRImage.png; path = default/defaultSRImage.png; sourceTree = "<group>"; };
 		B6BD45D31A7D628100C2A675 /* defaultSRImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "defaultSRImage@2x.png"; path = "default/defaultSRImage@2x.png"; sourceTree = "<group>"; };
-		B6BE93411C28199100BCD3E3 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = "OS X/Libraries/lib/libarchive.a"; sourceTree = "<group>"; };
-		B6BE93421C28199100BCD3E3 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "OS X/Libraries/lib/libcrypto.a"; sourceTree = "<group>"; };
-		B6BE93431C28199100BCD3E3 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = "OS X/Libraries/lib/libcurl.a"; sourceTree = "<group>"; };
-		B6BE93441C28199100BCD3E3 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = "OS X/Libraries/lib/libsqlite.a"; sourceTree = "<group>"; };
-		B6BE93451C28199100BCD3E3 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "OS X/Libraries/lib/libssl.a"; sourceTree = "<group>"; };
-		B6BE93461C28199100BCD3E3 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = "OS X/Libraries/lib/libtls.a"; sourceTree = "<group>"; };
-		B6BE93471C28199100BCD3E3 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "OS X/Libraries/lib/libz.a"; sourceTree = "<group>"; };
+		B6BE93411C28199100BCD3E3 /* libarchive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarchive.a; path = macOS/Libraries/lib/libarchive.a; sourceTree = "<group>"; };
+		B6BE93421C28199100BCD3E3 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = macOS/Libraries/lib/libcrypto.a; sourceTree = "<group>"; };
+		B6BE93431C28199100BCD3E3 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = macOS/Libraries/lib/libcurl.a; sourceTree = "<group>"; };
+		B6BE93441C28199100BCD3E3 /* libsqlite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite.a; path = macOS/Libraries/lib/libsqlite.a; sourceTree = "<group>"; };
+		B6BE93451C28199100BCD3E3 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = macOS/Libraries/lib/libssl.a; sourceTree = "<group>"; };
+		B6BE93461C28199100BCD3E3 /* libtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtls.a; path = macOS/Libraries/lib/libtls.a; sourceTree = "<group>"; };
+		B6BE93471C28199100BCD3E3 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macOS/Libraries/lib/libz.a; sourceTree = "<group>"; };
 		B6BE934F1C28629300BCD3E3 /* RakImportExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakImportExport.h; path = "Import:Export/RakImportExport.h"; sourceTree = "<group>"; };
 		B6BE93521C28706D00BCD3E3 /* RakNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RakNotification.h; sourceTree = "<group>"; };
-		B6BE93531C289FFF00BCD3E3 /* RakAppOSXDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAppOSXDelegate.h; path = "OS X/RakAppOSXDelegate.h"; sourceTree = SOURCE_ROOT; };
-		B6BE93541C289FFF00BCD3E3 /* RakAppOSXDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAppOSXDelegate.m; path = "OS X/RakAppOSXDelegate.m"; sourceTree = SOURCE_ROOT; };
+		B6BE93531C289FFF00BCD3E3 /* RakAppOSXDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAppOSXDelegate.h; path = macOS/RakAppOSXDelegate.h; sourceTree = SOURCE_ROOT; };
+		B6BE93541C289FFF00BCD3E3 /* RakAppOSXDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAppOSXDelegate.m; path = macOS/RakAppOSXDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6BF49D619D189FE00A2AAC9 /* RakCTHeaderImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHeaderImage.h; path = CTSelec/RakCTHeaderImage.h; sourceTree = "<group>"; };
 		B6BF49D719D189FE00A2AAC9 /* RakCTHeaderImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakCTHeaderImage.m; path = CTSelec/RakCTHeaderImage.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6BF49DA19D1944D00A2AAC9 /* RakCTHImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakCTHImage.h; path = CTSelec/RakCTHImage.h; sourceTree = "<group>"; };
@@ -1616,7 +1616,7 @@
 				B640F2EF1C014064005178E0 /* window.xib */,
 			);
 			name = "Interface Builder";
-			path = "OS X";
+			path = macOS;
 			sourceTree = "<group>";
 		};
 		B66F09B31C6B22EE009BE831 /* RAR */ = {
@@ -1717,7 +1717,7 @@
 			path = "Rakshata iOS";
 			sourceTree = "<group>";
 		};
-		B67C68B11C270921005AB992 /* OS X */ = {
+		B67C68B11C270921005AB992 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
 				B6CF07BC1868DD58009B16A3 /* Products */,
@@ -1725,7 +1725,7 @@
 				B645C46D1C28A27D00CC3EC8 /* Sources */,
 				B6073C451C29B28C0061070A /* Supporting Files */,
 			);
-			name = "OS X";
+			name = macOS;
 			sourceTree = "<group>";
 		};
 		B67DA7AC1C2E244200FAD87A /* Séries */ = {
@@ -2175,7 +2175,7 @@
 				B6CF07BD1868DD58009B16A3 /* Frameworks */,
 				B67C687C1C270698005AB992 /* iOS */,
 				B64B74F5195909030015B16D /* OptimizationProfiles */,
-				B67C68B11C270921005AB992 /* OS X */,
+				B67C68B11C270921005AB992 /* macOS */,
 				B6A9C4771C2EFA5B00BDE925 /* Rakshata iOS.entitlements */,
 				B6F6ECD118A3001400E3B55B /* rakshata.c */,
 				B6FD24EE18B11F8E0025FE74 /* Rakshata.entitlements */,
@@ -2203,13 +2203,13 @@
 				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B62576101C27724900811C33 /* iOS */,
-				B6CF07C01868DD58009B16A3 /* OS X */,
+				B6CF07C01868DD58009B16A3 /* macOS */,
 				B667B1151BFA857D00BB1971 /* Sparkle.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B6CF07C01868DD58009B16A3 /* OS X */ = {
+		B6CF07C01868DD58009B16A3 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
 				B68EAF701BD5180C00F6AB97 /* AppKit.framework */,
@@ -2227,7 +2227,7 @@
 				B630782F1899CF9400589988 /* QuartzCore.framework */,
 				B68EAF6E1BD517E800F6AB97 /* SystemConfiguration.framework */,
 			);
-			name = "OS X";
+			name = macOS;
 			sourceTree = "<group>";
 		};
 		B6CF07C41868DD58009B16A3 /* Common */ = {
@@ -2285,7 +2285,7 @@
 				B6D316481CA5FFA900C1BE16 /* APPLSuggestionsWindowController.m */,
 			);
 			name = SuggestionList;
-			path = "OS X/SuggestionList";
+			path = macOS/SuggestionList;
 			sourceTree = SOURCE_ROOT;
 		};
 		B6D7EC0A1B682CEE009FCE64 /* 7zip */ = {
@@ -3311,7 +3311,7 @@
 				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/include\"",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -3320,7 +3320,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					/usr/local/Cellar/icu4c/56.1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -3352,7 +3352,7 @@
 				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/include\"",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -3361,7 +3361,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					/usr/local/Cellar/icu4c/56.1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -3376,7 +3376,6 @@
 		B67C68A81C270699005AB992 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -3387,7 +3386,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3406,7 +3404,6 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/iOS/Libraries/include";
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3414,8 +3411,7 @@
 				);
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PRODUCT_NAME = "Rakshata iOS";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3424,7 +3420,6 @@
 		B67C68A91C270699005AB992 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -3435,7 +3430,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = NO;
-				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3455,7 +3449,6 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/iOS/Libraries/include";
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3464,11 +3457,11 @@
 				LLVM_LTO = YES;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PRODUCT_NAME = "Rakshata iOS";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};
@@ -3657,29 +3650,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
-				CLANG_ANALYZER_OBJC_RETAIN_COUNT = YES;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_USE_OPTIMIZATION_PROFILE = NO;
-				CLANG_WARN_ASSIGN_ENUM = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = NO;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES = NO;
-				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
-				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3688,40 +3669,32 @@
 					"$(PROJECT_DIR)/Framework/",
 					"$(PROJECT_DIR)/Framework",
 				);
-				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_FAST_MATH = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Common/rakshata.pch;
-				GCC_UNROLL_LOOPS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
-				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/include\"",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "OS X/info.plist";
+				INFOPLIST_FILE = macOS/info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					/usr/local/Cellar/icu4c/56.1/lib,
 				);
-				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = (
 					"-licui18n",
@@ -3734,14 +3707,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
-				STRIP_STYLE = debugging;
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Framework/";
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
-				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
@@ -3749,28 +3719,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ANALYZER_MEMORY_MANAGEMENT = YES;
-				CLANG_ANALYZER_OBJC_RETAIN_COUNT = YES;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_DEBUG_INFORMATION_LEVEL = default;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_USE_OPTIMIZATION_PROFILE = NO;
-				CLANG_WARN_ASSIGN_ENUM = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = NO;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES = NO;
-				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 2.0;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -3782,38 +3740,32 @@
 					"$(PROJECT_DIR)/Framework/",
 					"$(PROJECT_DIR)/Framework",
 				);
-				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Common/rakshata.pch;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
-				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/OS X/Libraries/include\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/include\"",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "OS X/info.plist";
+				INFOPLIST_FILE = macOS/info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/OS X/Libraries/lib\"",
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					/usr/local/Cellar/icu4c/56.1/lib,
 				);
 				LLVM_LTO = YES;
@@ -3830,15 +3782,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx;
 				STRIPFLAGS = "-S -x";
-				STRIP_INSTALLED_PRODUCT = YES;
-				STRIP_STYLE = all;
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Framework/";
 				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
-				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};

@@ -169,7 +169,14 @@ do
 		fi
 
 		#Extract the JS portion containing the download URL, in my testing "d391('a1','2015/sqlite-amalgamation-3090100.zip');"
+		#Sometime, a beta build use the first spot, so we check if we're not the second one
+
 		FINAL_DL_URL="$(grep "'a2'," $DL_FILE)"
+		if [[ $FINAL_DL_URL != *'amalgamation'* ]]
+		then
+			FINAL_DL_URL="$(grep "'a1'," $DL_FILE)"
+		fi
+
 		if [ "$FINAL_DL_URL" = '' ]
 		then
 			echo "Couldn't recognize a patern in the download page :("
@@ -305,7 +312,10 @@ do
 		
 		#Compiling
 		echo "Compiling x86"
-		clang -O3 $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphonesimulator | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_x86.o
+		clang -arch i386 -O3 $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphonesimulator | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_i386.o
+
+		echo "Compiling x86_64"
+		clang -arch x86_64 -O3 $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphonesimulator | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_x86.o
 
 		echo "Compiling arm64"
 		clang -arch arm64 $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphoneos | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_arm64.o
@@ -313,8 +323,11 @@ do
 		echo "Compiling armv7"
 		clang -arch armv7 $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphoneos | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_armv7.o
 
+		echo "Compiling armv7s"
+		clang -arch armv7s $SQLITE_FLAGS -isysroot $(xcodebuild -version -sdk iphoneos | grep -E '^Path' | sed 's/Path: //' | sed 's/[0-9]*\.[0-9]*.sdk/.sdk/') $SQLITE_SOURCE_FILE -o sqlite3_armv7s.o
+
 		#Packaging the library
-		lipo -create -arch x86_64 sqlite3_x86.o -arch arm64 sqlite3_arm64.o -arch armv7 sqlite3_armv7.o -output $OUTPUT_FILE
+		lipo -create -arch i386 sqlite3_i386.o -arch x86_64 sqlite3_x86.o -arch arm64 sqlite3_arm64.o -arch armv7 sqlite3_armv7.o -arch armv7s sqlite3_armv7s.o -output $OUTPUT_FILE
 
 		cp sqlite3_*.o ../
 		rm sqlite3_*.o

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15E49a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="494" id="495"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <menu title="AMainMenu" systemMenu="main" id="29">
+            <items>
+                <menuItem title="Rakshata" id="Hri-sJ-p8T">
+                    <menu key="submenu" title="Rakshata" systemMenu="apple" id="dpW-Qr-oG6">
+                        <items>
+                            <menuItem title="About Rakshata" id="led-o6-fnq" userLabel="About Rakshata">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ABOUT"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="orderFrontStandardAboutPanel:" target="-1" id="pOu-Tu-Thr"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Check for Updates" keyEquivalent="u" id="1Lc-vT-2o8">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-UPDATE"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="checkForUpdates:" target="3xm-KV-End" id="F9r-1o-seL"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="NdE-UH-XwG">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Preferences…" keyEquivalent="," id="NfC-pn-vLp">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-PREFS"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="openPreferenceWindow:" target="494" id="W5E-9c-w0Y"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="vk9-Dz-qa9">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Services" id="eqN-YR-kmd">
+                                <menu key="submenu" title="Services" systemMenu="services" id="BCB-Zm-3at"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="GK4-SD-uU8">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Hide Rakshata" keyEquivalent="h" id="xei-mZ-s9Q">
+                                <connections>
+                                    <action selector="hide:" target="-1" id="5qw-9Q-ISi"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hide Others" keyEquivalent="h" id="fuP-2k-SkB">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hideOtherApplications:" target="-1" id="DjN-gp-LUB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show All" id="Bor-Qc-XBs">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="unhideAllApplications:" target="-1" id="raX-62-6uB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="jvg-Kz-6JP">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Quit Rakshata" keyEquivalent="q" id="1RY-Ig-jry">
+                                <connections>
+                                    <action selector="terminate:" target="-1" id="7Ho-GI-I7H"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Edit" id="moO-ee-BuD">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Edit" id="OAx-sJ-Hfq">
+                        <items>
+                            <menuItem title="Undo" keyEquivalent="z" id="9Ax-tO-Bk9">
+                                <connections>
+                                    <action selector="undo:" target="-1" id="g82-vB-145"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Redo" keyEquivalent="Z" id="2w9-H1-ZUd">
+                                <connections>
+                                    <action selector="redo:" target="-1" id="E7d-uT-C36"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="YvH-qj-cga"/>
+                            <menuItem title="Cut" keyEquivalent="x" id="h00-vY-HQx">
+                                <connections>
+                                    <action selector="cut:" target="-1" id="EMK-2x-rlF"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Copy" keyEquivalent="c" id="9DM-Np-7JB">
+                                <connections>
+                                    <action selector="copy:" target="-1" id="7S9-k1-oPW"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Paste" keyEquivalent="v" id="Od2-G1-1D7">
+                                <connections>
+                                    <action selector="paste:" target="-1" id="pTg-6A-WbC"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Paste and Match Style" keyEquivalent="V" id="gU9-eC-2cD">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="pasteAsPlainText:" target="-1" id="wSp-5f-yaO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Delete" id="Caa-jb-n1F">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="delete:" target="-1" id="hDh-uL-FJH"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Select All" keyEquivalent="a" id="UBM-kB-ehe">
+                                <connections>
+                                    <action selector="selectAll:" target="-1" id="i5W-sp-lgY"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="sjq-vh-vft"/>
+                            <menuItem title="Substitutions" id="3dk-kU-bkj">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Substitutions" id="eZj-pD-BBY">
+                                    <items>
+                                        <menuItem title="Show Substitutions" id="K9g-78-Gwq">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="orderFrontSubstitutionsPanel:" target="-1" id="YkW-sk-8t6"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="8Yo-vm-Pog"/>
+                                        <menuItem title="Smart Copy/Paste" id="hCn-W0-mMC">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleSmartInsertDelete:" target="-1" id="Chd-xN-bfZ"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Smart Quotes" id="lbS-bT-UVz">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleAutomaticQuoteSubstitution:" target="-1" id="3Es-Cf-uvn"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Smart Dashes" id="Flw-sG-4Od">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleAutomaticDashSubstitution:" target="-1" id="tk4-Nb-tMe"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Smart Links" id="iOM-bQ-me9">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleAutomaticLinkDetection:" target="-1" id="n1U-kx-L39"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Data Detectors" id="j6y-JX-6Gr">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleAutomaticDataDetection:" target="-1" id="Zk1-bf-Vcp"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Text Replacement" id="Ix0-XZ-Ex1">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleAutomaticTextReplacement:" target="-1" id="5kL-TC-VHa"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Transformations" id="R58-Bt-K0i">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Transformations" id="SZb-aF-cY6">
+                                    <items>
+                                        <menuItem title="Make Upper Case" id="DO8-Y1-N04">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="uppercaseWord:" target="-1" id="AfU-Mg-gJq"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Make Lower Case" id="Dyj-t7-hZp">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="lowercaseWord:" target="-1" id="N7g-e9-eVQ"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Capitalize" id="p8s-Ol-jvU">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="capitalizeWord:" target="-1" id="D4Q-TR-3eS"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Speech" id="1q8-8e-Nka">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Speech" id="iK5-1Z-IA2">
+                                    <items>
+                                        <menuItem title="Start Speaking" id="Q3X-na-Gxl">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="startSpeaking:" target="-1" id="j29-W9-5nY"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Stop Speaking" id="GlV-Ch-4Hb">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="stopSpeaking:" target="-1" id="Kk6-Ng-yBs"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Lecteur" id="Xoe-AA-ztc">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Lecteur" systemMenu="window" id="mjo-Sm-53K">
+                        <items>
+                            <menuItem title="Ouvrir le lecteur" keyEquivalent="3" id="mup-3s-3SA">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="jumpToReader:" target="494" id="QfU-XP-xlt"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="5ew-in-gl3"/>
+                            <menuItem title="Dézoomer" keyEquivalent="-" id="Wbr-ZZ-8Sd">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-OUT"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="zoomOut:" target="494" id="9sf-EO-dQG"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="btS-8O-GoH"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Réinitialiser zoom" keyEquivalent="0" id="798-ac-2xV">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-RESET-ZOOM"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="resetZoom:" target="494" id="YKI-wA-B9f"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="0sf-39-lsm"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Occuper la largeur" keyEquivalent="=" id="zfF-Gi-Fqf">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-WIDTH"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="zoomFillWidth:" target="494" id="qDS-V0-Ssf"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="Uo4-u8-gaG"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoomer" keyEquivalent="+" id="DRS-2d-zDp">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-IN"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="zoomIn:" target="494" id="qPl-is-dWz"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="bhe-O7-4Ua"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="kiX-20-KvN"/>
+                            <menuItem title="Enter Full Screen" keyEquivalent="F" id="FO6-ei-KVE">
+                                <connections>
+                                    <action selector="toggleFullScreen:" target="-1" id="mxN-X6-lcn"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Enter Distraction Free" keyEquivalent="D" id="HOE-eB-9a5">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-DF"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="switchDistractionFree:" target="494" id="N67-UM-OA9"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="Ga0-yr-E2n"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
+                        </userDefinedRuntimeAttributes>
+                    </menu>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
+                    </userDefinedRuntimeAttributes>
+                </menuItem>
+                <menuItem title="Window" id="CCO-9q-yf9">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Window" systemMenu="window" id="4qx-Bj-2eK">
+                        <items>
+                            <menuItem title="Minimize" keyEquivalent="m" id="HpR-ih-7S2">
+                                <connections>
+                                    <action selector="performMiniaturize:" target="-1" id="u2l-53-AF3"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom" id="TE5-Y7-apn">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="performZoom:" target="-1" id="6C4-3X-cMR"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="g4h-3U-g2Z"/>
+                            <menuItem title="Série" keyEquivalent="1" id="JgZ-qh-W9g">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-SERIE"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="jumpToSeries:" target="494" id="USR-2n-Mc4"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Chapitres et tomes" keyEquivalent="2" id="7YJ-jY-ZzL">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-CT"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="jumpToCT:" target="494" id="n5v-X5-SA1"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Lecteur" keyEquivalent="3" id="HGb-RF-WqS">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="jumpToReader:" target="494" id="DeO-3k-03y"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="gGD-p0-y3z"/>
+                            <menuItem title="Bring All to Front" id="ecv-Sc-KcV">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="arrangeInFront:" target="-1" id="Z7H-Ea-g8f"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Close" keyEquivalent="w" id="aJL-5R-ahg">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-CLOSE"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="close:" target="494" id="7sT-0j-Xsp"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-WINDOW"/>
+                        </userDefinedRuntimeAttributes>
+                    </menu>
+                </menuItem>
+            </items>
+        </menu>
+        <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" id="371" customClass="RakWindow">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
+            <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
+            <rect key="contentRect" x="192" y="186" width="1175" height="550"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
+            <value key="minSize" type="size" width="930" height="400"/>
+            <view key="contentView" autoresizesSubviews="NO" wantsLayer="YES" id="372" customClass="RakContentViewBack">
+                <rect key="frame" x="0.0" y="0.0" width="1175" height="550"/>
+                <autoresizingMask key="autoresizingMask"/>
+            </view>
+            <connections>
+                <outlet property="initialFirstResponder" destination="372" id="pUA-Hb-oGz"/>
+            </connections>
+            <point key="canvasLocation" x="383.5" y="228"/>
+        </window>
+        <customObject id="494" customClass="RakAppOSXDelegate">
+            <connections>
+                <outlet property="window" destination="371" id="532"/>
+            </connections>
+        </customObject>
+        <customObject id="420" customClass="NSFontManager"/>
+        <userDefaultsController representsSharedInstance="YES" id="9dd-CP-NtX"/>
+        <customObject id="3xm-KV-End" customClass="SUUpdater"/>
+    </objects>
+</document>
