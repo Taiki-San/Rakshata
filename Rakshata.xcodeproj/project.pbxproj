@@ -174,6 +174,13 @@
 		B65BC54519071BE4006DA59F /* RakSerieListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65BC54419071BE4006DA59F /* RakSerieListItem.m */; };
 		B65D6CCD1B11424900DAC30C /* RakPrefsFavoriteView.m in Sources */ = {isa = PBXBuildFile; fileRef = B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */; };
 		B661042A1B5046930079924E /* RakExportStatusController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66104291B5046930079924E /* RakExportStatusController.m */; };
+		B66318961CC4D9B600D0168D /* libicudata.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B663188F1CC4D9B600D0168D /* libicudata.a */; };
+		B66318971CC4D9B600D0168D /* libicui18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318901CC4D9B600D0168D /* libicui18n.a */; };
+		B66318981CC4D9B600D0168D /* libicuio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318911CC4D9B600D0168D /* libicuio.a */; };
+		B66318991CC4D9B600D0168D /* libicule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318921CC4D9B600D0168D /* libicule.a */; };
+		B663189A1CC4D9B600D0168D /* libiculx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318931CC4D9B600D0168D /* libiculx.a */; };
+		B663189B1CC4D9B600D0168D /* libicutu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318941CC4D9B600D0168D /* libicutu.a */; };
+		B663189C1CC4D9B600D0168D /* libicuuc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B66318951CC4D9B600D0168D /* libicuuc.a */; };
 		B6633F7B1C30359A006B9BD5 /* RakReaderController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6633F7A1C30359A006B9BD5 /* RakReaderController.m */; };
 		B6633F7E1C31AC3B006B9BD5 /* RakPageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A1F59C1975684100A3AACD /* RakPageScrollView.m */; };
 		B66392251BD65A00003FD758 /* sorting.c in Sources */ = {isa = PBXBuildFile; fileRef = B66392241BD65A00003FD758 /* sorting.c */; };
@@ -726,6 +733,13 @@
 		B65D6CCC1B11424900DAC30C /* RakPrefsFavoriteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakPrefsFavoriteView.m; path = "Divers Windows/RakPrefsFavoriteView.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B66104281B5046930079924E /* RakExportStatusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakExportStatusController.h; path = "Import:Export/RakExportStatusController.h"; sourceTree = "<group>"; };
 		B66104291B5046930079924E /* RakExportStatusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakExportStatusController.m; path = "Import:Export/RakExportStatusController.m"; sourceTree = "<group>"; };
+		B663188F1CC4D9B600D0168D /* libicudata.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicudata.a; path = macOS/Libraries/lib/libicudata.a; sourceTree = "<group>"; };
+		B66318901CC4D9B600D0168D /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = macOS/Libraries/lib/libicui18n.a; sourceTree = "<group>"; };
+		B66318911CC4D9B600D0168D /* libicuio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuio.a; path = macOS/Libraries/lib/libicuio.a; sourceTree = "<group>"; };
+		B66318921CC4D9B600D0168D /* libicule.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicule.a; path = macOS/Libraries/lib/libicule.a; sourceTree = "<group>"; };
+		B66318931CC4D9B600D0168D /* libiculx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiculx.a; path = macOS/Libraries/lib/libiculx.a; sourceTree = "<group>"; };
+		B66318941CC4D9B600D0168D /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = macOS/Libraries/lib/libicutu.a; sourceTree = "<group>"; };
+		B66318951CC4D9B600D0168D /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = macOS/Libraries/lib/libicuuc.a; sourceTree = "<group>"; };
 		B6633F791C30359A006B9BD5 /* RakReaderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakReaderController.h; path = Reader/RakReaderController.h; sourceTree = "<group>"; };
 		B6633F7A1C30359A006B9BD5 /* RakReaderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakReaderController.m; path = Reader/RakReaderController.m; sourceTree = "<group>"; };
 		B66392241BD65A00003FD758 /* sorting.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sorting.c; path = C/Utils/sorting.c; sourceTree = "<group>"; };
@@ -1149,22 +1163,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				B68EAF6F1BD517E800F6AB97 /* SystemConfiguration.framework in Frameworks */,
+				B66318981CC4D9B600D0168D /* libicuio.a in Frameworks */,
+				B66318961CC4D9B600D0168D /* libicudata.a in Frameworks */,
 				B6E9C0B61BFCDB42003770D8 /* HockeySDK.framework in Frameworks */,
 				B6BE934C1C28199100BCD3E3 /* libssl.a in Frameworks */,
 				B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */,
 				B68EAF731BD5180C00F6AB97 /* AppKit.framework in Frameworks */,
+				B66318991CC4D9B600D0168D /* libicule.a in Frameworks */,
 				B667B1161BFA857D00BB1971 /* Sparkle.framework in Frameworks */,
+				B663189C1CC4D9B600D0168D /* libicuuc.a in Frameworks */,
 				B6BE934E1C28199100BCD3E3 /* libz.a in Frameworks */,
 				B6BE934A1C28199100BCD3E3 /* libcurl.a in Frameworks */,
 				B6BE934B1C28199100BCD3E3 /* libsqlite.a in Frameworks */,
+				B663189B1CC4D9B600D0168D /* libicutu.a in Frameworks */,
 				B63A5D971BE81D3C005E6EBC /* Quartz.framework in Frameworks */,
 				B6BE934D1C28199100BCD3E3 /* libtls.a in Frameworks */,
 				B6BE93491C28199100BCD3E3 /* libcrypto.a in Frameworks */,
 				B6BE93481C28199100BCD3E3 /* libarchive.a in Frameworks */,
+				B66318971CC4D9B600D0168D /* libicui18n.a in Frameworks */,
 				B69835C81C6A531D00F65CE4 /* libunarr.a in Frameworks */,
 				B68EAF751BD5180C00F6AB97 /* Foundation.framework in Frameworks */,
 				B68EAF741BD5180C00F6AB97 /* Cocoa.framework in Frameworks */,
 				B6DDBB071BDBED5E00B9E6AC /* INPopoverController.framework in Frameworks */,
+				B663189A1CC4D9B600D0168D /* libiculx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2218,6 +2239,13 @@
 				B6BE93411C28199100BCD3E3 /* libarchive.a */,
 				B6BE93421C28199100BCD3E3 /* libcrypto.a */,
 				B6BE93431C28199100BCD3E3 /* libcurl.a */,
+				B663188F1CC4D9B600D0168D /* libicudata.a */,
+				B66318901CC4D9B600D0168D /* libicui18n.a */,
+				B66318911CC4D9B600D0168D /* libicuio.a */,
+				B66318921CC4D9B600D0168D /* libicule.a */,
+				B66318931CC4D9B600D0168D /* libiculx.a */,
+				B66318941CC4D9B600D0168D /* libicutu.a */,
+				B66318951CC4D9B600D0168D /* libicuuc.a */,
 				B6BE93441C28199100BCD3E3 /* libsqlite.a */,
 				B6BE93451C28199100BCD3E3 /* libssl.a */,
 				B6BE93461C28199100BCD3E3 /* libtls.a */,
@@ -3696,20 +3724,13 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
-					/usr/local/Cellar/icu4c/56.1/lib,
+					"$(PROJECT_DIR)/macOS/Libraries/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_LDFLAGS = (
-					"-licui18n",
-					"-licuio",
-					"-licule",
-					"-liculx",
-					"-licutu",
-					"-licuuc",
-				);
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";
@@ -3769,22 +3790,15 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
 					"$(inherited)",
 					"$(PROJECT_DIR)/Ressources",
-					"\"$(PROJECT_DIR)/macOS/Libraries/lib\"",
-					/usr/local/Cellar/icu4c/56.1/lib,
+					"$(PROJECT_DIR)/macOS/Libraries/lib",
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-licui18n",
-					"-licuio",
-					"-licule",
-					"-liculx",
-					"-licutu",
-					"-licuuc",
-				);
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = us.taiki.rakshata;
 				PRODUCT_NAME = Rakshata;
 				PROVISIONING_PROFILE = "";

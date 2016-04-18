@@ -172,8 +172,14 @@ do
 
 		#Extract the JS portion containing the download URL, in my testing "d391('a1','2015/sqlite-amalgamation-3090100.zip');"
 		FINAL_DL_URL="$(grep "'a2'," $DL_FILE)"
+		if [[ $FINAL_DL_URL != *'amalgamation'* ]]
+		then
+			FINAL_DL_URL="$(grep "'a1'," $DL_FILE)"
+		fi
+
 		if [ "$FINAL_DL_URL" = '' ]
 		then
+			FINAL_DL_URL="$(grep "'a1'," $DL_FILE)"
 			echo "Couldn't recognize a patern in the download page :("
 			echo "Aborting, you should tweak my calibration"
 			continue
@@ -304,7 +310,7 @@ do
 		echo "Found everything we needed, compiling!"
 		
 		#Compiling
-		clang -O3 -c -DHAVE_USLEEP=1 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_ICU -I/usr/local/opt/icu4c/include $SQLITE_SOURCE_FILE -o sqlite3.o
+		clang -O3 -c -DHAVE_USLEEP=1 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_ICU -I../../include/ $SQLITE_SOURCE_FILE -o sqlite3.o
 		
 		#Packaging the library
 		ar rcs ../../$OUTPUT_DIR/$OUTPUT_FILE sqlite3.o
