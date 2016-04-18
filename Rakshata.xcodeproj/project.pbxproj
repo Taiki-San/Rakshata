@@ -3409,7 +3409,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
-				OTHER_LDFLAGS = "-lz";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "Rakshata iOS";
 				SDKROOT = iphoneos;
@@ -3455,7 +3458,10 @@
 					"$(PROJECT_DIR)/iOS/Libraries/lib",
 				);
 				LLVM_LTO = YES;
-				OTHER_LDFLAGS = "-lz";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "us.taiki.Rakshata-iOS";
 				PRODUCT_NAME = "Rakshata iOS";
 				SDKROOT = iphoneos;
