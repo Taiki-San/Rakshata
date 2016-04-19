@@ -303,6 +303,11 @@ enum
 
 - (void) setFrameSize : (NSSize) newSize
 {
+	if(newSize.width > 300)
+		newSize.height = 23;
+	else
+		newSize.height = 40;
+		
 	[super setFrameSize:(cachedSize = newSize)];
 }
 
