@@ -39,49 +39,47 @@ void logR(const char *error, ...)
 
 int libcurlErrorCode(CURLcode code)
 {
-    bool noLog = false;
     int ret_value = CODE_RETOUR_DL_CLOSE;
-    char log_message[100];
+	
     switch(code)
     {
         case CURLE_FAILED_INIT :
         {
-            strncpy(log_message, "Initialization failed", 100);
+            logR("Initialization failed");
             break;
         }
 
         case CURLE_URL_MALFORMAT:
         {
-            strncpy(log_message, "URL is malformated", 100);
+            logR("URL is malformated");
             break;
         }
         case CURLE_COULDNT_RESOLVE_PROXY:
         {
-            strncpy(log_message, "Failed at resolve the proxy", 100);
+            logR("Failed at resolve the proxy");
             break;
         }
         case CURLE_COULDNT_RESOLVE_HOST:
         case CURLE_COULDNT_CONNECT:
         {
             ret_value = CODE_FAILED_AT_RESOLVE;
-            noLog = true;
             break;
         }
         case CURLE_PARTIAL_FILE:
         {
-            strncpy(log_message, "Partial file", 100);
+            logR("Partial file");
             ret_value = CODE_RETOUR_PARTIAL;
             break;
         }
         case CURLE_OUT_OF_MEMORY:
         {
-			strncpy(log_message, "Everything is screwed up...", 100);
+			logR("Everything is screwed up...");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_OPERATION_TIMEDOUT:
         {
-            strncpy(log_message, "Request timed out", 100);
+            logR("Request timed out");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
@@ -89,30 +87,26 @@ int libcurlErrorCode(CURLcode code)
 		case CURLE_WRITE_ERROR:
         {
             ret_value = CODE_RETOUR_DL_CLOSE;
-            noLog = true;
             break;
         }
 		case CURLE_SSL_CONNECT_ERROR:
         case CURLE_SSL_CACERT_BADFILE:
         {
-            strncpy(log_message, "SSL error", 100);
+			logR("TLS error");
             ret_value = CODE_RETOUR_INTERNAL_FAIL;
             break;
         }
         case CURLE_SSL_CACERT:
         {
-            noLog = true;
             break;
         }
 
         default:
         {
-            snprintf(log_message, 100, "Unknown libcURL error: %d", code);
+            logR("Unknown libcURL error: %d (%s)", code, curl_easy_strerror(code));
             break;
         }
     }
-    if(!noLog)
-        logR(log_message);
 	
     return ret_value;
 }
