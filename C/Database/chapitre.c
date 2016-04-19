@@ -96,6 +96,7 @@ void getChapterInstalled(PROJECT_DATA *projectDB)
 	if(temporaryInstalledList == NULL)
 		return;
 
+	//TODO: replace this code by something listing the directory and registering the all the existing chapters, populating the 'local' database
     for(size_t pos = 0; pos < projectDB->nbChapter; pos++)
     {
         if(checkChapterReadable(*projectDB, projectDB->chaptersFull[pos]))

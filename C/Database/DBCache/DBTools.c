@@ -577,9 +577,11 @@ bool isInstalled(PROJECT_DATA project, char * basePath)
 			if(isNbr(entry->d_name[lengthChapterPrefix]))
 				retValue = checkChapterReadable(project, (uint) atol(&(entry->d_name[lengthChapterPrefix])) * 10);
 		}
+		
 		else if(!strncmp(entry->d_name, VOLUME_PREFIX, lengthVolPrefix) && strlen(entry->d_name) > lengthVolPrefix)
 		{
-			if(isNbr(entry->d_name[lengthVolPrefix]))
+			//checkTomeReadable will call getUpdatedTomeList if there is no volumes, but this can lead to a deadlock if we're being called from copyOutputDBToStruct
+			if(isNbr(entry->d_name[lengthVolPrefix]) && project.nbVolumes != 0)
 				retValue = checkTomeReadable(project, (uint) atol(&(entry->d_name[lengthVolPrefix])));
 		}
 	}
