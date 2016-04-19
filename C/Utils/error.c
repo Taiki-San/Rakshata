@@ -65,6 +65,8 @@ int libcurlErrorCode(CURLcode code)
             ret_value = CODE_FAILED_AT_RESOLVE;
             break;
         }
+			
+		case CURLE_RECV_ERROR:
         case CURLE_PARTIAL_FILE:
         {
             logR("Partial file");
