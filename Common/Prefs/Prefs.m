@@ -113,58 +113,49 @@ enum
 	return _customColor;
 }
 
-+ (NSString *) getFontName : (byte) context
++ (NSFont *) getFont : (byte) context ofSize : (CGFloat) size
 {
-	NSString * output = nil;
+	NSFont * output;
 	
 	switch (context)
 	{
-		case GET_FONT_TITLE:
+		case FONT_TITLE:
 		{
-			output = @"Futura";
+			output = [NSFont fontWithName:@"Futura" size:size];
 			break;
 		}
-		case GET_FONT_STANDARD:
+		case FONT_STANDARD:
 		{
 #if !TARGET_OS_IPHONE
-			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
-				output = @".AppleSystemUIFont";
-			else
-				output = @"Helvetica";
+			output = [NSFont systemFontOfSize:size];
 #else
 			output = @".SFUIText-Regular";
 #endif
 			break;
 		}
-		case GET_FONT_TAGS:
-		case GET_FONT_PLACEHOLDER:
+			
+		case FONT_AUTHOR_ITALIC:
+		case FONT_TAGS:
+		case FONT_PLACEHOLDER:
 		{
 #if !TARGET_OS_IPHONE
-			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
-				output = @".AppleSystemUIFontItalic";
-			else
-				output = @"Helvetica-Oblique";
+			output = [[NSFontManager sharedFontManager] fontWithFamily:[NSFont systemFontOfSize:size].familyName traits:NSItalicFontMask weight:0 size:size];
 #else
-			output = [[UIFont italicSystemFontOfSize:14] fontName];
-			NSLog(@"%@", output);
+			output = [UIFont italicSystemFontOfSize:size];
 #endif
 			break;
 		}
-		case GET_FONT_RD_BUTTONS:
-		case GET_FONT_SR_TITLE:
-		case GET_FONT_ABOUT:
-		case GET_FONT_PREFS_TITLE:
+		case FONT_RD_BUTTONS:
+		case FONT_SR_TITLE:
+		case FONT_ABOUT:
+		case FONT_PREFS_TITLE:
 		{
-#if !TARGET_OS_IPHONE
-			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
-				output = @".AppleSystemUIFontBold";
-			else
-				output = @"Helvetica-Bold";
-#else
-			output = @".SFUIText-Semibold";
-#endif
+			output = [NSFont boldSystemFontOfSize:size];
 			break;
 		}
+			
+		default:
+			output = nil;
 	}
 	
 	return output;

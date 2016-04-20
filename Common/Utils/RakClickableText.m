@@ -29,7 +29,7 @@
 	
 	if(self != nil)
 	{
-		self.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
+		self.font = [Prefs getFont:FONT_STANDARD ofSize:13];
 		[self sizeToFit];
 		
 		self.clicTarget = responder;

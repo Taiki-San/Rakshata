@@ -110,7 +110,7 @@ uint _currentTheme;
 			if(number == nil)
 				return;
 			
-			number.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:9];
+			number.font = [Prefs getFont:FONT_STANDARD ofSize:9];
 			[number sizeToFit];
 			
 			[self addSubview:number];

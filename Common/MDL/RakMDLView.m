@@ -44,7 +44,7 @@ enum
 		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:COLOR_SURVOL]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
-			[dropPlaceHolder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:15]];
+			[dropPlaceHolder setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:15]];
 			[dropPlaceHolder sizeToFit];
 			[dropPlaceHolder setHidden:YES];
 			[self addSubview:dropPlaceHolder];

@@ -294,7 +294,7 @@ enum
 	{
 		result = [[RakText alloc] init];
 		
-		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+		[result setFont:[Prefs getFont:FONT_STANDARD ofSize:13]];
 		[result setIdentifier: @"PFUDOR"];
 	}
 	
@@ -346,7 +346,7 @@ enum
 		case ROW_VOLUME:
 		{
 			if(titleColumn)
-				ret_value = [NSString stringWithFormat:@"Tome%c", numberOfVolumes == 1 ? '\0' : 's'];
+				ret_value = [NSString stringWithFormat:NSLocalizedString(@"VOLUME%c", nil), numberOfVolumes == 1 ? '\0' : 's'];
 			else
 			{
 				if(numberOfVolumes == numberOfVolumesInstalled)

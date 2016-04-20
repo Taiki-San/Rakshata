@@ -148,7 +148,7 @@ enum
 	if(output != nil)
 	{
 		output.alignment = NSTextAlignmentCenter;
-		output.font = [NSFont fontWithName:[Prefs getFontName:fontCode] size:fontSize];
+		output.font = [Prefs getFont:fontCode ofSize:fontSize];
 		
 		[output.cell setWraps : YES];
 		[output sizeToFit];
@@ -332,7 +332,7 @@ enum
 {
 	[super initContent];
 	
-	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : GET_FONT_STANDARD : 12];
+	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : FONT_STANDARD : 12];
 	if(projectName != nil)
 	{
 		projectName.fixedWidth = 180;
@@ -358,7 +358,7 @@ enum
 		
 		//Create or update the main view
 		if(projectAuthor == nil)
-			projectAuthor = [self getTextElement:getStringForWchar(_project.authorName) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
+			projectAuthor = [self getTextElement:getStringForWchar(_project.authorName) :[self getTagTextColor] : FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
 		else
 		{
 			projectAuthor.stringValue = getStringForWchar(_project.authorName);
@@ -377,7 +377,7 @@ enum
 		
 		//Create or update the main views
 		if(typeProject == nil)
-			typeProject = [self getTextElement:getStringForWchar(getCatNameForCode(_project.category)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
+			typeProject = [self getTextElement:getStringForWchar(getCatNameForCode(_project.category)) :[self getTagTextColor] : FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
 		else
 		{
 			typeProject.stringValue = getStringForWchar(getCatNameForCode(_project.category));
@@ -385,7 +385,7 @@ enum
 		}
 		
 		if(tagProject == nil)
-			tagProject = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : GET_FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
+			tagProject = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : FONT_STANDARD : SUB_ELEMENT_FONT_SIZE];
 		else
 		{
 			tagProject.stringValue = getStringForWchar(getTagNameForCode(_project.mainTag));

@@ -84,7 +84,8 @@ RakImage * loadProjectImage(const PROJECT_DATA project, const char * suffix, NSS
 		RakText * text = [[RakText alloc] initWithText:getStringForWchar(project.projectName) :[Prefs getSystemColor:COLOR_ICON_TEXT]];
 		if(text != nil)
 		{
-			text.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:15];
+			
+			text.font = [Prefs getFont:FONT_TITLE ofSize:15];
 			text.alignment = NSCenterTextAlignment;
 			text.enableWraps = YES;
 			text.fixedWidth = size.width * 3 / 4;

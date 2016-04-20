@@ -146,14 +146,15 @@ enum COLOR_REQUEST
 };
 
 enum FONT_REQUEST {
-	GET_FONT_TITLE,
-	GET_FONT_STANDARD,
-	GET_FONT_PLACEHOLDER,
-	GET_FONT_TAGS,
-	GET_FONT_SR_TITLE,
-	GET_FONT_RD_BUTTONS,
-	GET_FONT_ABOUT,
-	GET_FONT_PREFS_TITLE
+	FONT_TITLE,
+	FONT_STANDARD,
+	FONT_PLACEHOLDER,
+	FONT_TAGS,
+	FONT_SR_TITLE,
+	FONT_RD_BUTTONS,
+	FONT_ABOUT,
+	FONT_PREFS_TITLE,
+	FONT_AUTHOR_ITALIC
 };
 
 enum KVO_REQUEST {
@@ -203,7 +204,7 @@ enum KVO_REQUEST {
 
 + (RakColor*) getSystemColor : (byte) context;
 
-+ (NSString *) getFontName : (byte) context;
++ (NSFont *) getFont : (byte) context ofSize : (CGFloat) size;
 
 + (void) getPref : (uint) requestID : (void*) outputContainer;
 + (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;

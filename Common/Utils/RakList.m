@@ -389,7 +389,7 @@
 	if(result == nil)
 	{
 		result = [[RakText alloc] init];
-		result.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
+		result.font = [Prefs getFont:FONT_STANDARD ofSize:13];
 		result.identifier = _identifier;
 	}
 	

@@ -206,7 +206,7 @@
 
 + (NSFont *) getFont : (CGFloat) fontSize;
 {
-	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:fontSize];
+	return [Prefs getFont:FONT_TITLE ofSize:fontSize];
 }
 
 - (void) defineBackgroundColor

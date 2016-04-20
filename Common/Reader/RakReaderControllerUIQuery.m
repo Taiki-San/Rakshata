@@ -61,7 +61,7 @@
 	RakText * contentText = [[RakText alloc] initWithText:frame :string :[Prefs getSystemColor : COLOR_HIGHLIGHT]];
 	if(contentText != nil)
 	{
-		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+		[contentText setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:13]];
 		[contentText setAlignment:NSTextAlignmentCenter];
 		[contentText sizeToFit];
 		
@@ -187,7 +187,9 @@
 		
 		[self setSegmentCount:2];
 		
-		NSDictionary * attribute = @{NSFontAttributeName:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]};
+		
+		
+		NSDictionary * attribute = @{NSFontAttributeName:[Prefs getFont:FONT_RD_BUTTONS ofSize:13]};
 		NSSize sizeFirst = [agree sizeWithAttributes:attribute], sizeSecond = [disagree sizeWithAttributes:attribute];
 		
 		if(sizeFirst.width + 1 > widthButton1 || sizeSecond.width + 1 > widthButton2)	//Fuck, not enough space

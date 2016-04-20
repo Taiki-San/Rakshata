@@ -82,7 +82,7 @@ enum
 	projectName = [[RakClickableText alloc] initWithText:@"Rakshata" :[self mainTextColor] responder:self];
 	if(projectName != nil)
 	{
-		projectName.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_ABOUT] size:18];
+		projectName.font = [Prefs getFont:FONT_ABOUT ofSize:18];
 		[projectName sizeToFit];
 		
 		projectName.URL = PROJECT_URL;
@@ -100,7 +100,7 @@ enum
 	
 	if(version != nil)
 	{
-		version.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13];
+		version.font = [Prefs getFont:FONT_STANDARD ofSize:13];
 		[version sizeToFit];
 		
 		[contentView addSubview:version];
@@ -110,7 +110,7 @@ enum
 	devTitle = [[RakText alloc] initWithText:@"Code:" :[self versionTextColor]];
 	if(devTitle != nil)
 	{
-		devTitle.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_ABOUT] size:13];
+		devTitle.font = [Prefs getFont:FONT_ABOUT ofSize:13];
 		[devTitle sizeToFit];
 		
 		[contentView addSubview:devTitle];
@@ -126,7 +126,7 @@ enum
 	designTitle = [[RakText alloc] initWithText:@"Design:" :[self versionTextColor]];
 	if(designTitle != nil)
 	{
-		designTitle.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_ABOUT] size:13];
+		designTitle.font = [Prefs getFont:FONT_ABOUT ofSize:13];
 		[designTitle sizeToFit];
 		
 		[contentView addSubview:designTitle];
@@ -149,7 +149,7 @@ enum
 	FOSS = [[RakClickableText alloc] initWithText:NSLocalizedString(@"FOSS-USAGE", nil) :[self mainTextColor] responder:self];
 	if(FOSS != nil)
 	{
-		FOSS.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:13];
+		FOSS.font = [Prefs getFont:FONT_PLACEHOLDER ofSize:13];
 		[FOSS sizeToFit];
 		
 		FOSS.URL = FOSS_URL;
@@ -159,7 +159,7 @@ enum
 	copyright = [[RakText alloc] initWithText:NSLocalizedString(@"COPYRIGHT", nil) :[self versionTextColor]];
 	if(copyright != nil)
 	{
-		copyright.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:11];
+		copyright.font = [Prefs getFont:FONT_STANDARD ofSize:11];
 		[copyright sizeToFit];
 		
 		[contentView addSubview:copyright];

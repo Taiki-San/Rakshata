@@ -43,7 +43,7 @@
 	if(contentText != nil)
 	{
 		[contentText setAlignment:NSTextAlignmentCenter];
-		[contentText setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13]];
+		[contentText setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:13]];
 		[contentText sizeToFit];
 		
 		[self addSubview : contentText];

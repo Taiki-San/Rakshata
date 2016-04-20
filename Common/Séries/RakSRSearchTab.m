@@ -233,7 +233,7 @@ enum
 
 - (NSFont *) placeholderFont
 {
-	return [NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:14];
+	return [Prefs getFont:FONT_PLACEHOLDER ofSize:14];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

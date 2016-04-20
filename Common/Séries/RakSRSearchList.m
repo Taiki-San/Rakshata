@@ -130,7 +130,7 @@
 			view.drawsBackground = YES;
 		}
 		
-		view.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:11];
+		view.font = [Prefs getFont:FONT_STANDARD ofSize:11];
 	}
 	
 	return view;

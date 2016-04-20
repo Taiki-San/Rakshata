@@ -89,7 +89,7 @@ enum
 		placeholder = [[RakText alloc] initWithText:NSLocalizedString(@"PREFS-REPO-PLACEHOLDER-TUTORIAL", nil) :[self placeholderColor]];
 		if(placeholder != nil)
 		{
-			[placeholder setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_PLACEHOLDER] size:13]];
+			[placeholder setFont:[Prefs getFont:FONT_PLACEHOLDER ofSize:13]];
 			[placeholder.cell setWraps:YES];
 			
 			CGFloat availableWidth = (WIDTH - BORDER - PREFS_REPO_LIST_WIDTH);

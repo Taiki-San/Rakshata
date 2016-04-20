@@ -61,7 +61,7 @@ enum
 				[close setAction:@selector(close)];
 				
 				[close.cell setActiveAllowed:NO];
-				[close.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
+				[close.cell setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:11]];
 				
 				[self addSubview:close];
 			}
@@ -125,7 +125,7 @@ enum
 				flush.action = @selector(flushFilters);
 
 				[flush.cell setActiveAllowed:NO];
-				[flush.cell setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:11]];
+				[flush.cell setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:11]];
 				
 				[self addSubview:flush];
 			}

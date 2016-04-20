@@ -107,7 +107,7 @@
 			[projectName.cell setWraps:YES];
 			needProcessName = YES;
 			
-			[projectName setFont : [NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size: 18]];
+			[projectName setFont : [Prefs getFont:FONT_TITLE ofSize: 18]];
 			projectName.fixedWidth = projectName.fixedWidth;	//Will refresh our width
 			[projectName setFrameOrigin : [self projectNamePos : _bounds.size]];
 			
@@ -134,8 +134,7 @@
 			[authorName.cell setWraps:YES];
 			needProcessAuthor = YES;
 			
-			[authorName setFont : [[NSFontManager sharedFontManager] fontWithFamily:[Prefs getFontName:GET_FONT_TITLE]
-																			 traits:NSItalicFontMask weight:0 size: 13]];
+			authorName.font = [Prefs getFont:FONT_AUTHOR_ITALIC ofSize:13];
 			authorName.fixedWidth = authorName.fixedWidth;	//Will refresh our width
 			[authorName setFrameOrigin : [self authorNamePos : _bounds.size]];
 			

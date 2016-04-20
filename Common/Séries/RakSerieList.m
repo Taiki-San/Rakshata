@@ -533,13 +533,13 @@
 			
 			if([item isRootItem])
 			{
-				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_TITLE] size:14]];
+				[(RakText*) rowView setFont:[Prefs getFont:FONT_TITLE ofSize:14]];
 				[(RakText*) rowView setTextColor:[self getFontTopColor]];
 				((RakText*) rowView).forcedOffsetY = 2;
 			}
 			else
 			{
-				[(RakText*) rowView setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+				[(RakText*) rowView setFont:[Prefs getFont:FONT_STANDARD ofSize:13]];
 				[(RakText*) rowView setTextColor:[self getFontClickableColor]];
 			}
 		}

@@ -175,12 +175,12 @@
 
 - (void) setProjectTitle : (PROJECT_DATA) project
 {
-	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ - %@", [self getProjectName], getStringForWchar(project.projectName)];
+	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ – %@", [self getProjectName], getStringForWchar(project.projectName)];
 }
 
 - (void) setCTTitle : (PROJECT_DATA) project : (NSString *) element
 {
-	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ - %@ - %@", [self getProjectName], getStringForWchar(project.projectName), element];
+	((RakContentViewBack *) self.contentView).title = [NSString stringWithFormat:@"%@ – %@ – %@", [self getProjectName], getStringForWchar(project.projectName), element];
 }
 
 #pragma mark - Sheet management

@@ -290,7 +290,7 @@ enum
 			if(title != nil)
 			{
 				if(!_isCompact)
-					title.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:15];
+					title.font = [Prefs getFont:FONT_PREFS_TITLE ofSize:15];
 				[title sizeToFit];
 				
 				[self addSubview:title];
@@ -339,7 +339,7 @@ enum
 					if(!isRoot)
 						detail.URL = @(((REPO_DATA *) repo)->parentRepoID);
 					
-					detail.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:12];
+					detail.font = [Prefs getFont:FONT_STANDARD ofSize:12];
 					[detail sizeToFit];
 					
 					[self addSubview:detail];

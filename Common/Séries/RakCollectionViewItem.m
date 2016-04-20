@@ -49,21 +49,21 @@ enum	{	BORDER_BOTTOM	= 7	};
 {
 	[super initContent];
 	
-	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : GET_FONT_SR_TITLE : 13];
+	projectName = [self getTextElement :getStringForWchar(_project.projectName) : [self getTextColor] : FONT_SR_TITLE : 13];
 	if(projectName != nil)
 	{
 		projectName.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
 		[self addSubview:projectName];
 	}
 	
-	projectAuthor = [self getTextElement:getStringForWchar(_project.authorName) : [self getTextColor] : GET_FONT_STANDARD : 10];
+	projectAuthor = [self getTextElement:getStringForWchar(_project.authorName) : [self getTextColor] : FONT_STANDARD : 10];
 	if(projectAuthor != nil)
 	{
 		projectAuthor.fixedWidth = RCVC_MINIMUM_WIDTH * 0.8;
 		[self addSubview:projectAuthor];
 	}
 	
-	mainTag = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : GET_FONT_STANDARD : 10];
+	mainTag = [self getTextElement:getStringForWchar(getTagNameForCode(_project.mainTag)) :[self getTagTextColor] : FONT_STANDARD : 10];
 	if(mainTag != nil)
 		[self addSubview:mainTag];
 	

@@ -351,7 +351,7 @@ enum
 	RakText * header = [[RakText alloc] initWithText:[self stringTitleMetadata] :[self titleColor]], * title;
 	if(header != nil)
 	{
-		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
+		header.font = [Prefs getFont:FONT_PREFS_TITLE ofSize:[NSFont systemFontSize]];
 		header.textColor = [self mainTitleColor];
 
 		header.enableWraps = YES;
@@ -489,7 +489,7 @@ enum
 	if(header != nil)
 	{
 		header.alignment = NSTextAlignmentCenter;
-		header.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:[NSFont systemFontSize]];
+		header.font = [Prefs getFont:FONT_PREFS_TITLE ofSize:[NSFont systemFontSize]];
 		header.textColor = [self mainTitleColor];
 
 		[header sizeToFit];

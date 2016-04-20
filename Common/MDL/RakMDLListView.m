@@ -186,7 +186,7 @@ enum
 	NSRect curFrame;
 	NSPoint newPoint;
 	
-	if(wasMultiLine != (cachedSize.height > 30 && cachedSize.width < 300))
+	if(wasMultiLine != cachedSize.height > 30)
 	{
 		wasMultiLine = !wasMultiLine;
 		
@@ -303,7 +303,7 @@ enum
 
 - (void) setFrameSize : (NSSize) newSize
 {
-	if(newSize.width > 300)
+	if(newSize.width > 250)
 		newSize.height = 23;
 	else
 		newSize.height = 40;

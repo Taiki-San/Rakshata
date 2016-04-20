@@ -58,7 +58,7 @@ enum
 		title = [[RakClickableText alloc] initWithText:getStringForWchar(_project.projectName) :[self textColor]];
 		if(title != nil)
 		{
-			title.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_PREFS_TITLE] size:15];
+			title.font = [Prefs getFont:FONT_PREFS_TITLE ofSize:15];
 			
 			((RakClickableText *) title).ignoreURL = YES;
 			title.clicTarget = self;

@@ -103,7 +103,7 @@ enum
 	percentage = [[RakText alloc] initWithText:NSLocalizedString(@"INITIALIZATION", nil) :[Prefs getSystemColor:COLOR_CLICKABLE_TEXT]];
 	if(percentage != nil)
 	{
-		percentage.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:20];
+		percentage.font = [Prefs getFont:FONT_STANDARD ofSize:20];
 		[percentage sizeToFit];
 		percentage.alignment = NSTextAlignmentCenter;
 

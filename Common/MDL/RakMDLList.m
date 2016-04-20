@@ -174,7 +174,7 @@ enum
 		if(result.invalidData)
 			[_tableView reloadData];
 		
-		[result setFont:[NSFont fontWithName:[Prefs getFontName:GET_FONT_STANDARD] size:13]];
+		[result setFont:[Prefs getFont:FONT_STANDARD ofSize:13]];
 		
 		result.identifier = @"Mane 6";
 	}

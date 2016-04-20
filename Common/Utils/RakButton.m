@@ -284,7 +284,7 @@
 			textCell.centered = YES;
 			textCell.alignment = NSTextAlignmentCenter;
 			textCell.textColor = [self getFontColor];
-			textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
+			textCell.font = [Prefs getFont:FONT_RD_BUTTONS ofSize:13];
 			
 			if(!hasRegisteredThemeUpdates)
 			{
@@ -316,7 +316,7 @@
 	if(textCell != nil)	//text cell
 	{
 		[self reloadFontColor];
-		textCell.font = [NSFont fontWithName:[Prefs getFontName:GET_FONT_RD_BUTTONS] size:13];
+		textCell.font = [Prefs getFont:FONT_RD_BUTTONS ofSize:13];
 	}
 	else					//img cell
 	{
