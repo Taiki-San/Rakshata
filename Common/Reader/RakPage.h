@@ -61,7 +61,7 @@
 - (void) buildCache : (NSNumber *) session;
 - (void) updatePCState : (uint) page : (uint) currentCacheSession : (RakView *) view;
 
-- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize;
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView fromSize: (NSSize) previousSize toSize: (NSSize) newSize;
 - (void) updateProjectReadingOrder;
 
 - (void) checkIfNewElements;

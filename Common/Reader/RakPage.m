@@ -156,7 +156,7 @@
 	NSSize oldSize = _scrollView.frame.size;
 	
 	[self initialPositionning : _scrollView];
-	[self updateScrollerAfterResize : _scrollView : oldSize];
+	[self updateScrollerAfterResize: _scrollView fromSize:oldSize toSize:frameRect.size];
 	
 	if(isAnimated)
 		[_scrollView setFrameAnimated:container.frame];
@@ -1123,15 +1123,15 @@
 		[RakApp.serie ownFocus];
 }
 
-- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView : (NSSize) previousSize
+- (void) updateScrollerAfterResize : (RakPageScrollView *) scrollView fromSize: (NSSize) previousSize toSize: (NSSize) newSize
 {
 	NSPoint sliderStart = [_scrollView scrollerPosition];
 
 	if(scrollView.pageTooHigh)
-		sliderStart.y += (previousSize.height - scrollView.documentViewFrame.size.height) / 2;
+		sliderStart.y += ((previousSize.height - newSize.height) / 2) / scrollView.magnification;
 	
 	if(scrollView.pageTooLarge)
-		sliderStart.x += (previousSize.width - scrollView.documentViewFrame.size.width) / 2;
+		sliderStart.x += ((previousSize.width - newSize.width) / 2) / scrollView.magnification;
 	
 	[scrollView scrollToPoint:sliderStart];
 }
