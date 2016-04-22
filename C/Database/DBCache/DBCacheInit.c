@@ -16,12 +16,15 @@
 
 #include "dbCache.h"
 
+//The main cache structure
 sqlite3 *cache = NULL;
 uint nbElemInCache = 0;
 
+//The root repo cache
 ROOT_REPO_DATA ** rootRepoList = NULL;
 uint lengthRootRepo = 0;
 
+//The specific subrepo cache
 REPO_DATA ** repoList = NULL;
 uint lengthRepo = 0;
 uint maxRootID = 0;

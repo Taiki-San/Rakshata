@@ -25,18 +25,21 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 	
 	if(output != NULL)
 	{
-		bool canUseOptimization = true;		//Can we assume cacheDBID is sorted?
+		bool canUseOptimization = true;			//Can we assume cacheDBID is sorted?
 		uint pos = 0, ID = 0;
 		
 		while(pos < sizeData)
 		{
-			if(data[pos].cacheDBID < ID)	//There is holes, but numbers are still growing
+			if(data[pos].cacheDBID < ID)		//There are holes, but numbers are still growing
 				ID++;
 			
 			else if(data[pos].cacheDBID == ID)	//Standard case
+			{
+				ID++;	//We assume there is no cacheDBID duplicate
 				pos++;
+			}
 			
-			else							//We're not sorted
+			else								//We're not sorted
 			{
 				canUseOptimization = false;
 				break;
@@ -46,27 +49,40 @@ bool * getInstalledFromData(PROJECT_DATA * data, uint sizeData)
 		
 		sqlite3_stmt* request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_isInstalled)" = 1 ORDER BY "DBNAMETOID(RDB_ID)" ASC");
 		
+		//The SQL request gives us the list of all installed project, and we try to match them to the list we were passed.
+		//If we find a hit, we set the bool in output to true
+		//By using calloc, the default value is false
 		while(sqlite3_step(request) == SQLITE_ROW)
 		{
+			const uint32_t installedID = (uint32_t) sqlite3_column_int(request, RDB_ID-1);
+			
+			//As ID are sorted, and the used ORDER BY in the request, the whole parsing only need to iterate once.
+			//If something is missing, it's not far after and it's not before
+			//O(n) FTW!
 			if(canUseOptimization)
 			{
-				while(pos < nbElemInCache && data[pos].cacheDBID < (uint32_t) sqlite3_column_int(request, RDB_ID-1))
+				while(pos < sizeData && data[pos].cacheDBID < installedID)
 					pos++;
 				
-				if(data[pos].cacheDBID == (uint32_t) sqlite3_column_int(request, RDB_ID-1))
+				//We hit the end of our working set, not point going farther away
+				if(pos >= sizeData)
+					break;
+				
+				if(data[pos].cacheDBID == installedID)
 					output[pos++] = true;
 				
-				else if(pos < nbElemInCache)		//Élément supprimé
-					continue;
-				
-				else
-					break;
+				//Were we to add to after this for the initial if(), we would need to add else break;
+				//	as this would mean the entry we hit doesn't exist in our working set
 			}
+
+			//We must iterate the whole array every time as it's not sorted
+			//It's probably worth sorting a copy before but this would require a significant overhead
+			//	so, we cope with O(n^2) for now
 			else
 			{
-				for(pos = 0; pos < nbElemInCache && data[pos].cacheDBID != (uint32_t) sqlite3_column_int(request, RDB_ID-1); pos++);
+				for(pos = 0; pos < sizeData && data[pos].cacheDBID != installedID; pos++);
 				
-				if(data[pos].cacheDBID == (uint32_t) sqlite3_column_int(request, RDB_ID-1))
+				if(pos < sizeData && data[pos].cacheDBID == installedID)
 					output[pos] = true;
 			}
 		}
@@ -81,18 +97,15 @@ bool isProjectInstalledInCache (uint ID)
 {
 	bool output = false;
 	
-	sqlite3_stmt* request = createRequest(cache, "SELECT * FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
+	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_isInstalled)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	if(cache != NULL)
 	{
 		sqlite3_bind_int(request, 1, (int32_t) ID);
 		
-		if(sqlite3_step(request) == SQLITE_ROW)
-		{
-			if(sqlite3_column_int(request, RDB_isInstalled-1))
-				output = true;
-		}
-			
+		if(sqlite3_step(request) == SQLITE_ROW && sqlite3_column_int(request, 0) != 0)
+			output = true;
+		
 		destroyRequest(request);
 	}
 	
