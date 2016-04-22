@@ -65,6 +65,7 @@
 - (void) updateProjectReadingOrder;
 
 - (void) checkIfNewElements;
+- (void) promptNewDLByChangingPage;
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments;
 
 @end

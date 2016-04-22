@@ -252,18 +252,7 @@
 	if(_posElemInStructure != INVALID_VALUE)
 		[self updateTitleBar :_project :self.isTome :_posElemInStructure];
 	
-	if(queryHidden)
-	{
-		MDL * tabMDL = [RakApp MDL];
-
-		if(tabMDL != nil)
-			newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData:tabMDL :_project :self.isTome :_queryArrayData :_queryArraySize];
-		else
-			free(_queryArrayData);
-
-		_queryArrayData = NULL;
-		queryHidden = NO;
-	}
+	[self promptNewDLByChangingPage];
 }
 
 - (void) setUpViewForAnimation : (uint) mainThread

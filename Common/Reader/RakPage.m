@@ -14,6 +14,11 @@
  **                                                                                         **
  ********************************************************************************************/
 
+enum
+{
+	PAGES_BEFORE_PROMPT_NEXT_DL = 15
+};
+
 @implementation Reader (PageManagement)
 
 - (BOOL) initPage : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage
@@ -508,7 +513,7 @@
 
 - (BOOL) nextPage : (BOOL) animated
 {
-	return [self changePage:READER_ETAT_NEXTPAGE:animated];
+	return [self changePage:READER_ETAT_NEXTPAGE :animated];
 }
 
 - (void) prevPage
@@ -709,6 +714,8 @@
 		[self failure];
 		return NO;
 	}
+	else
+		dataLoaded = YES;
 	
 	[self updateProjectReadingOrder];
 	
@@ -777,7 +784,9 @@
 	[self updatePage:_data.pageCourante : _data.nbPage];	//And we update the bar
 	
 	if(switchType == READER_ETAT_DEFAULT)
+	{
 		[self updateEvnt];
+	}
 	else
 	{
 		RakPageScrollView * view = mainScroller.arrangedObjects[[mainScroller getPatchedPosForIndex:_data.pageCourante + 1]];
@@ -797,6 +806,7 @@
 		else
 			_scrollView = nil;
 		
+		[self promptNewDLByChangingPage];
 		[self optimizeCache : nil];
 	}
 	
@@ -1768,8 +1778,28 @@
 	argument.nbElem = nbElemToGrab;
 	
 	[self performSelectorOnMainThread:@selector(promptToGetNewElems:) withObject:argument waitUntilDone:YES];
+}
+
+- (BOOL) shouldPromptNewDL
+{
 	
-	releaseCTData(localProject);
+	return dataLoaded && _data.nbPage - _data.pageCourante < PAGES_BEFORE_PROMPT_NEXT_DL;
+}
+
+- (void) promptNewDLByChangingPage
+{
+	if(queryHidden && self.shouldPromptNewDL)
+	{
+		MDL * tabMDL = [RakApp MDL];
+		
+		if(tabMDL != nil)
+			newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData:tabMDL :_project :self.isTome :_queryArrayData :_queryArraySize];
+		else
+			free(_queryArrayData);
+		
+		_queryArrayData = NULL;
+		queryHidden = NO;
+	}
 }
 
 - (void) promptToGetNewElems : (RakArgumentToRefreshAlert *) arguments
@@ -1807,7 +1837,7 @@
 		}
 	}
 	
-	if(self.mainThread == TAB_READER)
+	if(self.mainThread == TAB_READER && [self shouldPromptNewDL])
 	{
 		newStuffsQuery = [[RakReaderControllerUIQuery alloc] initWithData : tabMDL : _project :self.isTome :selection :nbElemValidated];
 	}
@@ -1817,6 +1847,8 @@
 		_queryArraySize = nbElemValidated;
 		queryHidden = YES;
 	}
+	
+	releaseCTData(localProject);
 }
 
 #pragma mark - Display suggestions when done reading stuffs
