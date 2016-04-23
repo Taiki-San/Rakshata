@@ -14,7 +14,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-//#define MAINTAIN_SUPER_LEGACY_COMPATIBILITY
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 //#define FLUSH_PREFS_PROPERLY
 

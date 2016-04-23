@@ -127,7 +127,6 @@ void mainDLProcessing(MDL_MWORKER_ARG * arg)
 				}
 				MUTEX_UNLOCK(installSharedMemoryReadWrite);
 			}
-				
 		}
 		
 		pthread_cond_broadcast(&condResumeExecution);	//On a reçu la requête, le thread sera libéré dès que le mutex sera debloqué
@@ -200,7 +199,20 @@ bool MDLSendMessage(uint code)
 	if(threadID != NULL && isThreadStillRunning(*threadID))
 	{
 		requestID = code;
-		pthread_cond_wait(&condResumeExecution, &mutexLockMainThread);
+		
+		//We timeout after one second
+		struct timeval tv;
+		struct timespec ts;
+		gettimeofday(&tv, NULL);
+		ts.tv_sec = tv.tv_sec + 1;
+		ts.tv_nsec = tv.tv_usec * 1000;
+
+		//We timedout, so probably a deadlock, great...
+		if(pthread_cond_timedwait(&condResumeExecution, &mutexLockMainThread, &ts) == ETIMEDOUT)
+		{
+			//We don't have much to do though
+		}
+		
 		ret_value = true;
 	}
 	

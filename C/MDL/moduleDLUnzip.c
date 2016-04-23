@@ -116,7 +116,7 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 			 Pour ça, on va classer les clées en fonction des pages, retirer les éléments invalides, puis on chiffre tout ce beau monde*/
 
 			uint nbFichierDansConfigFile = 0;
-			char **nomPage = NULL;
+			char **pageNames = NULL;
 			byte temp[256];
 
 			//On vire les paths des noms de fichiers
@@ -134,26 +134,30 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 				}
 			}
 
+			//We compact everything
 			for(uint i = 0; i < nbFichiers; i++)
 			{
-				if(filename[i] != NULL && !strcmp(filename[i], CONFIGFILE)) //On vire la clées du config.dat
+				if(filename[i] == NULL || !strcmp(filename[i], CONFIGFILE)) //On vire la clé du config.dat
 				{
-					free(filename[i]);
-					filename[i] = NULL;
-
-					while(++i < nbFichiers - 2)
+					if(filename[i] != NULL)
 					{
-						memcpy(&(pass[i]), &(pass[i + 1]), sizeof(pass[0]));
+						nbFichierValide -= 1;
+						free(filename[i]);
 					}
 
-					nbFichierValide--;
-
-					break;
+					for(uint iter = i; iter < nbFichiers - 1; iter++)
+					{
+						filename[iter] = filename[iter + 1];
+						memcpy(&(pass[iter]), &(pass[iter + 1]), sizeof(pass[0]));
+					}
+					
+					nbFichiers -= 1;
 				}
 			}
 
 			//On va classer les fichier et les clées en ce basant sur config.dat
-			if((nomPage = loadChapterConfigDat(pathToConfigFile, &nbFichierDansConfigFile, NULL)) == NULL || (nbFichierDansConfigFile != nbFichierValide && nbFichierDansConfigFile != nbFichierValide-1))
+			if((pageNames = loadChapterConfigDat(pathToConfigFile, &nbFichierDansConfigFile, NULL)) == NULL
+			   || (nbFichierDansConfigFile != nbFichierValide && nbFichierDansConfigFile != nbFichierValide - 1))
 			{
 #ifdef EXTENSIVE_LOGGING
 				logR("config.dat invalid: encryption aborted");
@@ -161,51 +165,49 @@ bool decompressChapter(void *inputData, size_t sizeInput, char *outputPath, PROJ
 
 				removeFolder(outputPath);
 
-				if(nomPage != NULL)
+				if(pageNames != NULL)
 				{
-					for(uint i = 0; nbFichierDansConfigFile; free(nomPage[i++]));
-					free(nomPage);
+					for(uint i = 0; nbFichierDansConfigFile; free(pageNames[i++]));
+					free(pageNames);
 				}
 				ret_value = false;
 				goto quit;
 			}
 
-#ifdef MAINTAIN_SUPER_LEGACY_COMPATIBILITY
-			//Some legacy archive contain complexe file name, so we have to decapitalize them
-			for(uint i = 0; filename[i][0]; minimizeString(filename[i++]));
-#endif
+			//Ensure the strings are minimized to properly compare them
+			for(uint i = 0; i < nbFichiers; i++)
+				minimizeString(filename[i]);
+				
+			for(uint i = 0; i < nbFichierDansConfigFile; i++)
+				minimizeString(pageNames[i]);
 
-			//Classement
-			for(uint j, i = 0; i < nbFichiers; i++)
+			//Order the keys to match the order of the pages in config.dat
+			for(uint filenamePos = 0, searchPos; filenamePos < nbFichierDansConfigFile; filenamePos++)
 			{
-				if(filename[i] == NULL)
-					continue;
+				//Try finding the entry onward
+				for(searchPos = filenamePos; searchPos < nbFichiers && strcmp(pageNames[filenamePos], filename[searchPos]); searchPos++);
 
-				minimizeString(nomPage[i]);
-
-				for(j = i; j < nbFichiers; j++)
+				//Not working, trying backward
+				if(searchPos == nbFichiers)
+					for(searchPos = filenamePos; searchPos-- > 0 && strcmp(pageNames[filenamePos], filename[searchPos]););
+				
+				//Incorrect sorting
+				if(searchPos != filenamePos && searchPos < nbFichiers)
 				{
-					if(filename[j] != NULL && !strcmp(nomPage[i], filename[j]))
-						break;
-				}
-
-				if(j != i && j < nbFichiers) //Mauvais classement
-				{
-					void * entry = filename[i];
-					filename[i] = filename[j];
-					filename[j] = entry;
+					void * entry = filename[filenamePos];
+					filename[filenamePos] = filename[searchPos];
+					filename[searchPos] = entry;
 
 					char swapItem[SHA256_DIGEST_LENGTH];
-
-					memcpy(swapItem, pass[i], SHA256_DIGEST_LENGTH); //On déplace les clées
-					memcpy(pass[i], pass[j], SHA256_DIGEST_LENGTH);
-					memcpy(pass[j], swapItem, SHA256_DIGEST_LENGTH);
+					memcpy(swapItem, pass[filenamePos], SHA256_DIGEST_LENGTH); //On déplace les clées
+					memcpy(pass[filenamePos], pass[searchPos], SHA256_DIGEST_LENGTH);
+					memcpy(pass[searchPos], swapItem, SHA256_DIGEST_LENGTH);
 					crashTemp(swapItem, SHA256_DIGEST_LENGTH);
 				}
 			}
 
-			for(uint i = 0; i < nbFichierDansConfigFile; free(nomPage[i++]));
-			free(nomPage);
+			for(uint i = 0; i < nbFichierDansConfigFile; free(pageNames[i++]));
+			free(pageNames);
 
 			//Global encryption buffer
 			byte * hugeBuffer = malloc(((SHA256_DIGEST_LENGTH + 1) * nbFichierValide + 15 + CRYPTO_BUFFER_SIZE) * sizeof(byte));
