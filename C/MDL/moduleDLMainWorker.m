@@ -210,7 +210,10 @@ bool MDLSendMessage(uint code)
 		//We timedout, so probably a deadlock, great...
 		if(pthread_cond_timedwait(&condResumeExecution, &mutexLockMainThread, &ts) == ETIMEDOUT)
 		{
+#ifdef EXTENSIVE_LOGGING
 			//We don't have much to do though
+			logR("Timed out while waiting for the broker to release us :/");
+#endif
 		}
 		
 		ret_value = true;
