@@ -123,11 +123,11 @@ void addToPref(char* flag, char *stringToAdd)
 
 void removeFromPref(char* flag)
 {
-    uint i = 0, length = 0;
+    uint i = 0, length = 0, OBLength, CBLength;
     char *newPrefs = NULL, *prefs = NULL, *prefsBak, openingBracket[16], closingBracket[16];
 	
-	snprintf(openingBracket, sizeof(openingBracket), "<%s>", flag);
-	snprintf(closingBracket, sizeof(closingBracket), "</%s>", flag);
+	OBLength = (uint) snprintf(openingBracket, sizeof(openingBracket), "<%s>", flag);
+	CBLength = (uint) snprintf(closingBracket, sizeof(closingBracket), "</%s>", flag);
 
     prefsBak = prefs = loadPrefFile();
     if(prefs == NULL)
@@ -147,14 +147,14 @@ void removeFromPref(char* flag)
     while(*prefs && i < length)
     {
 		//Are we in front of the bracket we want to remove?
-        if(!strcmp(prefs, openingBracket))
+        if(!strncmp(prefs, openingBracket, OBLength))
         {
 			//Skip the opening bracket, and start looking for the closing backet
-            prefs += strlen(openingBracket) - 1;
-            while(strcmp(++prefs, closingBracket));
+            prefs += OBLength - 1;
+            while(strncmp(++prefs, closingBracket, CBLength));
 			
 			//Look for the next opening backet
-			prefs += strlen(closingBracket) - 1;
+			prefs += CBLength - 1;
             while(*++prefs && *prefs != '<');
         }
         else
