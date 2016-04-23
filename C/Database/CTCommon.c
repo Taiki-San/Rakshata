@@ -286,11 +286,11 @@ void generateCTUsable(PROJECT_DATA_PARSED * project)
 					for(uint posInject = 0; posInject < nbElemToInject; posInject++)
 					{
 						//Okay, we look for the closest value in the list
-						uint dataToInject = getData(isTome, dataInject, posInject), posLowestDiff = 0;
-						for(uint posBase = 1, newDiff, lowestDiff = getData(isTome, outputData, 0) - dataToInject; posBase < nbElemBase; posBase++)
+						uint dataToInject = getData(isTome, dataInject, posInject), posLowestDiff = 0, posBase = 1;
+						for(int newDiff, lowestDiff = (int) (dataToInject - getData(isTome, outputData, 0)); posBase < nbElemBase; posBase++)
 						{
-							newDiff = getData(isTome, outputData, posBase) - dataToInject;
-							if(newDiff < lowestDiff)
+							newDiff = (int) (dataToInject - getData(isTome, outputData, posBase));
+							if(abs(newDiff) < abs(lowestDiff))
 							{
 								posLowestDiff = posBase;
 								lowestDiff = newDiff;
