@@ -421,11 +421,11 @@ void consolidateCache()
 void addRootRepoToDB(ROOT_REPO_DATA ** newRepo, const uint nbRoot)
 {
 	uint oldEnd = lengthRepo;
-	void * lastElement = repoList[oldEnd - 1];
+	void * lastElement = oldEnd != 0 ? repoList[oldEnd - 1] : NULL;
 	insertRootRepoCache(newRepo, nbRoot);
 	
 	//We recover the begining of the added repo section
-	if(oldEnd >= lengthRepo || repoList[oldEnd - 1] != lastElement)
+	if(oldEnd != 0 && (oldEnd >= lengthRepo || repoList[oldEnd - 1] != lastElement))
 	{
 		for(oldEnd = 0; oldEnd < lengthRepo && repoList[oldEnd] != lastElement; oldEnd++);
 	}

@@ -77,7 +77,9 @@ RakImportBaseController <RakImportIO> * createIOForFilename(NSString * filename)
 {
 	RakImportBaseController <RakImportIO> * output = _createIOForFilename(filename);
 	
-	if(output == nil)	//_createIOForFilename should handle the files if the extension is there and correct. Otherwise, we try to recover whatever we can
+	//_createIOForFilename should handle the files if the extension is there and correct. Otherwise, we try to recover whatever we can...
+	//... unless this is a source file. Yuk!
+	if(output == nil && [[filename pathExtension] caseInsensitiveCompare:SOURCE_FILE_EXT] != NSOrderedSame)
 	{
 		FILE * file = fopen([filename UTF8String], "rb");
 		if(file != NULL)

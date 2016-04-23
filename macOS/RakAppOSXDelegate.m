@@ -86,34 +86,23 @@
 	return YES;
 }
 
-- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
-{
-	NSString * extension = [filename pathExtension];
-	BOOL retValue = NO;
-	
-	//Source insertions are only supported on the per file basis
-	if([extension caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
-	{
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
-		});
-		return YES;
-	}
-	
-	//Okay, file Import
-	RakImportBaseController <RakImportIO> * IOController = createIOForFilename(filename);
-	
-	if(IOController != nil)
-		[RakImportController importFile:@[IOController]];
-	else
-		NSLog(@"Couldn't open %@, either a permission issue or an invalid file :/", filename);
-	
-	return retValue;
-}
-
-- (void)application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames;
+- (BOOL) _openFiles:(NSArray<NSString *> *)filenames
 {
 	NSMutableArray * collector = [NSMutableArray array];
+	
+	//Source insertions are only supported on the per file basis
+	if([filenames count] == 1)
+	{
+		NSString * filename = [filenames firstObject];
+		if([[filename pathExtension] caseInsensitiveCompare:SOURCE_FILE_EXT] == NSOrderedSame)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[[[RakAddRepoController alloc] init] analyseFileContent:[NSData dataWithContentsOfFile:filename]];
+			});
+			
+			return YES;
+		}
+	}
 	
 	for(NSString * filename in filenames)
 	{
@@ -127,6 +116,18 @@
 	
 	if([collector count])
 		[RakImportController importFile:[NSArray arrayWithArray:collector]];
+	
+	return [collector count] != 0;
+}
+
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+	return [self _openFiles:@[filename]];
+}
+
+- (void) application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames
+{
+	[self _openFiles:filenames];
 }
 
 - (void) applicationWillBecomeActive:(nonnull NSNotification *)notification
