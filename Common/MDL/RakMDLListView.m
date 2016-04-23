@@ -462,7 +462,12 @@ enum
 	
 	[self abortProcessing];
 	
-	[_controller discardElement: _row withSimilar: status == MDL_CODE_INSTALL_OVER];
+	[_controller discardElement: _row
+#ifdef REMOVE_INSTALLED_FROM_PROJECT_WHEN_REMOVING_ENTRY_IN_MDL_LIST
+					withSimilar:status == MDL_CODE_INSTALL_OVER];
+#else
+					withSimilar:NO];
+#endif
 	
 	if(status == MDL_CODE_DL)
 		MDLDownloadOver(false);
