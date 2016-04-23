@@ -241,8 +241,6 @@
 	[tabReader zoomFill:YES];
 }
 
-#pragma mark Debug
-
 - (IBAction) reloadFromRemote : (NSMenuItem *) sender
 {
 	if(self.refreshButtonAvailable == NO)

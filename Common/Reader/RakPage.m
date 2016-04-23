@@ -759,21 +759,29 @@ enum
 		MUTEX_LOCK(cacheMutex);
 		
 		self.preventRecursion = YES;
-		
-		if(animated)
+
+		@try
 		{
-			if(switchType == READER_ETAT_NEXTPAGE)
-				[mainScroller navigateForward:self];
+			if(animated)
+			{
+				if(switchType == READER_ETAT_NEXTPAGE)
+					[mainScroller navigateForward:self];
+				else
+					[mainScroller navigateBack:self];
+			}
 			else
-				[mainScroller navigateBack:self];
+			{
+				[CATransaction begin];
+				[CATransaction setDisableActions:YES];
+				mainScroller.patchedSelectedIndex = _data.pageCourante + 1;
+				[CATransaction commit];
+			}
 		}
-		else
+		@catch (NSException *exception)
 		{
-			[CATransaction begin];
-			[CATransaction setDisableActions:YES];
-			mainScroller.patchedSelectedIndex = _data.pageCourante + 1;
-			[CATransaction commit];
+			NSLog(@"Failed page update :( %@", exception);
 		}
+		
 		self.preventRecursion = NO;
 		
 		MUTEX_UNLOCK(cacheMutex);
