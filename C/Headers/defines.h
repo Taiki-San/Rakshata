@@ -25,10 +25,6 @@
 #define BACKUP_INTERNET_CHECK "http://www.msftncsi.com/ncsi.txt"
 #endif
 
-#ifdef DOWNLOAD_DB_WHEN_EMPTY
-#define REPO_REC_NAME "repo"
-#define PROJECT_REC_NAME "projects"
-#endif
 #define CUSTOM_COLOR_FILE "customTheme"
 
 #define PROJECT_ROOT "project/"

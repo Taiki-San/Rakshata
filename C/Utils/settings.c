@@ -82,8 +82,8 @@ void addToPref(char* flag, char *stringToAdd)
             removeFromPref(flag);
 
         i = strlen(prefs);
-        length = i + strlen(stringToAdd)+2;
-        newPrefs = calloc(1, length+5);
+        length = i + strlen(stringToAdd) + 2;
+        newPrefs = calloc(1, length + 5);
         if(newPrefs == NULL)
         {
             free(prefs);
@@ -96,6 +96,7 @@ void addToPref(char* flag, char *stringToAdd)
 
         snprintf(newPrefs, length, "%s\n%s", prefs, stringToAdd);
 
+		//Remove the duplicate \n
         for(i = j = 2; i < length && newPrefs[j] != 0; i++, j++)
         {
             if(newPrefs[i-2] == '>' && newPrefs[i-1] == '\n' && newPrefs[j] == '\n')
@@ -103,8 +104,10 @@ void addToPref(char* flag, char *stringToAdd)
             if(i != j)
                 newPrefs[i] = newPrefs[j];
         }
+		
         newPrefs[i] = 0;
-        AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
+		
+		AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
         free(newPrefs);
         free(prefs);
     }
@@ -121,8 +124,10 @@ void addToPref(char* flag, char *stringToAdd)
 void removeFromPref(char* flag)
 {
     uint i = 0, length = 0;
-    char *newPrefs = NULL;
-	char *prefs = NULL, *prefsBak;
+    char *newPrefs = NULL, *prefs = NULL, *prefsBak, openingBracket[16], closingBracket[16];
+	
+	snprintf(openingBracket, sizeof(openingBracket), "<%s>", flag);
+	snprintf(closingBracket, sizeof(closingBracket), "</%s>", flag);
 
     prefsBak = prefs = loadPrefFile();
     if(prefs == NULL)
@@ -130,8 +135,9 @@ void removeFromPref(char* flag)
         remove(SETTINGS_FILE);
         return;
     }
+	
     length = strlen(prefs);
-    newPrefs = calloc(length+1, sizeof(char));
+    newPrefs = calloc(length + 1, sizeof(char));
     if(newPrefs == NULL)
     {
         free(prefs);
@@ -140,18 +146,28 @@ void removeFromPref(char* flag)
 
     while(*prefs && i < length)
     {
-        if(*prefs == '<' && *(prefs+1) == flag[0] && *(prefs+2) == '>')
+		//Are we in front of the bracket we want to remove?
+        if(!strcmp(prefs, openingBracket))
         {
-            prefs += 3;
-            while(*prefs && (*(prefs++) != '<' || *prefs != '/' || *(prefs+1) != flag[0] || *(prefs+2) != '>')); //Balise suivante
-            while(*prefs && *(prefs++) != '<'); //Balise suivante
-            if(*prefs)
-                prefs--;
+			//Skip the opening bracket, and start looking for the closing backet
+            prefs += strlen(openingBracket) - 1;
+            while(strcmp(++prefs, closingBracket));
+			
+			//Look for the next opening backet
+			prefs += strlen(closingBracket) - 1;
+            while(*++prefs && *prefs != '<');
         }
         else
-            newPrefs[i++] = *(prefs++);
+            newPrefs[i++] = *prefs++;
     }
-
+	
+#ifdef EXTENSIVE_LOGGING
+	if(i == 0)
+	{
+		logR("Uh? Deleting everything, WTF...");
+	}
+#endif
+	
 	newPrefs[i] = 0;
     AESEncrypt(SETTINGS_PASSWORD, newPrefs, SETTINGS_FILE".tmp", INPUT_IN_MEMORY);
 	remove(SETTINGS_FILE);
@@ -236,15 +252,15 @@ char* loadLargePrefs(char* flag)
 		size_t downloadLength;
 		
         if(flag[0] == SETTINGS_PROJECTDB_FLAG[0])
-            strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"PROJECT_REC_NAME, sizeof(temp));
+            strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/projects", sizeof(temp));
         else
-			strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/"REPO_REC_NAME, sizeof(temp));
+			strncpy(temp, SERVEUR_URL"/rec/"CURRENTVERSIONSTRING"/repo", sizeof(temp));
 
 		if(download_mem(temp, NULL, &downloadData, &downloadLength, SSL_ON) == CODE_RETOUR_OK && downloadData != NULL && downloadLength > 0)
 		{
 			char settingBuffer[downloadLength + 100];
 			
-			snprintf(settingBuffer, sizeof(settingBuffer), "<%s>\n%s\n</%s>\n", flag, downloadData, flag);
+			snprintf(settingBuffer, sizeof(settingBuffer), "<%s>\n%s\n</%s>", flag, downloadData, flag);
 			addToPref(flag, settingBuffer);
 
 			return downloadData;
