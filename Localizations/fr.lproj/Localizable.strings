@@ -248,8 +248,11 @@
 "TITLE-PREFS" = "Préférences";
 "TITLE-WINDOW" = "Fenêtre";
 "TITLE-CLOSE" = "Fermer";
+"TITLE-OPEN-SERIE" = "Ouvrir mes séries";
 "TITLE-SERIE" = "Séries";
+"TITLE-REFRESH_DB" = "Rafraîchir les séries distantes";
 "TITLE-CT" = "Chapitres et tomes";
+"TITLE-OPEN-READER" = "Ouvrir le lecteur";
 "TITLE-READER" = "Lecteur";
 "TITLE-DF" = "Entrer dans le mode discret";
 "TITLE-ZOOM-OUT" = "Dézoomer";

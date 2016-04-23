@@ -18,6 +18,7 @@
 
 - (RakView *) earlyInit
 {
+	self.refreshButtonAvailable = YES;
 	self.haveDistractionFree = getMainThread() == TAB_READER;
 
 	_hasFocus = YES;
@@ -242,9 +243,22 @@
 
 #pragma mark Debug
 
-- (IBAction) reloadFromRemote : (id)sender
+- (IBAction) reloadFromRemote : (NSMenuItem *) sender
 {
-	updateDatabase(YES);
+	if(self.refreshButtonAvailable == NO)
+		return;
+	
+	self.refreshButtonAvailable = NO;
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+
+		sleep(2);
+		updateDatabase();
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self.refreshButtonAvailable = YES;
+		});
+	});
 }
 
 @end

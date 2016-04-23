@@ -32,6 +32,7 @@
 
 @property BOOL initialized;
 @property BOOL haveDistractionFree;
+@property BOOL refreshButtonAvailable;
 
 - (RakView *) earlyInit;
 - (void) mainInit : (RakView *) contentView;

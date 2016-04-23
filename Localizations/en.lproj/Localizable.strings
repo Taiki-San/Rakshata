@@ -248,8 +248,11 @@
 "TITLE-PREFS" = "Preferences";
 "TITLE-WINDOW" = "Window";
 "TITLE-CLOSE" = "Close";
-"TITLE-SERIE" = "Series";
+"TITLE-OPEN-SERIE" = "Open the library";
+"TITLE-SERIE" = "Library";
+"TITLE-REFRESH_DB" = "Refresh the remote content";
 "TITLE-CT" = "Chapters and volumes";
+"TITLE-OPEN-READER" = "Open the reader";
 "TITLE-READER" = "Reader";
 "TITLE-DF" = "Enter Distraction Free";
 "TITLE-ZOOM-OUT" = "Zoom out";

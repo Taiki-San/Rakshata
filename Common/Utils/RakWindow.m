@@ -162,9 +162,9 @@
 - (NSString *) getProjectName
 {
 #ifdef EXTENSIVE_LOGGING
-	return [NSString stringWithFormat:@"%s β", PROJECT_NAME];
+	return @PROJECT_NAME" β";
 #else
-	return [NSString stringWithUTF8String:PROJECT_NAME];
+	return @PROJECT_NAME;
 #endif
 }
 

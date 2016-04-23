@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15E49a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15F24b" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -227,68 +227,96 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Lecteur" id="Xoe-AA-ztc">
+                <menuItem title="Séries" id="Xoe-AA-ztc">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Lecteur" systemMenu="window" id="mjo-Sm-53K">
+                    <menu key="submenu" title="Séries" systemMenu="window" id="mjo-Sm-53K">
                         <items>
-                            <menuItem title="Ouvrir le lecteur" keyEquivalent="3" id="mup-3s-3SA">
+                            <menuItem title="Ouvrir les séries" keyEquivalent="1" id="mup-3s-3SA">
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-OPEN-SERIE"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="jumpToReader:" target="494" id="QfU-XP-xlt"/>
+                                    <action selector="jumpToSeries:" target="494" id="0zo-ir-aZT"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="5ew-in-gl3"/>
-                            <menuItem title="Dézoomer" keyEquivalent="-" id="Wbr-ZZ-8Sd">
+                            <menuItem title="Rafraîchir les sources distantes" keyEquivalent="R" id="Wbr-ZZ-8Sd">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-REFRESH_DB"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="reloadFromRemote:" target="494" id="nsF-3S-9sn"/>
+                                    <binding destination="494" name="enabled" keyPath="refreshButtonAvailable" id="fiD-2Z-ZJl"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-SERIE"/>
+                        </userDefinedRuntimeAttributes>
+                    </menu>
+                </menuItem>
+                <menuItem title="Lecteur" id="Y1W-64-s3b">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Lecteur" systemMenu="window" id="AtK-Ib-t0y">
+                        <items>
+                            <menuItem title="Ouvrir le lecteur" keyEquivalent="3" id="f02-Mb-qLO">
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-OPEN-READER"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="jumpToReader:" target="494" id="0uN-JH-NCm"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="NbJ-ae-FPQ"/>
+                            <menuItem title="Dézoomer" keyEquivalent="-" id="UhK-hB-LyW">
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-OUT"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="zoomOut:" target="494" id="9sf-EO-dQG"/>
-                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="btS-8O-GoH"/>
+                                    <action selector="zoomOut:" target="494" id="HH9-cn-Ggu"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="TCV-qt-kxO"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Réinitialiser zoom" keyEquivalent="0" id="798-ac-2xV">
+                            <menuItem title="Réinitialiser zoom" keyEquivalent="0" id="jYG-dP-udn">
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-RESET-ZOOM"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="resetZoom:" target="494" id="YKI-wA-B9f"/>
-                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="0sf-39-lsm"/>
+                                    <action selector="resetZoom:" target="494" id="Zk1-Je-95m"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="frg-uA-fLt"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Occuper la largeur" keyEquivalent="=" id="zfF-Gi-Fqf">
+                            <menuItem title="Occuper la largeur" keyEquivalent="=" id="AG1-sE-2Ms">
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-WIDTH"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="zoomFillWidth:" target="494" id="qDS-V0-Ssf"/>
-                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="Uo4-u8-gaG"/>
+                                    <action selector="zoomFillWidth:" target="494" id="UiU-RE-YM2"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="iZJ-sf-yhj"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Zoomer" keyEquivalent="+" id="DRS-2d-zDp">
+                            <menuItem title="Zoomer" keyEquivalent="+" id="fKl-l8-Vhb">
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-ZOOM-IN"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="zoomIn:" target="494" id="qPl-is-dWz"/>
-                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="bhe-O7-4Ua"/>
+                                    <action selector="zoomIn:" target="494" id="ugn-lo-hSR"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="kru-As-qQc"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="kiX-20-KvN"/>
-                            <menuItem title="Enter Full Screen" keyEquivalent="F" id="FO6-ei-KVE">
+                            <menuItem isSeparatorItem="YES" id="ive-rv-era"/>
+                            <menuItem title="Enter Full Screen" keyEquivalent="F" id="dEr-5a-pSC">
                                 <connections>
-                                    <action selector="toggleFullScreen:" target="-1" id="mxN-X6-lcn"/>
+                                    <action selector="toggleFullScreen:" target="-1" id="gF9-l2-QkQ"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Enter Distraction Free" keyEquivalent="D" id="HOE-eB-9a5">
+                            <menuItem title="Enter Distraction Free" keyEquivalent="D" id="kQf-1b-nQP">
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-DF"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="switchDistractionFree:" target="494" id="N67-UM-OA9"/>
-                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="Ga0-yr-E2n"/>
+                                    <action selector="switchDistractionFree:" target="494" id="bUe-QJ-dgF"/>
+                                    <binding destination="494" name="enabled" keyPath="haveDistractionFree" id="EEb-1z-DPx"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -296,9 +324,6 @@
                             <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
                         </userDefinedRuntimeAttributes>
                     </menu>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="autoLocalizedString" value="TITLE-READER"/>
-                    </userDefinedRuntimeAttributes>
                 </menuItem>
                 <menuItem title="Window" id="CCO-9q-yf9">
                     <modifierMask key="keyEquivalentModifierMask"/>
