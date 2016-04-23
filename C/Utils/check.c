@@ -117,7 +117,7 @@ void networkAndVersionTest()
 		if(COMPTE_PRINCIPAL_MAIL != NULL && COMPTE_PRINCIPAL_MAIL[0] != 0 && bufferDL[0] == '0')
 			remove(SECURE_DATABASE);
 		
-		updateDatabase(false);
+		updateDatabase();
 		updateFavorites();
 		checkIfRefreshTag();
     }

@@ -32,16 +32,18 @@ uint maxRootID = 0;
 bool mutexInitialized;
 MUTEX_VAR cacheMutex, cacheParseMutex;
 
-uint setupBDDCache()
+bool setupBDDCache()
 {
 	uint nbRootRepo = 0, nbRepo = 0, nbProject = 0;
 	char *repoDB, *projectDB, *cacheFavs = NULL;
 	sqlite3 *internalDB;
 
+	//Create the mutexes we use to protect DB read
 	if(!mutexInitialized)
 	{
 		MUTEX_CREATE(cacheMutex);
 		MUTEX_CREATE(cacheParseMutex);
+		mutexInitialized = true;
 	}
 
 	MUTEX_LOCK(cacheMutex);
@@ -49,12 +51,12 @@ uint setupBDDCache()
 	if(cache != NULL)
 	{
 		MUTEX_UNLOCK(cacheMutex);
-		return 0;
+		return true;
 	}
 	
 	//Cleanup
 	if(repoList != NULL)
-	{
+	{		
 		freeRepo(repoList);
 		repoList = NULL;
 	}
@@ -77,7 +79,7 @@ uint setupBDDCache()
 	{
 		logR("Couldn't setup cache DB");
 		MUTEX_UNLOCK(cacheMutex);
-		return 0;
+		return false;
 	}
 	else
 	{
@@ -173,7 +175,7 @@ uint setupBDDCache()
 			
 			//Main insertion loop.
 			//We complete some metadata and
-			for(uint pos = 0, posRepo = 0, cacheID = 1; pos < nbProject; pos++)
+			for(uint pos = 0, posRepo = 0; pos < nbProject; pos++)
 			{
 				projects[pos].project.favoris = checkIfFaved(&projects[pos].project, &cacheFavs);
 				
@@ -202,7 +204,6 @@ uint setupBDDCache()
 							fclose(output);
 						}
 #endif
-						projects[pos].project.cacheDBID = cacheID++;
 						insertInSearch(searchData, INSERT_PROJECT, projects[pos].project);
 						continue;
 					}
@@ -240,7 +241,7 @@ fail:
 	free(cacheFavs);
 	free(projectDB);
 
-	return nbProject;
+	return true;
 }
 
 void syncCacheToDisk(byte syncCode)

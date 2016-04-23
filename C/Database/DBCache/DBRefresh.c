@@ -16,14 +16,13 @@
 
 #include "dbCache.h"
 
-void updateDatabase(bool forced)
+void updateDatabase()
 {
-    if(!checkNetworkState(CONNEXION_DOWN) && (forced || time(NULL) - alreadyRefreshed > DB_CACHE_EXPIRENCY))
+    if(!checkNetworkState(CONNEXION_DOWN))
 	{
 	    updateRepo();
         updateProjects();
 		consolidateCache();
-        alreadyRefreshed = time(NULL);
 	}
 }
 

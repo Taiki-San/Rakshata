@@ -44,7 +44,6 @@ int main(int argc, char *argv[])
 	MUTEX_CREATE(DBRefreshMutex);
 	
 	loadEmailProfile();
-	resetUpdateDBCache();
 	initializeDNSCache();
 	
 #ifdef VERBOSE_DB_MANAGEMENT

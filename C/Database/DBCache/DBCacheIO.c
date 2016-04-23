@@ -478,7 +478,7 @@ void removeRepoFromCache(REPO_DATA repo)
 	uint64_t repoID = getRepoID(&repo);
 	
 	//On libère la mémoire des éléments remplacés
-	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1"), *deleteRequest = createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
+	sqlite3_stmt* request = createRequest(cache, "SELECT "DBNAMETOID(RDB_chapitres)", "DBNAMETOID(RDB_chapitreLocal)", "DBNAMETOID(RDB_chapitreRemote)", "DBNAMETOID(RDB_chapitresPrice)", "DBNAMETOID(RDB_tomes)", "DBNAMETOID(RDB_nbVolumes)", "DBNAMETOID(RDB_tomeRemote)", "DBNAMETOID(RDB_tomeRemoteLength)", "DBNAMETOID(RDB_tomeLocal)", "DBNAMETOID(RDB_tomeLocalLength)", "DBNAMETOID(RDB_tagData)", "DBNAMETOID(RDB_ID)" FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_repo)" = ?1"), *deleteRequest = createRequest(cache, "DELETE FROM "MAIN_CACHE" WHERE "DBNAMETOID(RDB_ID)" = ?1");
 
 	sqlite3_bind_int64(request, 1, (int64_t) repoID);
 	
@@ -491,8 +491,9 @@ void removeRepoFromCache(REPO_DATA repo)
 		freeTomeList((void*) sqlite3_column_int64(request, 4), (uint32_t) sqlite3_column_int(request, 5), true);
 		freeTomeList((void*) sqlite3_column_int64(request, 6), (uint32_t) sqlite3_column_int(request, 7), true);
 		freeTomeList((void*) sqlite3_column_int64(request, 8), (uint32_t) sqlite3_column_int(request, 9), true);
+		free((void*) sqlite3_column_int64(request, 10));
 
-		sqlite3_bind_int64(deleteRequest, 1, sqlite3_column_int64(request, 10));
+		sqlite3_bind_int64(deleteRequest, 1, sqlite3_column_int64(request, 11));
 		sqlite3_step(deleteRequest);
 		sqlite3_reset(deleteRequest);
 		

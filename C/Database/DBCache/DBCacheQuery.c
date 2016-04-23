@@ -270,6 +270,7 @@ bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bo
 
 void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 {
+	const uint maxLength = getDBCount();
 	uint pos = 0;
 	void * output = NULL;
 	bool wantParsedOutput = maskRequest & RDB_PARSED_OUTPUT, copyDynamic = !(maskRequest & RDB_EXCLUDE_DYNAMIC), wantTags = maskRequest & RDB_INCLUDE_TAGS;
@@ -280,7 +281,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 	if(cache == NULL && !setupBDDCache())	//Échec du chargement
 		return NULL;
 	
-	output = malloc((nbElemInCache + 1) * (wantParsedOutput ? sizeof(PROJECT_DATA_PARSED) : sizeof(PROJECT_DATA)));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
+	output = malloc((maxLength + 1) * (wantParsedOutput ? sizeof(PROJECT_DATA_PARSED) : sizeof(PROJECT_DATA)));	//Unused memory seems to stay on the pool, so we can ask for more than really needed in the case we only want installed stuffs
 	if(output != NULL)
 	{
 		char sortRequest[50], requestString[300], searchCond[200];
@@ -319,7 +320,7 @@ void * getCopyCache(uint maskRequest, uint* nbElemCopied)
 		
 		MUTEX_LOCK(cacheParseMutex);
 		
-		while(pos < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
+		while(pos < maxLength && sqlite3_step(request) == SQLITE_ROW)
 		{
 			if(wantParsedOutput)
 			{
@@ -556,10 +557,12 @@ uint getProjectByName(const char * UTF8Name)
 
 uint * getFavoritesID(uint * nbFavorites)
 {
-	if(nbFavorites == NULL || cache == NULL)
+	const uint maxLength = getDBCount();
+
+	if(nbFavorites == NULL || cache == NULL || maxLength == 0)
 		return NULL;
 
-	uint * output = malloc(nbElemInCache * sizeof(uint));	//nbMax of entries
+	uint * output = malloc(maxLength * sizeof(uint));	//nbMax of entries
 	if(output == NULL)
 		return NULL;
 
@@ -572,7 +575,7 @@ uint * getFavoritesID(uint * nbFavorites)
 	}
 
 	*nbFavorites = 0;
-	while(sqlite3_step(request) == SQLITE_ROW && *nbFavorites < nbElemInCache)
+	while(sqlite3_step(request) == SQLITE_ROW && *nbFavorites < maxLength)
 		output[(*nbFavorites)++] = (uint32_t) sqlite3_column_int(request, 0);
 
 	destroyRequest(request);
@@ -581,7 +584,7 @@ uint * getFavoritesID(uint * nbFavorites)
 	{
 		free(output);	output = NULL;
 	}
-	else if(*nbFavorites != nbElemInCache)
+	else if(*nbFavorites != maxLength)
 	{
 		void * tmp = realloc(output, *nbFavorites * sizeof(uint));
 		if(tmp != NULL)

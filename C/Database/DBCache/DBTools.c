@@ -461,10 +461,10 @@ ICON_PATH getPathToIconsOfProject(PROJECT_DATA project, uint index)
 
 bool isDBProjectEmpty()
 {
-	return nbElemInCache == 0;
+	return getDBCount() == 0;
 }
 
-bool getDBCount()
+inline uint getDBCount()
 {
 	return nbElemInCache;
 }
@@ -472,12 +472,6 @@ bool getDBCount()
 bool isDBRepoEmpty()
 {
 	return lengthRootRepo == 0;
-}
-
-int64_t alreadyRefreshed;
-void resetUpdateDBCache()
-{
-    alreadyRefreshed = -DB_CACHE_EXPIRENCY;
 }
 
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data)

@@ -887,9 +887,10 @@ uint64_t * getSearchData(byte type, charType *** dataName, uint * dataLength)
 
 uint * _copyDataForRequest(sqlite3_stmt * request, uint * nbElemOutput)
 {
-	size_t realLength = 0;
-	uint data[nbElemInCache + 1];
-	while (realLength < nbElemInCache && sqlite3_step(request) == SQLITE_ROW)
+	const uint maxLength = getDBCount();
+	uint realLength = 0, data[maxLength];
+	
+	while (realLength < maxLength && sqlite3_step(request) == SQLITE_ROW)
 	{
 		data[realLength++] = (uint32_t) sqlite3_column_int(request, 0);
 	}
@@ -973,7 +974,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	else
 		*dataLength = UINT_MAX;
 	
-	size_t maxLength = nbElemInCache;
+	const size_t maxLength = getDBCount();
 	uint * output = malloc(maxLength * sizeof(uint));	//We allocate more space, but will reduce at the end
 	
 	if(output == NULL)
@@ -1143,7 +1144,7 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 	
 	*dataLength = validateLength;
 
-	if(validateLength < nbElemInCache)
+	if(validateLength < maxLength)
 	{
 		if(validateLength == 0)	//No data :/
 		{
@@ -1161,12 +1162,13 @@ uint * getFilteredProject(uint * dataLength, const char * searchQuery, bool want
 
 SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, bool projectNameOnly)
 {
-	SEARCH_SUGGESTION * output = calloc(nbElemInCache, sizeof(SEARCH_SUGGESTION));
+	char requestText[256];
+	const uint maxLength = getDBCount(), length = strlen(partial);
+
+	SEARCH_SUGGESTION * output = calloc(maxLength, sizeof(SEARCH_SUGGESTION));
 	if(output == NULL)
 		return NULL;
 	
-	uint length = strlen(partial);
-	char requestText[256];
 	
 	if(projectNameOnly)
 		snprintf(requestText, sizeof(requestText), "SELECT "DBNAMETOID(RDB_FTS_STRING)", "DBNAMETOID(RDB_FTS_REAL_CODE)", "DBNAMETOID(RDB_FTS_CACHEID)" FROM "FTS_TABLE" WHERE "DBNAMETOID(RDB_FTS_REAL_CODE)" = "STRINGIZE(RDB_FTS_CODE_NAME)" AND "DBNAMETOID(RDB_FTS_STRING)" MATCH ?1 ORDER BY "DBNAMETOID(RDB_FTS_STRING)" COLLATE "SORT_FUNC_SEARCH" DESC");
@@ -1191,7 +1193,7 @@ SEARCH_SUGGESTION * getProjectNameWith(const char * partial, uint * nbProject, b
 	
 	searchStringForCollate = &partial;
 	
-	size_t realLength = 0, maxEntries = MIN(nbElemInCache, 100);
+	size_t realLength = 0, maxEntries = MIN(maxLength, 100);
 	while (realLength < maxEntries && sqlite3_step(request) == SQLITE_ROW)
 	{
 		output[realLength].type = (byte) sqlite3_column_int(request, 1);

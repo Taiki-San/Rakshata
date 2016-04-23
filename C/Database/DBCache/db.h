@@ -14,10 +14,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define DB_CACHE_EXPIRENCY			5*60*1000	//5 minutes
-
-extern int64_t alreadyRefreshed;
-
 //Repo ID are the combinaison of two 32 bits integer, thus, it can not be below 2^32 + 1 so, we're safe
 #define LOCAL_REPO_ID 42
 #define MIN_LOCAL_VOLUME_ID 0x80000001
@@ -151,7 +147,7 @@ typedef struct
 } SEARCH_SUGGESTION;
 
 /**DBCache.c**/
-uint setupBDDCache();
+bool setupBDDCache();
 void syncCacheToDisk(byte syncCode);
 void flushDB();
 
@@ -245,7 +241,7 @@ bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome);
 
 /**DBRefresh.c**/
-void updateDatabase(bool forced);
+void updateDatabase();
 void refreshRepo(REPO_DATA * repo);
 int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
@@ -254,11 +250,10 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 /******		DBTools.c	  ******/
 bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);
 bool isDBProjectEmpty();
-bool getDBCount();
+uint getDBCount();
 bool isDBRepoEmpty();
 void updateProjectImages(void * _todo);
 bool isInstalled(PROJECT_DATA project, char * basePath);
-void resetUpdateDBCache();
 bool isPaidProject(PROJECT_DATA projectData);
 uint getNumberInstalledProjectForRepo(bool isRoot, void * repo);
 void * generateIconUpdateWorkload(PROJECT_DATA_EXTRA * project, uint nbElem);
