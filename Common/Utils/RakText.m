@@ -369,7 +369,7 @@
 		[self setFrameSize:size];
 
 
-		NSScrollView * scrollview = (id) self.superview.superview;
+		NSScrollView * scrollview = (NSScrollView *) self.superview.superview;
 		if([scrollview isKindOfClass:[NSScrollView class]])
 		{
 			frame.origin = [[scrollview contentView] bounds].origin;

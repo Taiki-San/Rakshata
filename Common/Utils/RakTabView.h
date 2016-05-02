@@ -66,7 +66,7 @@ enum
 
 - (void) setUpViewForAnimation : (uint) mainThread;
 
-- (id) getMDL : (BOOL) requireAvailable;
+- (MDL *) getMDL : (BOOL) requireAvailable;
 
 - (NSString *) waitingLoginMessage;
 - (void) setWaitingLoginWrapper : (NSNumber*) objWaitingLogin;

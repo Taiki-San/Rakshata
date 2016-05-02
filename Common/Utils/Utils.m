@@ -48,7 +48,7 @@ static NSArray * savedContext;
 - (NSData*) convertToData
 {
 	uint n = [self count];
-	NSMutableData* data = [NSMutableData dataWithLength: sizeof(uint) + sizeof(id) * n];
+	NSMutableData* data = [NSMutableData dataWithLength: sizeof(uint) + sizeof(id *) * n];
 	void * p = [data mutableBytes];
 	
 	* (uint *) p = n;

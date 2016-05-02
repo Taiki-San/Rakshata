@@ -225,7 +225,7 @@
 
 - (BOOL) makeFirstResponder:(NSResponder *)aResponder
 {
-	id old = _imatureFirstResponder;
+	NSResponder * old = _imatureFirstResponder;
 	
 	_imatureFirstResponder = aResponder;
 	BOOL retValue = [super makeFirstResponder:aResponder];

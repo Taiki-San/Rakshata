@@ -286,7 +286,7 @@ enum
 
 /* Properly creates a tracking area for an image view.
  */
-- (id) trackingAreaForView : (NSView *) view
+- (NSTrackingArea *) trackingAreaForView : (NSView *) view
 {
 	return [[NSTrackingArea alloc] initWithRect:[self.window.contentView convertRect:view.bounds fromView:view]
 										options:NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp
@@ -537,16 +537,6 @@ enum
 
 /* This window is acting as a popup menu of sorts.  Since this isn't semantically a window, we ignore it for accessibility purposes.  Similarly, the parent of this window is its logical parent in the parent window.  In this code sample, the text field, but essentially any UI element that is the logical 'parent' of the window.
  */
-- (BOOL) accessibilityIsIgnored	{	return YES;		}
 - (BOOL) isAccessibilityElement {	return NO;		}
-
-// If we are asked for our AXParent, return the unignored anscestor of our parent element
-- (id) accessibilityAttributeValue:(NSString *)attribute
-{
-	if ([attribute isEqualToString:NSAccessibilityParentAttribute])
-		return NSAccessibilityUnignoredAncestor(_parentElement);
-	
-	return [super accessibilityAttributeValue:attribute];
-}
 
 @end

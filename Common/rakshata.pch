@@ -57,6 +57,8 @@
 		#import "RakOSXWrapper.h"
 	#endif
 
+	@class MDL;
+
 	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/

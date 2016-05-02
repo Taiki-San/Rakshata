@@ -72,9 +72,6 @@
 @property SEL action;
 @property id target;
 
-// The designated initializer. This window controller creates its own custom suggestions window.
-- (id)init;
-
 // -beginForControl: is used to display the suggestions window just underneath the parent control.
 - (void) beginForTextField : (NSTextField *)parentTextField;
 
