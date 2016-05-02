@@ -38,7 +38,9 @@
 #define CONFIGFILETOME "config.tome.dat"
 #define LOCAL_PATH_NAME "local"
 
-#ifdef DEV_VERSION
+#ifdef WWDC_BUILD
+	#define BUILD "wwdc"
+#elif defined(DEV_VERSION)
     #define BUILD "dev"
 #elif defined(_WIN32)
 	#define BUILD "win32"

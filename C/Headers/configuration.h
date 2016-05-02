@@ -14,6 +14,8 @@
  **                                                                                         **
  *********************************************************************************************/
 
+#define WWDC_BUILD
+
 //#define INSTALLING_CONSIDERED_AS_INSTALLED
 //#define FLUSH_PREFS_PROPERLY
 

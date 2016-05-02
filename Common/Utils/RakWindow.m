@@ -161,7 +161,9 @@
 
 - (NSString *) getProjectName
 {
-#ifdef EXTENSIVE_LOGGING
+#ifdef WWDC_BUILD
+	return @"[Taiki's name] "PROJECT_NAME" β";
+#elif defined(EXTENSIVE_LOGGING)
 	return @PROJECT_NAME" β";
 #else
 	return @PROJECT_NAME;
@@ -225,7 +227,7 @@
 
 - (BOOL) makeFirstResponder:(NSResponder *)aResponder
 {
-	id old = _imatureFirstResponder;
+	NSResponder * old = _imatureFirstResponder;
 	
 	_imatureFirstResponder = aResponder;
 	BOOL retValue = [super makeFirstResponder:aResponder];

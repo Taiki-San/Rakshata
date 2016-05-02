@@ -76,6 +76,34 @@
 
 #pragma mark - Application Delegate
 
+#ifdef WWDC_BUILD
+#define FLAG "wwdc_flag"
+
+- (void) applicationDidFinishLaunching:(NSNotification *)notification
+{
+	if(checkFileExist(FLAG))
+		return;
+	else
+	{
+		FILE * file = fopen(FLAG, "w+");
+		if(file != nil)
+			fclose(file);
+	}
+	
+	NSAlert * alert = [[NSAlert alloc] init];
+	
+	if(alert != nil)
+	{
+		alert.alertStyle = NSCriticalAlertStyle;
+		alert.messageText = NSLocalizedString(@"First launch note for WWDC review", nil);
+		alert.informativeText = @"Rakshata is a comic reader, usually used to import your own collection but able to pull content from remote sources.\nIn order for you to be able to test it without having to download find your own comics (if you have, it supports PDF, ZIP, RAR, CBR, CBZ and uncompressed directories), I added an internal test repository.\nIt contains a couple of mangas from an internal collection, most of which (besides xxx and xxx) are in english.\nIf you have your own comics, you can import them using a drag and drop.";
+		[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+		
+		[alert runModal];
+	}
+}
+#endif
+
 - (void) applicationWillTerminate:(NSNotification *)notification
 {
 	[self flushState];
