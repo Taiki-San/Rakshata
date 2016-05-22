@@ -19,6 +19,7 @@
 #define RakView		UIView
 #define RakImage	UIImage
 #define RakColor	UIColor
+#define NSFont		UIFont
 
 #define NSRect		CGRect
 #define NSZeroRect	CGRectZero

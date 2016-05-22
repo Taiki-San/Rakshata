@@ -108,6 +108,9 @@
 
 - (void) shouldRefreshCounter
 {
+	if(![NSThread isMainThread])
+		return dispatch_sync(dispatch_get_main_queue(), ^{	[self shouldRefreshCounter];	});
+	
 	uint nbData = [controller getNbElemToProcess];
 
 	_tabBarItem.badgeValue = nbData == 0 ? nil : [NSString stringWithFormat:@"%d", nbData];

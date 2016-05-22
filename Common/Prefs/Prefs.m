@@ -126,11 +126,7 @@ enum
 		}
 		case FONT_STANDARD:
 		{
-#if !TARGET_OS_IPHONE
 			output = [NSFont systemFontOfSize:size];
-#else
-			output = @".SFUIText-Regular";
-#endif
 			break;
 		}
 			

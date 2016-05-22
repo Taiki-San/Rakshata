@@ -45,7 +45,7 @@
 	self.view = array[0];
 	header.title = [self headerText];
 	archiveLabel.text = [self archiveName];
-	self.modalPresentationStyle = UIModalPresentationPopover;
+	self.modalPresentationStyle = UIModalPresentationPageSheet;
 	
 	//Increase button size to the maximum
 	UIButton * button = [header.leftBarButtonItem customView];
@@ -201,7 +201,18 @@
 {
 	contentIDTitle.text = [NSString stringWithFormat:@"%@ #", NSLocalizedString(isTome ? @"VOLUME" : @"CHAPTER", nil)];
 
-	const CGFloat width = isTome ? 60 : RakApp.window.frame.size.width - (CTID.frame.origin.x + 15);
+	CGFloat width;
+	if(isTome)	//We need space for the title
+		width = 60;
+	else
+	{
+		width = MIN(self.view.frame.size.width, RakApp.window.frame.size.width);
+		
+		if(width == 0)
+			width = RakApp.window.frame.size.width;
+		
+		width -= CTID.frame.origin.x + 15;
+	}
 	
 	for(NSLayoutConstraint * constraint in CTID.constraints)
 	{
