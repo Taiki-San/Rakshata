@@ -738,7 +738,10 @@ enum
 
 - (BOOL) launchPopover : (RakView *) anchor : (RakImportStatusListRowView*) receiver
 {
-	[self internalInit:anchor :NSZeroRect :NO];
+	[self internalInitWithAnchor:anchor
+						 atFrame:NSZeroRect
+					wantCallback:NO
+			closeOnContextChange:NO];
 	return YES;
 }
 

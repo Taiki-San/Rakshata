@@ -30,7 +30,10 @@
 	{
 		_anchor = anchor;
 		
-		[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, 0) : YES];
+		[self internalInitWithAnchor:anchor
+							 atFrame:NSMakeRect(0, 0, _anchor.frame.size.width, 0)
+						wantCallback:YES
+				closeOnContextChange:YES];
 		
 		if(!alreadyAsked)
 			[RakPrefsRemindPopover setValueReminded : PREFS_REMIND_FAVS : YES];

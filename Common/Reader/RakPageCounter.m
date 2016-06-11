@@ -227,7 +227,10 @@
 	_anchor = anchor;
 	_maxPage = maxPage;
 	
-	[self internalInit: anchor : NSMakeRect(0, 0, _anchor.frame.size.width, _anchor.frame.size.height) : YES];
+	[self internalInitWithAnchor:anchor
+						 atFrame:NSMakeRect(0, 0, _anchor.frame.size.width, _anchor.frame.size.height)
+					wantCallback:YES
+			closeOnContextChange:YES];
 	
 	[self.window makeFirstResponder : textField];
 }

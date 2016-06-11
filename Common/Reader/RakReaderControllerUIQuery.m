@@ -45,7 +45,11 @@
 		if(_tabReader != nil)
 			frame.size.width = _tabReader.frame.origin.x;
 		
-		[self internalInit : _anchor : frame : YES];
+		[self internalInitWithAnchor:_anchor
+							 atFrame:frame
+						wantCallback:YES
+				closeOnContextChange:YES];
+
 		[(MDL*) _anchor registerPopoverExistance:self];
 	}
 	

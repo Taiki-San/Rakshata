@@ -240,8 +240,6 @@
 {
 	if(bottomBar != nil)
 		bottomBar.readerMode = NO;
-	
-	[newStuffsQuery closePopover];
 }
 
 - (void) willOpenReader

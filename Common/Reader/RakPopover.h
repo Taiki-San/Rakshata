@@ -49,7 +49,9 @@
 	RakPopoverWrapper * popover;
 }
 
-- (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig;
+@property BOOL closeOnContextChange;
+
+- (void) internalInitWithAnchor : (id) anchor atFrame : (NSRect) baseFrame wantCallback: (BOOL) wantAdditionalConfig closeOnContextChange : (BOOL) closeOnContextChange;
 
 - (void) setupView;
 - (void) configurePopover : (INPopoverController*) internalPopover;

@@ -89,8 +89,19 @@
 
 @implementation RakPopoverView
 
-- (void) internalInit : (id) anchor : (NSRect) baseFrame : (BOOL) wantAdditionalConfig
+- (instancetype) init
 {
+	self = [super init];
+	
+	if(self != nil)
+		_closeOnContextChange = YES;
+	
+	return self;
+}
+
+- (void) internalInitWithAnchor : (id) anchor atFrame : (NSRect) baseFrame wantCallback: (BOOL) wantAdditionalConfig closeOnContextChange : (BOOL) closeOnContextChange
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activeTabChange:) name:NOTIFICATION_UPDATE_TAB_CONFIRMED object:nil];
 	[Prefs registerForChange:self forType:KVO_THEME];
 	prefsRegistered = YES;
 	
@@ -121,6 +132,8 @@
 
 	[popover togglePopover : baseFrame];
 	[popover setDelegate : self];
+	
+	_closeOnContextChange = closeOnContextChange;
 }
 
 - (void) setFrame:(NSRect)frame
@@ -128,10 +141,19 @@
 	[self setFrameOrigin:frame.origin];
 }
 
+- (void) activeTabChange : (NSNotification *) notification
+{
+	if(_closeOnContextChange)
+		[self closePopover];
+}
+
 - (void) dealloc
 {
 	if(prefsRegistered)
+	{
 		[Prefs deRegisterForChange:self forType:KVO_THEME];
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
+	}
 }
 
 #pragma mark - Drawing
