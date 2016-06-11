@@ -86,7 +86,7 @@
 	if(cancel != nil)
 	{
 		cancel.target = self;
-		cancel.action = @selector(close);
+		cancel.action = @selector(closePopover);
 		[self addSubview:cancel];
 	}
 	
@@ -144,7 +144,7 @@
 - (BOOL) receiveClick : (RakThumbProjectView *) project forClick : (byte) selection
 {
 	if(selection != THUMBVIEW_CLICK_NONE)
-		[self close];
+		[self closePopover];
 
 	if(selection != THUMBVIEW_CLICK_PROJECT)
 		return YES;
@@ -159,11 +159,6 @@
 	}
 	
 	return retvalue;
-}
-
-- (void) close
-{
-	[self closePopover];
 }
 
 - (void) dontShowAgain

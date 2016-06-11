@@ -253,7 +253,7 @@ enum
 	if(button != nil)
 	{
 		button.target = self;
-		button.action = @selector(close);
+		button.action = @selector(closePopover);
 
 		workingSize = button.bounds.size;
 
@@ -573,7 +573,7 @@ enum
 	if(button != nil)
 	{
 		button.target = self;
-		button.action = @selector(close);
+		button.action = @selector(closePopover);
 
 		titleSize = button.bounds.size;
 
@@ -1153,7 +1153,7 @@ enum
 	NSArray * overridenImages;
 
 	if([_controller reflectMetadataUpdate:[self exfilterProject:&overridenImages] withImages:overridenImages forItem:_itemOfQueryForMetadata])
-		[self close];
+		[self closePopover];
 }
 
 - (void) validateDetail
@@ -1162,15 +1162,10 @@ enum
 	if(![_item updateCTIDWith:getNumberForString(contentID.stringValue) tomeName:contentName.stringValue isTome:isTome.selectedSegment != 0])
 		return;
 
-	[self close];
+	[self closePopover];
 
 	[_item refreshState];
 	[_controller postProcessUpdate];
-}
-
-- (void) close
-{
-	[self closePopover];
 }
 
 @end
