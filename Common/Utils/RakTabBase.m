@@ -138,7 +138,7 @@
 
 - (void) initiateTransition
 {
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_UPDATE_TAB_CONFIRMED object:@(flag)];
 }
 
 - (void) updateContextNotification : (PROJECT_DATA) project : (BOOL) isTome : (uint) element

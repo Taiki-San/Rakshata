@@ -68,7 +68,10 @@
 - (void) initiateTransition
 {
 	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	{
+		[super initiateTransition];
 		[self refreshLevelViews : self.superview : REFRESHVIEWS_CHANGE_MT];
+	}
 }
 
 #pragma mark - Drawing, and FS support

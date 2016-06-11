@@ -56,6 +56,7 @@
 //RakTabView
 #define NOTIFICATION_UPDATE_TAB_FOCUS			@"RakTabUpdateFocusNotification"
 #define NOTIFICATION_UPDATE_TAB_CONTENT			@"RakTabUpdateContentNotification"
+#define NOTIFICATION_UPDATE_TAB_CONFIRMED		@"vimeo.com/106094990"
 
 //Reader
 #define NOTIFICATION_RESUME_READING				@"JustOneMoreTurn..."

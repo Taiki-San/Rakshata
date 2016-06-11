@@ -47,6 +47,8 @@
 	if(tabBarController.selectedIndex == tabBarIndex)
 		return;
 	
+	[super initiateTransition];
+	
 	if(!alreadyOpenedOnce)
 	{
 		[CATransaction begin];
