@@ -52,6 +52,7 @@
 
 @property BOOL readerMode;
 @property BOOL highjackedMouseEvents;
+@property BOOL suggestionPopoverIsOpen;
 
 - (instancetype) init: (BOOL) displayed : (Reader*) parent;
 - (void) setupPath;

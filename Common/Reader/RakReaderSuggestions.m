@@ -55,6 +55,18 @@
 	}
 }
 
+- (void)popoverWillClose:(INPopoverController *)popover
+{
+	//When the popover close, we notify our launcher that it can launch a new when if asked
+	RakReaderBottomBar * bottomBar = (id) _anchor;
+	
+	while(bottomBar != nil && [bottomBar class] != [RakReaderBottomBar class])
+		bottomBar = (id) bottomBar.superview;
+	
+	if(bottomBar != nil)
+		bottomBar.suggestionPopoverIsOpen = NO;
+}
+
 #pragma mark - View configuration
 
 - (void) createUIItems : (NSArray < NSDictionary * > *) data

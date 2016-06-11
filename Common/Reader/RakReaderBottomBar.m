@@ -271,11 +271,13 @@
 
 - (void) displaySuggestionsForProject : (PROJECT_DATA) project withOldDFState : (BOOL) oldDFState
 {
-	if(project.isInitialized)
+	if(project.isInitialized && !_suggestionPopoverIsOpen)
 	{
 		RakReaderSuggestions * popover = [[RakReaderSuggestions alloc] autoInit];
 		if(popover != nil)
 		{
+			//This is switched back by RakReaderSuggestions on close notification
+			_suggestionPopoverIsOpen = YES;
 			popover.openedLeavingDFMode = oldDFState;
 			[popover launchPopover:nextChapter withProjectID:project.cacheDBID];
 		}
