@@ -18,6 +18,7 @@
 
 - (void) awakeFromNib
 {
+	[super awakeFromNib];
 	loginPromptOpen = NO;
 	
 	RakView * contentView = [self earlyInit];

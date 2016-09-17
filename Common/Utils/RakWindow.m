@@ -98,7 +98,11 @@
 
 - (void) layoutIfNeeded
 {
-	
+	//This method was overriden in order to prevent the AutoLayout engine from messing up our layout
+	//However, it completly broke the rendering of NSImageView ( rdar://28328265 )
+	//Because of that, on 10.12, we re-enable this method
+	if(floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_11_3)
+		[super layoutIfNeeded];
 }
 
 - (void) updateConstraintsIfNeeded

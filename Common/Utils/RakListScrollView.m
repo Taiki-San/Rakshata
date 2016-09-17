@@ -30,7 +30,7 @@
 		self.scrollerStyle =			NSScrollerStyleOverlay;
 		self.drawsBackground =			NO;
 		self.needsDisplay =				YES;
-		self.translatesAutoresizingMaskIntoConstraints = NO;
+		self.translatesAutoresizingMaskIntoConstraints = YES;
 		
 		[RakScroller updateScrollers:self];
 	}

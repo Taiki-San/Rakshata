@@ -46,6 +46,8 @@
 	RakBorder* internalRows1, * internalRows2;
 	RakText * titleView;
 #endif
+	
+	BOOL didRegisterKVO;
 }
 
 //Used when leaving fullscreen mode

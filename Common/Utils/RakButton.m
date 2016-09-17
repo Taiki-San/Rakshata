@@ -111,7 +111,10 @@
 - (void) dealloc
 {
 	if(hasRegisteredThemeUpdates)
+	{
 		[Prefs deRegisterForChange:self forType:KVO_THEME];
+		hasRegisteredThemeUpdates = NO;
+	}
 }
 
 - (void) sizeToFit
@@ -235,6 +238,7 @@
 	
 	if(self != nil)
 	{
+		hasRegisteredThemeUpdates = NO;
 		self.focusRingType = NSFocusRingTypeNone;
 		textCell = nil;
 		_borderWidth = 1;
@@ -296,6 +300,19 @@
 	return self;
 }
 
+- (id) copyWithZone:(NSZone *)zone
+{
+	id output = [super copyWithZone:zone];
+	
+	//Fix the view debugger, which would copy, dealloc, and complain because the context wouldn't be consistent
+	if(output != nil)
+	{
+		[output wasJustCopied];
+	}
+	
+	return output;
+}
+
 - (void) dealloc
 {
 	if(!textCell)
@@ -337,6 +354,11 @@
 }
 
 #pragma mark - Utils
+
+- (void) wasJustCopied
+{
+	hasRegisteredThemeUpdates = NO;
+}
 
 - (BOOL) loadIcon : (short) state
 {
