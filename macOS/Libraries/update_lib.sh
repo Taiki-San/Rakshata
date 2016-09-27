@@ -229,7 +229,7 @@ do
 			continue
 		fi
 		
-		NEW_VERSION="$(echo $FINAL_DL_URL | sed -e 's/.*Release //' | sed -e 's/ · curl\/curl.*//')"
+		NEW_VERSION="$(echo $FINAL_DL_URL | sed -e 's/.*Release curl //' | sed -e 's/ · curl\/curl.*//')"
 		if [ "$FINAL_DL_URL" = '' ]
 		then
 			echo "Couldn't determine the libcURL version from github page :("
