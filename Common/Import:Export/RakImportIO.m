@@ -144,7 +144,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 		
 		NSArray <RakImportNode *> * nodes = [_node getNodesIncludingChildren];
 		BOOL hadProbableProject = NO;
-		PROJECT_DATA sharedProject;
+		PROJECT_DATA sharedProject = getEmptyProject();
 
 		for(RakImportNode * node in nodes)
 		{

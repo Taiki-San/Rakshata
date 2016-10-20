@@ -61,7 +61,7 @@
 			[self mouseDown:event];
 	}
 	
-	if([event type] == NSKeyDown)
+	if([event type] == NSEventTypeKeyDown)
 	{
 		if(self.shiftPressed && self.commandPressed)
 		{
