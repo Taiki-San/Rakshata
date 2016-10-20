@@ -1076,24 +1076,24 @@ enum
 	if(!updatedList)
 		[catList selectItemAtIndex:0];
 	
-	if(array == nil)
-		return;
-	
-	for(NSDictionary * dict in array)
+	if(array != nil)
 	{
-		switch ([[dict objectForKey:@"code"] unsignedIntegerValue])
+		for(NSDictionary * dict in array)
 		{
-			case THUMB_INDEX_HEAD2X:
-				dropCT.image = [dict objectForKey:@"data"];
-				break;
-				
-			case THUMB_INDEX_SR2X:
-				dropSR.image = [dict objectForKey:@"data"];
-				break;
-				
-			case THUMB_INDEX_DD2X:
-				dropDD.image = [dict objectForKey:@"data"];
-				break;
+			switch ([[dict objectForKey:@"code"] unsignedIntegerValue])
+			{
+				case THUMB_INDEX_HEAD2X:
+					dropCT.image = [dict objectForKey:@"data"];
+					break;
+					
+				case THUMB_INDEX_SR2X:
+					dropSR.image = [dict objectForKey:@"data"];
+					break;
+					
+				case THUMB_INDEX_DD2X:
+					dropDD.image = [dict objectForKey:@"data"];
+					break;
+			}
 		}
 	}
 	
