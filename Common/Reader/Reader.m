@@ -290,7 +290,7 @@
 	
 	if(forced || [self isCursorOnMe] || [self mouseOutOfWindow])
 	{
-		[Prefs setPref:PREFS_SET_READER_TABS_STATE: STATE_READER_TAB_ALL_COLLAPSED];
+		[Prefs setPref:PREFS_SET_READER_TABS_STATE atValue:STATE_READER_TAB_ALL_COLLAPSED];
 	}
 	[super refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];	//Initialisera les surfaces de tracking
 }
@@ -307,7 +307,7 @@
 		if(subViewView != self)
 			[subViewView setHidden:YES];
 	}
-	[Prefs setPref:PREFS_SET_READER_TABS_STATE :STATE_READER_TAB_DISTRACTION_FREE];
+	[Prefs setPref:PREFS_SET_READER_TABS_STATE atValue:STATE_READER_TAB_DISTRACTION_FREE];
 	[self refreshLevelViews:[self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 }
 
@@ -336,10 +336,10 @@
 		return;
 	
 	//We have to leave distraction-free mode
-	if(self.distractionFree && (![Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1] || mustLeaveDFMode))
+	if(self.distractionFree && (![Prefs setPref: PREFS_SET_READER_DISTRACTION_FREE atValue:YES] || mustLeaveDFMode))
 	{
 		self.distractionFree = NO;
-		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0])
+		if([Prefs setPref: PREFS_SET_READER_DISTRACTION_FREE atValue:NO])
 			[self fadeBottomBar : 1];
 		
 		else
@@ -356,7 +356,7 @@
 	else
 	{
 		self.distractionFree = YES;
-		if([Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 1])
+		if([Prefs setPref: PREFS_SET_READER_DISTRACTION_FREE atValue:YES])
 		{
 			[self fadeBottomBar : READER_BB_ALPHA_DF];
 			[self startFadeTimer:[NSEvent mouseLocation]];
@@ -379,7 +379,7 @@
 	if(self.distractionFree)
 	{
 		self.distractionFree = NO;
-		[Prefs setPref : PREFS_SET_READER_DISTRACTION_FREE : 0];
+		[Prefs setPref: PREFS_SET_READER_DISTRACTION_FREE atValue:NO];
 		[self fadeBottomBar:1];
 	}
 }

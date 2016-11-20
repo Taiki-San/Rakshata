@@ -33,7 +33,7 @@
 		[self sizeToFit];
 		
 		self.clicTarget = responder;
-		self.clicAction = @selector(respondTo:);
+		self.clicAction = NSSelectorFromString(@"respondTo:");
 	}
 	
 	return self;
@@ -98,6 +98,8 @@
 }
 
 #pragma mark - Color
+
+//- (NSFont *) getFont14
 
 - (RakColor *) focusTextColor
 {

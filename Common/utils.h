@@ -59,17 +59,6 @@ void registerDefaultForExtension(NSString * extension);
 
 @end
 
-@interface RakView (RakUtils)
-
-- (void) setFrameAnimated : (NSRect) frame;
-- (void) setFrameOriginAnimated : (NSPoint) origin;
-- (void) setAlphaAnimated : (CGFloat) alpha;
-
-- (RakView *) findSubviewAtCoordinate : (NSPoint) coordinates;
-- (RakImage *) imageOfView;
-
-@end
-
 #if !TARGET_OS_IPHONE
 
 @interface NSMenuItem (AutoLocalization)
@@ -92,13 +81,11 @@ void registerDefaultForExtension(NSString * extension);
 	#import "RakAnimationController.h"
 
 	#import "NSImage+Tint.h"
-	#import "RakTextCell.h"
-	#import "RakText.h"
+	#import "RakTextComplete.h"
 	#import "RakButton.h"
 	#import "RakScroller.h"
 	#import "RakBorder.h"
 	#import "RakSegmentedButtonCell.h"
-	#import "RakMenuText.h"
 	#import "RakProgressBar.h"
 	#import "RakBackButton.h"
 	#import "RakPopover.h"

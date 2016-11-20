@@ -215,7 +215,7 @@ enum
 
 - (void) switchToNewContext : (NSString*) imageName : (short) state
 {
-	RakImage * template = [RakResPath getImage:imageName];
+	RakImage * template = getResImageWithName(imageName);
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];
 	unAvailable	= template;				[unAvailable tintWithColor:[Prefs getSystemColor:COLOR_ICON_DISABLE]];

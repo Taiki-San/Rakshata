@@ -182,7 +182,7 @@
 	//Appelé quand les tabs ont été réduits
 	if(context == REFRESHVIEWS_CHANGE_READER_TAB)
 	{
-		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
+		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER atValue:flag];
 	}
 }
 

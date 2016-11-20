@@ -18,6 +18,8 @@
 
 - (RakView *) earlyInit
 {
+	[Prefs initCacheWithProxyClass:[RakPrefsCustom class]];
+	
 	self.refreshButtonAvailable = YES;
 	self.haveDistractionFree = getMainThread() == TAB_READER;
 

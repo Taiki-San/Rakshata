@@ -64,6 +64,8 @@ __strong RakSuggestionEngine * sharedObject;
 //Random placeholder
 - (NSArray <NSDictionary *> *) getSuggestionForProject : (uint) cacheID withNumber : (uint) nbSuggestions
 {
+	//Don't suggest more series than we have
+	//If we're suggesting based on a series, we exclude it from the dataset
 	nbSuggestions = MIN(cacheID != INVALID_VALUE ? nbElem - 1 : nbElem, nbSuggestions);
 	
 	NSMutableArray < NSDictionary * > * array = [[NSMutableArray alloc] initWithCapacity:nbSuggestions];

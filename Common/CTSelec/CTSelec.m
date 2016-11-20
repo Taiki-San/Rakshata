@@ -357,7 +357,7 @@
 				
 				[CATransaction commit];
 				
-				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+				if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER atValue:flag])
 					[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 				
 				else if(self.mainThread == TAB_READER)	//Fuck, we have to cancel the animation...
@@ -380,7 +380,7 @@
 		{
 			[self updateProject : project.cacheDBID : isTome : element];
 			
-			if(self.mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			if(self.mainThread & TAB_READER && [Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER atValue:flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			
 			//Oh, we got selected then, awesome :)

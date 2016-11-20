@@ -18,7 +18,7 @@
 
 @implementation RakPrefsTabDeepData
 
-- (instancetype) init : (Prefs*) creator : (char *) inputData
+- (instancetype) initWithData : (char *) inputData
 {
 	self = [super init];
 	
@@ -30,7 +30,6 @@
 		NSRect dataBuf, dataDefault;
 		SEL jumpTable[numberElem];
 		
-		mammouth = creator;
 		[self initJumpTable:jumpTable];
 		
 		for(uint i = 0; i < numberElem - 1; i++)	//Le dernier cas est particulier

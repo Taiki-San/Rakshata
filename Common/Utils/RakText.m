@@ -145,8 +145,15 @@
 	//The text will be blurry if not on a round origin relative to the display, yeah, awesome...
 	if(self.window == nil)
 	{
-		rectOnScreen = [RakApp.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
-		factor = [RakApp.window backingScaleFactor];		
+		if([RakRealApp respondsToSelector:@selector(window)])
+		{
+			NSWindow * window = [RakRealApp performSelector:@selector(window)];
+			if(window != nil)
+			{
+				rectOnScreen = [window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+				factor = [window backingScaleFactor];
+			}
+		}
 	}
 	else
 	{
@@ -440,45 +447,6 @@
 		[super mouseUp:theEvent];
 }
 
-#pragma mark - Completion is required
-
-//By default, we complete with project names
-- (NSArray<NSString *> *)textView:(NSTextView *)textView completions:(NSArray<NSString *> *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
-{
-	if(!_wantCompletion)
-		return nil;
-
-	else if(_callbackOnCompletion != nil)
-		return _callbackOnCompletion();
-
-	uint nbElem;
-	const char * partialString = [textView.string UTF8String];
-	SEARCH_SUGGESTION * output = getProjectNameWith(partialString, &nbElem, true);
-
-	if(output == NULL || nbElem == 0)
-	{
-		free(output);
-		return @[];
-	}
-	
-	//We determine the begining of the last typed word (what the completion will replace)
-	uint length = strlen(partialString);
-	while(length > 0 && partialString[length - 1] != ' ')
-		length -= 1;
-
-	NSMutableArray * array = [NSMutableArray array];
-
-	for(uint i = 0; i < nbElem; i++)
-	{
-		[array addObject:[NSString stringWithUTF8String:&output[i].string[length]]];
-		free(output[i].string);
-	}
-	
-	free(output);
-
-	return array;
-}
-
 #pragma mark - Workarounds
 
 - (BOOL) textShouldEndEditing:(NSText *)textObject
@@ -531,7 +499,7 @@
 
 - (BOOL) isCommandEnterEvent : (NSEvent *) event
 {
-	return ([event modifierFlags] & NSCommandKeyMask) != 0 && [[event charactersIgnoringModifiers] characterAtIndex:0] == NSCarriageReturnCharacter;
+	return ([event modifierFlags] & NSEventModifierFlagCommand) != 0 && [[event charactersIgnoringModifiers] characterAtIndex:0] == NSCarriageReturnCharacter;
 }
 
 @end

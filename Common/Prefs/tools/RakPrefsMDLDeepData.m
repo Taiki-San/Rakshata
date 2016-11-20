@@ -18,12 +18,11 @@
 
 //Taille du buffer: 24 chars
 
-- (instancetype) init : (Prefs*) creator : (char*) inputData
+- (instancetype) initWithData : (char *) inputData
 {
 	self = [super init];
 	if(self != nil)
 	{
-		mammouth = creator;
 		[self setExpectedBufferSize];
 		
 		heightMDLReaderFocus = hex2intPrefs(inputData, 1000);

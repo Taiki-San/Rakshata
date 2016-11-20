@@ -27,7 +27,7 @@
 	CGFloat bordersY[4];	//Y pos of borders to draw
 
 	//Fields to recover metadata data
-	RakText * name, * author, * description;
+	RakTextComplete * name, * author, * description;
 	RakSegmentedControl * rightToLeft;
 	RakPopUpButton * status, * tagList, * catList;
 	RakImageDropArea * dropSR, * dropCT, * dropDD;
@@ -618,7 +618,7 @@ enum
 	for(byte i = 0; i < 3; i++)
 	{
 		RakText * title = [self getTextForLocalizationString:titleNames[i] :maxWidthTitles];
-		RakText * inputField = [self getInputFieldWithPlaceholder:placeholderNames[i] : maxWidthContent];
+		RakTextComplete * inputField = [self getInputFieldWithPlaceholder:placeholderNames[i] : maxWidthContent];
 		if(title != nil && inputField != nil)
 		{
 			NSSize titleSize = title.bounds.size, inputSize = inputField.bounds.size;
@@ -795,9 +795,9 @@ enum
 	return text;
 }
 
-- (RakText *) getInputFieldWithPlaceholder : (NSString *) string : (CGFloat) maxWidth
+- (RakTextComplete *) getInputFieldWithPlaceholder : (NSString *) string : (CGFloat) maxWidth
 {
-	RakText * text = [[RakText alloc] initWithText:nil :[self textColor]];
+	RakTextComplete * text = [[RakTextComplete alloc] initWithText:nil :[self textColor]];
 	if(text != nil)
 	{
 		((RakTextCell*) text.cell).customizedInjectionPoint = YES;

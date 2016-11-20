@@ -191,6 +191,7 @@
 {
 	if(_haveBackgroundColor)
 		return [Prefs getSystemColor:COLOR_TABS_BACKGROUND];
+	
 	return nil;
 }
 

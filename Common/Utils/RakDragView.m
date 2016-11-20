@@ -65,7 +65,7 @@
 		[element setFrameOrigin:newFrame.origin];
 	}
 	
-	//We check if we need to increse the full width
+	//We check if we need to increase the full width
 	if(NSMaxX(newFrame) + SPACE_AT_THE_RIGHT > self.bounds.size.width)
 	{
 		NSSize size = self.bounds.size;

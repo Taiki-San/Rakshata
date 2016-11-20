@@ -29,7 +29,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	CGFloat footerHeight;
 }
 
-- (instancetype) init : (Prefs*) creator : (char *) inputData;
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;
@@ -75,7 +74,6 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 //Structure trop différente pour qu'un héritage de RakPrefsTab soit rentable
 @interface RakMDLSize : NSObject
 {
-	Prefs* mammouth;
 	uint sizeInputBuffer;
 	
 	//Prefs propres au MDL
@@ -83,7 +81,7 @@ CGFloat hex2intPrefs(char hex[2], int maximum);
 	CGFloat heightMDLReaderFocus;
 }
 
-- (instancetype) init : (Prefs*) creator : (char*) inputData;
+- (instancetype) initWithData : (char *) inputData;
 - (void) dumpData : (char *) output : (uint) length;
 
 - (void) setExpectedBufferSize;

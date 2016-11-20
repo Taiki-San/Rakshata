@@ -145,7 +145,7 @@ enum
 
 - (void) autoDLToggled
 {
-	[Prefs setPref:PREFS_SET_FAVORITE_AUTODL :autoDLButton.state == NSOnState];
+	[Prefs setPref:PREFS_SET_FAVORITE_AUTODL atValue:autoDLButton.state == NSOnState];
 }
 
 @end

@@ -18,7 +18,7 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 
 @implementation RakPrefsDeepData
 
-- (instancetype) init : (Prefs*) creator : (char *) inputData
+- (instancetype) initWithData : (char *) inputData
 {
 	self = [super init];
 	if(self != nil)
@@ -30,7 +30,6 @@ CGFloat hex2intPrefs(char hex[4], int maximum);
 		uint8_t i;
 		SEL jumpTable[numberElem];
 		
-		mammouth = creator;
 		[self initJumpTable:jumpTable];
 		
 		for(i = 0; i < numberElem; i++)

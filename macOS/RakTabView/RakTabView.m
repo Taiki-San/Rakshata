@@ -67,7 +67,7 @@
 
 - (void) initiateTransition
 {
-	if([Prefs setPref:PREFS_SET_OWNMAINTAB:flag])
+	if([Prefs setPref:PREFS_SET_OWNMAINTAB atValue:flag])
 	{
 		[super initiateTransition];
 		[self refreshLevelViews : self.superview : REFRESHVIEWS_CHANGE_MT];
@@ -224,7 +224,7 @@
 	//Appelé quand les tabs ont été réduits
 	if(context == REFRESHVIEWS_CHANGE_READER_TAB && [self isCursorOnMe])
 	{
-		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER:flag];
+		[Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER atValue:flag];
 	}
 }
 
@@ -365,7 +365,7 @@
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 		if([self isCursorOnMe])
 		{
-			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER :flag])
+			if([Prefs setPref:PREFS_SET_READER_TABS_STATE_FROM_CALLER atValue:flag])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			else
 				[self rejectedMouseEntered];
@@ -378,7 +378,7 @@
 	if(!((RakWindow*) self.window).fullscreen && ![self isStillCollapsedReaderTab])	//Au bout de 0.25 secondes, si un autre tab a pas signalé que la souris était rentré chez lui, il ferme tout
 	{
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-			if(self.mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE:STATE_READER_TAB_ALL_COLLAPSED])
+			if(self.mainThread == TAB_READER && [self mouseOutOfWindow] && [Prefs setPref:PREFS_SET_READER_TABS_STATE atValue:STATE_READER_TAB_ALL_COLLAPSED])
 				[self refreshLevelViews : [self superview] : REFRESHVIEWS_CHANGE_READER_TAB];
 			else
 				[self rejectedMouseExited];

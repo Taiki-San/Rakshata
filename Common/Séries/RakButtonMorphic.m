@@ -70,7 +70,7 @@
 		}
 		else
 		{
-			image = [RakResPath getImage:imageName];
+			image = getResImageWithName(imageName);
 			if(image != nil)
 				[images addObject:image];
 			else
@@ -88,7 +88,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	RakImage * image = [RakResPath getImage:_imageNames[0]];
+	RakImage * image = getResImageWithName(_imageNames[0]);
 	
 	if(image != nil)
 	{

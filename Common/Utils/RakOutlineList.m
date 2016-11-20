@@ -32,8 +32,8 @@
 	
 	if([identifier isEqualToString:NSOutlineViewDisclosureButtonKey])
 	{
-		[(NSButton *)view setImage:[RakResPath getImage:@"TD->"]];
-		[(NSButton *)view setAlternateImage:[RakResPath getImage:@"TD-v"]];
+		[(NSButton *)view setImage:getResImageWithName(@"TD->")];
+		[(NSButton *)view setAlternateImage:getResImageWithName(@"TD-v")];
 	}
 	
 	return view;

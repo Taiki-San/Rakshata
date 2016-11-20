@@ -196,7 +196,7 @@ enum
 	
 	((RakContentViewBack *) self.window.contentView).title = activeButton.attributedTitle.string;
 	
-	[Prefs setPref:PREFS_SET_ACTIVE_PREFS_PANEL :code];
+	[Prefs setPref:PREFS_SET_ACTIVE_PREFS_PANEL atValue:code];
 	[responder focusChanged:code];
 	
 	if(triggeredClic)

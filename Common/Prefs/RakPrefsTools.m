@@ -87,7 +87,7 @@ NSArray * loadCustomColor(const char * file)
 		//Check the content of the array is valid
 		__block BOOL validData = YES;
 		[currentEntry enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if(ARE_CLASSES_DIFFERENT(obj, [NSNumber class]))
+			if(![obj isKindOfClass:[NSNumber class]])
 			{
 				validData = NO;
 				*stop = YES;
@@ -148,11 +148,7 @@ NSArray * loadCustomColor(const char * file)
 
 #pragma mark - Icon loader
 
-@implementation RakResPath
-
-+ (RakImage *) getImage: (NSString*) baseName
+RakImage * getResImageWithName(NSString* baseName)
 {
 	return [[NSBundle mainBundle] imageForResource:baseName];
 }
-
-@end

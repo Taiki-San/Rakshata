@@ -14,16 +14,16 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@class Prefs;
+@class RakPrefsCustom;
 
 @interface RakPrefsDeepData : NSObject
 {
-	Prefs* mammouth;
 	uint numberElem;
 	uint sizeInputBuffer;
 }
 
-- (instancetype) init : (Prefs*) creator : (char *) inputData;
+- (instancetype) initWithData : (char *) inputData;
+
 - (void) initJumpTable : (SEL *) jumpTable;
 - (void) setAtIndex: (uint8_t) index : (CGFloat) data;
 - (void) reinitAtIndex : (uint8_t) index;

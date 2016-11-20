@@ -362,7 +362,7 @@
 
 - (BOOL) loadIcon : (short) state
 {
-	RakImage * template = [RakResPath getImage:_imageName];
+	RakImage * template = getResImageWithName(_imageName);
 	
 	clicked		= [template copy];		[clicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_ACTIVE]];
 	nonClicked	= [template copy];		[nonClicked tintWithColor:[Prefs getSystemColor:COLOR_ICON_INACTIVE]];

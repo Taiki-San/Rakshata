@@ -99,7 +99,7 @@ enum
 	if(button != saveMagnification)
 		return [saveMagnification performClick:nil];
 	
-	[Prefs setPref:PREFS_SET_SAVE_MAGNIFICATION :saveMagnification.state == NSOnState];
+	[Prefs setPref:PREFS_SET_SAVE_MAGNIFICATION atValue:saveMagnification.state == NSOnState];
 }
 
 - (void) readerColorPDFBackground : (RakSwitchButton *) button
@@ -107,7 +107,7 @@ enum
 	if(button != forcePDFBackground)
 		return [forcePDFBackground performClick:nil];
 	
-	[Prefs setPref:PREFS_SET_HAVE_PDF_BACKGROUND :forcePDFBackground.state == NSOnState];
+	[Prefs setPref:PREFS_SET_HAVE_PDF_BACKGROUND atValue:forcePDFBackground.state == NSOnState];
 }
 
 - (void) readerOverrideDirection : (RakSwitchButton *) button
@@ -115,7 +115,7 @@ enum
 	if(button != overrideDirection)
 		return [overrideDirection performClick:nil];
 
-	[Prefs setPref:PREFS_SET_DIROVERRIDE :overrideDirection.state == NSOnState];
+	[Prefs setPref:PREFS_SET_DIROVERRIDE atValue:overrideDirection.state == NSOnState];
 }
 
 #pragma mark - Colors

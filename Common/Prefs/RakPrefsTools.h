@@ -19,15 +19,4 @@ CGFloat percToSize(CGFloat percentage, CGFloat superview, CGFloat max);
 
 NSArray * loadCustomColor(const char * file);
 
-enum RAKBUTTON_STATES
-{
-	RB_STATE_STANDARD		= NSOffState,
-	RB_STATE_HIGHLIGHTED	= NSOnState,
-	RB_STATE_UNAVAILABLE	= NSMixedState
-};
-
-@interface RakResPath : NSObject
-
-+ (RakImage *) getImage: (NSString*) baseName;
-
-@end
+RakImage * getResImageWithName(NSString* baseName);

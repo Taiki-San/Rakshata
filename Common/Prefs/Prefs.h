@@ -14,28 +14,29 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#include "RakPrefsTools.h"
-#include "RakPrefsDeepData.h"
-#import "RakContextRestoration.h"
-
 #define STATE_EMPTY @"Luna is bored"
 
-enum DIRECT_QUERY_REQUEST
-{
-	QUERY_SERIE = 0,	//Unused
-	QUERY_CT = 1,
-	QUERY_READER = 2,	//Unused
-	QUERY_MDL = 3		//Unused
-};
+@class Prefs;
 
-enum QUERY_SUBREQUEST {
-	QUERY_GET_WIDTH,
-	QUERY_GET_HEIGHT,	//Unused
-	QUERY_GET_POSX,		//Unused
-	QUERY_GET_POSY		//Unused
-};
+@protocol RakPrefsCustomized <NSObject>
 
-enum COLOR_REQUEST
+- (void) initializeContextWithProxy : (Prefs *) proxy;
+- (NSString *) dumpPrefs;
+
+- (NSArray <RakColor *> *) getColorThemeWithID : (uint) ID;
+
+- (NSFont *) getFont : (byte) context ofSize : (CGFloat) size;
+
+- (void) getPrefInternal : (uint) requestID : (void*) outputContainer : (void*) additionalData;
+- (BOOL) setPref : (uint) requestID atValue: (uint64_t) value;
+
+- (void) directQueryInternal : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (CGFloat*) output;
+
+- (NSString *) getKeyPathForCode : (byte) code;
+
+@end
+
+enum _COLOR_REQUEST
 {
 	COLOR_INACTIVE,
 	COLOR_SURVOL,
@@ -95,108 +96,35 @@ enum COLOR_REQUEST
 	COLOR_DANGER_POPOVER_TEXT_COLOR,
 	COLOR_DANGER_POPOVER_TEXT_COLOR_SELECTED,
 	
-	COLOR_GRID_FOCUS_BACKGROUND,
-	COLOR_SR_PLACEHOLDER_TEXT,
-	
-	COLOR_FILTER_FOREGROUND,
-	
-	COLOR_TAGITEM_BORDER,
-	COLOR_TAGITEM_BACKGROUND,
-	COLOR_TAGITEM_FONT,
-	
-	COLOR_SEARCHBAR_BACKGROUND,
-	COLOR_SEARCHBAR_BACKGROUND_EXTRA,
-	COLOR_SEARCHBAR_PLACEHOLDER_TEXT,
-	COLOR_SEARCHBAR_SELECTION_BACKGROUND,
-	COLOR_SEARCHBAR_SELECTION_TEXT,
-	COLOR_SEARCHBAR_BORDER,
-	COLOR_SEARCHSUG_SEPARATOR,
-	COLOR_SEARCHTAB_BACKGROUND,
-	COLOR_SEARCHTAB_PEAK_BACKGROUND,
-	COLOR_SEARCHTAB_BORDER_BAR,
-	COLOR_SEARCHTAB_BORDER_COLLAPSED,
-	COLOR_SEARCHTAB_BORDER_DEPLOYED,
-	
-	COLOR_CTHEADER_GRADIENT_START,
-	COLOR_CTHEADER_GRADIENT_END,
-	COLOR_CTHEADER_FONT,
-	COLOR_CTLIST_BACKGROUND,
-	
-	COLOR_READER_BAR,
-	COLOR_READER_BAR_FRONT,
-	COLOR_READER_BAR_PAGE_COUNTER,
-	COLOR_READER_BACKGROUND_INTAB,
-	COLOR_PDF_BACKGROUND,
-	
-	COLOR_PROGRESSLINE_SLOT,
-	COLOR_PROGRESSLINE_PROGRESS,
-	
-	COLOR_PREFS_HEADER_BACKGROUND,
-	COLOR_PREFS_HEADER_BORDER,
-	COLOR_PREFS_BUTTON_FOCUS,
-	
-	COLOR_REPO_LIST_BACKGROUND,
-	COLOR_REPO_LIST_ITEM_BACKGROUND,
-	COLOR_REPO_TEXT_PLACEHOLDER,
-	COLOR_ADD_REPO_BACKGROUND,
-	
-	COLOR_DROP_AREA_BACKGROUND,
-	COLOR_EXPORT_BACKGROUND,
-	COLOR_IMPORT_LIST_BACKGROUND
+	COLOR_KIT_MAX
 };
 
-enum FONT_REQUEST {
+enum _FONT_REQUEST {
 	FONT_TITLE,
 	FONT_STANDARD,
 	FONT_PLACEHOLDER,
-	FONT_TAGS,
-	FONT_SR_TITLE,
-	FONT_RD_BUTTONS,
-	FONT_ABOUT,
-	FONT_PREFS_TITLE,
-	FONT_AUTHOR_ITALIC
+	
+	FONT_KIT_MAX
 };
 
-enum KVO_REQUEST {
+enum _KVO_REQUEST {
 	KVO_THEME,
-	KVO_MAIN_THREAD,
-	KVO_PDF_BACKGRND,
-	KVO_MAGNIFICATION,
-	KVO_DIROVERRIDE
+	
+	KVO_KIT_MAX
 };
 
 @interface Prefs : NSObject
 {
-	RakContentView* firstResponder;
-	
-	// Prefs "sécurisés"
-	NSString * email;
-	
-	//	Prefs unencrypted
-	BOOL startInFullscreen;
-	
-	// Prefs taille/pos elements (pourcentages)
-	RakSizeSeries	*	tabSerieSize;
-	RakSizeCT		*	tabCTSize;
-	RakSizeReader	*	tabReaderSize;
-	
-	RakMDLSize * prefsPosMDL;
-	
-	NSArray * _darkColor, * _lightColor, * _customColor;
+	NSObject <RakPrefsCustomized> * customPreference;
 }
 
 @property uint themeCode;
-@property uint mainThread;
-@property uint stateTabsReader;
-@property byte activePrefsPanel;
-@property BOOL saveMagnification;
-@property BOOL havePDFBackground;
-@property BOOL overrideDirection;
-@property BOOL favoriteAutoDL;
-@property BOOL suggestFromLastRead;
 
 + (void) initCache;
++ (void) initCacheWithProxyClass : (Class) customClass;
+
 + (NSString *) dumpPrefs;
+- (NSString *) dumpProxyPrefs;
 + (void) deletePrefs;
 
 + (uint) getCurrentTheme;
@@ -208,7 +136,7 @@ enum KVO_REQUEST {
 
 + (void) getPref : (uint) requestID : (void*) outputContainer;
 + (void) getPref : (uint) requestID : (void*) outputContainer : (void*) additionalData;
-+ (BOOL) setPref : (uint) requestID : (uint64_t) value;
++ (BOOL) setPref : (uint) requestID atValue : (uint64_t) value;
 
 //KVO
 + (void) registerForChange : (id) object forType : (byte) code;
@@ -219,17 +147,7 @@ enum KVO_REQUEST {
 + (void) directQuery : (uint8_t) request : (uint8_t) subRequest : (uint) mainThreadLocal : (uint) stateTabsReaderLocal : (void*) outputContainer;
 
 //Not public, only called by subprefs
-- (instancetype) init : (NSString *) data;
 - (NSString*) dumpPrefs;
-- (void) refreshFirstResponder;
 - (void) flushMemory : (BOOL) memoryError;
-- (NSArray *) setupExecuteConsistencyChecks : (uint8_t) request;
+
 @end
-
-#include "prefsControl.h"
-#include "prefsMagic.h"
-
-#if !TARGET_OS_IPHONE
-	#import "PrefsUI.h"
-	#import "RakPrefsRemindPopover.h"
-#endif

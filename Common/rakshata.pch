@@ -59,6 +59,8 @@
 
 	@class MDL;
 
+	#import <RakKit/RakKit.h>
+
 	#import "utils.h"
 
 	/* Différentes super-classes de l'interface	*/
@@ -91,11 +93,9 @@
 		#import "RakAppOSXDelegate.h"
 	#endif
 
-	#import "Prefs.h"
+	#import "RakPrefsCustom.h"
 
 	#pragma clang diagnostic ignored "-Wnonnull"
-#else
-	#include "prefsControl.h"
 #endif
 
 #include "interface.h"
