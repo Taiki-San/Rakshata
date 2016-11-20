@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		B62F81DF1DE1E724000AE12C /* RakView.h in Headers */ = {isa = PBXBuildFile; fileRef = B62F81DD1DE1E724000AE12C /* RakView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62F81E01DE1E724000AE12C /* RakView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81DE1DE1E724000AE12C /* RakView.m */; };
-		B62F81ED1DE1F999000AE12C /* RakKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D319601DE097580088C86D /* RakKit.framework */; };
 		B6D319651DE097580088C86D /* RakKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D319631DE097580088C86D /* RakKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3197B1DE09C970088C86D /* RakClickableText.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D319701DE09C970088C86D /* RakClickableText.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3197C1DE09C970088C86D /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D319711DE09C970088C86D /* RakClickableText.m */; };
@@ -47,7 +46,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B62F81ED1DE1F999000AE12C /* RakKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
