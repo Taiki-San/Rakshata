@@ -18,23 +18,8 @@ int launchApp(int argc, char *argv[])
 {
 	@autoreleasepool
 	{
+		[Prefs initCacheWithProxyClass:[RakPrefsCustom class]];
+
 		return NSApplicationMain(argc, (const char **) argv);
 	}
 }
-
-@implementation RakView (Bridge)
-
-- (RakColor *) backgroundColor
-{
-	return [NSColor colorWithCGColor:self.layer.backgroundColor];
-}
-
-- (void) setBackgroundColor : (RakColor *) color
-{
-	if(self.layer == nil)
-		self.wantsLayer = YES;
-	
-	self.layer.backgroundColor = color.CGColor;
-}
-
-@end

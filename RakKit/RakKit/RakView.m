@@ -92,4 +92,21 @@
 	return image;
 }
 
+#if TARGET_OS_OSX
+
+- (RakColor *) backgroundColor
+{
+	return [NSColor colorWithCGColor:self.layer.backgroundColor];
+}
+
+- (void) setBackgroundColor : (RakColor *) color
+{
+	if(self.layer == nil)
+		self.wantsLayer = YES;
+	
+	self.layer.backgroundColor = color.CGColor;
+}
+
+#endif
+
 @end

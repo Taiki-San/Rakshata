@@ -31,14 +31,6 @@
 	typedef uint8_t byte;
 #endif
 
-#define RakView		NSView
-#define RakImage	NSImage
-#define RakColor	NSColor
-
-#define RakApplication	NSApplication
-#define RakRealApp		NSApp
-
-
 #include "RakKit.h"
 
 #pragma clang diagnostic ignored "-Wnonnull"

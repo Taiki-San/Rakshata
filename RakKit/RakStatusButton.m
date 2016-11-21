@@ -364,7 +364,7 @@ enum
 - (void) focusChanged
 {
 	BOOL oldAnimationData = NO;
-	CGFloat stage;
+	uint stage;
 
 	if(_animation != nil)
 	{

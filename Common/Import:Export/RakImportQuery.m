@@ -167,6 +167,7 @@ enum
 
 		isTome.target = self;
 		isTome.action = @selector(changedIsTome);
+		isTome.animationControllerClass = [RakCTAnimationController class];
 		
 		workingSize = isTome.bounds.size;
 		[isTome setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, currentY -= workingSize.height + META_LARGE_INTERLINE_BORDER)];
@@ -871,10 +872,6 @@ enum
 			area.defaultImage = YES;
 		}
 	}
-}
-
-- (void) feedAnimationController : (RakCTAnimationController *) animationController
-{
 }
 
 - (void) drawRect:(NSRect)dirtyRect

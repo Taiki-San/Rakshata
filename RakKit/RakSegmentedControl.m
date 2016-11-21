@@ -130,7 +130,10 @@ enum
 	
 	if(animationController == nil)
 	{
-		animationController = [[RakCTAnimationController alloc] init: initialPos : [newValue integerValue] - initialPos : self.cell];
+		if(_animationControllerClass == nil || ![_animationControllerClass isSubclassOfClass:[RakSegmentedAnimationController class]])
+			_animationControllerClass = [RakSegmentedAnimationController class];
+		
+		animationController = [[_animationControllerClass alloc] initWithBasePos:initialPos stepping:[newValue integerValue] - initialPos cell:self.cell];
 		
 		if(animationController == nil)
 			return NO;

@@ -16,6 +16,10 @@
 
 @interface RakView (RakUtils)
 
+#if TARGET_OS_OSX
+@property RakColor * backgroundColor;
+#endif
+
 - (void) setFrameAnimated : (NSRect) frame;
 - (void) setFrameOriginAnimated : (NSPoint) origin;
 - (void) setAlphaAnimated : (CGFloat) alpha;

@@ -78,14 +78,10 @@ void registerDefaultForExtension(NSString * extension);
 #if !TARGET_OS_IPHONE
 	#import "RakWindow.h"
 	#import "RakSheetView.h"
-	#import "RakAnimationController.h"
 
-	#import "NSImage+Tint.h"
 	#import "RakTextComplete.h"
-	#import "RakButton.h"
 	#import "RakScroller.h"
 	#import "RakBorder.h"
-	#import "RakSegmentedButtonCell.h"
 	#import "RakProgressBar.h"
 	#import "RakBackButton.h"
 	#import "RakPopover.h"

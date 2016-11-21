@@ -173,6 +173,11 @@
 {
 	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame : _bounds : @[NSLocalizedString(@"CHAPTERS", nil), NSLocalizedString(@"VOLUMES", nil)]];
 	
+	if(_buttons != nil)
+	{
+		_buttons.animationControllerClass = [RakCTAnimationController class];
+	}
+	
 	if(!data.isInitialized)
 	{
 		[_buttons setEnabled: NO forSegment:0];

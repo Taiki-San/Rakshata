@@ -138,13 +138,18 @@
 	//On non-retina display, the text will be blurry if not on a round origin relative to the window, yeah, awesome...
 	if(self.window == nil)
 	{
-		if(self.superview != nil && [RakApp.window backingScaleFactor] == 1)
+		if([RakRealApp respondsToSelector:@selector(window)])
 		{
-			NSRect rectOnScreen = [RakApp.window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
-			
-			newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
-			newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
+			NSWindow * window = [RakRealApp performSelector:@selector(window)];
+			if(window != nil && self.superview != nil && [window backingScaleFactor] == 1)
+			{
+				NSRect rectOnScreen = [window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];
+				
+				newOrigin.x += roundf(rectOnScreen.origin.x) - rectOnScreen.origin.x;
+				newOrigin.y += roundf(rectOnScreen.origin.y) - rectOnScreen.origin.y;
+			}
 		}
+
 	}
 	else if([self.window backingScaleFactor] == 1)
 	{

@@ -16,21 +16,6 @@
 
 @implementation RakCTAnimationController
 
-- (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell
-{
-	self = [super init];
-	
-	if(self != nil)
-	{
-		_initialState = initialPos;
-		_animationDiff = diff;
-		_cell = cell;
-		self.stage = self.animationFrame;
-	}
-	
-	return self;
-}
-
 #pragma mark - Context update
 
 - (void) addCTContent : (RakCTSelectionListContainer*) chapter : (RakCTSelectionListContainer*) volume
@@ -84,27 +69,18 @@
 
 #pragma mark - Animation Work
 
-- (void) animation:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress)progress
+- (void) customAnimationUpdate:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress) progress
 {
-	[_cell updateAnimationStatus: YES : _initialState + _animationDiff * progress];
-	[_cell.controlView setNeedsDisplay:YES];
+	if(_chapter != nil)
+		chapOrigin.x += distanceToCoverPerMark;		[_chapter setFrameOrigin:chapOrigin];
 	
-	chapOrigin.x += distanceToCoverPerMark;		[_chapter setFrameOrigin:chapOrigin];
-	volOrigin.x += distanceToCoverPerMark;		[_volume setFrameOrigin:volOrigin];
-	
-	[super animation:animation didReachProgressMark:progress];
-}
-
-- (void) animationDidEnd:(NSAnimation *)animation
-{
-	[super animationDidEnd:animation];
-	
-	[_cell.controlView setNeedsDisplay:YES];
+	if(_volume != nil)
+		volOrigin.x += distanceToCoverPerMark;		[_volume setFrameOrigin:volOrigin];
 }
 
 - (void) postProcessingBeforeAction
 {
-	[_cell updateAnimationStatus:NO :1];
+	[super postProcessingBeforeAction];
 	
 	NSRect superviewFrame = _chapter.superview.frame;
 	_chapter.frame = superviewFrame;

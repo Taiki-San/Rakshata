@@ -12,26 +12,21 @@
  **                                                                                         **
  **                     			© Taiki 2011-2016                                       **
  **                                                                                         **
- ********************************************************************************************/
+ *********************************************************************************************/
 
-@interface RakMinimalSegmentedControl : NSSegmentedControl
+#if TARGET_OS_OSX
+	#define RakView		NSView
+	#define RakImage	NSImage
+	#define RakColor	NSColor
 
-- (NSRect) getButtonFrame : (NSRect) superviewFrame;
-- (void) resizeAnimation : (NSRect) frameRect;
+	#define RakApplication	NSApplication
+	#define RakRealApp		NSApp
 
-@end
+	#define CONFIGURE_APPEARANCE_DARK(__view) if(__view != nil && floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_10) __view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]
 
-@interface RakSegmentedControl : RakMinimalSegmentedControl
-{
-	id animationController;
-}
+#endif
 
-@property (unsafe_unretained) id postAnimationTarget;
-@property SEL postAnimationAction;
+NSRect prefsPercToFrame(NSRect percentage, NSSize superview);
+CGFloat percToSize(CGFloat percentage, CGFloat superview, CGFloat max);
 
-- (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
-
-- (void) updateSelectionWithoutAnimation : (NSInteger) newState;
-- (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
-
-@end
+RakImage * getResImageWithName(NSString* baseName);

@@ -184,7 +184,7 @@ enum
 	}
 }
 
-- (void) feedAnimationController : (RakCTAnimationController *) animationController
+- (void) feedAnimationController : (RakSegmentedAnimationController *) animationController
 {
 	[animationController addAction : self];
 }

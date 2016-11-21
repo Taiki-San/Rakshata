@@ -14,9 +14,8 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTAnimationController : RakAnimationController
+@interface RakCTAnimationController : RakSegmentedAnimationController
 {
-	RakSegmentedButtonCell * _cell;
 	RakCTSelectionListContainer * _chapter;
 	RakCTSelectionListContainer * _volume;
 	
@@ -24,8 +23,6 @@
 	NSPoint chapOrigin;
 	NSPoint volOrigin;
 }
-
-- (instancetype) init : (NSInteger) initialPos : (CGFloat) diff : (RakSegmentedButtonCell*) cell;
 
 - (void) addCTContent : (RakCTSelectionListContainer*) chapter : (RakCTSelectionListContainer*) volume;
 

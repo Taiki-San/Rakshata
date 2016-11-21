@@ -12,8 +12,21 @@
  **                                                                                         **
  **                     			© Taiki 2011-2016                                       **
  **                                                                                         **
- *********************************************************************************************/
+ ********************************************************************************************/
 
-@interface RakPrefsGeneralView : RakView <RakSegmentedAnimationControllerCallback>
+@interface RakSegmentedAnimationController : RakAnimationController
+{
+	RakSegmentedButtonCell * _cell;
+}
+
+- (instancetype) initWithBasePos : (NSInteger) initialPos stepping: (CGFloat) diff cell: (RakSegmentedButtonCell*) cell;
+
+- (void) customAnimationUpdate:(NSAnimation *)animation didReachProgressMark:(NSAnimationProgress) progress;
+
+@end
+
+@protocol RakSegmentedAnimationControllerCallback <NSObject>
+
+- (void) feedAnimationController : (RakSegmentedAnimationController *) controller;
 
 @end

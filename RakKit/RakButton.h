@@ -14,13 +14,6 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#import "RakCustomButton.h"
-#import "RakSlideshowButton.h"
-#import "RakSwitchButton.h"
-#import "RakSegmentedControl.h"
-#import "RakStatusButton.h"
-#import "RakPopUpButton.h"
-
 @interface RakButton: NSButton
 {
 	BOOL haveBackground, hasRegisteredThemeUpdates;
@@ -69,3 +62,11 @@
 - (RakColor *) getFontColor;
 
 @end
+
+#import "RakCustomButton.h"
+#import "RakSlideshowButton.h"
+#import "RakSwitchButton.h"
+#import "RakSegmentedButtonCell.h"
+#import "RakSegmentedControl.h"
+#import "RakStatusButton.h"
+#import "RakPopUpButton.h"

@@ -14,16 +14,4 @@
  **                                                                                         **
  *********************************************************************************************/
 
-#define RakView		NSView
-#define RakImage	NSImage
-#define RakColor	NSColor
-
-#define RakApplication	NSApplication
-#define RakRealApp		NSApp
 #define RakApp			((RakAppOSXDelegate *) [RakRealApp delegate])
-
-@interface RakView (Bridge)
-
-@property RakColor * backgroundColor;
-
-@end

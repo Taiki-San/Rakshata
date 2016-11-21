@@ -14,7 +14,7 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@interface RakCTSelection : RakView
+@interface RakCTSelection : RakView <RakSegmentedAnimationControllerCallback>
 {
 	PROJECT_DATA data;
 	RakCTCoreViewButtons * _buttons;
@@ -39,7 +39,6 @@
 
 - (void) gotClickedTransmitData : (NSNotification*) notification;
 
-- (void) feedAnimationController : (RakCTAnimationController *) animationController;
 - (void) switchIsTome;
 
 - (void) selectElem : (uint) projectID : (BOOL) isTome : (uint) element;

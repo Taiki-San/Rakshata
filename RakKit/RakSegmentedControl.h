@@ -14,32 +14,28 @@
  **                                                                                         **
  ********************************************************************************************/
 
-@implementation RakImage (Tint)
+#import <RakKit/RakSegmentedAnimationController.h>
 
-//Come from http://stackoverflow.com/questions/1413135/tinting-a-grayscale-RakImage-or-ciimage
-- (void) tintWithColor : (RakColor *) color
+@interface RakMinimalSegmentedControl : NSSegmentedControl
+
+- (NSRect) getButtonFrame : (NSRect) superviewFrame;
+- (void) resizeAnimation : (NSRect) frameRect;
+
+@end
+
+@interface RakSegmentedControl : RakMinimalSegmentedControl
 {
-	if(color == nil)
-	{
-#ifdef EXTENSIVE_LOGGING
-		NSLog(@"Hey, trying to tint an empty image, WTF?");
-#endif
-		return;
-	}
-
-	NSSize size = self.size;
-	
-	if (!NSEqualSizes(size, NSZeroSize))
-	{
-		NSRect imageRect = {NSZeroPoint, size};
-		
-		[self lockFocus];
-		
-		[color set];
-		NSRectFillUsingOperation(imageRect, NSCompositeSourceAtop);
-		
-		[self unlockFocus];
-	}
+	id animationController;
 }
+
+@property (unsafe_unretained) id postAnimationTarget;
+@property SEL postAnimationAction;
+
+@property Class animationControllerClass;
+
+- (instancetype) initWithFrame : (NSRect) frame : (NSArray *) buttonMessage;
+
+- (void) updateSelectionWithoutAnimation : (NSInteger) newState;
+- (BOOL) setupTransitionAnimation : (NSNumber*) oldValue : (NSNumber *) newValue;
 
 @end

@@ -66,4 +66,6 @@
 
 @end
 
-#import "RakClickableText.h"
+#import <RakKit/RakClickableText.h>
+#import <RakKit/RakTextCell.h>
+#import <RakKit/RakMenuText.h>

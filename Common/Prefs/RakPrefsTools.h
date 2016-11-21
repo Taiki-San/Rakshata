@@ -14,9 +14,4 @@
  **                                                                                         **
  ********************************************************************************************/
 
-NSRect prefsPercToFrame(NSRect percentage, NSSize superview);
-CGFloat percToSize(CGFloat percentage, CGFloat superview, CGFloat max);
-
 NSArray * loadCustomColor(const char * file);
-
-RakImage * getResImageWithName(NSString* baseName);

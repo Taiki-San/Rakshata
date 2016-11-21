@@ -9,6 +9,30 @@
 /* Begin PBXBuildFile section */
 		B62F81DF1DE1E724000AE12C /* RakView.h in Headers */ = {isa = PBXBuildFile; fileRef = B62F81DD1DE1E724000AE12C /* RakView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62F81E01DE1E724000AE12C /* RakView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81DE1DE1E724000AE12C /* RakView.m */; };
+		B684D14F1DE26ADF00982DD7 /* shared_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B684D14D1DE26ADF00982DD7 /* shared_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B684D1501DE26ADF00982DD7 /* shared_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B684D14E1DE26ADF00982DD7 /* shared_utils.m */; };
+		B684D1531DE26BE700982DD7 /* NSImage+Tint.h in Headers */ = {isa = PBXBuildFile; fileRef = B684D1511DE26BE700982DD7 /* NSImage+Tint.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B684D1541DE26BE700982DD7 /* NSImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = B684D1521DE26BE700982DD7 /* NSImage+Tint.m */; };
+		B697B9BB1DE1FF6C007079CE /* RakAnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9B81DE1FF6C007079CE /* RakAnimationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9BC1DE1FF6C007079CE /* RakAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9B91DE1FF6C007079CE /* RakAnimationController.m */; };
+		B697B9CE1DE20075007079CE /* RakButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9BE1DE20075007079CE /* RakButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9CF1DE20075007079CE /* RakButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9BF1DE20075007079CE /* RakButton.m */; };
+		B697B9D01DE20075007079CE /* RakCustomButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9C01DE20075007079CE /* RakCustomButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9D11DE20075007079CE /* RakCustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9C11DE20075007079CE /* RakCustomButton.m */; };
+		B697B9D21DE20075007079CE /* RakPopUpButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9C21DE20075007079CE /* RakPopUpButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9D31DE20075007079CE /* RakPopUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9C31DE20075007079CE /* RakPopUpButton.m */; };
+		B697B9D41DE20075007079CE /* RakSegmentedButtonCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9C41DE20075007079CE /* RakSegmentedButtonCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9D51DE20075007079CE /* RakSegmentedButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9C51DE20075007079CE /* RakSegmentedButtonCell.m */; };
+		B697B9D61DE20075007079CE /* RakSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9C61DE20075007079CE /* RakSegmentedControl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9D71DE20075007079CE /* RakSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9C71DE20075007079CE /* RakSegmentedControl.m */; };
+		B697B9D81DE20075007079CE /* RakSlideshowButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9C81DE20075007079CE /* RakSlideshowButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9D91DE20075007079CE /* RakSlideshowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9C91DE20075007079CE /* RakSlideshowButton.m */; };
+		B697B9DA1DE20075007079CE /* RakStatusButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9CA1DE20075007079CE /* RakStatusButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9DB1DE20075007079CE /* RakStatusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9CB1DE20075007079CE /* RakStatusButton.m */; };
+		B697B9DC1DE20075007079CE /* RakSwitchButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B697B9CC1DE20075007079CE /* RakSwitchButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B697B9DD1DE20075007079CE /* RakSwitchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B697B9CD1DE20075007079CE /* RakSwitchButton.m */; };
+		B6C1D9D21DE3611C005A2CB3 /* RakSegmentedAnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C1D9D01DE3611C005A2CB3 /* RakSegmentedAnimationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6C1D9D31DE3611C005A2CB3 /* RakSegmentedAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C1D9D11DE3611C005A2CB3 /* RakSegmentedAnimationController.m */; };
 		B6D319651DE097580088C86D /* RakKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D319631DE097580088C86D /* RakKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3197B1DE09C970088C86D /* RakClickableText.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D319701DE09C970088C86D /* RakClickableText.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3197C1DE09C970088C86D /* RakClickableText.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D319711DE09C970088C86D /* RakClickableText.m */; };
@@ -25,6 +49,30 @@
 /* Begin PBXFileReference section */
 		B62F81DD1DE1E724000AE12C /* RakView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakView.h; path = RakKit/RakView.h; sourceTree = "<group>"; };
 		B62F81DE1DE1E724000AE12C /* RakView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakView.m; path = RakKit/RakView.m; sourceTree = "<group>"; };
+		B684D14D1DE26ADF00982DD7 /* shared_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shared_utils.h; sourceTree = "<group>"; };
+		B684D14E1DE26ADF00982DD7 /* shared_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = shared_utils.m; sourceTree = "<group>"; };
+		B684D1511DE26BE700982DD7 /* NSImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage+Tint.h"; sourceTree = "<group>"; };
+		B684D1521DE26BE700982DD7 /* NSImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage+Tint.m"; sourceTree = "<group>"; };
+		B697B9B81DE1FF6C007079CE /* RakAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakAnimationController.h; path = Utils/RakAnimationController.h; sourceTree = "<group>"; };
+		B697B9B91DE1FF6C007079CE /* RakAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakAnimationController.m; path = Utils/RakAnimationController.m; sourceTree = "<group>"; };
+		B697B9BE1DE20075007079CE /* RakButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakButton.h; sourceTree = "<group>"; };
+		B697B9BF1DE20075007079CE /* RakButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakButton.m; sourceTree = "<group>"; };
+		B697B9C01DE20075007079CE /* RakCustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakCustomButton.h; sourceTree = "<group>"; };
+		B697B9C11DE20075007079CE /* RakCustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakCustomButton.m; sourceTree = "<group>"; };
+		B697B9C21DE20075007079CE /* RakPopUpButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakPopUpButton.h; sourceTree = "<group>"; };
+		B697B9C31DE20075007079CE /* RakPopUpButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakPopUpButton.m; sourceTree = "<group>"; };
+		B697B9C41DE20075007079CE /* RakSegmentedButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakSegmentedButtonCell.h; sourceTree = "<group>"; };
+		B697B9C51DE20075007079CE /* RakSegmentedButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakSegmentedButtonCell.m; sourceTree = "<group>"; };
+		B697B9C61DE20075007079CE /* RakSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakSegmentedControl.h; sourceTree = "<group>"; };
+		B697B9C71DE20075007079CE /* RakSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakSegmentedControl.m; sourceTree = "<group>"; };
+		B697B9C81DE20075007079CE /* RakSlideshowButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakSlideshowButton.h; sourceTree = "<group>"; };
+		B697B9C91DE20075007079CE /* RakSlideshowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakSlideshowButton.m; sourceTree = "<group>"; };
+		B697B9CA1DE20075007079CE /* RakStatusButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakStatusButton.h; sourceTree = "<group>"; };
+		B697B9CB1DE20075007079CE /* RakStatusButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakStatusButton.m; sourceTree = "<group>"; };
+		B697B9CC1DE20075007079CE /* RakSwitchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RakSwitchButton.h; sourceTree = "<group>"; };
+		B697B9CD1DE20075007079CE /* RakSwitchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RakSwitchButton.m; sourceTree = "<group>"; };
+		B6C1D9D01DE3611C005A2CB3 /* RakSegmentedAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSegmentedAnimationController.h; path = CTSelec/RakSegmentedAnimationController.h; sourceTree = "<group>"; };
+		B6C1D9D11DE3611C005A2CB3 /* RakSegmentedAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakSegmentedAnimationController.m; path = CTSelec/RakSegmentedAnimationController.m; sourceTree = "<group>"; };
 		B6D319601DE097580088C86D /* RakKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RakKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6D319631DE097580088C86D /* RakKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RakKit.h; sourceTree = "<group>"; };
 		B6D319641DE097580088C86D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -52,6 +100,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B697B9BA1DE1FF6C007079CE /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				B697B9B81DE1FF6C007079CE /* RakAnimationController.h */,
+				B697B9B91DE1FF6C007079CE /* RakAnimationController.m */,
+				B6C1D9D01DE3611C005A2CB3 /* RakSegmentedAnimationController.h */,
+				B6C1D9D11DE3611C005A2CB3 /* RakSegmentedAnimationController.m */,
+			);
+			name = Animation;
+			path = ../Common;
+			sourceTree = "<group>";
+		};
+		B697B9BD1DE2005D007079CE /* Bouton */ = {
+			isa = PBXGroup;
+			children = (
+				B697B9BE1DE20075007079CE /* RakButton.h */,
+				B697B9BF1DE20075007079CE /* RakButton.m */,
+				B697B9C01DE20075007079CE /* RakCustomButton.h */,
+				B697B9C11DE20075007079CE /* RakCustomButton.m */,
+				B697B9C21DE20075007079CE /* RakPopUpButton.h */,
+				B697B9C31DE20075007079CE /* RakPopUpButton.m */,
+				B697B9C41DE20075007079CE /* RakSegmentedButtonCell.h */,
+				B697B9C51DE20075007079CE /* RakSegmentedButtonCell.m */,
+				B697B9C61DE20075007079CE /* RakSegmentedControl.h */,
+				B697B9C71DE20075007079CE /* RakSegmentedControl.m */,
+				B697B9C81DE20075007079CE /* RakSlideshowButton.h */,
+				B697B9C91DE20075007079CE /* RakSlideshowButton.m */,
+				B697B9CA1DE20075007079CE /* RakStatusButton.h */,
+				B697B9CB1DE20075007079CE /* RakStatusButton.m */,
+				B697B9CC1DE20075007079CE /* RakSwitchButton.h */,
+				B697B9CD1DE20075007079CE /* RakSwitchButton.m */,
+			);
+			name = Bouton;
+			sourceTree = "<group>";
+		};
 		B6D319561DE097580088C86D = {
 			isa = PBXGroup;
 			children = (
@@ -83,6 +166,10 @@
 		B6D3196B1DE097E60088C86D /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				B697B9BA1DE1FF6C007079CE /* Animation */,
+				B697B9BD1DE2005D007079CE /* Bouton */,
+				B684D1511DE26BE700982DD7 /* NSImage+Tint.h */,
+				B684D1521DE26BE700982DD7 /* NSImage+Tint.m */,
 				B6D319831DE09D0D0088C86D /* RakKit_macOS.pch */,
 				B6D319781DE09C970088C86D /* RakText */,
 			);
@@ -102,6 +189,8 @@
 				B6D319941DE0A5CD0088C86D /* Prefs */,
 				B62F81DD1DE1E724000AE12C /* RakView.h */,
 				B62F81DE1DE1E724000AE12C /* RakView.m */,
+				B684D14D1DE26ADF00982DD7 /* shared_utils.h */,
+				B684D14E1DE26ADF00982DD7 /* shared_utils.m */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -139,9 +228,21 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B697B9BB1DE1FF6C007079CE /* RakAnimationController.h in Headers */,
 				B6D3199D1DE0A5CD0088C86D /* Prefs.h in Headers */,
 				B6D3197B1DE09C970088C86D /* RakClickableText.h in Headers */,
+				B6C1D9D21DE3611C005A2CB3 /* RakSegmentedAnimationController.h in Headers */,
+				B697B9CE1DE20075007079CE /* RakButton.h in Headers */,
+				B684D14F1DE26ADF00982DD7 /* shared_utils.h in Headers */,
 				B6D3197F1DE09C970088C86D /* RakText.h in Headers */,
+				B697B9D41DE20075007079CE /* RakSegmentedButtonCell.h in Headers */,
+				B697B9DC1DE20075007079CE /* RakSwitchButton.h in Headers */,
+				B697B9D61DE20075007079CE /* RakSegmentedControl.h in Headers */,
+				B697B9D21DE20075007079CE /* RakPopUpButton.h in Headers */,
+				B684D1531DE26BE700982DD7 /* NSImage+Tint.h in Headers */,
+				B697B9DA1DE20075007079CE /* RakStatusButton.h in Headers */,
+				B697B9D01DE20075007079CE /* RakCustomButton.h in Headers */,
+				B697B9D81DE20075007079CE /* RakSlideshowButton.h in Headers */,
 				B6D319811DE09C970088C86D /* RakTextCell.h in Headers */,
 				B6D3197D1DE09C970088C86D /* RakMenuText.h in Headers */,
 				B62F81DF1DE1E724000AE12C /* RakView.h in Headers */,
@@ -217,10 +318,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B697B9DD1DE20075007079CE /* RakSwitchButton.m in Sources */,
+				B697B9CF1DE20075007079CE /* RakButton.m in Sources */,
 				B6D3197E1DE09C970088C86D /* RakMenuText.m in Sources */,
+				B697B9DB1DE20075007079CE /* RakStatusButton.m in Sources */,
+				B684D1541DE26BE700982DD7 /* NSImage+Tint.m in Sources */,
+				B697B9D51DE20075007079CE /* RakSegmentedButtonCell.m in Sources */,
+				B697B9D71DE20075007079CE /* RakSegmentedControl.m in Sources */,
+				B697B9D11DE20075007079CE /* RakCustomButton.m in Sources */,
 				B6D319821DE09C970088C86D /* RakTextCell.m in Sources */,
+				B697B9D91DE20075007079CE /* RakSlideshowButton.m in Sources */,
 				B6D3197C1DE09C970088C86D /* RakClickableText.m in Sources */,
+				B697B9D31DE20075007079CE /* RakPopUpButton.m in Sources */,
+				B697B9BC1DE1FF6C007079CE /* RakAnimationController.m in Sources */,
 				B6D3199E1DE0A5CD0088C86D /* Prefs.m in Sources */,
+				B6C1D9D31DE3611C005A2CB3 /* RakSegmentedAnimationController.m in Sources */,
+				B684D1501DE26ADF00982DD7 /* shared_utils.m in Sources */,
 				B62F81E01DE1E724000AE12C /* RakView.m in Sources */,
 				B6D319801DE09C970088C86D /* RakText.m in Sources */,
 			);

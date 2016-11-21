@@ -14,6 +14,31 @@
  **                                                                                         **
  *********************************************************************************************/
 
-@interface RakPrefsGeneralView : RakView <RakSegmentedAnimationControllerCallback>
+#pragma mark - Preference size utilities
 
-@end
+NSRect prefsPercToFrame(NSRect percentage, NSSize superview)
+{
+	percentage.origin.x *= superview.width / 100.0f;
+	percentage.origin.y *= superview.height / 100.0f;
+	percentage.size.width *= superview.width / 100.0f;
+	percentage.size.height *= superview.height / 100.0f;
+	
+	return percentage;
+}
+
+CGFloat percToSize(CGFloat percentage, CGFloat superview, CGFloat max)
+{
+	percentage *= superview / 100.0f;
+	
+	if(max != -1 && percentage > max)
+		percentage = max;
+	
+	return percentage;
+}
+
+#pragma mark - Icon loader
+
+RakImage * getResImageWithName(NSString* baseName)
+{
+	return [[NSBundle mainBundle] imageForResource:baseName];
+}
