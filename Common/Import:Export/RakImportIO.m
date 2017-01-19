@@ -119,6 +119,7 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 		return nil;
 	
 	NSMutableArray <RakImportItem *> * output = [NSMutableArray array];
+	NSMutableDictionary <NSString*, NSNumber *> * cachedGuessedName = [NSMutableDictionary new];
 
 	//We iterate input files, we perform independant analysis on each of them
 	//We don't try to merge different input files (eg, all flat CT) because it would be an issues
@@ -192,9 +193,23 @@ NSArray <RakImportItem *> * getManifestForIOs(NSArray <RakImportBaseController <
 				//No luck ¯\_(ツ)_/¯
 				if(sharedProject.cacheDBID == INVALID_VALUE)
 				{
+					//We will still check if there is a new project with the same guessed name as this one
+					NSNumber * oldGuessedID = [cachedGuessedName objectForKey:inferedName];
+					
+					//Nope, we have to create a new project
+					if(oldGuessedID == NULL)
+					{
+						sharedProject.projectID = getEmptyLocalSlot(sharedProject);
+						[cachedGuessedName setObject:@(sharedProject.projectID) forKey:inferedName];
+					}
+					else	//There is a perfect match for guessed name... Cool?
+					{
+						sharedProject.projectID = oldGuessedID.unsignedIntValue;
+					}
+					
 					wstrncpy(sharedProject.projectName, LENGTH_PROJECT_NAME, getStringFromUTF8((const byte *) [inferedName UTF8String]));
 					sharedProject.locale = true;
-					sharedProject.projectID = getEmptyLocalSlot(sharedProject);
+
 				}
 				else
 				{

@@ -106,8 +106,11 @@
 	{
 		if(unzLocateFile(archive, filenames[indexOfFiles[pos]], true) != UNZ_OK)
 			continue;
-
-		workingBlock(self, [NSString stringWithUTF8String:filenames[indexOfFiles[pos]]], pos, &abort);
+		
+		NSString * currentFilename = [NSString stringWithUTF8String:filenames[indexOfFiles[pos]]];
+		
+		if(currentFilename != nil)
+			workingBlock(self, currentFilename, pos, &abort);
 	}
 }
 

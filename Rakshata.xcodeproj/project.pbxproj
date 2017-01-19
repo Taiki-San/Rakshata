@@ -166,6 +166,7 @@
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
+		B64B33141DFDCDBB008D2FCA /* RakKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62F81E81DE1F887000AE12C /* RakKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B64D1561191058A200B6E47F /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
 		B64DA2AB1C3BB7240053D4A6 /* RakDownloadStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = B64DA2AA1C3BB7240053D4A6 /* RakDownloadStatus.m */; };
 		B6531BE41C2EE8A3001F45FA /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6531BE31C2EE8A3001F45FA /* RakTabView.m */; };
@@ -518,6 +519,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				B64B33141DFDCDBB008D2FCA /* RakKit.framework in Embed Frameworks */,
 				B6E9C0B71BFCDB4B003770D8 /* HockeySDK.framework in Embed Frameworks */,
 				B667B1171BFA859E00BB1971 /* Sparkle.framework in Embed Frameworks */,
 				B6DDBB081BDBED7300B9E6AC /* INPopoverController.framework in Embed Frameworks */,
