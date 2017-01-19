@@ -136,8 +136,15 @@
 	BOOL abort = NO;
 	for (uint pos = 0; pos < nbFileToEvaluate && !abort; pos++)
 	{
+
 		if(checkFileExist(filenames[indexOfFiles[pos]]))
-			workingBlock(self, [NSString stringWithUTF8String:filenames[indexOfFiles[pos]]], pos, &abort);
+		{
+			NSString * currentFilename = [NSString stringWithUTF8String:filenames[indexOfFiles[pos]]];
+			
+			if(currentFilename != nil)
+				workingBlock(self, currentFilename, pos, &abort);
+			
+		}
 	}
 }
 

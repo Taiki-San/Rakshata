@@ -96,7 +96,8 @@
 		if([string isEqualToString:[dirName stringByAppendingString:@"/"]] || !archiveLocateFile(archive, archive->fileList[indexOfFiles[pos]]))
 			continue;
 
-		workingBlock(self, string, pos, &abort);
+		if(string != nil)
+			workingBlock(self, string, pos, &abort);
 	}
 }
 
