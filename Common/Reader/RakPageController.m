@@ -64,8 +64,11 @@
 		
 		_flipped = flipped;
 		
-		self.arrangedObjects = [self.arrangedObjects revertArray];
-		self.patchedSelectedIndex = patched;
+		if(self.arrangedObjects.count != 0)
+		{
+			self.arrangedObjects = [self.arrangedObjects revertArray];
+			self.patchedSelectedIndex = patched;
+		}
 	}
 }
 

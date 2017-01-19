@@ -36,7 +36,13 @@ enum
 	_activePrefsPanel = PREFS_BUTTON_CODE_DEFAULT;
 #endif
 	
-	NSString * context = RakRealApp.savedContext[0];
+	NSString * context;
+
+	if(RakRealApp != nil)
+		context = [[RakRealApp savedContext] objectAtIndex:0];
+	else
+		context = [[RakContextRestoration newContext] objectAtIndex:0];
+	
 	if(context == nil)
 		proxy.themeCode = 1;
 	else
