@@ -139,15 +139,15 @@
 	if(_forcedOffsetY)
 		newOrigin.y -= _forcedOffsetY;
 	
-	NSRect rectOnScreen;
-	CGFloat factor;
+	NSRect rectOnScreen = NSZeroRect;
+	CGFloat factor = 1;
 	
 	//The text will be blurry if not on a round origin relative to the display, yeah, awesome...
 	if(self.window == nil)
 	{
-		if([RakRealApp respondsToSelector:@selector(window)])
+		if([RakRealApp.delegate respondsToSelector:@selector(window)])
 		{
-			NSWindow * window = [RakRealApp performSelector:@selector(window)];
+			NSWindow * window = [RakRealApp.delegate performSelector:@selector(window)];
 			if(window != nil)
 			{
 				rectOnScreen = [window convertRectToScreen: [self.superview convertRect:(NSRect) {newOrigin, NSZeroSize} toView:nil]];

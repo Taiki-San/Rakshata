@@ -559,7 +559,7 @@ enum
 	else if(move > 0)
 	{
 		CGFloat basePos = round(([_scrollView documentViewFrame].size.width - _scrollView.frame.size.width) / (2 * _scrollView.magnification));
-		if(point.x == basePos)
+		if(fabs(basePos - point.x) <= 1.0)
 			return NO;
 		else if(point.x > basePos - move)
 			point.x = basePos;
@@ -611,7 +611,7 @@ enum
 	else if(move > 0)
 	{
 		CGFloat basePos = round(([_scrollView documentViewFrame].size.height - _scrollView.bounds.size.height) / _scrollView.magnification);
-		if(point.y == basePos)
+		if(fabs(basePos - point.y) <= 1.0)
 			return NO;
 		else if(point.y > basePos - move)
 		{
@@ -756,25 +756,28 @@ enum
 	//We have to change the page ourselves
 	if(switchType != READER_ETAT_DEFAULT && mainScroller.patchedSelectedIndex != _data.pageCourante + 1)
 	{
-		MUTEX_LOCK(cacheMutex);
-		
 		self.preventRecursion = YES;
 
 		@try
 		{
 			if(animated)
 			{
-				if(switchType == READER_ETAT_NEXTPAGE)
+				
+				if((switchType == READER_ETAT_NEXTPAGE) ^ mainScroller.flipped)
 					[mainScroller navigateForward:self];
 				else
 					[mainScroller navigateBack:self];
 			}
 			else
 			{
+				MUTEX_LOCK(cacheMutex);
+				
 				[CATransaction begin];
 				[CATransaction setDisableActions:YES];
 				mainScroller.patchedSelectedIndex = _data.pageCourante + 1;
 				[CATransaction commit];
+				
+				MUTEX_UNLOCK(cacheMutex);
 			}
 		}
 		@catch (NSException *exception)
@@ -783,8 +786,6 @@ enum
 		}
 		
 		self.preventRecursion = NO;
-		
-		MUTEX_UNLOCK(cacheMutex);
 	}
 	
 	previousMove = switchType;
@@ -1901,7 +1902,8 @@ enum
 	
 	if(mainScroller != nil)
 	{
-		MUTEX_LOCK(cacheMutex);
+		if(!self.preventRecursion)
+			MUTEX_LOCK(cacheMutex);
 		
 		_flushingCache = YES;
 
@@ -1917,7 +1919,8 @@ enum
 		
 		_flushingCache = NO;
 		
-		MUTEX_UNLOCK(cacheMutex);
+		if(!self.preventRecursion)
+			MUTEX_UNLOCK(cacheMutex);
 	}
 }
 
