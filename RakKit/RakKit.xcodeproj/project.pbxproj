@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		B62F81DF1DE1E724000AE12C /* RakView.h in Headers */ = {isa = PBXBuildFile; fileRef = B62F81DD1DE1E724000AE12C /* RakView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62F81E01DE1E724000AE12C /* RakView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81DE1DE1E724000AE12C /* RakView.m */; };
-		B64B33131DFDCD8E008D2FCA /* RakKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D319601DE097580088C86D /* RakKit.framework */; };
 		B684D14F1DE26ADF00982DD7 /* shared_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B684D14D1DE26ADF00982DD7 /* shared_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B684D1501DE26ADF00982DD7 /* shared_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B684D14E1DE26ADF00982DD7 /* shared_utils.m */; };
 		B684D1531DE26BE700982DD7 /* NSImage+Tint.h in Headers */ = {isa = PBXBuildFile; fileRef = B684D1511DE26BE700982DD7 /* NSImage+Tint.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -95,7 +94,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B64B33131DFDCD8E008D2FCA /* RakKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +277,7 @@
 		B6D319571DE097580088C86D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
 					B6D3195F1DE097580088C86D = {
@@ -362,6 +360,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -412,6 +411,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
