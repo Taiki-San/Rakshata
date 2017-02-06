@@ -191,7 +191,7 @@ char ** loadChapterConfigDat(char* input, uint *nbPage, uint ** nameID)
 					output[carry] = NULL;
 					
 					if(haveNameID)
-						nameID[validEntries] = nameID[carry];
+						(*nameID)[validEntries] = (*nameID)[carry];
 				}
 			}
 		}
