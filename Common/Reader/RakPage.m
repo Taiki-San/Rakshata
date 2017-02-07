@@ -318,7 +318,11 @@ enum
 				}
 				case 0:			//a
 				{
-					[self prevPage];
+					if(mainScroller.flipped)
+						[self nextPage];
+					else
+						[self prevPage];
+
 					handledChar = true;
 					break;
 				}
@@ -332,7 +336,10 @@ enum
 					}
 					else
 					{
-						[self nextPage];
+						if(mainScroller.flipped)
+							[self prevPage];
+						else
+							[self nextPage];
 					}
 
 					handledChar = true;
@@ -351,7 +358,11 @@ enum
 				case 12:		//q
 				case 32:		//u
 				{
-					[self prevChapter];
+					if(mainScroller.flipped)
+						[self nextChapter];
+					else
+						[self prevChapter];
+
 					handledChar = true;
 					break;
 				}
@@ -359,7 +370,11 @@ enum
 				case 14:		//e
 				case 31:		//o
 				{
-					[self nextChapter];
+					if(mainScroller.flipped)
+						[self prevChapter];
+					else
+						[self nextChapter];
+
 					handledChar = true;
 					break;
 				}
