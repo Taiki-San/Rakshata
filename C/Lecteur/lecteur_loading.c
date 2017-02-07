@@ -143,7 +143,10 @@ char ** loadChapterConfigDat(char* input, uint *nbPage, uint ** nameID)
 		}
 		
 		if(haveNameID)
+		{
 			*nameID = NULL;
+			haveNameID = false;
+		}
 	}
 	
 	fclose(fileInput);

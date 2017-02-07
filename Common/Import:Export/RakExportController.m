@@ -485,6 +485,8 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				}
 			}
 		}
+		
+		free((void *) baseInzipPath);
 
 		if(error)
 			break;
