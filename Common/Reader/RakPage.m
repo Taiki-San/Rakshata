@@ -298,8 +298,6 @@ enum
 			if(character == nil)
 				break;
 			
-			bool handledChar = false;
-
 			const byte keyCode = [theEvent keyCode];
 			
 			//We get an hardware independant keycode, then check it against a known database
@@ -312,7 +310,6 @@ enum
 					if(RakApp.window.commandPressed)
 					{
 						[bottomBar triggerPageCounterPopover];
-						handledChar = true;
 						break;
 					}
 				}
@@ -323,7 +320,6 @@ enum
 					else
 						[self prevPage];
 
-					handledChar = true;
 					break;
 				}
 					
@@ -341,8 +337,6 @@ enum
 						else
 							[self nextPage];
 					}
-
-					handledChar = true;
 					break;
 				}
 					
@@ -351,7 +345,6 @@ enum
 					if(RakApp.window.commandPressed)
 						[self.window toggleFullScreen:self];
 
-					handledChar = true;
 					break;
 				}
 					
@@ -363,7 +356,6 @@ enum
 					else
 						[self prevChapter];
 
-					handledChar = true;
 					break;
 				}
 					
@@ -375,7 +367,6 @@ enum
 					else
 						[self nextChapter];
 
-					handledChar = true;
 					break;
 				}
 					
@@ -383,7 +374,6 @@ enum
 				case 34:		//i
 				{
 					[self moveSliderY:PAGE_MOVE];
-					handledChar = true;
 					break;
 				}
 					
@@ -391,64 +381,64 @@ enum
 				case 40:		//k
 				{
 					[self moveSliderY:-PAGE_MOVE];
-					handledChar = true;
 					break;
 				}
 					
 				case 49:		//space
 				{
 					[self jumpPressed : isModPressed];
-					handledChar = true;
-					break;
-				}
-			}
-
-			if(handledChar)
-				break;
-			
-			const char * string = [character UTF8String];
-			char c;
-			
-			if(string == nil)
-				break;
-			
-			if(string[0] >= 'A' && string[0] <= 'Z')
-				c = string[0] + 'a' - 'A';
-			else
-				c = string[0];
-
-			switch (c)
-			{
-				//Magnification
-					
-				case '0':
-				{
-					if(RakApp.window.commandPressed)
-						[self resetZoom];
 					break;
 				}
 					
-				case '+':
+				default:
 				{
-					if(RakApp.window.commandPressed)
-						[self zoomIn];
-
-					break;
-				}
+					const char * string = [character UTF8String];
+					char c;
 					
-				case '-':
-				{
-					if(RakApp.window.commandPressed)
-						[self zoomOut];
-					break;
-				}
+					if(string == nil)
+						break;
 					
-				case '=':	//Fill the avaiable width/height
-				{
-					BOOL altPressed = RakApp.window.optionPressed, commandPressed = RakApp.window.commandPressed;
+					if(string[0] >= 'A' && string[0] <= 'Z')
+						c = string[0] + 'a' - 'A';
+					else
+						c = string[0];
 					
-					if(altPressed || commandPressed)
-						[self zoomFill:commandPressed];
+					switch (c)
+					{
+							//Magnification
+							
+						case '0':
+						{
+							if(RakApp.window.commandPressed)
+								[self resetZoom];
+							break;
+						}
+							
+						case '+':
+						{
+							if(RakApp.window.commandPressed)
+								[self zoomIn];
+							
+							break;
+						}
+							
+						case '-':
+						{
+							if(RakApp.window.commandPressed)
+								[self zoomOut];
+							break;
+						}
+							
+						case '=':	//Fill the avaiable width/height
+						{
+							BOOL altPressed = RakApp.window.optionPressed, commandPressed = RakApp.window.commandPressed;
+							
+							if(altPressed || commandPressed)
+								[self zoomFill:commandPressed];
+							
+							break;
+						}
+					}
 				}
 			}
 		}

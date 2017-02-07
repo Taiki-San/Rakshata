@@ -114,10 +114,16 @@ enum
 	_insertionPoint = insertionPoint;
 	
 	if(projectName != nil)
+	{
 		projectName.stringValue = getStringForWchar(_project.projectName);
+		[projectName sizeToFit];
+	}
 	
 	if(projectAuthor)
+	{
 		projectAuthor.stringValue = getStringForWchar(_project.authorName);
+		[projectName sizeToFit];
+	}
 	
 	RakImage * image = loadImageGrid(_project);
 	if(image != nil)
@@ -218,8 +224,9 @@ enum
 
 - (NSPoint) originOfName : (NSRect) frameRect : (NSPoint) thumbOrigin
 {
-	NSPoint center = NSCenteredRect(frameRect, projectName.bounds);
+	NSPoint center;
 	
+	center.x = MAX(0, frameRect.origin.x + frameRect.size.width / 2 - projectName.bounds.size.width / 2);
 	center.y = thumbOrigin.y - projectName.bounds.size.height;
 	
 	return center;
