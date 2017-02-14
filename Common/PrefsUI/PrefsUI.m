@@ -248,8 +248,12 @@ enum
 - (void)popoverDidClose:(NSNotification *)notification
 {
 	[viewControllerHUD popoverClosed];
-	popover = nil;
-	[Prefs deRegisterForChange:self forType:KVO_MAIN_THREAD];
+	
+	if(popover != nil)
+	{
+		popover = nil;
+		[Prefs deRegisterForChange:self forType:KVO_MAIN_THREAD];
+	}
 }
 
 #pragma mark - KVO and setting management
