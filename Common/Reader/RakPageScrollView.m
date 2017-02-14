@@ -115,7 +115,7 @@
 	if(_pageTooHigh)
 		sliderStart.y = (documentViewSize.height - scrollviewSize.height) / self.magnification;
 	
-	if(_pageTooLarge)
+	if(_pageTooWide)
 	{
 		if([[RakApp reader] isContentFlipped])
 			sliderStart.x = documentViewSize.width - scrollviewSize.width;
@@ -131,7 +131,7 @@
 	NSPoint sliderStart = NSMakePoint(cachedBounds.x , 0);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
-	if(_pageTooLarge)
+	if(_pageTooWide)
 	{
 		if([[RakApp reader] isContentFlipped])
 			sliderStart.x = (documentViewSize.width - scrollviewSize.width) / self.magnification;
@@ -215,13 +215,37 @@
 #endif
 }
 
-- (void) setPageTooLarge : (BOOL) pageTooLarge
+- (BOOL) pageTooHigh
 {
-	_pageTooLarge = pageTooLarge;
+	NSRect containerFrame = [[RakApp reader] lastFrame];
+	
+	BOOL output = containerFrame.size.height < self.documentViewFrame.size.height + READER_PAGE_BORDERS_HIGH;
+	
+	if(output != _pageTooHigh)
+		self.pageTooHigh = output;
+	
+	return output;
+}
+
+- (void) setPageTooWide : (BOOL) pageTooWide
+{
+	_pageTooWide = pageTooWide;
 #if !TARGET_OS_IPHONE
-	self.hasHorizontalScroller = _pageTooLarge;
+	self.hasHorizontalScroller = _pageTooWide;
 	self.horizontalScroller.alphaValue = 0;
 #endif
+}
+
+- (BOOL) pageTooWide
+{
+	NSRect containerFrame = [[RakApp reader] lastFrame];
+	
+	BOOL output = containerFrame.size.width < self.documentViewFrame.size.width + 2 * READER_BORDURE_VERT_PAGE;
+	
+	if(output != _pageTooWide)
+		self.pageTooWide = output;
+	
+	return output;
 }
 
 - (void) setIsPDF:(BOOL)isPDF

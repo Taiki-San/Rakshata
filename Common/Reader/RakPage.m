@@ -84,14 +84,12 @@ enum
 	NSRect tabFrame = [self lastFrame], scrollViewFrame = scrollView.scrollViewFrame;
 	
 	//Hauteur
-	if(tabFrame.size.height < scrollView.contentFrame.size.height)
+	if(scrollView.pageTooHigh)
 	{
-		scrollView.pageTooHigh = YES;
 		scrollViewFrame.size.height = tabFrame.size.height;
 	}
 	else
 	{
-		scrollView.pageTooHigh = NO;
 		scrollViewFrame.origin.y = tabFrame.size.height / 2 - scrollView.contentFrame.size.height / 2;
 		scrollViewFrame.size.height = scrollView.contentFrame.size.height;
 	}
@@ -99,15 +97,13 @@ enum
 	if(self.mainThread == TAB_READER)	//Le seul contexte où les calculs de largeur ont une importance
 	{
 		//Largeur
-		if(tabFrame.size.width < scrollView.contentFrame.size.width + 2 * READER_BORDURE_VERT_PAGE)	//	Page trop large
+		if(scrollView.pageTooWide)	//	Page trop large
 		{
-			scrollView.pageTooLarge = YES;
 			scrollViewFrame.size.width = tabFrame.size.width - 2 * READER_BORDURE_VERT_PAGE;
 			scrollViewFrame.origin.x = READER_BORDURE_VERT_PAGE;
 		}
 		else
 		{
-			scrollView.pageTooLarge = NO;
 			scrollViewFrame.origin.x = tabFrame.size.width / 2 - scrollView.contentFrame.size.width / 2;
 			scrollViewFrame.size.width = scrollView.contentFrame.size.width;
 		}
@@ -238,7 +234,7 @@ enum
 				fail = YES;
 		}
 		
-		if(_scrollView.pageTooLarge)
+		if(_scrollView.pageTooWide)
 		{
 			mouseLoc.x += [_scrollView.contentView documentRect].size.width - [_scrollView frame].size.width - [_scrollView.contentView documentVisibleRect].origin.x;
 			if(mouseLoc.x < READER_BORDURE_VERT_PAGE || mouseLoc.x > [_scrollView documentViewFrame].size.width - READER_BORDURE_VERT_PAGE)
@@ -553,7 +549,7 @@ enum
 
 - (BOOL) _moveSliderX : (int) move : (BOOL) animated : (BOOL) contextExist
 {
-	if(_scrollView == nil || (!_scrollView.pageTooLarge && _scrollView.magnification <= 1))
+	if(_scrollView == nil || (!_scrollView.pageTooWide && _scrollView.magnification <= 1))
 		return NO;
 	
 	NSPoint point = [_scrollView scrollerPosition];
@@ -1169,7 +1165,7 @@ enum
 	if(scrollView.pageTooHigh)
 		sliderStart.y += ((previousSize.height - newSize.height) / 2) / scrollView.magnification;
 	
-	if(scrollView.pageTooLarge)
+	if(scrollView.pageTooWide)
 		sliderStart.x += ((previousSize.width - newSize.width) / 2) / scrollView.magnification;
 	
 	[scrollView scrollToPoint:sliderStart];

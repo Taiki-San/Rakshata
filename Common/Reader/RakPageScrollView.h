@@ -21,6 +21,8 @@
 #endif
 {
 	NSPoint cachedBounds;
+	
+	BOOL _pageTooWide, _pageTooHigh;
 }
 
 #if TARGET_OS_IPHONE
@@ -29,7 +31,7 @@
 
 @property NSRect scrollViewFrame;
 @property NSRect contentFrame;
-@property (nonatomic) BOOL pageTooLarge;
+@property (nonatomic) BOOL pageTooWide;
 @property (nonatomic) BOOL pageTooHigh;
 @property uint page;
 @property (nonatomic) BOOL isPDF;

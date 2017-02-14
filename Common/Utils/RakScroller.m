@@ -184,7 +184,7 @@
 	selfFrame = la taille de l'élément complet
 	readerView = la taille de la view
  
- if(pageTooLarge)
+ if(pageTooWide)
 	self.horizontalScroller.floatValue = 1 - sliderStart.x / (selfFrame.size.width + 2 * READER_BORDURE_VERT_PAGE - frameReader.size.width);
  if(pageTooHigh)
 	self.verticalScroller.floatValue = 1 - sliderStart.y / (selfFrame.size.height + READER_PAGE_BORDERS_HIGH - frameReader.size.height);
