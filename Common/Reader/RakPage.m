@@ -35,9 +35,13 @@ enum
 	if(mainScroller == nil)
 	{
 		mainScroller = [[RakPageController alloc] init];
-		mainScroller.view = container;
-		mainScroller.delegate = self;
-		[self updateProjectReadingOrder];
+		if(mainScroller != nil)
+		{
+			[self updateProjectReadingOrder];
+			
+			mainScroller.view = container;
+			mainScroller.delegate = self;
+		}
 	}
 	
 	[self updateEvnt];
@@ -563,7 +567,13 @@ enum
 	
 	else if(move > 0)
 	{
-		CGFloat basePos = round(([_scrollView documentViewFrame].size.width - _scrollView.frame.size.width) / (2 * _scrollView.magnification));
+		CGFloat basePos;
+
+		if(mainScroller.flipped)
+			basePos = 0;
+		else
+			basePos = round(([_scrollView documentViewFrame].size.width - _scrollView.frame.size.width) / (2 * _scrollView.magnification));
+		
 		if(fabs(basePos - point.x) <= 1.0)
 			return NO;
 		else if(point.x > basePos - move)
@@ -683,6 +693,11 @@ enum
 		_haveScrollerPosToCommit = NO;
 		[self setSliderPos:_scrollerPosToCommit];
 	}
+}
+
+- (BOOL) isContentFlipped
+{
+	return mainScroller.flipped;
 }
 
 /*Active routines*/
@@ -1170,8 +1185,8 @@ enum
 	
 	if(![self _moveSliderY : delta : YES : NO])
 	{
-		CGFloat width = size.width;
-		delta = width - 2 * READER_BORDURE_VERT_PAGE;
+		CGFloat width = _scrollView.scrollViewFrame.size.width;
+		delta = round(width * 0.90);
 		
 		if(withShift ^ !mainScroller.flipped)
 			delta *= -1;
@@ -1540,7 +1555,7 @@ enum
 	else
 		page.image.size = size;
 	
-	page.frame = scrollView.contentFrame = NSMakeRect(0, 0, size.width, size.height + READER_PAGE_BORDERS_HIGH);
+	page.frame = scrollView.contentFrame = NSMakeRect(0, 0, size.width + 2 * READER_PAGE_BOTTOM_BORDER, size.height + READER_PAGE_BORDERS_HIGH);
 	
 	page.imageAlignment = NSImageAlignCenter;
 	page.imageFrameStyle = NSImageFrameNone;

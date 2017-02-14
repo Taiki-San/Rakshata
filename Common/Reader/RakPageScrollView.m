@@ -87,7 +87,7 @@
 
 - (void) scrollToTopOfDocument : (BOOL) animated
 {
-	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
+	NSPoint sliderStart = NSMakePoint(cachedBounds.x, READER_PAGE_BOTTOM_BORDER);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
@@ -109,21 +109,37 @@
 
 - (void) scrollToBeginningOfDocument
 {
-	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_TOP_BORDER);
+	NSPoint sliderStart = NSMakePoint(cachedBounds.x , READER_PAGE_BOTTOM_BORDER);
 	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
 	
 	if(_pageTooHigh)
 		sliderStart.y = (documentViewSize.height - scrollviewSize.height) / self.magnification;
 	
 	if(_pageTooLarge)
-		sliderStart.x = (documentViewSize.width - scrollviewSize.width) / self.magnification;
+	{
+		if([[RakApp reader] isContentFlipped])
+			sliderStart.x = documentViewSize.width - scrollviewSize.width;
+		else
+			sliderStart.x = 0;
+	}
 	
 	[self scrollToPoint:sliderStart];
 }
 
 - (void) scrollToEndOfDocument
 {
-	[self scrollToPoint:NSMakePoint(cachedBounds.x, 0)];
+	NSPoint sliderStart = NSMakePoint(cachedBounds.x , 0);
+	NSSize documentViewSize = [self documentViewFrame].size, scrollviewSize = self.bounds.size;
+	
+	if(_pageTooLarge)
+	{
+		if([[RakApp reader] isContentFlipped])
+			sliderStart.x = (documentViewSize.width - scrollviewSize.width) / self.magnification;
+		else
+			sliderStart.x = 0;
+	}
+	
+	[self scrollToPoint:sliderStart];
 }
 
 - (void) scrollToPoint : (NSPoint) origin

@@ -44,6 +44,7 @@
 - (BOOL) moveSliderY : (int) move;
 - (void) setSliderPos : (NSPoint) newPos;
 - (void) commitSliderPosIfNeeded;
+- (BOOL) isContentFlipped;
 
 - (BOOL) initialLoading : (PROJECT_DATA) dataRequest : (uint) elemRequest : (BOOL) isTomeRequest : (uint) startPage;
 - (BOOL) changePage : (byte) switchType;
