@@ -1,3 +1,0 @@
-[submodule "iOS/Libraries/icu-iOS"]
-	path = iOS/Libraries/icu-iOS
-	url = https://github.com/zhm/icu-ios.git
