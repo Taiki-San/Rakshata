@@ -73,8 +73,13 @@ RakImportNode * _importDataForFiles(const char * dirName, char ** files, const u
 
 		cursor = length = strlen(files[pos]);
 
-		if(length <= 1 || files[pos][length - 1] == '.' || !strncmp(files[pos], "._", 2))
+		if(length <= 1 || files[pos][length - 1] == '.' || !strncmp(files[pos], "._", 2) || !strncmp(files[pos], "__MACOSX/", 9))
+		{
+#ifdef EXTENSIVE_LOGGING
+			logR("File %s discarded because of format in %s", files[pos], __PRETTY_FUNCTION__);
+#endif
 			continue;
+		}
 		
 		//We need to take a different code path if the file is a bundle, but in order to determine that, we need to locate the extension...
 		//This make the code a bit convulated...
