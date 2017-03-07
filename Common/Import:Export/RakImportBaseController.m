@@ -66,4 +66,34 @@
 	return NO;
 }
 
+
+
+- (uint) prepareFilesToUnpack : (char **) fileList
+		   totalNumberOfFiles : (const uint) nbFiles
+					 fromPath : (const char *) startExpectedPath
+			 writeToIndexList : (uint []) indexOfFiles
+				couldFindADir : (bool *) couldFindDirInArray
+{
+	uint lengthExpected = startExpectedPath != NULL ? strlen(startExpectedPath) : 0, nbFileToEvaluate = 0;
+	
+	if(couldFindDirInArray != NULL)
+		*couldFindDirInArray = false;
+	
+	for(uint pos = 0; pos < nbFiles; pos++)
+	{
+		if(!isStringLongerOrAsLongThan(fileList[pos], lengthExpected))
+			continue;
+		
+		if(startExpectedPath == NULL || !strncmp(fileList[pos], startExpectedPath, lengthExpected))
+		{
+			if(fileList[pos][lengthExpected] != '\0')
+				indexOfFiles[nbFileToEvaluate++] = pos;
+			else if(couldFindDirInArray != NULL)
+				*couldFindDirInArray = true;
+		}
+	}
+	
+	return nbFileToEvaluate;
+}
+
 @end

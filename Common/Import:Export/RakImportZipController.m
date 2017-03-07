@@ -71,24 +71,17 @@
 
 - (void) evaluateItem : (RakImportItem * __nonnull) item forDir : (NSString * __nonnull) dirName withInitBlock : (void (^__nonnull)(uint nbItems, uint iteration))initBlock andWithBlock : (void (^ __nonnull)(id<RakImportIO> __nonnull controller, NSString * __nonnull filename, uint index, BOOL * __nonnull stop))workingBlock
 {
-	bool couldFindDirInArray = false;
+		bool couldFindDirInArray;
 	const char * startExpectedPath = dirName == nil || [dirName length] == 0 ? NULL : [dirName UTF8String];
-	uint lengthExpected = startExpectedPath != NULL ? strlen(startExpectedPath) : 0, nbFileToEvaluate = 0, indexOfFiles[nbFiles];
-
+	uint nbFileToEvaluate, indexOfFiles[nbFiles];
+	
 	//We gather the indexes of the files we'll evaluate
-	for(uint pos = 0; pos < nbFiles; pos++)
-	{
-		if(!isStringLongerOrAsLongThan(filenames[pos], lengthExpected))
-			continue;
-		
-		if(startExpectedPath == NULL || !strncmp(filenames[pos], startExpectedPath, lengthExpected))
-		{
-			if(filenames[pos][lengthExpected] != '\0')
-				indexOfFiles[nbFileToEvaluate++] = pos;
-			else if(startExpectedPath != NULL)
-				couldFindDirInArray = true;
-		}
-	}
+	nbFileToEvaluate = [self prepareFilesToUnpack:filenames
+							   totalNumberOfFiles:nbFiles
+										 fromPath:startExpectedPath
+								 writeToIndexList:indexOfFiles
+									couldFindADir:&couldFindDirInArray];
+
 
 	//Nothing to evaluate...
 	if(nbFileToEvaluate == 0)

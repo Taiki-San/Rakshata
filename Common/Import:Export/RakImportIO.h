@@ -51,6 +51,7 @@
 - (BOOL) noValidFileFoundForDir : (const char * __nullable) dirname butFoundInFiles : (BOOL) foundDirInFiles shouldRedirectTo : (NSString * __nullable * __nonnull) redirection;
 - (BOOL) acceptPackageInPackage;
 - (BOOL) needCraftedPathForUnread;
+- (uint) prepareFilesToUnpack : (char *_Nonnull*_Nonnull) fileList totalNumberOfFiles : (const uint) nbFiles fromPath : (const char *_Nullable) startExpectedPath writeToIndexList : (uint *_Nonnull) indexOfFiles couldFindADir : (bool *_Nullable) couldFindDirInArray;
 
 @end
 

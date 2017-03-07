@@ -111,21 +111,16 @@
 	if(dirName != nil && ![dirName isDirectory])
 		dirName = [dirName stringByDeletingLastPathComponent];
 
-	const char * startExpectedPath = dirName == nil ? NULL : [dirName UTF8String];
-	uint lengthExpected = startExpectedPath == NULL ? 0 : strlen(startExpectedPath), nbFileToEvaluate = 0, indexOfFiles[nbFiles];
+	const char * startExpectedPath = dirName == nil || [dirName length] == 0 ? NULL : [dirName UTF8String];
+	uint nbFileToEvaluate, indexOfFiles[nbFiles];
 
 	//We gather the indexes of the files we'll evaluate
-	for(uint pos = 0; pos < nbFiles; pos++)
-	{
-		//If dirName == NULL, we send everything
-		//The comparaison must be performed in this order because it'll prevent shorter filename to get tested for
-		//	being precisely the dir we are trying to probe for (possibly a subdir of the directory that was listed)
-		if(startExpectedPath == NULL || (!strncmp(filenames[pos], startExpectedPath, lengthExpected) && filenames[pos][lengthExpected] != '\0'))
-		{
-			indexOfFiles[nbFileToEvaluate++] = pos;
-		}
-	}
-
+	nbFileToEvaluate = [self prepareFilesToUnpack:filenames
+							   totalNumberOfFiles:nbFiles
+										 fromPath:startExpectedPath
+								 writeToIndexList:indexOfFiles
+									couldFindADir:NULL];
+	
 	//Nothing to evaluate...
 	if(nbFileToEvaluate == 0)
 		return;
