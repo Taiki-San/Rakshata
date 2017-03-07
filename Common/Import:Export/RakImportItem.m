@@ -482,11 +482,18 @@
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
 	NSArray * tokens = [strippedPath componentsSeparatedByCharactersInSet:charSet];
 
-	BOOL inferingTome, firstPointCrossed, justLookingAtSomeNumbers, inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
-	uint elementID, discardedCloseCalls = 0;
+	BOOL inferingTome, firstPointCrossed, justLookingAtSomeNumbers = [strippedPath length], inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
+	uint elementID, discardedCloseCalls = 0, actualBaseDigitPos, absoluteTokenPos = 0;
 
-	for(uint i = 0, length, posInChunk, baseDigits; i < [tokens count]; ++i)
+	for(uint i = 0, length, baseDigits, posInChunk; i < [tokens count]; ++i, absoluteTokenPos++)
 	{
+		//Add the length of the previous token
+		if(i != 0)
+		{
+			absoluteTokenPos += [[[tokens objectAtIndex:i - 1] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] length];
+		}
+
+		
 		NSData * data = [[tokens objectAtIndex:i] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 		const char * simplifiedChunk = [data bytes];
 		length = [data length];
@@ -512,8 +519,20 @@
 
 		for(posInChunk = 1; posInChunk < length && !isdigit(simplifiedChunk[posInChunk]); ++posInChunk);
 
+		BOOL couldntFindDigitInChunk = posInChunk == length;
+		BOOL atLastChunk = i >= [tokens count] - 1, nextChunkIsEmpty, nextChunkStartWithDigit = NO;
+		
+		if(!atLastChunk)
+		{
+			nextChunkIsEmpty = [[tokens objectAtIndex:i + 1] length] == 0;
+			if(!nextChunkIsEmpty)
+			{
+				nextChunkStartWithDigit = isdigit([[tokens objectAtIndex:i + 1] UTF8String][0]);
+			}
+		}
+
 		//Couldn't find digits in the end of the chunk and the next chunk doesn't start with digits
-		if(posInChunk == length && (i >= [tokens count] - 1 || [[tokens objectAtIndex:i + 1] length] == 0 || !isdigit([[tokens objectAtIndex:i + 1] UTF8String][0])))
+		if(couldntFindDigitInChunk && !nextChunkStartWithDigit)
 		{
 			++discardedCloseCalls;
 			continue;
@@ -522,7 +541,7 @@
 		//Digits analysis
 
 		//If we separated the numbers from the base
-		if(posInChunk == length)
+		if(couldntFindDigitInChunk)
 		{
 			data = [[tokens objectAtIndex:i + 1] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 			simplifiedChunk = [data bytes];
@@ -557,7 +576,12 @@
 		{
 #ifdef EXTENSIVE_LOGGING
 			logR("Close call, this chunk almost got me!");
-			NSLog(@"`%@` -> %s", tokens, simplifiedChunk);
+			
+			char _simplifiedChunk[length + 1];
+			memcpy(_simplifiedChunk, [data bytes], length);
+			_simplifiedChunk[length] = 0;
+
+			NSLog(@"`%@` -> %s", tokens, _simplifiedChunk);
 #endif
 			++discardedCloseCalls;
 			continue;
@@ -579,6 +603,9 @@
 			{
 				inferedSomethingUsable = YES;
 				isTomeInfered = _isTome;	//isTome is an heuristic based on the number of element in the archive
+				
+				//We need the position in the string of the numbers
+				actualBaseDigitPos = absoluteTokenPos;
 			}
 			
 			else if(inferedSomethingSolid)
@@ -606,7 +633,7 @@
 			if(nextCharNeedChecking)
 			{
 				c = toupper(c);
-				if((c == 'C' || c == 'T' || c == 'V') && discardedCloseCalls-- == 0)
+				if((c == 'C' || c == 'T' || c == 'V' || posFullName == actualBaseDigitPos) && discardedCloseCalls-- == 0)
 				{
 					//If it starts with the C/T/V we used, we stop the prediction
 					if(posFullName)
