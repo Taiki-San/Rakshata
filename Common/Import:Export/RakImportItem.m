@@ -483,7 +483,7 @@
 	NSArray * tokens = [strippedPath componentsSeparatedByCharactersInSet:charSet];
 
 	BOOL inferingTome, firstPointCrossed, justLookingAtSomeNumbers = [strippedPath length], inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
-	uint elementID, discardedCloseCalls = 0, actualBaseDigitPos, absoluteTokenPos = 0;
+	uint elementID, discardedCloseCalls = 0, actualBaseDigitPos = UINT_MAX, absoluteTokenPos = 0;
 
 	for(uint i = 0, length, baseDigits, posInChunk; i < [tokens count]; ++i, absoluteTokenPos++)
 	{
