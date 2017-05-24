@@ -482,7 +482,7 @@
 	//We look for something la C* or [T-V]* followed then exclusively by numbers
 	NSArray * tokens = [strippedPath componentsSeparatedByCharactersInSet:charSet];
 
-	BOOL inferingTome, firstPointCrossed, justLookingAtSomeNumbers = [strippedPath length], inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
+	BOOL inferingTome, firstPointCrossed, inferedSomethingSolid = NO, inferedSomethingUsable = NO, isTomeInfered;
 	uint elementID, discardedCloseCalls = 0, actualBaseDigitPos = UINT_MAX, absoluteTokenPos = 0;
 
 	for(uint i = 0, length, baseDigits, posInChunk; i < [tokens count]; ++i, absoluteTokenPos++)
@@ -493,7 +493,6 @@
 			absoluteTokenPos += [[[tokens objectAtIndex:i - 1] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] length];
 		}
 
-		
 		NSData * data = [[tokens objectAtIndex:i] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 		const char * simplifiedChunk = [data bytes];
 		length = [data length];
@@ -501,7 +500,7 @@
 		if(length == 0)
 			continue;
 		
-		justLookingAtSomeNumbers = NO;
+		BOOL justLookingAtSomeNumbers = NO;
 
 		char sample = toupper(simplifiedChunk[0]);
 
