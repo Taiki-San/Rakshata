@@ -1047,7 +1047,7 @@ extern int  unzGetCurrentFileInfo (unzFile file,
 		pfile_info->internal_fa = file_info64.internal_fa;
 		pfile_info->external_fa = file_info64.external_fa;
 
-		pfile_info->tmu_date = file_info64.tmu_date,
+		pfile_info->tmu_date = file_info64.tmu_date;
 
 
 		pfile_info->compressed_size = (uint64_t)file_info64.compressed_size;

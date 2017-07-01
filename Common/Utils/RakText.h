@@ -43,7 +43,7 @@
 
 //Completion
 @property BOOL wantCompletion;
-@property (copy) NSArray<NSString *> * (^callbackOnCompletion)();
+@property (copy) NSArray<NSString *> * (^callbackOnCompletion)(void);
 
 - (instancetype)initWithText:(NSRect)frame : (NSString *) text : (RakColor *) color;
 - (instancetype) initWithText : (NSString *) text : (RakColor *) color;

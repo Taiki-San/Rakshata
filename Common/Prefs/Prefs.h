@@ -109,8 +109,7 @@ enum _FONT_REQUEST {
 };
 
 enum _KVO_REQUEST {
-	KVO_THEME,
-	
+	KVO_THEME = 1,
 	KVO_KIT_MAX
 };
 

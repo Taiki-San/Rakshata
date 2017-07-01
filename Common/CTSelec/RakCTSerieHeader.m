@@ -319,7 +319,7 @@ enum
 
 - (void) updateGradient
 {
-	const RakColor * activeColor = [self getGradientColor];
+	RakColor * activeColor = [self getGradientColor];
 	_gradient = [[NSGradient alloc] initWithColors:@[activeColor, activeColor, [RakColor clearColor]] atLocations:(const CGFloat [3]) {0.0f, INFLECTION_POINT, 1.0f} colorSpace:[NSColorSpace genericRGBColorSpace]];
 }
 
