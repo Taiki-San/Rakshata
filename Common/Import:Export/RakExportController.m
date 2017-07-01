@@ -425,11 +425,25 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 		//Initialize the UI
 		controller.nbElementInEntry = entryData.nbPage;
 
+		//We pick the base path (volumes move into subdirectory so they have a slightly more complex logic
+		const char * baseInzipPath;
+		uint baseInzipVolPathLength;
+
+		if(isTome)
+		{
+			char baseInzipPathTmp[rootZipPathLength + 100];
+			
+			baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s0/", rootInzipPath);
+			baseInzipPath = strdup(baseInzipPathTmp);
+		}
+		else
+		{
+			baseInzipPath = rootInzipPath;
+			baseInzipVolPathLength = rootZipPathLength;
+		}
+		
 		//Then add those files
 		BOOL error = NO;
-		char * outFile;
-		const char * baseInzipPath = NULL;
-		uint baseInzipVolPathLength;
 		for(uint pos = 0, basePagePathLength = strlen(entryData.path[0]), chunkCount = 0; pos < entryData.nbPage && !error; pos++)
 		{
 			controller.posInEntry = pos;
@@ -439,28 +453,12 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 			//	Chapter : $root path with entry ID$/files
 			//	Volumes : $root path with entry ID$/$entry index$/files
 			
-			if(isTome && baseInzipPath == NULL)
-			{
-				char baseInzipPathTmp[rootZipPathLength + 100];
-
-				baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s%d/", rootInzipPath, chunkCount);
-				baseInzipPath = strdup(baseInzipPathTmp);
-			}
-			else if(baseInzipPath == NULL)
-			{
-				baseInzipPath = rootInzipPath;
-				baseInzipVolPathLength = rootZipPathLength;
-			}
-			
 			char inzipOfFile[baseInzipVolPathLength + strlen(&(entryData.nomPages[pos][basePagePathLength])) + 2];
 			snprintf(inzipOfFile, sizeof(inzipOfFile), "%s%s", baseInzipPath, &(entryData.nomPages[pos][basePagePathLength + 1]));
-			outFile = strdup(inzipOfFile);
 
 			//Add the file to the zip, then cleanup
-			if(!addFileToZip(file, entryData.nomPages[pos], outFile))
+			if(!addFileToZip(file, entryData.nomPages[pos], inzipOfFile))
 				error = YES;
-
-			free(outFile);
 
 			//If we need to insert the config.dat file
 			//This is either the last entry (chapter) or the last entry of the chunk (chapter in volume)
@@ -479,14 +477,18 @@ NSDictionary * linearizeContentLine(PROJECT_DATA project, uint projectID, BOOL i
 				//Volumes use a different root than the rootInzipPath
 				if(isTome)
 				{
-					chunkCount++;
+					char baseInzipPathTmp[rootZipPathLength + 100];
+				
 					free((void *) baseInzipPath);
-					baseInzipPath = NULL;
+					
+					baseInzipVolPathLength = (uint) snprintf(baseInzipPathTmp, sizeof(baseInzipPathTmp), "%s%d/", rootInzipPath, ++chunkCount);
+					baseInzipPath = strdup(baseInzipPathTmp);
 				}
 			}
 		}
 		
-		free((void *) baseInzipPath);
+		if(isTome)
+			free((void *) baseInzipPath);
 
 		if(error)
 			break;
