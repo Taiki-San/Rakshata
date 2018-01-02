@@ -213,7 +213,7 @@ typedef gz_header FAR *gz_headerp;
 
                         /* basic functions */
 
- const char *  zlibVersion();
+ const char *  zlibVersion(void);
 /* The application can compare zlibVersion and ZLIB_VERSION for consistency.
    If the first character differs, the library code actually used is not
    compatible with the zlib.h header file used by the application.  This check

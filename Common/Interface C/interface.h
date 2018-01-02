@@ -35,11 +35,11 @@ int compareBeginingStrings(const void* a, uint lengthA, const void* b, uint leng
  **										**
  *****************************************/
 
-bool isSandboxed();
-void configureSandbox();
-void restoreSettingsFile();
-void registerExtensions();
-int getBuildID();
+bool isSandboxed(void);
+void configureSandbox(void);
+void restoreSettingsFile(void);
+void registerExtensions(void);
+int getBuildID(void);
 void openWebsite(const char * URL);
 uint getActiveProjectForTab(uint32_t tabID);
 
@@ -49,8 +49,8 @@ uint getActiveProjectForTab(uint32_t tabID);
  **										**
  *****************************************/
 
-void createCrashFile();
-void deleteCrashFile();
+void createCrashFile(void);
+void deleteCrashFile(void);
 void sendToLog(const char * string, va_list args);
 void alertExit(const char * exitReason);
 
@@ -60,12 +60,12 @@ void alertExit(const char * exitReason);
  **										**
  *****************************************/
 
-uint32_t getMainThread();
-bool shouldDownloadFavorite();
-void notifyEmailUpdate();
-void restorePrefsFile();
-bool removeProjectWithContent();
-bool shouldSuggestFromLastRead();
+uint32_t getMainThread(void);
+bool shouldDownloadFavorite(void);
+void notifyEmailUpdate(void);
+void restorePrefsFile(void);
+bool removeProjectWithContent(void);
+bool shouldSuggestFromLastRead(void);
 
 #ifdef VERBOSE_DB_MANAGEMENT
 void logStack(void * address);
@@ -77,11 +77,11 @@ void logStack(void * address);
  **										**
  *****************************************/
 
-void notifyFullUpdate();
+void notifyFullUpdate(void);
 void notifyUpdateRepo(REPO_DATA repo);
 void notifyUpdateRootRepo(ROOT_REPO_DATA root);
 void notifyUpdateProject(PROJECT_DATA project);
-void notifyFullUpdateRepo();
+void notifyFullUpdateRepo(void);
 
 /*****************************************
  **										**
@@ -98,7 +98,7 @@ void notifyThumbnailUpdate(ICONS_UPDATE * payload);
  *****************************************/
 
 void setLockStatusNotifyRestrictionChanged(bool lock);
-void notifyRestrictionChanged();
+void notifyRestrictionChanged(void);
 
 /*****************************************
  **										**
@@ -106,7 +106,7 @@ void notifyRestrictionChanged();
  **										**
  *****************************************/
 
-void updateRecentSeries();
+void updateRecentSeries(void);
 
 /*****************************************
  **										**
@@ -117,7 +117,7 @@ void updateRecentSeries();
 bool checkIfElementAlreadyInMDL(PROJECT_DATA data, bool isTome, uint element);
 void addElementToMDL(PROJECT_DATA data, bool isTome, uint element, bool partOfBatch);
 void addElementWithIDToMDL(uint cacheDBID, bool isTome, uint element, bool partOfBatch);
-void notifyDownloadOver();
+void notifyDownloadOver(void);
 
 /*****************************************
  **										**

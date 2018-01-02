@@ -35,9 +35,9 @@ bool loadRemoteTagState(char * remoteDump, TAG_VERBOSE ** tags, uint * nbTags, C
 
 //Internal high level API
 void updateTagDBVersion(uint newDBVersion);
-uint getTagDBVersion();
+uint getTagDBVersion(void);
 
-void resetTagsToLocal();
+void resetTagsToLocal(void);
 
 void tagUpdateCachedEntry(TAG_VERBOSE * newData, uint nbData);
 void catUpdateCachedEntry(CATEGORY_VERBOSE * newData, uint nbData);

@@ -52,7 +52,7 @@ enum
 
 - (BOOL) windowShouldClose:(id)sender
 {
-	BOOL output = [super windowShouldClose:self];
+	BOOL output = [super windowShouldClose: (NSWindow*) self];
 	
 	[self hideEaster];
 	

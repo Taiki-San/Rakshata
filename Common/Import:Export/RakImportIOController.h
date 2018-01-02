@@ -15,5 +15,5 @@
  *********************************************************************************************/
 
 RakImportNode * importDataForFiles(const char * dirName, char ** files, const uint nbFiles, RakImportBaseController <RakImportIO> * IOController);
-RakImportNode * getEmptyImportNode();
+RakImportNode * getEmptyImportNode(void);
 void freeImportNode(RakImportNode * node);

@@ -198,8 +198,8 @@ bool MDLCheckDuplicate(DATA_LOADED *struc1, DATA_LOADED *struc2);
 int sortProjectsToDownload(const void *a, const void *b);
 
 bool MDLDownloadOver(bool reanimateOnly);
-bool MDLStartNextInstallation();
-void MDLQuit();
+bool MDLStartNextInstallation(void);
+void MDLQuit(void);
 void MDLInstallOver(PROJECT_DATA project);
 void MDLUpdateIcons(uint selfCode, DATA_LOADED * metadata);
 void MDLCommunicateOC(uint selfCode, DATA_LOADED * metadata);

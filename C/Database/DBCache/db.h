@@ -147,16 +147,16 @@ typedef struct
 } SEARCH_SUGGESTION;
 
 /**DBCache.c**/
-bool setupBDDCache();
+bool setupBDDCache(void);
 void syncCacheToDisk(byte syncCode);
-void flushDB();
+void flushDB(void);
 
 void * getCopyCache(uint maskRequest, uint* nbElemCopied);
 PROJECT_DATA getCopyOfProjectData(PROJECT_DATA data);
-PROJECT_DATA getEmptyProject();
-PROJECT_DATA_PARSED getEmptyParsedProject();
-PROJECT_DATA_EXTRA getEmptyExtraProject();
-REPO_DATA getEmptyRepo();
+PROJECT_DATA getEmptyProject(void);
+PROJECT_DATA_PARSED getEmptyParsedProject(void);
+PROJECT_DATA_EXTRA getEmptyExtraProject(void);
+REPO_DATA getEmptyRepo(void);
 REPO_DATA getEmptyRepoWithID(uint64_t repoID);
 bool updateCache(PROJECT_DATA_PARSED data, char whatCanIUse, uint projectID);
 
@@ -211,7 +211,7 @@ bool updateProjectSearch(void * _table, PROJECT_DATA project);
 bool insertRestriction(uint64_t code, byte type);
 bool haveRestriction(uint64_t code, byte type);
 bool removeRestriction(uint64_t code, byte type);
-bool flushRestriction();
+bool flushRestriction(void);
 
 uint getFromSearch(void * _table, byte type, PROJECT_DATA project);
 uint getIDForTag(byte type, uint code);
@@ -224,14 +224,14 @@ uint getNbSeriesForAuthorOfID(uint cacheDBID);
 bool haveOneOrLessMatchForNameWith(const char * partial);
 
 /**DBRecent.c**/
-void flushRecentMutex();
+void flushRecentMutex(void);
 
 bool insertCurrentState(PROJECT_DATA project, STATE_DUMP state);
 double getSavedZoomForProject(PROJECT_DATA project, bool isTome);
 uint getSavedIDForProject(void * database, PROJECT_DATA project, bool isTome);
 bool lastReadAsTome(void * database, PROJECT_DATA project);
 bool projectHaveValidSavedState(PROJECT_DATA project, STATE_DUMP state);
-STATE_DUMP getEmptyRecoverState();
+STATE_DUMP getEmptyRecoverState(void);
 STATE_DUMP recoverStateForProject(PROJECT_DATA project);
 STATE_DUMP _recoverStateForProject(PROJECT_DATA project, bool haveTome, bool isTome);
 
@@ -241,7 +241,7 @@ bool addRecentEntry(PROJECT_DATA data, bool wasItADL);
 void deleteProject(PROJECT_DATA project, uint elemToDel, bool isTome);
 
 /**DBRefresh.c**/
-void updateDatabase();
+void updateDatabase(void);
 void refreshRepo(REPO_DATA * repo);
 int getUpdatedRepo(char **buffer_repo, size_t * bufferSize, ROOT_REPO_DATA repo);
 void * enforceRepoExtra(ROOT_REPO_DATA * root, bool getRidOfThemAfterward);
@@ -249,9 +249,9 @@ void * updateProjectsFromRepo(PROJECT_DATA_PARSED* oldData, uint posBase, uint p
 
 /******		DBTools.c	  ******/
 bool parseRemoteRootRepo(char * data, int version, ROOT_REPO_DATA ** output);
-bool isDBProjectEmpty();
-uint getDBCount();
-bool isDBRepoEmpty();
+bool isDBProjectEmpty(void);
+uint getDBCount(void);
+bool isDBRepoEmpty(void);
 void updateProjectImages(void * _todo);
 bool isInstalled(PROJECT_DATA project, char * basePath);
 bool isPaidProject(PROJECT_DATA projectData);
@@ -281,7 +281,7 @@ bool getCopyOfTags(TAG_VERBOSE ** newData, uint * nbData);
 bool getCopyOfCats(CATEGORY_VERBOSE ** newData, uint * nbData);
 
 /**		TagUpdate.c		**/
-void checkIfRefreshTag();
+void checkIfRefreshTag(void);
 
 /**DBSuggestion.c**/
 SUGGESTIONS_FAVS * getIDOfInterestingFavorites(uint forbiddenID, uint nbMax, uint * nbOutputData);

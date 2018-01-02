@@ -36,14 +36,14 @@ extern const char ** searchStringForCollate;
 sqlite3_stmt * getAddToCacheRequest(sqlite3 * db);
 uint addToCache(sqlite3_stmt* request, PROJECT_DATA_PARSED data, uint64_t repoID, bool isInstalled);
 void removeFromCache(PROJECT_DATA_PARSED data);
-void consolidateCache();
+void consolidateCache(void);
 bool copyOutputDBToStruct(sqlite3_stmt *state, PROJECT_DATA* output, bool copyDynamic, bool evenWantTags);
 bool copyParsedDBToStruct(sqlite3_stmt * state, PROJECT_DATA_PARSED * output, bool copyDynamic);
 
 //Repository
 ROOT_REPO_DATA ** loadRootRepo(char * repoDB, uint *nbRepo);
 REPO_DATA ** loadRepo(ROOT_REPO_DATA ** root, uint nbRoot, uint * nbRepo);
-uint getFreeRootRepoID();
+uint getFreeRootRepoID(void);
 void getRidOfDuplicateInRepo(REPO_DATA ** data, uint nbRepo);
 void insertRootRepoCache(ROOT_REPO_DATA ** newRoot, uint newRootEntries);
 void updateRootRepoCache(ROOT_REPO_DATA ** repoData);
@@ -69,7 +69,7 @@ bool removeFromSearch(void * _table, PROJECT_DATA project);
 void checkIfRemainingAndDelete(uint data, byte type);
 
 /**DBRecent.c**/
-sqlite3* getPtrRecentDB();
+sqlite3* getPtrRecentDB(void);
 void closeRecentDB(sqlite3 * database);
 uint checkRecentDBValid(sqlite3 * DB);
 
@@ -78,10 +78,10 @@ void removeRecentEntry(PROJECT_DATA data);
 void removeRecentEntryInternal(uint64_t repoID, uint projectID, bool isLocal);
 
 /**DBRefresh.c**/
-void updateRepo();
+void updateRepo(void);
 int getUpdatedProjectOfRepo(char **projectBuf, REPO_DATA* repo);
 void * refreshRepoHelper(REPO_DATA * repo, bool standalone);
-void updateProjects();
+void updateProjects(void);
 
 /******		DBTools.c	  ******/
 bool parseRemoteRepoEntry(char *data, ROOT_REPO_DATA *previousData, int version, ROOT_REPO_DATA **output);

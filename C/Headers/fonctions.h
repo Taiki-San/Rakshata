@@ -23,7 +23,7 @@ void internalDeleteChapitre(PROJECT_DATA projectDB, uint chapitreDelete, bool ca
 bool isChapterShared(char *path, PROJECT_DATA data, uint ID);
 
 /**check.c**/
-void networkAndVersionTest();
+void networkAndVersionTest(void);
 bool checkNetworkState(int state);
 
 /**CTCommon.c**/
@@ -46,8 +46,8 @@ void releaseParsedData(PROJECT_DATA_PARSED data);
 void releaseCTData(PROJECT_DATA data);
 
 /**Download.c**/
-void initializeDNSCache();
-void releaseDNSCache();
+void initializeDNSCache(void);
+void releaseDNSCache(void);
 int download_mem(char* adresse, char *POST, char **buffer_out, size_t * buffer_length, bool SSL_enabled);
 int download_disk(char* adresse, char * POST, char *file_name, bool SSL_enabled);
 
@@ -59,9 +59,9 @@ void memoryError(size_t size);
 /**Favoris.c**/
 bool checkIfFaved(PROJECT_DATA* projectDB, char **favs);
 bool setFavorite(PROJECT_DATA* projectDB);
-void updateFavorites();
+void updateFavorites(void);
 bool checkFavoriteUpdate(PROJECT_DATA project, PROJECT_DATA * projectInPipeline, bool * isTomePipeline, uint * elementInPipeline, bool checkOnly);
-void getNewFavs();
+void getNewFavs(void);
 
 /**JSONParser.m**/
 PROJECT_DATA_EXTRA * parseRemoteData(REPO_DATA* repo, char * remoteDataRaw, uint * nbElem);
@@ -77,7 +77,7 @@ char * linearizeRepoData(ROOT_REPO_DATA ** root, uint rootLength, size_t * sizeO
 byte getMasterKey(unsigned char *input);
 void generateRandomKey(unsigned char output[SHA256_DIGEST_LENGTH]);
 void updateEmail(const char * email);
-void deleteEmail();
+void deleteEmail(void);
 void addPassToCache(const char * hashedPassword);
 bool getPassFromCache(char pass[2 * SHA256_DIGEST_LENGTH + 1]);
 bool validateEmail(const char* adresseEmail);
@@ -125,15 +125,15 @@ IMG_DATA *loadSecurePage(char *pathRoot, char *pathPage, uint numeroChapitre, ui
 void loadKS(char killswitch_string[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 bool checkKS(ROOT_REPO_DATA dataCheck, char dataKS[NUMBER_MAX_REPO_KILLSWITCHE][2*SHA256_DIGEST_LENGTH+1]);
 void KSTriggered(REPO_DATA team);
-uint getRandom();
+uint getRandom(void);
 bool checkSignature(const byte * input, const size_t inputLength, const byte * signature, const size_t signatureLength);
 
 /**Settings.c**/
-char *loadPrefFile();
+char *loadPrefFile(void);
 void addToPref(char* flag, char *stringToAdd);
 void removeFromPref(char* flag);
 void updatePrefs(char* flag, char *stringToAdd);
-bool loadEmailProfile();
+bool loadEmailProfile(void);
 char* loadLargePrefs(char* flag);
 
 /**Sorting.c**/
