@@ -1,0 +1,28 @@
+WIP:
+	RakSuggestionEngine is still in early stage
+	Light theme
+
+TODO:
+	Page de facturation
+	Gestion des classements (backend server)
+	Drapeaux pour afficher la localisation
+	Log des nouveautés, pour mise en avant
+
+Stuffs:
+	Make scroller width configuration
+	Make the DL popup only appear when relevant (for instance, not before the reader went through the first half of the first chapter)
+	Option to sync the current reading position?
+
+New config.dat format:
+	Zoom preset
+	Support for ePub
+
+Backend:
+	Concurrent DL for different repo
+
+RakSuggestionEngine:
+(+)	Strike (lecture de plusieurs CT à la suite)
+(+)	Lu rapidement après la sortie
+(+)	Favoris
+(+)	Favoris pas lu depuis longtemps
+(-)	Lecture interrompue depuis plus de 24h (et quelques lancements)
