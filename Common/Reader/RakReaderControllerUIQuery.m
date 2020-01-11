@@ -58,7 +58,7 @@
 
 - (void) setupView
 {
-	NSRect frame = _frame;
+	NSRect frame = self.frame;
 	
 	NSString * string = NSLocalizedString(_isTome ? (_sizeArray == 1 ? @"AUTO-DL-ONE-VOL" : @"AUTO-DL-SEVERAL-VOL") : (_sizeArray == 1 ? @"AUTO-DL-ONE-CHAP" : @"AUTO-DL-SEVERAL-CHAP"), nil);
 	

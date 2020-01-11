@@ -87,7 +87,7 @@ enum
 		if(selfSize.width < header.bounds.size.width)
 		{
 			[self setFrameSize:NSMakeSize(header.bounds.size.width + 20, selfSize.height)];
-			selfSize.width = _bounds.size.width;
+			selfSize.width = self.bounds.size.width;
 		}
 
 		[header setFrameOrigin:NSMakePoint(selfSize.width / 2 - header.bounds.size.width / 2, (currentY -= header.bounds.size.height + META_TOP_BORDER))];
@@ -98,7 +98,7 @@ enum
 
 	if(discard != nil && replace != nil && replaceAll != nil)
 	{
-		CGFloat totalWidth = discard.bounds.size.width + 5 + replace.bounds.size.width + 5 + replaceAll.bounds.size.width, baseWidth = _bounds.size.width / 2 - totalWidth / 2, height = currentY / 2;
+		CGFloat totalWidth = discard.bounds.size.width + 5 + replace.bounds.size.width + 5 + replaceAll.bounds.size.width, baseWidth = self.bounds.size.width / 2 - totalWidth / 2, height = currentY / 2;
 
 		discard.action = @selector(discard);
 		replace.action = @selector(replace);
@@ -147,7 +147,7 @@ enum
 		if(selfSize.width < workingSize.width)
 		{
 			[self setFrameSize:NSMakeSize(workingSize.width + 20, selfSize.height)];
-			selfSize.width = _bounds.size.width;
+			selfSize.width = self.bounds.size.width;
 		}
 
 		[detailHeader setFrameOrigin:NSMakePoint(selfSize.width / 2 - workingSize.width / 2, (currentY -= workingSize.height + META_TOP_BORDER))];
@@ -293,7 +293,7 @@ enum
 		[animate ? contentID.animator: contentID setFrameSize:workingFrame.size];
 	}
 
-	CGFloat width = (isTomeState ? NSMaxX(workingFrame) : _bounds.size.width) + BORDER;
+	CGFloat width = (isTomeState ? NSMaxX(workingFrame) : self.bounds.size.width) + BORDER;
 
 	//Separator
 	workingFrame = contentSeparator.frame;
@@ -600,7 +600,7 @@ enum
 
 	if(selfSize.height < 0)
 	{
-		NSSize newSize = _bounds.size;
+		NSSize newSize = self.bounds.size;
 
 		newSize.height -= selfSize.height;
 
@@ -1111,7 +1111,7 @@ enum
 	[detailHeader sizeToFit];
 	frame.size = detailHeader.frame.size;
 
-	[detailHeader setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - frame.size.width / 2, frame.origin.y)];
+	[detailHeader setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - frame.size.width / 2, frame.origin.y)];
 
 	//Input fields
 	contentIDTitle.stringValue = [NSString stringWithFormat:@"%@ #", NSLocalizedString(isTomeSelected ? @"VOLUME" : @"CHAPTER", nil)];

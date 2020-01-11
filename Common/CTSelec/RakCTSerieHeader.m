@@ -38,14 +38,14 @@ enum
 		placeholder = [self craftField:NSLocalizedString(@"SUGGESTIONS", nil)];
 		if(placeholder != nil)
 		{
-			[placeholder setFrame:[self titleFrame : _bounds : YES]];
+			[placeholder setFrame:[self titleFrame : self.bounds : YES]];
 			[self addSubview:placeholder];
 		}
 		
 		title = [self craftField:PROJECT_NAME_PLACEHOLDER];
 		if(title != nil)
 		{
-			[title setFrame:[self titleFrame:_bounds : NO]];
+			[title setFrame:[self titleFrame:self.bounds : NO]];
 			[self addSubview:title];
 		}
 		
@@ -71,7 +71,7 @@ enum
 
 - (RakText *) craftField : (NSString *) string
 {
-	RakText * output = [[RakText alloc] initWithText:_bounds : string :[self textColor]];
+	RakText * output = [[RakText alloc] initWithText:self.bounds : string :[self textColor]];
 	if(output != nil)
 	{
 		output.font = [RakMenuText getFont : 17];
@@ -128,8 +128,8 @@ enum
 	if(getIn)
 	{
 		title.alphaValue = 1;
-		[title setFrame : [self titleFrame:_bounds :NO]];
-		[rating setFrameOrigin:[self ratingOrigin:_bounds : NO : YES]];
+		[title setFrame : [self titleFrame:self.bounds :NO]];
+		[rating setFrameOrigin:[self ratingOrigin:self.bounds : NO : YES]];
 		
 		[CATransaction commit];
 		[CATransaction begin];
@@ -137,9 +137,9 @@ enum
 	
 	_projectHaveFocus = getIn;
 	
-	[placeholder setFrameAnimated : [self titleFrame:_bounds : YES]];
-	[title setFrameAnimated : [self titleFrame:_bounds : NO]];
-	[rating setFrameOriginAnimated:[self ratingOrigin:_bounds :_projectHaveFocus :YES]];
+	[placeholder setFrameAnimated : [self titleFrame:self.bounds : YES]];
+	[title setFrameAnimated : [self titleFrame:self.bounds : NO]];
+	[rating setFrameOriginAnimated:[self ratingOrigin:self.bounds :_projectHaveFocus :YES]];
 	
 	if(!getIn)
 		title. alphaAnimated = 0;
@@ -183,7 +183,7 @@ enum
 	}
 	
 	//Ok, time to animate
-	NSRect frame = [self titleFrame:_bounds :!_projectHaveFocus];
+	NSRect frame = [self titleFrame:self.bounds :!_projectHaveFocus];
 	
 	//We generate the new title
 	RakText * newTitle = [self craftField:PROJECT_NAME_PLACEHOLDER], * oldTitle = title;
@@ -191,7 +191,7 @@ enum
 	if(newTitle != nil)
 	{
 		CGFloat oldY = frame.origin.y;
-		frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? 1 : -1);
+		frame.origin.y = self.bounds.size.height * (compareResult == NSOrderedDescending ? 1 : -1);
 		
 		[newTitle setFrame:frame];
 		[newTitle setStringValue: newName];
@@ -201,7 +201,7 @@ enum
 		{
 			rating = newStars;
 			
-			[newStars setFrameOrigin:NSMakePoint([self ratingOrigin:_bounds].x, frame.origin.y)];
+			[newStars setFrameOrigin:NSMakePoint([self ratingOrigin:self.bounds].x, frame.origin.y)];
 			
 			[self addSubview:newStars];
 		}
@@ -216,9 +216,9 @@ enum
 		[newTitle setFrameAnimated : frame];
 	
 	if(newStars != nil)
-		[newStars setFrameOriginAnimated:[self ratingOrigin:_bounds]];
+		[newStars setFrameOriginAnimated:[self ratingOrigin:self.bounds]];
 	
-	frame.origin.y = _bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
+	frame.origin.y = self.bounds.size.height * (compareResult == NSOrderedDescending ? -1 : 1);
 	
 	[oldTitle setFrameOriginAnimated:frame.origin];
 	[oldRating setFrameOriginAnimated:NSMakePoint(newStars.frame.origin.x, frame.origin.y)];

@@ -217,7 +217,7 @@
 
 - (NSRect) frame
 {
-	NSRect frame = _frame;
+	NSRect frame = [super frame];
 
 	if(_sheetManipulation)
 		frame.origin.y -= TITLE_BAR_HEIGHT + WIDTH_BORDER_ALL - 1;

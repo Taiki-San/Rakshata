@@ -826,7 +826,7 @@
 	if(self != nil)
 	{
 		self.preCommitedLastClickedColumn = LIST_INVALID_SELECTION;
-		_lastClickedRow = _lastClickedColumn = _preCommitedLastClickedRow = LIST_INVALID_SELECTION;
+		_lastSelectedRow = _lastSelectedColumn = _preCommitedLastClickedRow = LIST_INVALID_SELECTION;
 	}
 	
 	return self;

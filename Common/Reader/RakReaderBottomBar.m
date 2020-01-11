@@ -123,7 +123,7 @@
 
 - (void) loadIcons : (Reader*) superview
 {
-	const CGFloat width = _frame.size.width;
+	const CGFloat width = self.frame.size.width;
 	
 	favorite = [RakButton allocForReader:self :@"favs" :[self getPosXElement : 1 : width] :YES :self :@selector(switchFavs)];
 	fullscreen = [RakButton allocForReader:self :@"fullscreen" :[self getPosXElement : 2 : width] :YES :superview :@selector(triggerFullscreen)];

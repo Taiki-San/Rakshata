@@ -96,6 +96,9 @@
 
 - (RakColor *) backgroundColor
 {
+    if(self.layer.backgroundColor == NULL)
+        return [RakColor yellowColor];
+    
 	return [NSColor colorWithCGColor:self.layer.backgroundColor];
 }
 

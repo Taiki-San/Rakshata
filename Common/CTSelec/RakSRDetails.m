@@ -66,7 +66,7 @@ enum
 		synopsis = [[RakText alloc] init];
 		if(synopsis != nil)
 		{
-			synopsis.fixedWidth = _bounds.size.width - 2 * OFFSET_SYNOPSIS;
+			synopsis.fixedWidth = self.bounds.size.width - 2 * OFFSET_SYNOPSIS;
 			[synopsis setFrameOrigin : NSMakePoint(OFFSET_SYNOPSIS, 0)];
 			
 			[synopsis setAlignment:NSTextAlignmentJustified];
@@ -177,7 +177,7 @@ enum
 		
 		synopsis.stringValue = getStringForWchar(project.description);			[synopsis sizeToFit];
 		
-		[self setFrame:_frame];
+		[self setFrame:self.frame];
 		[self setNeedsDisplay:YES];
 	}
 	else
@@ -205,7 +205,7 @@ enum
 			thumb.image = image;
 			[thumb setFrameSize:getThumbSize(image)];
 			
-			[self setFrame:_frame];
+			[self setFrame:self.frame];
 			[self setNeedsDisplay:YES];
 		}
 	}
@@ -236,7 +236,7 @@ enum
 	NSPoint oldOrigin;
 	newFrame.origin = NSZeroPoint;
 	
-	if(newFrame.size.width != _bounds.size.width)
+	if(newFrame.size.width != self.bounds.size.width)
 	{
 		infos.fixedWidth = newFrame.size.width;
 		synopsis.fixedWidth = newFrame.size.width - 2 * SYNOPSIS_MAIN_TEXT_BORDER;
@@ -351,7 +351,7 @@ enum
 	if(_project.description[0])
 	{
 		frame.origin.x = 20;
-		frame.size.width = _bounds.size.width - 2 * frame.origin.x;
+		frame.size.width = self.bounds.size.width - 2 * frame.origin.x;
 		
 		frame.origin.y = NSMaxY(tag.frame) + SYNOPSIS_SEPARATOR_BORDER;
 		frame.size.height = SYNOPSIS_SEPARATOR_WIDTH;

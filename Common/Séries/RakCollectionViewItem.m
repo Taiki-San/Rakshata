@@ -70,8 +70,8 @@ enum	{	BORDER_BOTTOM	= 7	};
 	_requestedHeight = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]);
 	
 	_workingArea.size.height = _requestedHeight;
-	_workingArea.origin.x = _bounds.size.width / 2 - _workingArea.size.width / 2;
-	_workingArea.origin.y = _bounds.size.height - _requestedHeight;
+	_workingArea.origin.x = self.bounds.size.width / 2 - _workingArea.size.width / 2;
+	_workingArea.origin.y = self.bounds.size.height - _requestedHeight;
 }
 
 - (void) updateProject:(PROJECT_DATA)project

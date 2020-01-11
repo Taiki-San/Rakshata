@@ -25,7 +25,7 @@
 
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 
-	NSSize currentSize = _bounds.size;
+	NSSize currentSize = self.bounds.size;
 	const CGFloat radius = 2;
 
 	//Background

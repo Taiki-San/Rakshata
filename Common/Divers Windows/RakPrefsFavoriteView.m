@@ -96,14 +96,14 @@ enum
 
 - (NSPoint) headerOrigin
 {
-	NSSize base = _bounds.size, head = header.bounds.size;
+	NSSize base = self.bounds.size, head = header.bounds.size;
 	
 	return NSMakePoint(base.width / 2 - head.width / 2, base.height - head.height - BORDER);
 }
 
 - (NSRect) listFrame
 {
-	const NSSize base = _bounds.size;
+	const NSSize base = self.bounds.size;
 	const CGFloat heightBelow = NSMaxY(autoDLButton.frame) + BORDER;
 	
 	return NSMakeRect(BORDER_X_LIST, heightBelow, base.width - 2 * BORDER_X_LIST, header.frame.origin.y - BORDER - heightBelow);
@@ -112,7 +112,7 @@ enum
 - (NSPoint) switchButtonOrigin
 {
 	CGFloat fullWidth = autoDLButton.bounds.size.width + BORDER + autoDLMessage.bounds.size.width;
-	return NSMakePoint(_bounds.size.width / 2 - fullWidth / 2, SWITCH_Y_OFFSET);
+	return NSMakePoint(self.bounds.size.width / 2 - fullWidth / 2, SWITCH_Y_OFFSET);
 }
 
 - (NSPoint) switchMessageOrigin

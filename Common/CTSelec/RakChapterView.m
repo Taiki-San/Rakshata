@@ -25,7 +25,7 @@
 		
 		[self initCTView : project : mainThread == TAB_CT];
 		
-		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : _bounds : (header != nil ? header.bounds.size.height : 0) : context : mainThread];
+		coreview = [[RakCTSelection alloc] initWithProject : project : isTome : self.bounds : (header != nil ? header.bounds.size.height : 0) : context : mainThread];
 		if(coreview != nil)
 		{
 			[self addSubview:coreview];
@@ -111,7 +111,7 @@
 
 - (void) initSerieView : (PROJECT_DATA) project : (BOOL) serieMode
 {
-	suggestions = [[RakSRSuggestions alloc] init: _bounds];
+	suggestions = [[RakSRSuggestions alloc] init: self.bounds];
 	if(suggestions != nil)
 	{
 		[suggestions getContent].alphaValue = serieMode;
@@ -119,13 +119,13 @@
 		[self addSubview:[suggestions getContent]];
 	}
 	
-	mainDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	mainDetailView = [[RakSRDetails alloc] initWithFrame:self.bounds];
 	if(mainDetailView != nil)
-		mainDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
+		mainDetailView.offsetX = [suggestions getFrameFromParent:self.bounds].origin.x;
 	
-	tmpDetailView = [[RakSRDetails alloc] initWithFrame:_bounds];
+	tmpDetailView = [[RakSRDetails alloc] initWithFrame:self.bounds];
 	if(tmpDetailView != nil)
-		tmpDetailView.offsetX = [suggestions getFrameFromParent:_bounds].origin.x;
+		tmpDetailView.offsetX = [suggestions getFrameFromParent:self.bounds].origin.x;
 	
 	[super setSerieViewHidden:!serieMode];
 }
@@ -149,13 +149,13 @@
 
 - (void) initReaderView : (PROJECT_DATA) project : (BOOL) readerMode
 {
-	projectName = [[RakMenuText alloc] initWithText:_bounds : project.isInitialized ? getStringForWchar(project.projectName) : @""];
+	projectName = [[RakMenuText alloc] initWithText:self.bounds : project.isInitialized ? getStringForWchar(project.projectName) : @""];
 	if(projectName != nil)	[self addSubview:projectName];
 	
 	if(project.isInitialized)
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: project : self.bounds];
 	else
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: getEmptyProject() : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: getEmptyProject() : self.bounds];
 	
 	if(projectImage != nil)
 		[self addSubview:projectImage];
@@ -281,7 +281,7 @@
 		[projectName setStringValue : projectNameString];
 	else
 	{
-		projectName = [[RakMenuText alloc] initWithText:_bounds : projectNameString];
+		projectName = [[RakMenuText alloc] initWithText:self.bounds : projectNameString];
 		if(projectName != nil)		[self addSubview:projectName];
 	}
 	
@@ -289,7 +289,7 @@
 		[projectImage updateProject:data];
 	else
 	{
-		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data : _bounds];
+		projectImage = [[RakCTProjectImageView alloc] initWithImageName: data : self.bounds];
 		if(projectImage != nil)		[self addSubview:projectImage];
 	}
 	
@@ -419,11 +419,11 @@ enum
 	if(newView != suggestions && ((RakView *)newView).superview == nil)
 		[self addSubview:newView];
 	
-	[newView setFrame:(NSRect) {[self newOriginFocus:newView :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], _bounds.size}];
+	[newView setFrame:(NSRect) {[self newOriginFocus:newView :(direction + DIR_OPPOSITE) % DIR_NB_ELEM], self.bounds.size}];
 	if(newView == suggestions)
 		[newView getContent].alphaValue = 1;
 	
-	[oldView setFrame: _bounds];
+	[oldView setFrame: self.bounds];
 	
 	[CATransaction commit];
 	
@@ -431,7 +431,7 @@ enum
 	[NSAnimationContext beginGrouping];
 	
 	[(RakList *) oldView resizeAnimation: (NSRect) {[self newOriginFocus:oldView :direction], ((RakList *)oldView).frame.size}];
-	[(RakList *) newView resizeAnimation: _bounds];
+	[(RakList *) newView resizeAnimation: self.bounds];
 	
 	if(oldView == suggestions)		//Completion handler is a bitch :x
 		[oldView getContent]. alphaAnimated = 0;
@@ -447,11 +447,11 @@ enum
 	switch (direction)
 	{
 		case DIR_RIGHT:
-			output.x = _bounds.size.width;
+			output.x = self.bounds.size.width;
 			break;
 			
 		case DIR_UP:
-			output.y = _bounds.size.height;
+			output.y = self.bounds.size.height;
 			break;
 			
 		case DIR_LEFT:

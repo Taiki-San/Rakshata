@@ -38,14 +38,14 @@ enum
 		{
 			[self loadDataForListAndSearch];
 			
-			list = [[RakSRSearchList alloc] init:[self getTableFrame : _bounds] ofType:_ID withData:listData ofSize:nbDataList andIndexes:indexesData];
+			list = [[RakSRSearchList alloc] init:[self getTableFrame : self.bounds] ofType:_ID withData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(list != nil)
 			{
 				[[NSNotificationCenter defaultCenter] addObserver:list selector:@selector(fullCleanup) name:SR_NOTIFICATION_FULL_UNSELECTION_TRIGGERED object:nil];
 				[self addSubview:[list getContent]];
 			}
 			
-			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:_bounds] ID:_ID andData:listData ofSize:nbDataList andIndexes:indexesData];
+			searchBar = [[RakSRSearchBar alloc] initWithFrame:[self getSearchFrame:self.bounds] ID:_ID andData:listData ofSize:nbDataList andIndexes:indexesData];
 			if(searchBar != nil)
 				[self addSubview:searchBar];
 			

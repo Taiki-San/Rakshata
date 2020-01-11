@@ -129,12 +129,15 @@
 
 - (void) abortAnimation
 {
-	aborting = YES;
-
-	[_animation stopAnimation];
-	[self animationDidEnd:_animation];
-	
-	aborting = NO;
+    if(_animation != nil)
+    {
+        aborting = YES;
+        
+        [_animation stopAnimation];
+        [self animationDidEnd:_animation];
+        
+        aborting = NO;
+    }
 }
 
 #pragma mark - Animation work

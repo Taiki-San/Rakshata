@@ -151,13 +151,13 @@ enum
 	
 	_repo = repo;
 	
-	CGFloat baseY = _bounds.size.height;
+	CGFloat baseY = self.bounds.size.height;
 	
 	repoImage = loadImageForRepo(isRoot, repo);
 	if(repoImage != nil)
 	{
 		imageFrame.size = repoImage.size;
-		imageFrame.origin.x = _bounds.size.width / 2 - imageFrame.size.width / 2;
+		imageFrame.origin.x = self.bounds.size.width / 2 - imageFrame.size.width / 2;
 		imageFrame.origin.y = (baseY -= (isRoot ? IMAGE_BORDER_ROOT : IMAGE_BORDER) + imageFrame.size.height);
 		
 		[self setNeedsDisplay:YES];
@@ -185,7 +185,7 @@ enum
 			else
 				URL.hidden = NO;
 			
-			[URL setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - URL.bounds.size.width / 2, (baseY -= URL.bounds.size.height))];
+			[URL setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - URL.bounds.size.width / 2, (baseY -= URL.bounds.size.height))];
 			URL.URL = [NSString stringWithUTF8String : ((REPO_DATA *) repo)->website];
 		}
 		else
@@ -273,13 +273,13 @@ enum
 		
 		//Resizing
 		if(!data.isHidden)
-			[data setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= data.bounds.size.height))];
+			[data setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - data.bounds.size.width / 2, (baseY -= data.bounds.size.height))];
 		
 		if(!nbElement.isHidden)
-			[nbElement setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - nbElement.bounds.size.width / 2, (baseY -= nbElement.bounds.size.height))];
+			[nbElement setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - nbElement.bounds.size.width / 2, (baseY -= nbElement.bounds.size.height))];
 		
-		[flushButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - BUTTON_SEPARATOR - flushButton.bounds.size.width, BUTTON_BORDER)];
-		[deleteButton setFrameOrigin:NSMakePoint(_bounds.size.width / 2 + BUTTON_SEPARATOR, BUTTON_BORDER)];
+		[flushButton setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - BUTTON_SEPARATOR - flushButton.bounds.size.width, BUTTON_BORDER)];
+		[deleteButton setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 + BUTTON_SEPARATOR, BUTTON_BORDER)];
 	}
 	else
 	{
@@ -291,7 +291,7 @@ enum
 		
 		if(description == nil)
 		{
-			description = [[RakSynopsis alloc] initWithSynopsis:[self selectDescription:repo] :[self getSynopsisFrame : _bounds] : YES];
+			description = [[RakSynopsis alloc] initWithSynopsis:[self selectDescription:repo] :[self getSynopsisFrame : self.bounds] : YES];
 			if(description != NULL)
 			{
 				description.haveBackground = YES;
@@ -312,7 +312,7 @@ enum
 				subrepoList.responder = self;
 				subrepoList.detailMode = YES;
 				
-				subrepoList = [subrepoList initWithFrame:[self listFrame : _bounds]];
+				subrepoList = [subrepoList initWithFrame:[self listFrame : self.bounds]];
 				
 				[self addSubview:[subrepoList getContent]];
 			}

@@ -53,8 +53,8 @@
 	else
 		[self removeTrackingRect:tracking];
 	
-	BOOL mouseInside = NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], _bounds);
-	tracking = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:mouseInside];
+	BOOL mouseInside = NSPointInRect([self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil], self.bounds);
+	tracking = [self addTrackingRect:self.bounds owner:self userData:NULL assumeInside:mouseInside];
 	
 	if(mouseInside)
 		[self mouseEntered:nil];

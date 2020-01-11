@@ -94,8 +94,6 @@
 		B62F81DC1DE1B5A4000AE12C /* RakPrefsCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81DA1DE1B5A4000AE12C /* RakPrefsCustom.m */; };
 		B62F81E41DE1ED52000AE12C /* RakSynopsis.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81E31DE1ED52000AE12C /* RakSynopsis.m */; };
 		B62F81E71DE1EEB3000AE12C /* RakTextComplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B62F81E61DE1EEB3000AE12C /* RakTextComplete.m */; };
-		B62F81EE1DE1FCA3000AE12C /* RakKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62F81E81DE1F887000AE12C /* RakKit.framework */; };
-		B62F81EF1DE1FCA4000AE12C /* RakKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62F81E81DE1F887000AE12C /* RakKit.framework */; };
 		B63078301899CF9400589988 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B630782F1899CF9400589988 /* QuartzCore.framework */; };
 		B63401391A96A890003DC56E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B63401371A96A890003DC56E /* Localizable.strings */; };
 		B634EAD61C01DF170078F33A /* RakPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = B634EAD41C01DF170078F33A /* RakPageController.m */; };
@@ -166,7 +164,6 @@
 		B64640D81870DBD2005705E7 /* PrefsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B64640D71870DBD2005705E7 /* PrefsUI.m */; };
 		B646E7891A52F3D600923C95 /* RakCTDragableTitle.m in Sources */ = {isa = PBXBuildFile; fileRef = B646E7881A52F3D600923C95 /* RakCTDragableTitle.m */; };
 		B64B2A75198C6CC20044344B /* RakTabViewTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B2A74198C6CC20044344B /* RakTabViewTools.m */; };
-		B64B33141DFDCDBB008D2FCA /* RakKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62F81E81DE1F887000AE12C /* RakKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B64D1561191058A200B6E47F /* RakMDLController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64D1560191058A200B6E47F /* RakMDLController.m */; };
 		B64DA2AB1C3BB7240053D4A6 /* RakDownloadStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = B64DA2AA1C3BB7240053D4A6 /* RakDownloadStatus.m */; };
 		B6531BE41C2EE8A3001F45FA /* RakTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6531BE31C2EE8A3001F45FA /* RakTabView.m */; };
@@ -435,6 +432,8 @@
 		B6CB36141C839E1C0085AB2E /* RakFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB36131C839E1C0085AB2E /* RakFormatter.m */; };
 		B6CB36151C839E1C0085AB2E /* RakFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB36131C839E1C0085AB2E /* RakFormatter.m */; };
 		B6CBD2A31A7C2E380051EECB /* RakSRSearchTab.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */; };
+		B6CD1D48215B8ADD001471ED /* RakKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6CD1D47215B8ABB001471ED /* RakKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B6CD1D4A215B8CE7001471ED /* RakKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CD1D47215B8ABB001471ED /* RakKit.framework */; };
 		B6CD68EC1C2B459400A84E0B /* MDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D61DD186CA3D0003504F9 /* MDL.m */; };
 		B6CF07D21868DD58009B16A3 /* RakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF07D11868DD58009B16A3 /* RakAppDelegate.m */; };
 		B6D126FD1AC71353003FFEC6 /* RakPrefsRepoAddView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D126FC1AC71353003FFEC6 /* RakPrefsRepoAddView.m */; };
@@ -519,7 +518,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B64B33141DFDCDBB008D2FCA /* RakKit.framework in Embed Frameworks */,
+				B6CD1D48215B8ADD001471ED /* RakKit.framework in Embed Frameworks */,
 				B6E9C0B71BFCDB4B003770D8 /* HockeySDK.framework in Embed Frameworks */,
 				B667B1171BFA859E00BB1971 /* Sparkle.framework in Embed Frameworks */,
 				B6DDBB081BDBED7300B9E6AC /* INPopoverController.framework in Embed Frameworks */,
@@ -629,7 +628,6 @@
 		B62F81E31DE1ED52000AE12C /* RakSynopsis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSynopsis.m; path = Common/CTSelec/RakSynopsis.m; sourceTree = "<group>"; };
 		B62F81E51DE1EEB3000AE12C /* RakTextComplete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakTextComplete.h; path = Common/Utils/RakTextComplete.h; sourceTree = "<group>"; };
 		B62F81E61DE1EEB3000AE12C /* RakTextComplete.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RakTextComplete.m; path = Common/Utils/RakTextComplete.m; sourceTree = "<group>"; };
-		B62F81E81DE1F887000AE12C /* RakKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RakKit.framework; path = DerivedData/Rakshata/Build/Products/Debug/RakKit.framework; sourceTree = "<group>"; };
 		B630782F1899CF9400589988 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B63401381A96A890003DC56E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		B634014B1A96AB1B003DC56E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
@@ -1002,6 +1000,7 @@
 		B6CB36161C839E4B0085AB2E /* RakFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RakFormatter.h; path = Utils/RakFormatter.h; sourceTree = "<group>"; };
 		B6CBD2A11A7C2E380051EECB /* RakSRSearchTab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RakSRSearchTab.h; path = "Séries/RakSRSearchTab.h"; sourceTree = "<group>"; };
 		B6CBD2A21A7C2E380051EECB /* RakSRSearchTab.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = RakSRSearchTab.m; path = "Séries/RakSRSearchTab.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B6CD1D47215B8ABB001471ED /* RakKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RakKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF07BB1868DD58009B16A3 /* Rakshata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rakshata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF07CC1868DD58009B16A3 /* rakshata.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = rakshata.pch; path = Common/rakshata.pch; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6CF07D01868DD58009B16A3 /* RakAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RakAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1094,7 +1093,6 @@
 				B62576121C27725D00811C33 /* Foundation.framework in Frameworks */,
 				B614F9C11C9A05F9000A9FE1 /* libsqlite.a in Frameworks */,
 				B6B27D1E1C9ACE9400C8E793 /* libicule.a in Frameworks */,
-				B62F81EF1DE1FCA4000AE12C /* RakKit.framework in Frameworks */,
 				B6FAD8901C2A1F5E0084692A /* libssl.a in Frameworks */,
 				B667E2981C2ADE5F001E504E /* libarchive.a in Frameworks */,
 				B625760F1C27723C00811C33 /* QuartzCore.framework in Frameworks */,
@@ -1129,8 +1127,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6CD1D4A215B8CE7001471ED /* RakKit.framework in Frameworks */,
 				B68EAF6F1BD517E800F6AB97 /* SystemConfiguration.framework in Frameworks */,
-				B62F81EE1DE1FCA3000AE12C /* RakKit.framework in Frameworks */,
 				B66318981CC4D9B600D0168D /* libicuio.a in Frameworks */,
 				B66318961CC4D9B600D0168D /* libicudata.a in Frameworks */,
 				B6E9C0B61BFCDB42003770D8 /* HockeySDK.framework in Frameworks */,
@@ -2166,7 +2164,7 @@
 		B6CF07BD1868DD58009B16A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B62F81E81DE1F887000AE12C /* RakKit.framework */,
+				B6CD1D47215B8ABB001471ED /* RakKit.framework */,
 				B6E9C0B51BFCDB42003770D8 /* HockeySDK.framework */,
 				B6DDBB061BDBED5E00B9E6AC /* INPopoverController.framework */,
 				B62576101C27724900811C33 /* iOS */,
@@ -2583,7 +2581,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Rak;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = Taiki;
 				TargetAttributes = {
 					B6291ECC1C89779E0079E6BE = {
@@ -2622,7 +2620,7 @@
 			};
 			buildConfigurationList = B6CF07B61868DD58009B16A3 /* Build configuration list for PBXProject "Rakshata" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -3531,12 +3529,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -3593,12 +3593,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -3654,6 +3656,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DEVELOPMENT_TEAM = MJ9ZWUG4BD;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3716,6 +3719,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DEVELOPMENT_TEAM = MJ9ZWUG4BD;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (

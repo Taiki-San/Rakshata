@@ -129,7 +129,7 @@ enum
 
 - (NSRect) listFrame
 {
-	NSRect frame = _bounds;
+	NSRect frame = self.bounds;
 	const CGFloat height = frame.size.height - PREFS_REPO_BORDER_BELOW_LIST - BORDER;
 	
 	frame.origin.x = BORDER;
@@ -261,7 +261,7 @@ enum
 	
 	if(details == nil)
 	{
-		details = [[RakPrefsRepoDetails alloc] initWithRepo:_bounds :isRoot :_data : self];
+		details = [[RakPrefsRepoDetails alloc] initWithRepo:self.bounds :isRoot :_data : self];
 		if(details != nil)
 			[self addSubview: details];
 	}

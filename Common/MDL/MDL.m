@@ -71,11 +71,11 @@ enum
 		return NO;
 	
 #if !TARGET_OS_IPHONE
-	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : _bounds] : state : controller];
+	coreView = [[RakMDLView alloc] initContent:[self getCoreviewFrame : self.bounds] : state : controller];
 	if(coreView != nil)
 		[self addSubview:coreView];
 	
-	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:_bounds] : oldWantCollapse];
+	footer = [[RakMDLFooter alloc] initWithFrame:[self getFooterFrame:self.bounds] : oldWantCollapse];
 	if(footer != nil)
 	{
 		footer.controller = controller;

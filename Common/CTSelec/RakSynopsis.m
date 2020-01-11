@@ -143,7 +143,7 @@ enum
 
 - (BOOL) postProcessScrollView
 {
-	return [self generatedScrollView:[self frameForContent : _bounds]];
+	return [self generatedScrollView:[self frameForContent : self.bounds]];
 }
 
 - (BOOL) generatedScrollView : (NSRect) frame

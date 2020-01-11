@@ -121,7 +121,7 @@ enum
 
 - (void) updateSelectionWithoutAnimation : (NSInteger) newState
 {
-	[_cell setSelectedSegmentWithoutAnimation:newState];
+	[self.cell setSelectedSegmentWithoutAnimation:newState];
 }
 
 - (BOOL) setupTransitionAnimation : (NSNumber *) oldValue : (NSNumber *) newValue

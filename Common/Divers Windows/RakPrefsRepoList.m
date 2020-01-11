@@ -413,7 +413,7 @@ enum
 		
 		if(_isCompact)
 		{
-			[title setFrameOrigin:NSMakePoint([self titleX], _bounds.size.height / 2 - title.bounds.size.height / 2)];
+			[title setFrameOrigin:NSMakePoint([self titleX], self.bounds.size.height / 2 - title.bounds.size.height / 2)];
 		}
 		else
 		{

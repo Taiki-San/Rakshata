@@ -117,7 +117,7 @@
 	self.forceNextFrameUpdate = YES;
 	
 	[self setFrame:[self createFrame]];
-	[foregroundView setFrame: _bounds];
+	[foregroundView setFrame: self.bounds];
 	
 	[self refreshDataAfterAnimation];
 }
@@ -258,7 +258,7 @@
 
 - (NSRect) generatedReaderTrackingFrame
 {
-	return _bounds;
+	return self.bounds;
 }
 
 - (void) refreshDataAfterAnimation
@@ -289,7 +289,7 @@
 
 - (BOOL) isCursorOnMe
 {
-	NSRect frame = _bounds;
+	NSRect frame = self.bounds;
 	
 	if(self.mainThread == TAB_READER && [self class] != [Reader class])	//Prendre en compte le fait que les tabs se superposent dans le readerMode
 		frame.size.width = [self getFrameOfNextTab].origin.x - self.frame.origin.x;
@@ -567,7 +567,7 @@
 		return YES;
 	}
 	
-	return !NSEqualRects(_frame, newFrame);
+	return !NSEqualRects(self.frame, newFrame);
 }
 
 #pragma mark - Drop support

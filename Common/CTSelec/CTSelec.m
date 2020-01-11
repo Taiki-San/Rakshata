@@ -61,7 +61,7 @@
 
 - (void) initBackButton
 {
-	backButton = [[RakBackButton alloc] initWithFrame:_bounds: YES];
+	backButton = [[RakBackButton alloc] initWithFrame:self.bounds: YES];
 	if(backButton != nil)
 	{
 		[backButton setTarget : self];
@@ -75,7 +75,7 @@
 
 - (void) initMisc
 {
-	SRHeader = [[RakCTSerieHeader alloc] initWithFrame:[self headerFrame : _bounds]];
+	SRHeader = [[RakCTSerieHeader alloc] initWithFrame:[self headerFrame : self.bounds]];
 	if(SRHeader != nil)
 	{
 		if(self.mainThread != TAB_SERIES)
@@ -111,7 +111,7 @@
 	context[2] = [[dataState objectAtIndex:6] floatValue];		//elemSelectedVolume
 	context[3] = [[dataState objectAtIndex:7] floatValue];		//scrollerPosVolume
 	
-	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : self.bounds : backButton.frame.origin.y + backButton.frame.size.height] : *project : isTome : context];
 	
 	releaseCTData(*project);
 	free(project);
@@ -122,7 +122,7 @@
 - (void) noContent
 {
 	self.initWithNoContent = YES;
-	coreView = [[RakChapterView alloc] initContent:[self contentFrame : _bounds : backButton.frame.origin.y + backButton.frame.size.height] :getEmptyProject() : NO : (long[4]){-1, -1, -1, -1}];
+	coreView = [[RakChapterView alloc] initContent:[self contentFrame : self.bounds : backButton.frame.origin.y + backButton.frame.size.height] :getEmptyProject() : NO : (long[4]){-1, -1, -1, -1}];
 }
 
 - (void) dealloc

@@ -105,10 +105,10 @@ enum
 - (void) drawRect : (NSRect) dirtyRect
 {
 	[[self backgroundColor] setFill];
-	NSRectFill(_bounds);
+	NSRectFill(self.bounds);
 	
 	[[self borderColor] setFill];
-	NSRectFill(NSMakeRect(0, 0, _bounds.size.width, 1));
+	NSRectFill(NSMakeRect(0, 0, self.bounds.size.width, 1));
 }
 
 - (RakColor *) backgroundColor

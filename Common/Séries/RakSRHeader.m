@@ -26,7 +26,7 @@
 	{
 		_prefUIOpen = NO;
 		_haveFocus = haveFocus;
-		_height = _bounds.size.height;
+		_height = self.bounds.size.height;
 		
 		[self initView];
 		

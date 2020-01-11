@@ -54,10 +54,10 @@
 		return;
 	}
 	
-	queryWindow = [[RakSheetWindow alloc] initWithContentRect:(NSRect) {{200, 200}, _bounds.size} styleMask:0 backing:NSBackingStoreBuffered defer:YES];
+	queryWindow = [[RakSheetWindow alloc] initWithContentRect:(NSRect) {{200, 200}, self.bounds.size} styleMask:0 backing:NSBackingStoreBuffered defer:YES];
 	if(queryWindow != nil)
 	{
-		coreview = [[RakSheetView alloc] initWithFrame:_bounds];
+		coreview = [[RakSheetView alloc] initWithFrame:self.bounds];
 		if(coreview != nil)
 		{
 			coreview.anchor = self;

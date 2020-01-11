@@ -40,7 +40,7 @@ enum
 		ID = isOneLevelBack ? LEVEL_CT : LEVEL_SERIE;
 		
 		//Set tracking area
-		tag = [self addTrackingRect:_bounds owner:self userData:NULL assumeInside:NO];
+		tag = [self addTrackingRect:self.bounds owner:self userData:NULL assumeInside:NO];
 	}
 	return self;
 }
@@ -121,7 +121,7 @@ enum
 	//On vérifie que le tab est ouvert ET que la souris est bien sur nous
 	RakTabView * group = ID == LEVEL_SERIE ? RakApp.serie : RakApp.CT;
 	
-	NSRect frame = _frame;
+	NSRect frame = self.frame;
 	if(group.isFlipped)
 		frame.origin.y = group.bounds.size.height - frame.size.height - frame.origin.y;
 	

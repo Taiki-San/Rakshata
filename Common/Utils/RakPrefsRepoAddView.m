@@ -229,7 +229,7 @@ enum
 		cancelButton.target = self;
 		cancelButton.action = @selector(cancelClicked);
 		
-		[cancelButton setFrameOrigin:NSMakePoint(_bounds.size.width / 3 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
+		[cancelButton setFrameOrigin:NSMakePoint(self.bounds.size.width / 3 - cancelButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
 		
 		[self addSubview:cancelButton];
 	}
@@ -240,7 +240,7 @@ enum
 		confirmButton.target = self;
 		confirmButton.action = @selector(confirmClicked);
 		
-		[confirmButton setFrameOrigin:NSMakePoint(_bounds.size.width * 2 / 3 - confirmButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
+		[confirmButton setFrameOrigin:NSMakePoint(self.bounds.size.width * 2 / 3 - confirmButton.bounds.size.width / 2, NSMaxY(scrollview.frame) + OFFSET_BUTTONS)];
 		
 		[self addSubview:confirmButton];
 	}
@@ -252,7 +252,7 @@ enum
 	
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];
 	
-	NSSize currentSize = _bounds.size;
+	NSSize currentSize = self.bounds.size;
 	const CGFloat radius = 2;
 	
 	CGContextBeginPath(contextBorder);

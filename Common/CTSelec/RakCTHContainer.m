@@ -100,7 +100,7 @@
 	//Project name
 	if(projectName == nil)
 	{
-		projectName = [[RakText alloc] initWithText : _bounds : currentElem : [self textColor]];
+		projectName = [[RakText alloc] initWithText : self.bounds : currentElem : [self textColor]];
 		if(projectName != nil)
 		{
 			[projectName setAlignment:NSTextAlignmentLeft];
@@ -109,7 +109,7 @@
 			
 			[projectName setFont : [Prefs getFont:FONT_TITLE ofSize: 18]];
 			projectName.fixedWidth = projectName.fixedWidth;	//Will refresh our width
-			[projectName setFrameOrigin : [self projectNamePos : _bounds.size]];
+			[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 			
 			[self addSubview: projectName];
 		}
@@ -117,7 +117,7 @@
 	else if(![currentElem isEqualToString:projectName.stringValue])
 	{
 		[projectName setStringValue : currentElem];
-		[projectName setFrameOrigin : [self projectNamePos : _bounds.size]];
+		[projectName setFrameOrigin : [self projectNamePos : self.bounds.size]];
 	}
 	
 	currentElem = _data.isInitialized ? getStringForWchar(_data.authorName) : @"";
@@ -136,7 +136,7 @@
 			
 			authorName.font = [Prefs getFont:FONT_AUTHOR_ITALIC ofSize:13];
 			authorName.fixedWidth = authorName.fixedWidth;	//Will refresh our width
-			[authorName setFrameOrigin : [self authorNamePos : _bounds.size]];
+			[authorName setFrameOrigin : [self authorNamePos : self.bounds.size]];
 			
 			[self addSubview: authorName];
 		}

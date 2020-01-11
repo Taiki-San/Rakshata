@@ -72,8 +72,8 @@
 	button.stringValue = [self determineMessageForStatus : button.status andItem:item];
 
 	//Refresh everything's position
-	if(!NSEqualSizes(_bounds.size, NSZeroSize))
-		[self setFrameSize:_bounds.size];
+	if(!NSEqualSizes(self.bounds.size, NSZeroSize))
+		[self setFrameSize:self.bounds.size];
 }
 
 - (byte) status
@@ -85,7 +85,7 @@
 {
 	[super setFrameSize:newSize];
 
-	newSize = _bounds.size;
+	newSize = self.bounds.size;
 
 	[projectName setFrameOrigin:NSMakePoint(20, newSize.height / 2 - projectName.bounds.size.height / 2)];
 

@@ -121,7 +121,7 @@
 {
 	if(self.textButton)
 	{
-		NSRect frame = _frame;
+		NSRect frame = self.frame;
 		
 		frame.size = [self.cell sizeOfTextCell];
 		frame.size.height += 4;
@@ -355,7 +355,7 @@
 		[self loadIcon:state];
 	}
 
-	[_controlView setNeedsDisplay:YES];
+	[self.controlView setNeedsDisplay:YES];
 }
 
 #pragma mark - Utils

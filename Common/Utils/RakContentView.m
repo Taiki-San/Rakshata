@@ -102,7 +102,7 @@
 {
 	if(self.window.isMainWindow)
 	{
-		firstResponder = [[RakContentView alloc] initWithFrame:_bounds];
+		firstResponder = [[RakContentView alloc] initWithFrame:self.bounds];
 		if(firstResponder != nil)
 			[self addSubview:firstResponder];
 	}
@@ -190,7 +190,7 @@
 
 - (NSRect) internalFrame
 {
-	NSRect output = _bounds;
+	NSRect output = self.bounds;
 	
 	output.size.height -= _heightOffset + TITLE_BAR_HEIGHT;
 	
@@ -225,7 +225,7 @@
 
 - (void) setIsMainWindow:(BOOL)isMainWindow
 {
-	isMainWindow &= _window.isMainWindow;
+	isMainWindow &= self.window.isMainWindow;
 	
 	if(_isMainWindow != isMainWindow)
 	{

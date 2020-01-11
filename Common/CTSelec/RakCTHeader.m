@@ -32,10 +32,10 @@
 			
 			[Prefs registerForChange:self forType:KVO_THEME];
 			
-			[header setFrame : _bounds];
+			[header setFrame : self.bounds];
 			[self addSubview:header];
 			
-			synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : _bounds : header.bounds.size];
+			synopsis = [[RakCTProjectSynopsis alloc] initWithProject:project : self.bounds : header.bounds.size];
 			if(synopsis != nil)
 			{
 				_synopsisTitleHeight = [synopsis titleHeight];	//For now, this height is stable
@@ -60,7 +60,7 @@
 		[synopsis updateProject : project];
 	else
 	{
-		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : project : _bounds : header.bounds.size];
+		synopsis = [[RakCTProjectSynopsis alloc] initWithProject : project : self.bounds : header.bounds.size];
 		if(synopsis != nil)
 			[self addSubview:synopsis];
 	}
@@ -110,8 +110,8 @@
 	
 	[super setFrame:[self frameByParent:frameRect : header]];
 	
-	[header setFrame : _bounds];
-	[synopsis setFrame : _bounds : header.bounds.size];
+	[header setFrame : self.bounds];
+	[synopsis setFrame : self.bounds : header.bounds.size];
 }
 
 - (void) resizeAnimation : (NSRect) frame

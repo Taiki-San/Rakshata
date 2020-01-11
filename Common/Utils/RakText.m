@@ -105,7 +105,7 @@
 {
 	if(self.wantCustomBorder)
 	{
-		NSBezierPath * path = [NSBezierPath bezierPathWithRect : _bounds];
+		NSBezierPath * path = [NSBezierPath bezierPathWithRect : self.bounds];
 		[path setLineWidth:1];
 		[[self getBorderColor] setStroke];
 		[path stroke];
@@ -125,7 +125,7 @@
 - (void) setFrameSize:(NSSize)newSize
 {
 	//Fix an issue when resizing with an animation
-	if(_forcedOffsetY && newSize.height != _bounds.size.height)
+	if(_forcedOffsetY && newSize.height != self.bounds.size.height)
 		newSize.height += _forcedOffsetY;
 	
 	_suggestedWidth = newSize.width;
@@ -233,7 +233,7 @@
 - (void) setFixedWidth : (CGFloat)fixedWidth
 {
 	haveFixedWidth = fixedWidth != 0;
-	if(_fixedWidth != fixedWidth || _bounds.size.width != fixedWidth)
+	if(_fixedWidth != fixedWidth || self.bounds.size.width != fixedWidth)
 	{
 		_fixedWidth = fixedWidth;
 		
@@ -259,8 +259,8 @@
 	
 	if(haveFixedWidth)
 		frame.size.width = _fixedWidth;
-	else if(_bounds.size.width != 0)
-		frame.size.width = _bounds.size.width;
+	else if(self.bounds.size.width != 0)
+		frame.size.width = self.bounds.size.width;
 	else
 		frame.size.width = _suggestedWidth;
 	
@@ -366,7 +366,7 @@
 	[self validateEditing];
 
 	NSSize size = [self intrinsicContentSize];
-	NSRect frame = _frame;
+	NSRect frame = self.frame;
 
 	if(!NSEqualSizes(size, frame.size))
 	{

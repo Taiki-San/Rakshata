@@ -63,10 +63,10 @@
 	
 	CGFloat cumulatedHeight = 10 + contentText.bounds.size.height + 10 + button.bounds.size.height + 10;
 	
-	[self setFrameSize:NSMakeSize(_bounds.size.width, cumulatedHeight)];
+	[self setFrameSize:NSMakeSize(self.bounds.size.width, cumulatedHeight)];
 
-	[contentText setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - contentText.frame.size.width / 2 , _bounds.size.height - 10 - contentText.frame.size.height)];
-	[button setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
+	[contentText setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - contentText.frame.size.width / 2 , self.bounds.size.height - 10 - contentText.frame.size.height)];
+	[button setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - button.bounds.size.width / 2, 10)];
 }
 
 - (void) configurePopover:(INPopoverController *)internalPopover

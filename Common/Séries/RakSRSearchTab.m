@@ -34,7 +34,7 @@
 		self.layer.borderWidth = 1;
 		self.layer.borderColor = [self getBorderColor].CGColor;
 		
-		placeholder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
+		placeholder = [[RakText alloc] initWithText:self.bounds :NSLocalizedString(@"PROJ-EXPAND-FILTER-AREA", nil) : [self placeholderTextColor]];
 		if(placeholder != nil)
 		{
 			placeholder.font = [self placeholderFont];
@@ -54,7 +54,7 @@
 
 - (void) initContent
 {
-	author = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame : _bounds : 1] :SEARCH_BAR_ID_AUTHOR];
+	author = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame : self.bounds : 1] :SEARCH_BAR_ID_AUTHOR];
 	if(author != nil)
 	{
 		author.alphaValue = 0;
@@ -62,7 +62,7 @@
 		[self addSubview:author];
 	}
 	
-	source = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :2] :SEARCH_BAR_ID_SOURCE];
+	source = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:self.bounds :2] :SEARCH_BAR_ID_SOURCE];
 	if(source != nil)
 	{
 		source.alphaValue = 0;
@@ -70,7 +70,7 @@
 		[self addSubview:source];
 	}
 	
-	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :3] :SEARCH_BAR_ID_CAT];
+	type = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:self.bounds :3] :SEARCH_BAR_ID_CAT];
 	if(type != nil)
 	{
 		type.alphaValue = 0;
@@ -78,7 +78,7 @@
 		[self addSubview:type];
 	}
 	
-	tag = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :4] :SEARCH_BAR_ID_TAG];
+	tag = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:self.bounds :4] :SEARCH_BAR_ID_TAG];
 	if(tag != nil)
 	{
 		tag.alphaValue = 0;
@@ -86,7 +86,7 @@
 		[self addSubview:tag];
 	}
 	
-	extra = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:_bounds :5] :SEARCH_BAR_ID_EXTRA];
+	extra = [[RakSRSearchTabGroup alloc] initWithFrame:[self getBlockFrame:self.bounds :5] :SEARCH_BAR_ID_EXTRA];
 	if(extra != nil)
 	{
 		extra.alphaValue = 0;

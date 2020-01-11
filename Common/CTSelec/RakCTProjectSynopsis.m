@@ -26,7 +26,7 @@
 		self.layer.cornerRadius = 4;
 		[Prefs registerForChange:self forType:KVO_THEME];
 		
-		_title = [[RakMenuText alloc] initWithText : _bounds : NSLocalizedString(@"CT-SYNOPSIS", nil)];
+		_title = [[RakMenuText alloc] initWithText : self.bounds : NSLocalizedString(@"CT-SYNOPSIS", nil)];
 		if(_title != nil)
 		{
 			[_title sizeToFit];
@@ -35,7 +35,7 @@
 			_title.barWidth = 1;
 			_title.widthGradient = 0.4f;
 			
-			[_title setFrame : [self frameForTitle:_bounds : _title.bounds.size.height]];
+			[_title setFrame : [self frameForTitle:self.bounds : _title.bounds.size.height]];
 			[_title setAlignment : NSTextAlignmentRight];
 			[self addSubview:_title];
 		}

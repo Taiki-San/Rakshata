@@ -32,7 +32,7 @@ enum
 	{
 		self.status = status;
 
-		trackingArea = [[NSTrackingArea alloc] initWithRect:_bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
+		trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
 		if(trackingArea != nil)
 			[self addTrackingArea:trackingArea];
 
@@ -201,7 +201,7 @@ enum
 	[super updateTrackingAreas];
 
 	[self removeTrackingArea:trackingArea];
-	trackingArea = [[NSTrackingArea alloc] initWithRect:_bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
+	trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
 	if(trackingArea != nil)
 		[self addTrackingArea:trackingArea];
 }
@@ -228,7 +228,7 @@ enum
 
 - (void) updateFrame
 {
-	NSRect frame = _frame;
+	NSRect frame = self.frame;
 	CGFloat diff = STATUS_BUTTON_DIAMETER + textWidth - frame.size.width;
 
 	frame.size.width += diff;
@@ -248,7 +248,7 @@ enum
 	else
 		minX += cursorOver ? 0 : textWidth;
 
-	[text setFrameOrigin:NSMakePoint(minX, _bounds.size.height / 2 - text.bounds.size.height / 2 - 1)];
+	[text setFrameOrigin:NSMakePoint(minX, self.bounds.size.height / 2 - text.bounds.size.height / 2 - 1)];
 }
 
 #pragma mark - Drawing
@@ -282,7 +282,7 @@ enum
 	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
 	
 	//Line to the other side is implied when drawing the other half of the circle
-	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+	CGContextAddArc(contextBorder, self.bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
 	CGContextClosePath(contextBorder);
 
 	if(_underlyingBackgroundColor != nil)
@@ -311,7 +311,7 @@ enum
 	CGContextAddArc(contextBorder, minX + STATUS_BUTTON_RADIUS, STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, -M_PI_2, M_PI_2, 1);
 		
 	//Line to the other side is implied when drawing the other half of the circle
-	CGContextAddArc(contextBorder, _bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
+	CGContextAddArc(contextBorder, self.bounds.size.width - (STATUS_BUTTON_RADIUS + 1), STATUS_BUTTON_DIAMETER / 2, STATUS_BUTTON_RADIUS, M_PI_2, -M_PI_2, 1);
 	CGContextClosePath(contextBorder);
 	
 	//Now, draw the shape within
@@ -364,7 +364,7 @@ enum
 - (void) focusChanged
 {
 	BOOL oldAnimationData = NO;
-	uint stage;
+	uint stage = 0;
 
 	if(_animation != nil)
 	{

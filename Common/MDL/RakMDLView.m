@@ -30,7 +30,7 @@ enum
 		_controller = controller;
 		[self setupInternal];
 		
-		headerText = [[RakMenuText alloc] initWithText:_bounds : NSLocalizedString(@"MDL-TAB-TITLE", nil)];
+		headerText = [[RakMenuText alloc] initWithText:self.bounds : NSLocalizedString(@"MDL-TAB-TITLE", nil)];
 		if(headerText != nil)
 		{
 			headerText.barWidth = 1;
@@ -38,10 +38,10 @@ enum
 			[self addSubview:headerText];
 		}
 		
-		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:_bounds] : controller];
+		MDLList = [[RakMDLList alloc] init : [self getMainListFrame:self.bounds] : controller];
 		if(MDLList != nil)			MDLList.superview = self;
 		
-		dropPlaceHolder = [[RakText alloc] initWithText:_bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:COLOR_SURVOL]];	//setupInternal already register
+		dropPlaceHolder = [[RakText alloc] initWithText:self.bounds :NSLocalizedString(@"MDL-DROP-PLACEHOLDER", nil) : [Prefs getSystemColor:COLOR_SURVOL]];	//setupInternal already register
 		if(dropPlaceHolder != nil)
 		{
 			[dropPlaceHolder setFont:[Prefs getFont:FONT_RD_BUTTONS ofSize:15]];
@@ -106,7 +106,7 @@ enum
 
 - (void) setFrameInternalViews:(NSRect)newBound
 {
-	[headerText setFrame:_bounds];
+	[headerText setFrame:self.bounds];
 	[MDLList setFrame:[self getMainListFrame:newBound]];
 	
 	[dropPlaceHolder setFrameOrigin: [self getPosDropPlaceHolder:newBound.size]];
@@ -139,7 +139,7 @@ enum
 		return;
 	
 	RakColor * color = [self getBorderColor];
-	NSRect frame = _bounds;
+	NSRect frame = self.bounds;
 	CGFloat radius = self.layer.cornerRadius;
 	
 	CGContextRef contextBorder = [[NSGraphicsContext currentContext] graphicsPort];

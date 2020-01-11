@@ -37,7 +37,7 @@ enum
 	
 	if(self != nil)
 	{
-		collapseButton = [[RakSlideshowButton alloc] initWithFrame:[self collapseFrame:_bounds]];
+		collapseButton = [[RakSlideshowButton alloc] initWithFrame:[self collapseFrame:self.bounds]];
 		if(collapseButton != nil)
 		{
 			collapseButton.state = initialCollapseState ? NSOnState : NSOffState;
@@ -50,7 +50,7 @@ enum
 		actionButton = [RakButton allocWithText:NSLocalizedString(@"MDL-FLUSH-INSTALLED", nil)];
 		if(actionButton != nil)
 		{
-			[actionButton setFrame:[self actionFrame:_bounds]];
+			[actionButton setFrame:[self actionFrame:self.bounds]];
 			
 			actionButton.target = self;
 			actionButton.action = @selector(actionClicked);
@@ -92,13 +92,13 @@ enum
 	{
 		[self setFrameAnimated:newFrame];
 		[collapseButton setFrameAnimated:[self collapseFrame:newFrame]];
-		[actionButton setFrameAnimated:[self actionFrame:_bounds]];
+		[actionButton setFrameAnimated:[self actionFrame:self.bounds]];
 	}
 	else
 	{
 		[super setFrame:newFrame];
 		[collapseButton setFrame:[self collapseFrame:newFrame]];
-		[actionButton setFrame:[self actionFrame:_bounds]];
+		[actionButton setFrame:[self actionFrame:self.bounds]];
 	}
 }
 

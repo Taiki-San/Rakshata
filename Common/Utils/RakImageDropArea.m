@@ -45,7 +45,7 @@ enum
 			if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_10_5)
 				[content setFrameSize:NSMakeSize(WIDTH, content.bounds.size.height)];
 			
-			[content setFrameOrigin : NSCenterPoint(_bounds, content.bounds)];
+			[content setFrameOrigin : NSCenterPoint(self.bounds, content.bounds)];
 			[self addSubview:content];
 		}
 	}
@@ -128,7 +128,7 @@ enum
 
 	if(highlighted)
 	{
-		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:_bounds xRadius:5 yRadius:5];
+		NSBezierPath * path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:5 yRadius:5];
 		[[Prefs getSystemColor:COLOR_ACTIVE] setStroke];
 
 		[path setLineWidth:2];

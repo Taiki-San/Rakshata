@@ -19,7 +19,7 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
 	if(_haveAdditionalDrawing)
-		_additionalDrawing(_bounds.size);
+		_additionalDrawing(self.bounds.size);
 }
 
 @end

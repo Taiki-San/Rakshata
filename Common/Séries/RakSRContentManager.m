@@ -238,7 +238,7 @@
 #if !TARGET_OS_IPHONE
 - (void) initViews
 {
-	previousFrame = _controlView.bounds;
+	previousFrame = self.controlView.bounds;
 	
 	_grid = [[RakGridView alloc] initWithFrame : previousFrame : self];
 	if(_grid != nil)
@@ -251,7 +251,7 @@
 			view.hidden = YES;
 		}
 		
-		[_controlView addSubview : view];
+		[self.controlView addSubview : view];
 	}
 	
 	_initialized = YES;

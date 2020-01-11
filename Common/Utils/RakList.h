@@ -28,8 +28,8 @@
 	
 	uint _preCommitedLastClickedRow;
 	
-	uint _lastClickedRow;
-	uint _lastClickedColumn;
+	uint _lastSelectedRow;
+	uint _lastSelectedColumn;
 }
 
 @property BOOL wantVerboseClick;

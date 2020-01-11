@@ -349,7 +349,7 @@ enum
 	[self initReason];
 	
 	_workingArea.size.height = MAX(RCVC_MINIMUM_HEIGHT, [self getMinimumHeight]) - 2 * TOP_BORDER;
-	_workingArea.origin = NSCenterSize(_bounds.size, _workingArea.size);
+	_workingArea.origin = NSCenterSize(self.bounds.size, _workingArea.size);
 }
 
 - (void) initReason
@@ -419,7 +419,7 @@ enum
 
 - (void) updateSizes
 {
-	NSSize size = _bounds.size;
+	NSSize size = self.bounds.size;
 	
 	//Too small
 	if(size.width < 10)
@@ -547,7 +547,7 @@ enum
 	
 	if(newLowestOrigin.y < 0)
 	{
-		NSSize size = _bounds.size;
+		NSSize size = self.bounds.size;
 		
 		size.height -= newLowestOrigin.y;	//newLowestOrigin is negative
 		

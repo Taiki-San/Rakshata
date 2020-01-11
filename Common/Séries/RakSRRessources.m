@@ -61,7 +61,7 @@
 	haveForcedWidth = YES;
 	_forcedWidth = forcedWidth;
 	
-	NSSize size = _frame.size;
+	NSSize size = self.frame.size;
 	if(size.width != _forcedWidth)
 	{
 		[self setFrameSize:size];

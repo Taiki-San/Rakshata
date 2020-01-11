@@ -44,7 +44,7 @@
 
 - (void) initContent : (NSString *) state
 {
-	NSRect frame = _bounds;
+	NSRect frame = self.bounds;
 	
 	header = [[RakSRHeader alloc] initWithFrame:frame : self.mainThread == TAB_SERIES];
 	if(header != nil)

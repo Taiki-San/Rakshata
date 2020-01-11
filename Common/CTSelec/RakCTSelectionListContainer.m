@@ -68,7 +68,7 @@
 		[content getContent].alphaValue = !_placeholderActive;	[content setHidden : _placeholderActive];
 		_placeholder.alphaValue = _placeholderActive;			[_placeholder setHidden : !_placeholderActive];
 		
-		[content setFrame:[self frameForContent : _bounds]];
+		[content setFrame:[self frameForContent : self.bounds]];
 		[_placeholder setFrameOrigin : NSCenteredRect(content.frame, _placeholder.bounds)];
 		
 		if(self.compactMode)
@@ -202,14 +202,14 @@
 {
 	[super setFrame : [self frameFromParent:parentFrame]];
 	
-	[_title setFrame : [self frameForTitle : _bounds]];
+	[_title setFrame : [self frameForTitle : self.bounds]];
 	
 	[self reloadContentFrame];
 }
 
 - (void) reloadContentFrame
 {
-	NSRect contentFrame = [self frameForContent : _bounds];
+	NSRect contentFrame = [self frameForContent : self.bounds];
 	[_content setFrame : contentFrame];
 	[_placeholder setFrameOrigin : NSCenteredRect(contentFrame, _placeholder.bounds)];
 }

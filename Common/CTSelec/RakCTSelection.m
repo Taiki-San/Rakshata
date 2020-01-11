@@ -118,9 +118,9 @@
 	
 	[super setFrame : [self frameFromParent : parentFrame : headerHeight]];
 	
-	[_buttons setFrame : _bounds];
-	[_chapterView setFrame : _bounds];
-	[_volView setFrame : _bounds];
+	[_buttons setFrame : self.bounds];
+	[_chapterView setFrame : self.bounds];
+	[_volView setFrame : self.bounds];
 }
 
 - (void) resizeAnimation : (NSRect) parentFrame : (CGFloat) headerHeight
@@ -154,7 +154,7 @@
 	
 	[[Prefs getSystemColor:COLOR_CTLIST_BACKGROUND] setFill];
 	
-	dirtyRect.size = _bounds.size;
+	dirtyRect.size = self.bounds.size;
 	
 	NSRectFill(NSMakeRect(0, 0, dirtyRect.size.width, dirtyRect.size.height - CT_READERMODE_HEIGHT_CT_BUTTON - CT_READERMODE_HEIGHT_BORDER_TABLEVIEW + 2));
 }
@@ -171,7 +171,7 @@
 
 - (void) setupButtons : (BOOL*) isTome
 {
-	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame : _bounds : @[NSLocalizedString(@"CHAPTERS", nil), NSLocalizedString(@"VOLUMES", nil)]];
+	_buttons = [[RakCTCoreViewButtons alloc] initWithFrame : self.bounds : @[NSLocalizedString(@"CHAPTERS", nil), NSLocalizedString(@"VOLUMES", nil)]];
 	
 	if(_buttons != nil)
 	{

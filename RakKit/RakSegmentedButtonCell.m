@@ -35,7 +35,7 @@
 	if([object class] != [Prefs class])
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[_controlView setNeedsDisplay:YES];
+	[self.controlView setNeedsDisplay:YES];
 }
 
 - (void) setSelectedSegmentWithoutAnimation:(NSInteger)selectedSegment

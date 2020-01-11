@@ -48,7 +48,7 @@ enum
 		[Prefs registerForChange:self forType:KVO_THEME];
 
 		//Theme change
-		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:_bounds :@[NSLocalizedString(@"PREFS-GENERAL-THEME-DARK", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-LIGHT", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-CUSTOM", nil)]];
+		themeSwitch = [[RakSegmentedControl alloc] initWithFrame:self.bounds :@[NSLocalizedString(@"PREFS-GENERAL-THEME-DARK", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-LIGHT", nil), NSLocalizedString(@"PREFS-GENERAL-THEME-CUSTOM", nil)]];
 		
 		if(themeSwitch != nil)
 		{
@@ -93,7 +93,7 @@ enum
 			
 		}
 		else if(email != nil)
-			[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+			[email setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 		
 		resetRemind = [RakButton allocWithText:NSLocalizedString(@"PREFS-GENERAL-RESET-ALERTS", nil)];
 		if(resetRemind != nil)
@@ -104,7 +104,7 @@ enum
 			resetRemind.target = self;
 			resetRemind.action = @selector(toogleReset);
 			
-			[resetRemind setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - resetRemind.bounds.size.width / 2, RESET_BASE_Y)];
+			[resetRemind setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - resetRemind.bounds.size.width / 2, RESET_BASE_Y)];
 			
 			[self addSubview:resetRemind];
 		}
@@ -169,7 +169,7 @@ enum
 {
 	if(COMPTE_PRINCIPAL_MAIL != NULL)
 	{
-		[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+		[email setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - (email.bounds.size.width + disconnect.bounds.size.width) / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 		[disconnect setFrameOrigin:NSMakePoint(NSMaxX(email.frame) + 10, EMAIL_BASE_Y - disconnect.bounds.size.height / 2)];
 		
 		if(disconnect.isHidden)
@@ -180,7 +180,7 @@ enum
 	else
 	{
 		disconnect.hidden = YES;
-		[email setFrameOrigin:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+		[email setFrameOrigin:NSMakePoint(self.bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 	}
 }
 
@@ -198,7 +198,7 @@ enum
 	[email sizeToFit];
 	
 	disconnect. alphaAnimated = 0;
-	[email setFrameOriginAnimated:NSMakePoint(_bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
+	[email setFrameOriginAnimated:NSMakePoint(self.bounds.size.width / 2 - email.bounds.size.width / 2, EMAIL_BASE_Y - email.bounds.size.height / 2)];
 }
 
 - (void) animationOver : (RakAnimationController *) controller
