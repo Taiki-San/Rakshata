@@ -1,12 +1,11 @@
-#Rakshata
+# Rakshata
 
-[Rakshata][website] is a decentralized offline manga/comic/BD reader for OS X.  
+[Rakshata](https://www.rakshata.com/) is a decentralized offline manga/comic/BD reader for OS X.  
 Rakshata is designed to manage your library, with content coming from either a source compatible with Rakshata's open standard or from your local stuffs that you can easily import.  
-You can download a recent build [there][dl-link].
-[website]:https://www.rakshata.com/
-[dl-link]:https://www.rakshata.com/beta
+You can download a recent build [there](https://www.rakshata.com/beta).
 
-##Spirit
+
+## Spirit
 
 Rakshata was designed as a tool to enable everyone to share, and eventually sell, their content free of the censorship of centralized actor.  
 Rakshata was made open source for two reasons :
@@ -17,49 +16,43 @@ Rakshata was made open source for two reasons :
 
 The most interesting part of the codebase is probably the various subclasses for basic UI elements (RakText, RakList...) that enable easy customization of properties AppKit can be fairly rigid about.
 
-##Formats
+## Formats
 
 The various formats documentation will be made available shortly.
 
-##Building
+## Building
 
 Rakshata requires a non-trivial amount of dependencies, which are included in the repository but packed in an archive.  
 In order to build Rakshata, you need to decompress Frameworks/Frameworks.zip and in OS X/Libraries/include.zip.  
 Please note that the content of Frameworks.zip need to be directly in Frameworks/ (and not in Frameworks/Frameworks/).
 
-##Contributing
+## Contributing
 
 You can chat with the dev team on IRC on freenode, #Rakshata.
 
-###Coding style
+### Coding style
 
-This project use the [Allman identation style][allman-ident], [Camel case][camel-case] starting with a lower case.
+This project use the [Allman identation style](https://en.wikipedia.org/wiki/Indent_style#Allman_style), [Camel case](https://en.wikipedia.org/wiki/CamelCase) starting with a lower case.
 
-[allman-ident]: https://en.wikipedia.org/wiki/Indent_style#Allman_style
-[camel-case]: https://en.wikipedia.org/wiki/CamelCase
 
-###Code of Conduct
+### Code of Conduct
 
-Please note that this project is released with a [Contributor Code of Conduct][code-of-conduct].  
-By participating in this project you agree to abide by its terms.  
-If you want to report a violation, please contact us at [this address][abuse-address].
-[code-of-conduct]: http://contributor-covenant.org/version/1/4/
-[abuse-address]:mailto:abuse@rakshata.com
+Please note that this project is released with a [Contributor Code of Conduct](http://contributor-covenant.org/version/1/4/).  
+By participating in this project you agree to abide by its terms.
+If you want to report a violation, please contact us at [this address](mailto:abuse@rakshata.com).
 
-###Security
+### Security
 
 Rakshata was designed with security in mind, and a particular attention was given to protect Rakshata from potentially dangerous input and was regularly submitted to static analysis.  
-However, in the case you find something we missed that could potentially harm our users, please send us an encrypted email at [this address][security-address].  
+However, in the case you find something we missed that could potentially harm our users, please send us an encrypted email at [this address](mailto:taiki@rakshata.com).
 The GPG key for this address is `AD4D 9753 4993 54C3 1B19  5CCA 8597 FA21 D9F4 E395`.  
 Unless you ask otherwise, you'll be credited for the discovery.
-[security-address]:mailto:taiki@rakshata.com
 
-##Licence
+## Licence
 
-Rakshata is licenced under the [MPL][mpl-licence].  
+Rakshata is licenced under the [MPL](https://mozilla.org/MPL/2.0/).  
 However, an additionnal constraint is added as you're not granted the right to distribute, on a binary form :
 - Your own compiled version Rakshata;
 - A software heavily based, with minimal modifications, on Rakshata
 
 on an app store Rakshata is already made available by the maintainer of the projet.
-[mpl-licence]:https://mozilla.org/MPL/2.0/
